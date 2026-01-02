@@ -113,36 +113,60 @@ const Inventory: React.FC = () => {
     [handleOpen]
   );
 
+  const handleScanSuccessRef = useRef(handleScanSuccess);
+
+  // Keep the ref updated with the latest callback
+  useEffect(() => {
+    handleScanSuccessRef.current = handleScanSuccess;
+  }, [handleScanSuccess]);
+
   // Handle scanner lifecycle
   useEffect(() => {
     if (scanOpen && !scannerRef.current) {
-      const scanner = new Html5QrcodeScanner(
-        "reader",
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        /* verbose= */ false
-      );
+      // Wait for the dialog to render before initializing the scanner
+      const timeoutId = setTimeout(() => {
+        console.log("Initializing scanner...");
+        const scanner = new Html5QrcodeScanner(
+          "reader",
+          { fps: 10, qrbox: { width: 250, height: 250 } },
+          /* verbose= */ false
+        );
 
-      scanner.render(
-        (decodedText) => {
-          handleScanSuccess(decodedText);
-        },
-        () => {
-          // ignore scan errors
-        }
-      );
+        scanner.render(
+          (decodedText) => {
+            console.log("Barcode scanned:", decodedText);
+            // Clean up scanner before handling success
+            if (scannerRef.current) {
+              scannerRef.current.clear().catch((error) => {
+                console.error("Failed to clear scanner", error);
+              });
+              scannerRef.current = null;
+            }
+            // Call the latest version of handleScanSuccess
+            handleScanSuccessRef.current(decodedText);
+          },
+          (errorMessage) => {
+            // ignore scan errors (they happen frequently as camera tries to scan)
+            // console.log("Scan error:", errorMessage);
+          }
+        );
 
-      scannerRef.current = scanner;
+        scannerRef.current = scanner;
+        console.log("Scanner initialized successfully");
+      }, 100); // Small delay to let the dialog render
+
+      return () => clearTimeout(timeoutId);
     }
 
-    return () => {
-      if (scannerRef.current) {
-        scannerRef.current.clear().catch((error) => {
-          console.error("Failed to clear scanner", error);
-        });
-        scannerRef.current = null;
-      }
-    };
-  }, [scanOpen, handleScanSuccess]);
+    // Cleanup when dialog closes
+    if (!scanOpen && scannerRef.current) {
+      console.log("Cleaning up scanner...");
+      scannerRef.current.clear().catch((error) => {
+        console.error("Failed to clear scanner", error);
+      });
+      scannerRef.current = null;
+    }
+  }, [scanOpen]);
 
   const handleClose = () => {
     setOpen(false);
