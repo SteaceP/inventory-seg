@@ -29,7 +29,8 @@ import {
 import { useTheme, useMediaQuery } from "@mui/material";
 import { supabase } from "../supabaseClient";
 import Barcode from "react-barcode";
-import { Html5QrcodeScanner } from "html5-qrcode";
+import { Html5Qrcode } from "html5-qrcode";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface InventoryItem {
   id: string;
@@ -57,7 +58,7 @@ const Inventory: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+  const scannerRef = useRef<Html5Qrcode | null>(null);
 
   const fetchInventory = React.useCallback(async () => {
     setLoading(true);
@@ -122,47 +123,55 @@ const Inventory: React.FC = () => {
   // Handle scanner lifecycle
   useEffect(() => {
     if (scanOpen && !scannerRef.current) {
-      // Wait for the dialog to render before initializing the scanner
-      const timeoutId = setTimeout(() => {
-        console.log("Initializing scanner...");
-        const scanner = new Html5QrcodeScanner(
-          "reader",
-          { fps: 10, qrbox: { width: 250, height: 250 } },
-          /* verbose= */ false
-        );
+      const timeoutId = setTimeout(async () => {
+        try {
+          console.log("Initializing custom scanner...");
+          const html5QrCode = new Html5Qrcode("reader");
+          scannerRef.current = html5QrCode;
 
-        scanner.render(
-          (decodedText) => {
-            console.log("Barcode scanned:", decodedText);
-            // Clean up scanner before handling success
-            if (scannerRef.current) {
-              scannerRef.current.clear().catch((error) => {
-                console.error("Failed to clear scanner", error);
-              });
-              scannerRef.current = null;
-            }
-            // Call the latest version of handleScanSuccess
-            handleScanSuccessRef.current(decodedText);
-          },
-          () => {
-            // ignore scan errors (they happen frequently as camera tries to scan)
-          }
-        );
+          const config = {
+            fps: 20,
+            qrbox: { width: 250, height: 250 },
+            aspectRatio: 1.0,
+          };
 
-        scannerRef.current = scanner;
-        console.log("Scanner initialized successfully");
-      }, 100); // Small delay to let the dialog render
+          await html5QrCode.start(
+            { facingMode: "environment" },
+            config,
+            (decodedText) => {
+              console.log("Barcode scanned:", decodedText);
+
+              // Stop scanner properly before handling success
+              html5QrCode
+                .stop()
+                .then(() => {
+                  scannerRef.current = null;
+                  handleScanSuccessRef.current(decodedText);
+                })
+                .catch((err) => {
+                  console.error("Failed to stop scanner", err);
+                  scannerRef.current = null;
+                  handleScanSuccessRef.current(decodedText);
+                });
+            },
+            () => {} // silent errors
+          );
+
+          console.log("Scanner started successfully");
+        } catch (err) {
+          console.error("Unable to start scanner", err);
+        }
+      }, 300);
 
       return () => clearTimeout(timeoutId);
     }
 
-    // Cleanup when dialog closes
     if (!scanOpen && scannerRef.current) {
-      console.log("Cleaning up scanner...");
-      scannerRef.current.clear().catch((error) => {
-        console.error("Failed to clear scanner", error);
-      });
+      const scanner = scannerRef.current;
       scannerRef.current = null;
+      if (scanner.isScanning) {
+        scanner.stop().catch(console.error);
+      }
     }
   }, [scanOpen]);
 
@@ -520,7 +529,6 @@ const Inventory: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Scanner Dialog */}
       <Dialog
         open={scanOpen}
         onClose={() => setScanOpen(false)}
@@ -531,30 +539,147 @@ const Inventory: React.FC = () => {
             bgcolor: "#0d1117",
             color: "white",
             border: "1px solid #30363d",
-            borderRadius: "12px",
+            borderRadius: "20px",
+            overflow: "hidden",
           },
         }}
       >
-        <DialogTitle>Scan Barcode</DialogTitle>
-        <DialogContent>
-          <Box id="reader" sx={{ width: "100%", minHeight: "300px" }} />
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            align="center"
-            sx={{ mt: 2 }}
-          >
-            Point your camera at a barcode to identify or add an item.
+        <Box sx={{ p: 3, textAlign: "center", position: "relative" }}>
+          <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
+            Scan Barcode
           </Typography>
-        </DialogContent>
-        <DialogActions>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Align the barcode within the frame
+          </Typography>
+
+          <Box
+            sx={{
+              position: "relative",
+              width: "300px",
+              height: "300px",
+              margin: "0 auto",
+              borderRadius: "16px",
+              overflow: "hidden",
+              boxShadow: "0 0 20px rgba(0,0,0,0.5)",
+              border: "2px solid #30363d",
+            }}
+          >
+            <Box id="reader" sx={{ width: "100%", height: "100%" }} />
+
+            {/* Custom Scanner Overlay */}
+            <Box
+              sx={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                pointerEvents: "none",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {/* Corner Accents */}
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 20,
+                  left: 20,
+                  width: 30,
+                  height: 30,
+                  borderLeft: "4px solid #58a6ff",
+                  borderTop: "4px solid #58a6ff",
+                  borderRadius: "4px 0 0 0",
+                }}
+              />
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 20,
+                  right: 20,
+                  width: 30,
+                  height: 30,
+                  borderRight: "4px solid #58a6ff",
+                  borderTop: "4px solid #58a6ff",
+                  borderRadius: "0 4px 0 0",
+                }}
+              />
+              <Box
+                sx={{
+                  position: "absolute",
+                  bottom: 20,
+                  left: 20,
+                  width: 30,
+                  height: 30,
+                  borderLeft: "4px solid #58a6ff",
+                  borderBottom: "4px solid #58a6ff",
+                  borderRadius: "0 0 0 4px",
+                }}
+              />
+              <Box
+                sx={{
+                  position: "absolute",
+                  bottom: 20,
+                  right: 20,
+                  width: 30,
+                  height: 30,
+                  borderRight: "4px solid #58a6ff",
+                  borderBottom: "4px solid #58a6ff",
+                  borderRadius: "0 0 4px 0",
+                }}
+              />
+
+              {/* Pulsing Scan Line */}
+              <motion.div
+                initial={{ top: "15%" }}
+                animate={{ top: "85%" }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  ease: "linear",
+                }}
+                style={{
+                  position: "absolute",
+                  left: "10%",
+                  right: "10%",
+                  height: "2px",
+                  background:
+                    "linear-gradient(90deg, transparent, #58a6ff, transparent)",
+                  boxShadow: "0 0 15px #58a6ff",
+                  zIndex: 10,
+                }}
+              />
+
+              {/* Semi-transparent Backdrop Mask */}
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  border: "40px solid rgba(13, 17, 23, 0.4)",
+                }}
+              />
+            </Box>
+          </Box>
+
           <Button
             onClick={() => setScanOpen(false)}
-            sx={{ color: "text.secondary" }}
+            variant="outlined"
+            sx={{
+              mt: 4,
+              color: "text.secondary",
+              borderColor: "#30363d",
+              borderRadius: "10px",
+              px: 4,
+            }}
           >
-            Close
+            Cancel
           </Button>
-        </DialogActions>
+        </Box>
       </Dialog>
     </Box>
   );
