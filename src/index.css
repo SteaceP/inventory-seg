@@ -68,3 +68,32 @@ button:active {
   border-radius: 12px;
   padding: 2rem;
 }
+
+/* Print Styles */
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+
+  #root {
+    display: none !important;
+  }
+
+  .print-only-area {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  /* Hide common browser elements if they persist */
+  header, footer, nav, aside {
+    display: none !important;
+  }
+}
+
+.print-only-area {
+  display: none;
+}

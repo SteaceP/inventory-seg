@@ -20,6 +20,7 @@ import {
   Tooltip,
   Snackbar,
   Alert,
+  Checkbox,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -28,12 +29,14 @@ import {
   QrCodeScanner as ScanIcon,
   Refresh as RefreshIcon,
   Close as CloseIcon,
+  Print as PrintIcon,
 } from "@mui/icons-material";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { supabase } from "../supabaseClient";
 import Barcode from "react-barcode";
 import { Html5Qrcode } from "html5-qrcode";
 import { motion } from "framer-motion";
+import BarcodePrinter from "../components/BarcodePrinter";
 
 interface InventoryItem {
   id: string;
@@ -58,6 +61,7 @@ const Inventory: React.FC = () => {
     stock: 0,
     price: 0,
   });
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -94,6 +98,14 @@ const Inventory: React.FC = () => {
     }
     setOpen(true);
   }, []);
+
+  const getBarcodeFormat = (sku: string) => {
+    const cleanSku = sku.trim();
+    if (/^\d{12}$/.test(cleanSku)) return "UPC";
+    if (/^\d{13}$/.test(cleanSku)) return "EAN13";
+    if (/^\d{8}$/.test(cleanSku)) return "EAN8";
+    return "CODE128";
+  };
 
   const handleScanSuccess = React.useCallback(
     (decodedText: string) => {
@@ -135,7 +147,7 @@ const Inventory: React.FC = () => {
 
           const config = {
             fps: 20,
-            qrbox: { width: 250, height: 250 },
+            qrbox: { width: 300, height: 150 }, // Wide rectangle for 1D barcodes
             aspectRatio: 1.0,
           };
 
@@ -310,6 +322,24 @@ const Inventory: React.FC = () => {
         <Box
           sx={{ display: "flex", gap: 2, width: { xs: "100%", sm: "auto" } }}
         >
+          {selectedItems.size > 0 && (
+            <Button
+              variant="outlined"
+              startIcon={<PrintIcon />}
+              fullWidth={isMobile}
+              onClick={() => window.print()}
+              sx={{
+                border: "1px solid #30363d",
+                color: "text.primary",
+                "&:hover": {
+                  borderColor: "primary.main",
+                  bgcolor: "rgba(88, 166, 255, 0.1)",
+                },
+              }}
+            >
+              Print Labels ({selectedItems.size})
+            </Button>
+          )}
           <Button
             variant="outlined"
             startIcon={<ScanIcon />}
@@ -344,6 +374,27 @@ const Inventory: React.FC = () => {
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell
+                padding="checkbox"
+                sx={{ borderBottom: "1px solid #30363d" }}
+              >
+                <Checkbox
+                  indeterminate={
+                    selectedItems.size > 0 && selectedItems.size < items.length
+                  }
+                  checked={
+                    items.length > 0 && selectedItems.size === items.length
+                  }
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedItems(new Set(items.map((i) => i.id)));
+                    } else {
+                      setSelectedItems(new Set());
+                    }
+                  }}
+                  sx={{ color: "text.secondary" }}
+                />
+              </TableCell>
               <TableCell
                 sx={{
                   color: "text.secondary",
@@ -397,7 +448,25 @@ const Inventory: React.FC = () => {
           </TableHead>
           <TableBody>
             {items.map((item) => (
-              <TableRow key={item.id}>
+              <TableRow key={item.id} selected={selectedItems.has(item.id)}>
+                <TableCell
+                  padding="checkbox"
+                  sx={{ borderBottom: "1px solid #30363d" }}
+                >
+                  <Checkbox
+                    checked={selectedItems.has(item.id)}
+                    onChange={(e) => {
+                      const newSelected = new Set(selectedItems);
+                      if (e.target.checked) {
+                        newSelected.add(item.id);
+                      } else {
+                        newSelected.delete(item.id);
+                      }
+                      setSelectedItems(newSelected);
+                    }}
+                    sx={{ color: "text.secondary" }}
+                  />
+                </TableCell>
                 <TableCell
                   sx={{
                     borderBottom: "1px solid #30363d",
@@ -499,10 +568,12 @@ const Inventory: React.FC = () => {
               >
                 <Barcode
                   value={formData.sku}
-                  width={1.5}
+                  format={getBarcodeFormat(formData.sku)}
+                  width={2.0}
                   height={50}
                   fontSize={14}
-                  background="transparent"
+                  background="#ffffff"
+                  margin={10}
                 />
               </Box>
             )}
@@ -776,6 +847,9 @@ const Inventory: React.FC = () => {
           {error}
         </Alert>
       </Snackbar>
+      <BarcodePrinter
+        items={items.filter((item) => selectedItems.has(item.id))}
+      />
     </Box>
   );
 };
