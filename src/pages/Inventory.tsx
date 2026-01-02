@@ -27,6 +27,7 @@ import {
   Delete as DeleteIcon,
   QrCodeScanner as ScanIcon,
   Refresh as RefreshIcon,
+  Close as CloseIcon,
 } from "@mui/icons-material";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { supabase } from "../supabaseClient";
@@ -208,8 +209,10 @@ const Inventory: React.FC = () => {
           }),
         });
       }
-    } catch {
-      // Silent error for notification failures
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to send email alert";
+      setError(`Low stock alert error: ${message}`);
     }
   };
 
@@ -597,6 +600,8 @@ const Inventory: React.FC = () => {
         onClose={() => setScanOpen(false)}
         maxWidth="xs"
         fullWidth
+        disableEnforceFocus
+        disableRestoreFocus
         PaperProps={{
           sx: {
             bgcolor: "#0d1117",
@@ -608,6 +613,17 @@ const Inventory: React.FC = () => {
         }}
       >
         <Box sx={{ p: 3, textAlign: "center", position: "relative" }}>
+          <IconButton
+            onClick={() => setScanOpen(false)}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: "text.secondary",
+            }}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
           <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
             Scan Barcode
           </Typography>

@@ -18,11 +18,29 @@ export default {
     // Handle API routes
     if (url.pathname === '/api/send-low-stock-alert' && request.method === 'POST') {
       try {
-        const { itemName, currentStock, threshold, userEmail } = await request.json() as RequestBody;
+        let body: RequestBody;
+        try {
+          body = await request.json() as RequestBody;
+        } catch {
+          return new Response(JSON.stringify({ error: 'Invalid or missing JSON body' }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
+        const { itemName, currentStock, threshold, userEmail } = body;
 
         if (!env.BREVO_API_KEY) {
-          return new Response(JSON.stringify({ error: 'BREVO_API_KEY not configured' }), {
+          console.error("BREVO_API_KEY is missing from environment variables");
+          return new Response(JSON.stringify({ error: 'BREVO_API_KEY not configured on server' }), {
             status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
+        if (!userEmail || !itemName) {
+          return new Response(JSON.stringify({ error: 'Missing required fields (itemName or userEmail)' }), {
+            status: 400,
             headers: { 'Content-Type': 'application/json' },
           });
         }
@@ -61,8 +79,12 @@ export default {
           headers: { 'Content-Type': 'application/json' },
         });
       } catch (error) {
+        console.error("Worker Error:", error);
         const message = error instanceof Error ? error.message : 'An unknown error occurred';
-        return new Response(JSON.stringify({ error: message }), {
+        return new Response(JSON.stringify({ 
+          error: message,
+          timestamp: new Date().toISOString()
+        }), {
           status: 500,
           headers: { 'Content-Type': 'application/json' },
         });
