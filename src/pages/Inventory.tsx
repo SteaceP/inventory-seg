@@ -30,7 +30,7 @@ import { useTheme, useMediaQuery } from "@mui/material";
 import { supabase } from "../supabaseClient";
 import Barcode from "react-barcode";
 import { Html5Qrcode } from "html5-qrcode";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 interface InventoryItem {
   id: string;
@@ -180,15 +180,32 @@ const Inventory: React.FC = () => {
   };
 
   const handleSave = async () => {
+    // Basic Validation & Sanitization
+    const sanitizedData = {
+      ...formData,
+      name: formData.name?.trim(),
+      category: formData.category?.trim(),
+      sku: formData.sku?.trim(),
+      stock: Math.max(0, formData.stock || 0),
+      price: Math.max(0, formData.price || 0),
+    };
+
+    if (!sanitizedData.name) {
+      alert("Item name is required.");
+      return;
+    }
+
     if (editingItem) {
       const { error } = await supabase
         .from("inventory")
-        .update(formData)
+        .update(sanitizedData)
         .eq("id", editingItem.id);
 
       if (error) console.error("Error updating item:", error);
     } else {
-      const { error } = await supabase.from("inventory").insert([formData]);
+      const { error } = await supabase
+        .from("inventory")
+        .insert([sanitizedData]);
 
       if (error) console.error("Error adding item:", error);
     }
