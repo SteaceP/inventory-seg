@@ -26,6 +26,7 @@ import {
   QrCodeScanner as ScanIcon,
   Refresh as RefreshIcon,
 } from "@mui/icons-material";
+import { useTheme, useMediaQuery } from "@mui/material";
 import { supabase } from "../supabaseClient";
 import Barcode from "react-barcode";
 import { Html5QrcodeScanner } from "html5-qrcode";
@@ -52,6 +53,9 @@ const Inventory: React.FC = () => {
     stock: 0,
     price: 0,
   });
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const scannerRef = useRef<Html5QrcodeScanner | null>(null);
 
@@ -214,22 +218,27 @@ const Inventory: React.FC = () => {
   }
 
   return (
-    <Box>
+    <Box sx={{ p: isMobile ? 0 : 0 }}>
       <Box
         sx={{
           display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: { xs: "flex-start", sm: "center" },
+          gap: 2,
           mb: 4,
         }}
       >
-        <Typography variant="h4" fontWeight="bold">
+        <Typography variant={isMobile ? "h5" : "h4"} fontWeight="bold">
           Inventory
         </Typography>
-        <Box sx={{ display: "flex", gap: 2 }}>
+        <Box
+          sx={{ display: "flex", gap: 2, width: { xs: "100%", sm: "auto" } }}
+        >
           <Button
             variant="outlined"
             startIcon={<ScanIcon />}
+            fullWidth={isMobile}
             onClick={() => setScanOpen(true)}
             sx={{ border: "1px solid #30363d", color: "text.primary" }}
           >
@@ -238,6 +247,7 @@ const Inventory: React.FC = () => {
           <Button
             variant="contained"
             startIcon={<AddIcon />}
+            fullWidth={isMobile}
             onClick={() => handleOpen()}
           >
             Add Item
@@ -252,6 +262,8 @@ const Inventory: React.FC = () => {
           backdropFilter: "blur(10px)",
           border: "1px solid #30363d",
           borderRadius: "12px",
+          width: "100%",
+          overflowX: "auto",
         }}
       >
         <Table>
@@ -360,13 +372,14 @@ const Inventory: React.FC = () => {
       <Dialog
         open={open}
         onClose={handleClose}
+        fullScreen={isMobile}
         PaperProps={{
           sx: {
             bgcolor: "#0d1117",
             color: "white",
-            border: "1px solid #30363d",
-            borderRadius: "12px",
-            minWidth: "450px",
+            border: isMobile ? "none" : "1px solid #30363d",
+            borderRadius: isMobile ? 0 : "12px",
+            minWidth: isMobile ? "100%" : "450px",
           },
         }}
       >
@@ -449,7 +462,13 @@ const Inventory: React.FC = () => {
               }}
               InputLabelProps={{ sx: { color: "text.secondary" } }}
             />
-            <Box sx={{ display: "flex", gap: 2 }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: isMobile ? "column" : "row",
+                gap: 2,
+              }}
+            >
               <TextField
                 label="Stock"
                 type="number"

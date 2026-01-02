@@ -1,86 +1,274 @@
-import React from 'react';
-import { Box, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Typography, Divider, Toolbar } from '@mui/material';
-import { Dashboard as DashboardIcon, Inventory as InventoryIcon, Settings as SettingsIcon, ExitToApp as LogoutIcon } from '@mui/icons-material';
-import { useNavigate, useLocation, Outlet } from 'react-router-dom';
-import { supabase } from '../supabaseClient';
+import React, { useState } from "react";
+import {
+  Box,
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+  Divider,
+  Toolbar,
+  IconButton,
+  Tooltip,
+  AppBar,
+  useMediaQuery,
+  useTheme,
+  CssBaseline,
+} from "@mui/material";
+import {
+  Dashboard as DashboardIcon,
+  Inventory as InventoryIcon,
+  Settings as SettingsIcon,
+  ExitToApp as LogoutIcon,
+  ChevronLeft as ChevronLeftIcon,
+  Menu as MenuIcon,
+} from "@mui/icons-material";
+import { useNavigate, useLocation, Outlet } from "react-router-dom";
+import { supabase } from "../supabaseClient";
 
 const drawerWidth = 240;
+const collapsedWidth = 64;
 
 const Layout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const menuItems = [
-    { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
-    { text: 'Inventory', icon: <InventoryIcon />, path: '/inventory' },
-    { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
+    { text: "Dashboard", icon: <DashboardIcon />, path: "/" },
+    { text: "Inventory", icon: <InventoryIcon />, path: "/inventory" },
+    { text: "Settings", icon: <SettingsIcon />, path: "/settings" },
   ];
 
-  return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
-      <Drawer
-        variant="permanent"
+  const handleDrawerToggle = () => {
+    if (isMobile) {
+      setMobileOpen(!mobileOpen);
+    } else {
+      setCollapsed(!collapsed);
+    }
+  };
+
+  const currentDrawerWidth = isMobile
+    ? drawerWidth
+    : collapsed
+    ? collapsedWidth
+    : drawerWidth;
+
+  const drawerContent = (
+    <>
+      <Toolbar
         sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          [`& .MuiDrawer-paper`]: { 
-            width: drawerWidth, 
-            boxSizing: 'border-box',
-            background: 'rgba(22, 27, 34, 0.8)',
-            backdropFilter: 'blur(10px)',
-            borderRight: '1px solid #30363d',
-            color: '#c9d1d9'
-          },
+          display: "flex",
+          alignItems: "center",
+          justifyContent: collapsed && !isMobile ? "center" : "space-between",
+          px: [1],
         }}
       >
-        <Toolbar>
-          <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+        {(!collapsed || isMobile) && (
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ fontWeight: "bold", color: "primary.main", ml: 1 }}
+          >
             INVENTORY
           </Typography>
-        </Toolbar>
-        <Box sx={{ overflow: 'auto', mt: 2 }}>
-          <List>
-            {menuItems.map((item) => (
-              <ListItemButton 
-                key={item.text} 
-                onClick={() => navigate(item.path)}
+        )}
+        {!isMobile && (
+          <IconButton
+            onClick={handleDrawerToggle}
+            sx={{ color: "primary.main" }}
+          >
+            {collapsed ? <MenuIcon /> : <ChevronLeftIcon />}
+          </IconButton>
+        )}
+      </Toolbar>
+      <Box sx={{ overflow: "auto", mt: 2 }}>
+        <List>
+          {menuItems.map((item) => (
+            <Tooltip
+              key={item.text}
+              title={collapsed && !isMobile ? item.text : ""}
+              placement="right"
+            >
+              <ListItemButton
+                onClick={() => {
+                  navigate(item.path);
+                  if (isMobile) setMobileOpen(false);
+                }}
                 selected={location.pathname === item.path}
                 sx={{
                   mx: 1,
-                  borderRadius: '8px',
+                  borderRadius: "8px",
                   mb: 0.5,
-                  '&.Mui-selected': {
-                    bgcolor: 'rgba(88, 166, 255, 0.1)',
-                    color: 'primary.main',
-                    '&:hover': {
-                      bgcolor: 'rgba(88, 166, 255, 0.2)',
+                  px: collapsed && !isMobile ? 1.5 : 2,
+                  justifyContent: collapsed && !isMobile ? "center" : "initial",
+                  "&.Mui-selected": {
+                    bgcolor: "rgba(88, 166, 255, 0.1)",
+                    color: "primary.main",
+                    "&:hover": {
+                      bgcolor: "rgba(88, 166, 255, 0.2)",
                     },
                   },
                 }}
               >
-                <ListItemIcon sx={{ color: location.pathname === item.path ? 'primary.main' : 'inherit' }}>
+                <ListItemIcon
+                  sx={{
+                    color:
+                      location.pathname === item.path
+                        ? "primary.main"
+                        : "inherit",
+                    minWidth: 0,
+                    mr: collapsed && !isMobile ? 0 : 2,
+                    justifyContent: "center",
+                  }}
+                >
                   {item.icon}
                 </ListItemIcon>
-                <ListItemText primary={item.text} />
+                {(!collapsed || isMobile) && (
+                  <ListItemText primary={item.text} />
+                )}
               </ListItemButton>
-            ))}
-          </List>
-          <Divider sx={{ my: 2, borderColor: '#30363d' }} />
-          <List>
-            <ListItemButton 
-              sx={{ mx: 1, borderRadius: '8px' }}
+            </Tooltip>
+          ))}
+        </List>
+        <Divider sx={{ my: 2, borderColor: "#30363d" }} />
+        <List>
+          <Tooltip
+            title={collapsed && !isMobile ? "Logout" : ""}
+            placement="right"
+          >
+            <ListItemButton
+              sx={{
+                mx: 1,
+                borderRadius: "8px",
+                px: collapsed && !isMobile ? 1.5 : 2,
+                justifyContent: collapsed && !isMobile ? "center" : "initial",
+              }}
               onClick={async () => {
                 await supabase.auth.signOut();
-                navigate('/login');
+                navigate("/login");
+                if (isMobile) setMobileOpen(false);
               }}
             >
-              <ListItemIcon sx={{ color: 'inherit' }}><LogoutIcon /></ListItemIcon>
-              <ListItemText primary="Logout" />
+              <ListItemIcon
+                sx={{
+                  color: "inherit",
+                  minWidth: 0,
+                  mr: collapsed && !isMobile ? 0 : 2,
+                  justifyContent: "center",
+                }}
+              >
+                <LogoutIcon />
+              </ListItemIcon>
+              {(!collapsed || isMobile) && <ListItemText primary="Logout" />}
             </ListItemButton>
-          </List>
-        </Box>
-      </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 4, pt: 8 }}>
+          </Tooltip>
+        </List>
+      </Box>
+    </>
+  );
+
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        minHeight: "100vh",
+        bgcolor: "background.default",
+      }}
+    >
+      <CssBaseline />
+      {isMobile && (
+        <AppBar
+          position="fixed"
+          sx={{
+            width: "100%",
+            background: "rgba(22, 27, 34, 0.8)",
+            backdropFilter: "blur(10px)",
+            borderBottom: "1px solid #30363d",
+            boxShadow: "none",
+          }}
+        >
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 2 }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{ fontWeight: "bold", color: "primary.main" }}
+            >
+              INVENTORY
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+
+      <Box
+        component="nav"
+        sx={{ width: { md: currentDrawerWidth }, flexShrink: { md: 0 } }}
+      >
+        {isMobile ? (
+          <Drawer
+            variant="temporary"
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            ModalProps={{ keepMounted: true }}
+            sx={{
+              display: { xs: "block", md: "none" },
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                width: drawerWidth,
+                background: "#0d1117",
+                borderRight: "1px solid #30363d",
+                color: "#c9d1d9",
+              },
+            }}
+          >
+            {drawerContent}
+          </Drawer>
+        ) : (
+          <Drawer
+            variant="permanent"
+            sx={{
+              display: { xs: "none", md: "block" },
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                width: currentDrawerWidth,
+                background: "rgba(22, 27, 34, 0.8)",
+                backdropFilter: "blur(10px)",
+                borderRight: "1px solid #30363d",
+                color: "#c9d1d9",
+                transition: "width 0.2s ease-in-out",
+                overflowX: "hidden",
+              },
+            }}
+          >
+            {drawerContent}
+          </Drawer>
+        )}
+      </Box>
+
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: { xs: 2, sm: 3, md: 4 },
+          width: { md: `calc(100% - ${currentDrawerWidth}px)` },
+          mt: isMobile ? "64px" : 0,
+        }}
+      >
         <Outlet />
       </Box>
     </Box>

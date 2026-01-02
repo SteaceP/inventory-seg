@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Paper, Box, CircularProgress } from "@mui/material";
+import {
+  Typography,
+  Paper,
+  Box,
+  CircularProgress,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import {
   Inventory as InventoryIcon,
@@ -54,6 +61,8 @@ const Dashboard: React.FC = () => {
     topCategory: "N/A",
   });
   const [loading, setLoading] = useState(true);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -109,8 +118,12 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <Box>
-      <Typography variant="h4" fontWeight="bold" gutterBottom>
+    <Box sx={{ p: isMobile ? 0 : 0 }}>
+      <Typography
+        variant={isMobile ? "h5" : "h4"}
+        fontWeight="bold"
+        gutterBottom
+      >
         Dashboard
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
