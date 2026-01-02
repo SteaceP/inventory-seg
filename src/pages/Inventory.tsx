@@ -18,6 +18,8 @@ import {
   TextField,
   IconButton,
   Tooltip,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -47,6 +49,7 @@ const Inventory: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [scanOpen, setScanOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<InventoryItem>>({
     name: "",
     category: "",
@@ -68,7 +71,7 @@ const Inventory: React.FC = () => {
       .order("name");
 
     if (error) {
-      console.error("Failed to fetch inventory:", error);
+      setError("Failed to load inventory. Please try again.");
     } else {
       setItems(data || []);
     }
@@ -77,7 +80,8 @@ const Inventory: React.FC = () => {
 
   useEffect(() => {
     fetchInventory();
-  }, [fetchInventory]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleOpen = React.useCallback((item?: InventoryItem) => {
     if (item) {
@@ -125,7 +129,6 @@ const Inventory: React.FC = () => {
     if (scanOpen && !scannerRef.current) {
       const timeoutId = setTimeout(async () => {
         try {
-          console.log("Initializing custom scanner...");
           const html5QrCode = new Html5Qrcode("reader");
           scannerRef.current = html5QrCode;
 
@@ -139,8 +142,6 @@ const Inventory: React.FC = () => {
             { facingMode: "environment" },
             config,
             (decodedText) => {
-              console.log("Barcode scanned:", decodedText);
-
               // Stop scanner properly before handling success
               html5QrCode
                 .stop()
@@ -148,18 +149,16 @@ const Inventory: React.FC = () => {
                   scannerRef.current = null;
                   handleScanSuccessRef.current(decodedText);
                 })
-                .catch((err) => {
-                  console.error("Failed to stop scanner", err);
+                .catch(() => {
                   scannerRef.current = null;
                   handleScanSuccessRef.current(decodedText);
                 });
             },
             () => {} // silent errors
           );
-
-          console.log("Scanner started successfully");
-        } catch (err) {
-          console.error("Unable to start scanner", err);
+        } catch {
+          setError("Unable to start camera. Please check permissions.");
+          setScanOpen(false);
         }
       }, 300);
 
@@ -170,13 +169,48 @@ const Inventory: React.FC = () => {
       const scanner = scannerRef.current;
       scannerRef.current = null;
       if (scanner.isScanning) {
-        scanner.stop().catch(console.error);
+        scanner.stop().catch(() => {});
       }
     }
   }, [scanOpen]);
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const checkLowStockAndNotify = async (item: Partial<InventoryItem>) => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // GET user settings
+      const { data: userSettings } = await supabase
+        .from("user_settings")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      if (
+        userSettings?.email_alerts &&
+        (item.stock || 0) <= userSettings.low_stock_threshold
+      ) {
+        // Trigger email notification via Cloudflare Function
+        await fetch("/api/send-low-stock-alert", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            itemName: item.name,
+            currentStock: item.stock,
+            threshold: userSettings.low_stock_threshold,
+            userEmail: user.email,
+          }),
+        });
+      }
+    } catch {
+      // Silent error for notification failures
+    }
   };
 
   const handleSave = async () => {
@@ -201,14 +235,23 @@ const Inventory: React.FC = () => {
         .update(sanitizedData)
         .eq("id", editingItem.id);
 
-      if (error) console.error("Error updating item:", error);
+      if (error) {
+        setError("Failed to update item. Please try again.");
+        return;
+      }
     } else {
       const { error } = await supabase
         .from("inventory")
         .insert([sanitizedData]);
 
-      if (error) console.error("Error adding item:", error);
+      if (error) {
+        setError("Failed to add item. Please try again.");
+        return;
+      }
     }
+
+    // Check for low stock and notify if necessary
+    checkLowStockAndNotify(sanitizedData);
 
     handleClose();
     fetchInventory();
@@ -218,8 +261,11 @@ const Inventory: React.FC = () => {
     if (window.confirm("Are you sure you want to delete this item?")) {
       const { error } = await supabase.from("inventory").delete().eq("id", id);
 
-      if (error) console.error("Error deleting item:", error);
-      fetchInventory();
+      if (error) {
+        setError("Failed to delete item. Please try again.");
+      } else {
+        fetchInventory();
+      }
     }
   };
 
@@ -698,6 +744,22 @@ const Inventory: React.FC = () => {
           </Button>
         </Box>
       </Dialog>
+
+      {/* Error Snackbar */}
+      <Snackbar
+        open={!!error}
+        autoHideDuration={6000}
+        onClose={() => setError(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          severity="error"
+          sx={{ width: "100%" }}
+          onClose={() => setError(null)}
+        >
+          {error}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

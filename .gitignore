@@ -34,3 +34,5 @@ node
 *.njsproj
 *.sln
 *.sw?
+user_settings_schema.sql
+update_settings_schema.sql

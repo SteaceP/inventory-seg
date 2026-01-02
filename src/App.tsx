@@ -21,6 +21,7 @@ import "./App.css";
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Inventory = lazy(() => import("./pages/Inventory"));
 const Login = lazy(() => import("./pages/Login"));
+const Settings = lazy(() => import("./pages/Settings"));
 
 // Loading component for Suspense
 const PageLoader = () => (
@@ -127,7 +128,7 @@ function App() {
             >
               <Route index element={<Dashboard />} />
               <Route path="inventory" element={<Inventory />} />
-              <Route path="settings" element={<div>Settings Component</div>} />
+              <Route path="settings" element={<Settings />} />
             </Route>
           </Routes>
         </Suspense>

@@ -6,6 +6,8 @@ import {
   CircularProgress,
   useTheme,
   useMediaQuery,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import {
@@ -61,6 +63,7 @@ const Dashboard: React.FC = () => {
     topCategory: "N/A",
   });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -70,7 +73,7 @@ const Dashboard: React.FC = () => {
       const { data, error } = await supabase.from("inventory").select("*");
 
       if (error) {
-        console.error("Error fetching stats:", error);
+        setError("Failed to load dashboard statistics. Please try again.");
       } else if (data) {
         const totalItems = data.length;
         const totalValue = data.reduce(
@@ -159,6 +162,22 @@ const Dashboard: React.FC = () => {
           />
         </Grid>
       </Grid>
+
+      {/* Error Snackbar */}
+      <Snackbar
+        open={!!error}
+        autoHideDuration={6000}
+        onClose={() => setError(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          severity="error"
+          sx={{ width: "100%" }}
+          onClose={() => setError(null)}
+        >
+          {error}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
