@@ -55,7 +55,7 @@ const Inventory: React.FC = () => {
 
   const scannerRef = useRef<Html5QrcodeScanner | null>(null);
 
-  const fetchInventory = async () => {
+  const fetchInventory = React.useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("inventory")
@@ -68,11 +68,11 @@ const Inventory: React.FC = () => {
       setItems(data || []);
     }
     setLoading(false);
-  };
+  }, []);
 
   useEffect(() => {
     fetchInventory();
-  }, []);
+  }, [fetchInventory]);
 
   const handleOpen = React.useCallback((item?: InventoryItem) => {
     if (item) {
@@ -88,29 +88,24 @@ const Inventory: React.FC = () => {
   const handleScanSuccess = React.useCallback(
     (decodedText: string) => {
       setScanOpen(false);
-      // Find item by SKU
-      // Note: items is a dependency here, so it might re-create this function
-      // but we can also search in the latest state if needed.
-      setItems((prevItems) => {
-        const item = prevItems.find((i) => i.sku === decodedText);
-        if (item) {
-          handleOpen(item);
-        } else {
-          // If not found, open as new item with this SKU
-          setEditingItem(null);
-          setFormData({
-            name: "",
-            category: "",
-            sku: decodedText,
-            stock: 0,
-            price: 0,
-          });
-          setOpen(true);
-        }
-        return prevItems;
-      });
+      // Find item by SKU in the current items state
+      const item = items.find((i) => i.sku === decodedText);
+      if (item) {
+        handleOpen(item);
+      } else {
+        // If not found, open as new item with this SKU
+        setEditingItem(null);
+        setFormData({
+          name: "",
+          category: "",
+          sku: decodedText,
+          stock: 0,
+          price: 0,
+        });
+        setOpen(true);
+      }
     },
-    [handleOpen]
+    [handleOpen, items]
   );
 
   const handleScanSuccessRef = useRef(handleScanSuccess);
@@ -145,9 +140,8 @@ const Inventory: React.FC = () => {
             // Call the latest version of handleScanSuccess
             handleScanSuccessRef.current(decodedText);
           },
-          (errorMessage) => {
+          () => {
             // ignore scan errors (they happen frequently as camera tries to scan)
-            // console.log("Scan error:", errorMessage);
           }
         );
 
