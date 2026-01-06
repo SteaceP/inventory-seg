@@ -15,7 +15,7 @@
     "@mui/icons-material": "^6.5.0",
     "@mui/material": "^6.5.0",
     "@supabase/supabase-js": "^2.89.0",
-    "framer-motion": "^12.23.26",
+    "framer-motion": "^12.24.0",
     "html5-qrcode": "^2.3.8",
     "react": "^19.2.3",
     "react-barcode": "^1.6.1",
