@@ -39,6 +39,7 @@ const Inventory: React.FC = () => {
     const { data, error } = await supabase
       .from("inventory")
       .select("*")
+      .order("category")
       .order("name");
 
     if (error) {

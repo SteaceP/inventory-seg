@@ -69,9 +69,6 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                             Image
                         </TableCell>
                         <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider", fontSize: compactView ? "0.75rem" : "inherit" }}>
-                            SKU
-                        </TableCell>
-                        <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider", fontSize: compactView ? "0.75rem" : "inherit" }}>
                             Nom
                         </TableCell>
                         <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider", fontSize: compactView ? "0.75rem" : "inherit" }}>
@@ -126,9 +123,6 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                                         <ImageIcon sx={{ color: "text.secondary", fontSize: compactView ? 16 : 20 }} />
                                     </Box>
                                 )}
-                            </TableCell>
-                            <TableCell sx={{ borderBottom: "1px solid", borderColor: "divider", fontFamily: "monospace", fontSize: compactView ? "0.75rem" : "0.875rem" }}>
-                                {item.sku || "-"}
                             </TableCell>
                             <TableCell sx={{ borderBottom: "1px solid", borderColor: "divider", fontSize: compactView ? "0.8125rem" : "0.875rem" }}>{item.name}</TableCell>
                             <TableCell sx={{ borderBottom: "1px solid", borderColor: "divider", fontSize: compactView ? "0.8125rem" : "0.875rem" }}>{item.category}</TableCell>

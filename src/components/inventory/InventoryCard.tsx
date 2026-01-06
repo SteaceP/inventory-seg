@@ -74,23 +74,25 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                             justifyContent: "space-between",
                             alignItems: "flex-start",
                             mb: compactView ? 1 : 2,
+                            gap: 1,
                         }}
                     >
-                        <Box>
-                            <Typography variant={compactView ? "body1" : "h6"} fontWeight="bold" noWrap>
-                                {item.name}
-                            </Typography>
+                        <Box sx={{ flex: 1, minWidth: 0 }}>
                             <Typography
-                                variant="caption"
-                                sx={{ fontFamily: "monospace", color: "text.secondary" }}
+                                variant={compactView ? "body1" : "h6"}
+                                fontWeight="bold"
+                                sx={{
+                                    wordBreak: "break-word",
+                                    overflowWrap: "break-word",
+                                }}
                             >
-                                {item.sku || "Pas de SKU"}
+                                {item.name}
                             </Typography>
                         </Box>
                         <Checkbox
                             checked={isSelected}
                             onChange={(e) => onToggle(item.id, e.target.checked)}
-                            sx={{ color: "text.secondary", p: 0 }}
+                            sx={{ color: "text.secondary", p: 0, flexShrink: 0 }}
                         />
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: compactView ? "flex-start" : "center", mb: compactView ? 1 : 2 }}>
