@@ -21,7 +21,14 @@ import {
   Snackbar,
   Alert,
   Checkbox,
+  InputAdornment,
+  Card,
+  CardContent,
+  Chip,
+  Stack,
+  Divider,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import {
   Add as AddIcon,
   Edit as EditIcon,
@@ -30,12 +37,13 @@ import {
   Refresh as RefreshIcon,
   Close as CloseIcon,
   Print as PrintIcon,
+  Search as SearchIcon,
 } from "@mui/icons-material";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { supabase } from "../supabaseClient";
 import Barcode from "react-barcode";
 import { Html5Qrcode } from "html5-qrcode";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import BarcodePrinter from "../components/BarcodePrinter";
 
 interface InventoryItem {
@@ -62,9 +70,11 @@ const Inventory: React.FC = () => {
     price: 0,
   });
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState("");
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
   const scannerRef = useRef<Html5Qrcode | null>(null);
 
@@ -167,7 +177,7 @@ const Inventory: React.FC = () => {
                   handleScanSuccessRef.current(decodedText);
                 });
             },
-            () => {} // silent errors
+            () => { } // silent errors
           );
         } catch {
           setError("Unable to start camera. Please check permissions.");
@@ -182,7 +192,7 @@ const Inventory: React.FC = () => {
       const scanner = scannerRef.current;
       scannerRef.current = null;
       if (scanner.isScanning) {
-        scanner.stop().catch(() => {});
+        scanner.stop().catch(() => { });
       }
     }
   }, [scanOpen]);
@@ -289,6 +299,15 @@ const Inventory: React.FC = () => {
     setFormData({ ...formData, sku: random.toString() });
   };
 
+  const filteredItems = items.filter((item) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      item.name.toLowerCase().includes(query) ||
+      (item.sku && item.sku.toLowerCase().includes(query)) ||
+      (item.category && item.category.toLowerCase().includes(query))
+    );
+  });
+
   if (loading && items.length === 0) {
     return (
       <Box
@@ -337,7 +356,7 @@ const Inventory: React.FC = () => {
                 },
               }}
             >
-              Print Labels ({selectedItems.size})
+              Print {isMobile ? "" : `Labels (${selectedItems.size})`}
             </Button>
           )}
           <Button
@@ -355,162 +374,297 @@ const Inventory: React.FC = () => {
             fullWidth={isMobile}
             onClick={() => handleOpen()}
           >
-            Add Item
+            Add
           </Button>
         </Box>
       </Box>
 
-      <TableContainer
-        component={Paper}
-        sx={{
-          background: "rgba(22, 27, 34, 0.7)",
-          backdropFilter: "blur(10px)",
-          border: "1px solid #30363d",
-          borderRadius: "12px",
-          width: "100%",
-          overflowX: "auto",
-        }}
-      >
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell
-                padding="checkbox"
-                sx={{ borderBottom: "1px solid #30363d" }}
-              >
-                <Checkbox
-                  indeterminate={
-                    selectedItems.size > 0 && selectedItems.size < items.length
-                  }
-                  checked={
-                    items.length > 0 && selectedItems.size === items.length
-                  }
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setSelectedItems(new Set(items.map((i) => i.id)));
-                    } else {
-                      setSelectedItems(new Set());
-                    }
-                  }}
-                  sx={{ color: "text.secondary" }}
-                />
-              </TableCell>
-              <TableCell
-                sx={{
-                  color: "text.secondary",
-                  borderBottom: "1px solid #30363d",
-                }}
-              >
-                SKU
-              </TableCell>
-              <TableCell
-                sx={{
-                  color: "text.secondary",
-                  borderBottom: "1px solid #30363d",
-                }}
-              >
-                Name
-              </TableCell>
-              <TableCell
-                sx={{
-                  color: "text.secondary",
-                  borderBottom: "1px solid #30363d",
-                }}
-              >
-                Category
-              </TableCell>
-              <TableCell
-                sx={{
-                  color: "text.secondary",
-                  borderBottom: "1px solid #30363d",
-                }}
-              >
-                Stock
-              </TableCell>
-              <TableCell
-                sx={{
-                  color: "text.secondary",
-                  borderBottom: "1px solid #30363d",
-                }}
-              >
-                Price
-              </TableCell>
-              <TableCell
-                align="right"
-                sx={{
-                  color: "text.secondary",
-                  borderBottom: "1px solid #30363d",
-                }}
-              >
-                Actions
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {items.map((item) => (
-              <TableRow key={item.id} selected={selectedItems.has(item.id)}>
+      {/* Search Bar */}
+      <Box sx={{ mb: 4 }}>
+        <TextField
+          fullWidth
+          variant="outlined"
+          placeholder="Search items by name, SKU, or category..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              bgcolor: "rgba(22, 27, 34, 0.7)",
+              color: "white",
+              "& fieldset": { borderColor: "#30363d" },
+              "&:hover fieldset": { borderColor: "#58a6ff" },
+            },
+          }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon sx={{ color: "text.secondary" }} />
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Box>
+
+      {!isTablet ? (
+        <TableContainer
+          component={Paper}
+          sx={{
+            background: "rgba(22, 27, 34, 0.7)",
+            backdropFilter: "blur(10px)",
+            border: "1px solid #30363d",
+            borderRadius: "12px",
+            width: "100%",
+            overflowX: "auto",
+          }}
+        >
+          <Table>
+            <TableHead>
+              <TableRow>
                 <TableCell
                   padding="checkbox"
                   sx={{ borderBottom: "1px solid #30363d" }}
                 >
                   <Checkbox
-                    checked={selectedItems.has(item.id)}
+                    indeterminate={
+                      selectedItems.size > 0 &&
+                      selectedItems.size < items.length
+                    }
+                    checked={
+                      items.length > 0 && selectedItems.size === items.length
+                    }
                     onChange={(e) => {
-                      const newSelected = new Set(selectedItems);
                       if (e.target.checked) {
-                        newSelected.add(item.id);
+                        setSelectedItems(new Set(items.map((i) => i.id)));
                       } else {
-                        newSelected.delete(item.id);
+                        setSelectedItems(new Set());
                       }
-                      setSelectedItems(newSelected);
                     }}
                     sx={{ color: "text.secondary" }}
                   />
                 </TableCell>
                 <TableCell
                   sx={{
+                    color: "text.secondary",
                     borderBottom: "1px solid #30363d",
-                    fontFamily: "monospace",
                   }}
                 >
-                  {item.sku || "-"}
+                  SKU
                 </TableCell>
-                <TableCell sx={{ borderBottom: "1px solid #30363d" }}>
-                  {item.name}
+                <TableCell
+                  sx={{
+                    color: "text.secondary",
+                    borderBottom: "1px solid #30363d",
+                  }}
+                >
+                  Name
                 </TableCell>
-                <TableCell sx={{ borderBottom: "1px solid #30363d" }}>
-                  {item.category}
+                <TableCell
+                  sx={{
+                    color: "text.secondary",
+                    borderBottom: "1px solid #30363d",
+                  }}
+                >
+                  Category
                 </TableCell>
-                <TableCell sx={{ borderBottom: "1px solid #30363d" }}>
-                  {item.stock}
+                <TableCell
+                  sx={{
+                    color: "text.secondary",
+                    borderBottom: "1px solid #30363d",
+                  }}
+                >
+                  Stock
                 </TableCell>
-                <TableCell sx={{ borderBottom: "1px solid #30363d" }}>
-                  ${item.price.toFixed(2)}
+                <TableCell
+                  sx={{
+                    color: "text.secondary",
+                    borderBottom: "1px solid #30363d",
+                  }}
+                >
+                  Price
                 </TableCell>
                 <TableCell
                   align="right"
-                  sx={{ borderBottom: "1px solid #30363d" }}
+                  sx={{
+                    color: "text.secondary",
+                    borderBottom: "1px solid #30363d",
+                  }}
                 >
-                  <IconButton
-                    size="small"
-                    onClick={() => handleOpen(item)}
-                    sx={{ color: "primary.main", mr: 1 }}
-                  >
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    onClick={() => handleDelete(item.id)}
-                    sx={{ color: "error.main" }}
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
+                  Actions
                 </TableCell>
               </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredItems.map((item) => (
+                <TableRow key={item.id} selected={selectedItems.has(item.id)}>
+                  <TableCell
+                    padding="checkbox"
+                    sx={{ borderBottom: "1px solid #30363d" }}
+                  >
+                    <Checkbox
+                      checked={selectedItems.has(item.id)}
+                      onChange={(e) => {
+                        const newSelected = new Set(selectedItems);
+                        if (e.target.checked) {
+                          newSelected.add(item.id);
+                        } else {
+                          newSelected.delete(item.id);
+                        }
+                        setSelectedItems(newSelected);
+                      }}
+                      sx={{ color: "text.secondary" }}
+                    />
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      borderBottom: "1px solid #30363d",
+                      fontFamily: "monospace",
+                    }}
+                  >
+                    {item.sku || "-"}
+                  </TableCell>
+                  <TableCell sx={{ borderBottom: "1px solid #30363d" }}>
+                    {item.name}
+                  </TableCell>
+                  <TableCell sx={{ borderBottom: "1px solid #30363d" }}>
+                    {item.category}
+                  </TableCell>
+                  <TableCell sx={{ borderBottom: "1px solid #30363d" }}>
+                    {item.stock}
+                  </TableCell>
+                  <TableCell sx={{ borderBottom: "1px solid #30363d" }}>
+                    ${item.price.toFixed(2)}
+                  </TableCell>
+                  <TableCell
+                    align="right"
+                    sx={{ borderBottom: "1px solid #30363d" }}
+                  >
+                    <IconButton
+                      size="small"
+                      onClick={() => handleOpen(item)}
+                      sx={{ color: "primary.main", mr: 1 }}
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      onClick={() => handleDelete(item.id)}
+                      sx={{ color: "error.main" }}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      ) : (
+        <Grid container spacing={2}>
+          <AnimatePresence>
+            {filteredItems.map((item) => (
+              <Grid size={{ xs: 12, sm: 6 }} key={item.id}>
+                <motion.div
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                >
+                  <Card
+                    sx={{
+                      bgcolor: "rgba(22, 27, 34, 0.7)",
+                      backdropFilter: "blur(10px)",
+                      border: "1px solid #30363d",
+                      borderRadius: "12px",
+                      position: "relative",
+                      "&:hover": { borderColor: "#58a6ff" },
+                    }}
+                  >
+                    <CardContent>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "flex-start",
+                          mb: 2,
+                        }}
+                      >
+                        <Box>
+                          <Typography variant="h6" fontWeight="bold">
+                            {item.name}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{ fontFamily: "monospace", color: "text.secondary" }}
+                          >
+                            {item.sku || "No SKU"}
+                          </Typography>
+                        </Box>
+                        <Checkbox
+                          checked={selectedItems.has(item.id)}
+                          onChange={(e) => {
+                            const newSelected = new Set(selectedItems);
+                            if (e.target.checked) {
+                              newSelected.add(item.id);
+                            } else {
+                              newSelected.delete(item.id);
+                            }
+                            setSelectedItems(newSelected);
+                          }}
+                          sx={{ color: "text.secondary", p: 0 }}
+                        />
+                      </Box>
+
+                      <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+                        <Chip
+                          label={`${item.stock} in stock`}
+                          size="small"
+                          color={item.stock < 5 ? "warning" : "default"}
+                          sx={{ bgcolor: item.stock < 5 ? "rgba(210, 153, 34, 0.1)" : "rgba(48, 54, 61, 0.5)" }}
+                        />
+                        <Chip
+                          label={item.category}
+                          size="small"
+                          sx={{ bgcolor: "rgba(88, 166, 255, 0.1)", color: "#58a6ff" }}
+                        />
+                      </Stack>
+
+                      <Divider sx={{ my: 1.5, borderColor: "#30363d" }} />
+
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Typography variant="h6" color="primary.main">
+                          ${item.price.toFixed(2)}
+                        </Typography>
+                        <Box>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleOpen(item)}
+                            sx={{ color: "primary.main", mr: 1 }}
+                          >
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleDelete(item.id)}
+                            sx={{ color: "error.main" }}
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </Grid>
             ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          </AnimatePresence>
+        </Grid>
+      )}
 
       {/* Edit/Add Dialog */}
       <Dialog
