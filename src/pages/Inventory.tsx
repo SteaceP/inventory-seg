@@ -38,6 +38,8 @@ import {
   Close as CloseIcon,
   Print as PrintIcon,
   Search as SearchIcon,
+  Image as ImageIcon,
+  AddPhotoAlternate as AddPhotoIcon,
 } from "@mui/icons-material";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { supabase } from "../supabaseClient";
@@ -53,6 +55,7 @@ interface InventoryItem {
   sku: string;
   stock: number;
   price: number;
+  image_url?: string;
 }
 
 const Inventory: React.FC = () => {
@@ -68,6 +71,7 @@ const Inventory: React.FC = () => {
     sku: "",
     stock: 0,
     price: 0,
+    image_url: "",
   });
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
@@ -235,6 +239,35 @@ const Inventory: React.FC = () => {
       const message =
         err instanceof Error ? err.message : "Failed to send email alert";
       setError(`Low stock alert error: ${message}`);
+    }
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setLoading(true);
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("inventory-images")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("inventory-images")
+        .getPublicUrl(filePath);
+
+      setFormData({ ...formData, image_url: publicUrl });
+    } catch (err) {
+      setError("Error uploading image. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -448,6 +481,14 @@ const Inventory: React.FC = () => {
                     borderBottom: "1px solid #30363d",
                   }}
                 >
+                  Image
+                </TableCell>
+                <TableCell
+                  sx={{
+                    color: "text.secondary",
+                    borderBottom: "1px solid #30363d",
+                  }}
+                >
                   SKU
                 </TableCell>
                 <TableCell
@@ -517,6 +558,41 @@ const Inventory: React.FC = () => {
                   <TableCell
                     sx={{
                       borderBottom: "1px solid #30363d",
+                      width: 60,
+                    }}
+                  >
+                    {item.image_url ? (
+                      <Box
+                        component="img"
+                        src={item.image_url}
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: "8px",
+                          objectFit: "cover",
+                          border: "1px solid #30363d",
+                        }}
+                      />
+                    ) : (
+                      <Box
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: "8px",
+                          bgcolor: "rgba(255,255,255,0.05)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          border: "1px solid #30363d",
+                        }}
+                      >
+                        <ImageIcon sx={{ color: "text.secondary", fontSize: 20 }} />
+                      </Box>
+                    )}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      borderBottom: "1px solid #30363d",
                       fontFamily: "monospace",
                     }}
                   >
@@ -576,9 +652,22 @@ const Inventory: React.FC = () => {
                       border: "1px solid #30363d",
                       borderRadius: "12px",
                       position: "relative",
+                      overflow: "hidden",
                       "&:hover": { borderColor: "#58a6ff" },
                     }}
                   >
+                    {item.image_url && (
+                      <Box
+                        component="img"
+                        src={item.image_url}
+                        sx={{
+                          width: "100%",
+                          height: 140,
+                          objectFit: "cover",
+                          borderBottom: "1px solid #30363d",
+                        }}
+                      />
+                    )}
                     <CardContent>
                       <Box
                         sx={{
@@ -684,6 +773,65 @@ const Inventory: React.FC = () => {
         <DialogTitle>{editingItem ? "Edit Item" : "Add New Item"}</DialogTitle>
         <DialogContent>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 1 }}>
+            {/* Image Upload Area */}
+            <Box
+              sx={{
+                width: "100%",
+                height: 200,
+                borderRadius: "12px",
+                border: "2px dashed #30363d",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                overflow: "hidden",
+                position: "relative",
+                transition: "border-color 0.2s",
+                "&:hover": { borderColor: "primary.main" },
+              }}
+              onClick={() => document.getElementById("image-upload")?.click()}
+            >
+              {formData.image_url ? (
+                <>
+                  <Box
+                    component="img"
+                    src={formData.image_url}
+                    sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                  <IconButton
+                    sx={{
+                      position: "absolute",
+                      top: 8,
+                      right: 8,
+                      bgcolor: "rgba(0,0,0,0.5)",
+                      "&:hover": { bgcolor: "rgba(0,0,0,0.7)" },
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setFormData({ ...formData, image_url: "" });
+                    }}
+                  >
+                    <DeleteIcon sx={{ color: "white" }} />
+                  </IconButton>
+                </>
+              ) : (
+                <>
+                  <AddPhotoIcon sx={{ fontSize: 40, color: "text.secondary", mb: 1 }} />
+                  <Typography variant="body2" color="text.secondary">
+                    Click to upload photo
+                  </Typography>
+                </>
+              )}
+              <input
+                type="file"
+                id="image-upload"
+                hidden
+                accept="image/*"
+                onChange={handleImageUpload}
+              />
+            </Box>
+
             <Box sx={{ display: "flex", gap: 1, alignItems: "flex-start" }}>
               <TextField
                 label="SKU / Barcode"
@@ -1002,7 +1150,7 @@ const Inventory: React.FC = () => {
         </Alert>
       </Snackbar>
       <BarcodePrinter
-        items={items.filter((item) => selectedItems.has(item.id))}
+        items={items.filter((i) => selectedItems.has(i.id))}
       />
     </Box>
   );
