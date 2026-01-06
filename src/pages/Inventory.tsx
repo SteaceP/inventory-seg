@@ -1,62 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  Typography,
-  Box,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Button,
-  CircularProgress,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  IconButton,
-  Tooltip,
-  Snackbar,
-  Alert,
-  Checkbox,
-  InputAdornment,
-  Card,
-  CardContent,
-  Chip,
-  Stack,
-  Divider,
-} from "@mui/material";
-import Grid from "@mui/material/Grid2";
-import {
-  Add as AddIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  QrCodeScanner as ScanIcon,
-  Refresh as RefreshIcon,
-  Close as CloseIcon,
-  Print as PrintIcon,
-  Search as SearchIcon,
-  Image as ImageIcon,
-  AddPhotoAlternate as AddPhotoIcon,
-} from "@mui/icons-material";
+import React, { useState, useEffect } from "react";
+import { Box, CircularProgress, Snackbar, Alert } from "@mui/material";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { supabase } from "../supabaseClient";
-import Barcode from "react-barcode";
-import { Html5Qrcode } from "html5-qrcode";
-import { motion, AnimatePresence } from "framer-motion";
 import BarcodePrinter from "../components/BarcodePrinter";
+import type { InventoryItem } from "../types/inventory";
 
-interface InventoryItem {
-  id: string;
-  name: string;
-  category: string;
-  sku: string;
-  stock: number;
-  price: number;
-  image_url?: string;
-}
+// Sub-components
+import InventoryHeader from "../components/inventory/InventoryHeader";
+import InventorySearch from "../components/inventory/InventorySearch";
+import InventoryTable from "../components/inventory/InventoryTable";
+import InventoryGrid from "../components/inventory/InventoryGrid";
+import InventoryDialog from "../components/inventory/InventoryDialog";
+import InventoryScanner from "../components/inventory/InventoryScanner";
 
 const Inventory: React.FC = () => {
   const [items, setItems] = useState<InventoryItem[]>([]);
@@ -80,8 +35,6 @@ const Inventory: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
-  const scannerRef = useRef<Html5Qrcode | null>(null);
-
   const fetchInventory = React.useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase
@@ -99,8 +52,7 @@ const Inventory: React.FC = () => {
 
   useEffect(() => {
     fetchInventory();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchInventory]);
 
   const handleOpen = React.useCallback((item?: InventoryItem) => {
     if (item) {
@@ -108,10 +60,14 @@ const Inventory: React.FC = () => {
       setFormData(item);
     } else {
       setEditingItem(null);
-      setFormData({ name: "", category: "", sku: "", stock: 0, price: 0 });
+      setFormData({ name: "", category: "", sku: "", stock: 0, price: 0, image_url: "" });
     }
     setOpen(true);
   }, []);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const getBarcodeFormat = (sku: string) => {
     const cleanSku = sku.trim();
@@ -121,98 +77,11 @@ const Inventory: React.FC = () => {
     return "CODE128";
   };
 
-  const handleScanSuccess = React.useCallback(
-    (decodedText: string) => {
-      setScanOpen(false);
-      // Find item by SKU in the current items state
-      const item = items.find((i) => i.sku === decodedText);
-      if (item) {
-        handleOpen(item);
-      } else {
-        // If not found, open as new item with this SKU
-        setEditingItem(null);
-        setFormData({
-          name: "",
-          category: "",
-          sku: decodedText,
-          stock: 0,
-          price: 0,
-        });
-        setOpen(true);
-      }
-    },
-    [handleOpen, items]
-  );
-
-  const handleScanSuccessRef = useRef(handleScanSuccess);
-
-  // Keep the ref updated with the latest callback
-  useEffect(() => {
-    handleScanSuccessRef.current = handleScanSuccess;
-  }, [handleScanSuccess]);
-
-  // Handle scanner lifecycle
-  useEffect(() => {
-    if (scanOpen && !scannerRef.current) {
-      const timeoutId = setTimeout(async () => {
-        try {
-          const html5QrCode = new Html5Qrcode("reader");
-          scannerRef.current = html5QrCode;
-
-          const config = {
-            fps: 20,
-            qrbox: { width: 300, height: 150 }, // Wide rectangle for 1D barcodes
-            aspectRatio: 1.0,
-          };
-
-          await html5QrCode.start(
-            { facingMode: "environment" },
-            config,
-            (decodedText) => {
-              // Stop scanner properly before handling success
-              html5QrCode
-                .stop()
-                .then(() => {
-                  scannerRef.current = null;
-                  handleScanSuccessRef.current(decodedText);
-                })
-                .catch(() => {
-                  scannerRef.current = null;
-                  handleScanSuccessRef.current(decodedText);
-                });
-            },
-            () => { } // silent errors
-          );
-        } catch {
-          setError("Unable to start camera. Please check permissions.");
-          setScanOpen(false);
-        }
-      }, 300);
-
-      return () => clearTimeout(timeoutId);
-    }
-
-    if (!scanOpen && scannerRef.current) {
-      const scanner = scannerRef.current;
-      scannerRef.current = null;
-      if (scanner.isScanning) {
-        scanner.stop().catch(() => { });
-      }
-    }
-  }, [scanOpen]);
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   const checkLowStockAndNotify = async (item: Partial<InventoryItem>) => {
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // GET user settings
       const { data: userSettings } = await supabase
         .from("user_settings")
         .select("*")
@@ -223,7 +92,6 @@ const Inventory: React.FC = () => {
         userSettings?.email_alerts &&
         (item.stock || 0) <= userSettings.low_stock_threshold
       ) {
-        // Trigger email notification via Cloudflare Function
         await fetch("/api/send-low-stock-alert", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -236,9 +104,7 @@ const Inventory: React.FC = () => {
         });
       }
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Failed to send email alert";
-      setError(`Low stock alert error: ${message}`);
+      console.error("Low stock alert error:", err);
     }
   };
 
@@ -272,7 +138,6 @@ const Inventory: React.FC = () => {
   };
 
   const handleSave = async () => {
-    // Basic Validation & Sanitization
     const sanitizedData = {
       ...formData,
       name: formData.name?.trim(),
@@ -308,9 +173,7 @@ const Inventory: React.FC = () => {
       }
     }
 
-    // Check for low stock and notify if necessary
     checkLowStockAndNotify(sanitizedData);
-
     handleClose();
     fetchInventory();
   };
@@ -318,7 +181,6 @@ const Inventory: React.FC = () => {
   const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this item?")) {
       const { error } = await supabase.from("inventory").delete().eq("id", id);
-
       if (error) {
         setError("Failed to delete item. Please try again.");
       } else {
@@ -332,6 +194,36 @@ const Inventory: React.FC = () => {
     setFormData({ ...formData, sku: random.toString() });
   };
 
+  const handleScanSuccess = (decodedText: string) => {
+    setScanOpen(false);
+    const item = items.find((i) => i.sku === decodedText);
+    if (item) {
+      handleOpen(item);
+    } else {
+      setEditingItem(null);
+      setFormData({ name: "", category: "", sku: decodedText, stock: 0, price: 0, image_url: "" });
+      setOpen(true);
+    }
+  };
+
+  const toggleAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedItems(new Set(items.map((i) => i.id)));
+    } else {
+      setSelectedItems(new Set());
+    }
+  };
+
+  const toggleItem = (id: string, checked: boolean) => {
+    const newSelected = new Set(selectedItems);
+    if (checked) {
+      newSelected.add(id);
+    } else {
+      newSelected.delete(id);
+    }
+    setSelectedItems(newSelected);
+  };
+
   const filteredItems = items.filter((item) => {
     const query = searchQuery.toLowerCase();
     return (
@@ -343,812 +235,77 @@ const Inventory: React.FC = () => {
 
   if (loading && items.length === 0) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "50vh",
-        }}
-      >
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
         <CircularProgress />
       </Box>
     );
   }
 
   return (
-    <Box sx={{ p: isMobile ? 0 : 0 }}>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: { xs: "column", sm: "row" },
-          justifyContent: "space-between",
-          alignItems: { xs: "flex-start", sm: "center" },
-          gap: 2,
-          mb: 4,
-        }}
-      >
-        <Typography variant={isMobile ? "h5" : "h4"} fontWeight="bold">
-          Inventory
-        </Typography>
-        <Box
-          sx={{ display: "flex", gap: 2, width: { xs: "100%", sm: "auto" } }}
-        >
-          {selectedItems.size > 0 && (
-            <Button
-              variant="outlined"
-              startIcon={<PrintIcon />}
-              fullWidth={isMobile}
-              onClick={() => window.print()}
-              sx={{
-                border: "1px solid #30363d",
-                color: "text.primary",
-                "&:hover": {
-                  borderColor: "primary.main",
-                  bgcolor: "rgba(88, 166, 255, 0.1)",
-                },
-              }}
-            >
-              Print {isMobile ? "" : `Labels (${selectedItems.size})`}
-            </Button>
-          )}
-          <Button
-            variant="outlined"
-            startIcon={<ScanIcon />}
-            fullWidth={isMobile}
-            onClick={() => setScanOpen(true)}
-            sx={{ border: "1px solid #30363d", color: "text.primary" }}
-          >
-            Scan
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            fullWidth={isMobile}
-            onClick={() => handleOpen()}
-          >
-            Add
-          </Button>
-        </Box>
-      </Box>
+    <Box sx={{ p: 0 }}>
+      <InventoryHeader
+        isMobile={isMobile}
+        selectedCount={selectedItems.size}
+        onPrint={() => window.print()}
+        onScan={() => setScanOpen(true)}
+        onAdd={() => handleOpen()}
+      />
 
-      {/* Search Bar */}
-      <Box sx={{ mb: 4 }}>
-        <TextField
-          fullWidth
-          variant="outlined"
-          placeholder="Search items by name, SKU, or category..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              bgcolor: "rgba(22, 27, 34, 0.7)",
-              color: "white",
-              "& fieldset": { borderColor: "#30363d" },
-              "&:hover fieldset": { borderColor: "#58a6ff" },
-            },
-          }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon sx={{ color: "text.secondary" }} />
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Box>
+      <InventorySearch
+        value={searchQuery}
+        onChange={setSearchQuery}
+      />
 
       {!isTablet ? (
-        <TableContainer
-          component={Paper}
-          sx={{
-            background: "rgba(22, 27, 34, 0.7)",
-            backdropFilter: "blur(10px)",
-            border: "1px solid #30363d",
-            borderRadius: "12px",
-            width: "100%",
-            overflowX: "auto",
-          }}
-        >
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell
-                  padding="checkbox"
-                  sx={{ borderBottom: "1px solid #30363d" }}
-                >
-                  <Checkbox
-                    indeterminate={
-                      selectedItems.size > 0 &&
-                      selectedItems.size < items.length
-                    }
-                    checked={
-                      items.length > 0 && selectedItems.size === items.length
-                    }
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedItems(new Set(items.map((i) => i.id)));
-                      } else {
-                        setSelectedItems(new Set());
-                      }
-                    }}
-                    sx={{ color: "text.secondary" }}
-                  />
-                </TableCell>
-                <TableCell
-                  sx={{
-                    color: "text.secondary",
-                    borderBottom: "1px solid #30363d",
-                  }}
-                >
-                  Image
-                </TableCell>
-                <TableCell
-                  sx={{
-                    color: "text.secondary",
-                    borderBottom: "1px solid #30363d",
-                  }}
-                >
-                  SKU
-                </TableCell>
-                <TableCell
-                  sx={{
-                    color: "text.secondary",
-                    borderBottom: "1px solid #30363d",
-                  }}
-                >
-                  Name
-                </TableCell>
-                <TableCell
-                  sx={{
-                    color: "text.secondary",
-                    borderBottom: "1px solid #30363d",
-                  }}
-                >
-                  Category
-                </TableCell>
-                <TableCell
-                  sx={{
-                    color: "text.secondary",
-                    borderBottom: "1px solid #30363d",
-                  }}
-                >
-                  Stock
-                </TableCell>
-                <TableCell
-                  sx={{
-                    color: "text.secondary",
-                    borderBottom: "1px solid #30363d",
-                  }}
-                >
-                  Price
-                </TableCell>
-                <TableCell
-                  align="right"
-                  sx={{
-                    color: "text.secondary",
-                    borderBottom: "1px solid #30363d",
-                  }}
-                >
-                  Actions
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredItems.map((item) => (
-                <TableRow key={item.id} selected={selectedItems.has(item.id)}>
-                  <TableCell
-                    padding="checkbox"
-                    sx={{ borderBottom: "1px solid #30363d" }}
-                  >
-                    <Checkbox
-                      checked={selectedItems.has(item.id)}
-                      onChange={(e) => {
-                        const newSelected = new Set(selectedItems);
-                        if (e.target.checked) {
-                          newSelected.add(item.id);
-                        } else {
-                          newSelected.delete(item.id);
-                        }
-                        setSelectedItems(newSelected);
-                      }}
-                      sx={{ color: "text.secondary" }}
-                    />
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      borderBottom: "1px solid #30363d",
-                      width: 60,
-                    }}
-                  >
-                    {item.image_url ? (
-                      <Box
-                        component="img"
-                        src={item.image_url}
-                        sx={{
-                          width: 40,
-                          height: 40,
-                          borderRadius: "8px",
-                          objectFit: "cover",
-                          border: "1px solid #30363d",
-                        }}
-                      />
-                    ) : (
-                      <Box
-                        sx={{
-                          width: 40,
-                          height: 40,
-                          borderRadius: "8px",
-                          bgcolor: "rgba(255,255,255,0.05)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          border: "1px solid #30363d",
-                        }}
-                      >
-                        <ImageIcon sx={{ color: "text.secondary", fontSize: 20 }} />
-                      </Box>
-                    )}
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      borderBottom: "1px solid #30363d",
-                      fontFamily: "monospace",
-                    }}
-                  >
-                    {item.sku || "-"}
-                  </TableCell>
-                  <TableCell sx={{ borderBottom: "1px solid #30363d" }}>
-                    {item.name}
-                  </TableCell>
-                  <TableCell sx={{ borderBottom: "1px solid #30363d" }}>
-                    {item.category}
-                  </TableCell>
-                  <TableCell sx={{ borderBottom: "1px solid #30363d" }}>
-                    {item.stock}
-                  </TableCell>
-                  <TableCell sx={{ borderBottom: "1px solid #30363d" }}>
-                    ${item.price.toFixed(2)}
-                  </TableCell>
-                  <TableCell
-                    align="right"
-                    sx={{ borderBottom: "1px solid #30363d" }}
-                  >
-                    <IconButton
-                      size="small"
-                      onClick={() => handleOpen(item)}
-                      sx={{ color: "primary.main", mr: 1 }}
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      onClick={() => handleDelete(item.id)}
-                      sx={{ color: "error.main" }}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <InventoryTable
+          items={filteredItems}
+          selectedItems={selectedItems}
+          onToggleAll={toggleAll}
+          onToggleItem={toggleItem}
+          onEdit={handleOpen}
+          onDelete={handleDelete}
+        />
       ) : (
-        <Grid container spacing={2}>
-          <AnimatePresence>
-            {filteredItems.map((item) => (
-              <Grid size={{ xs: 12, sm: 6 }} key={item.id}>
-                <motion.div
-                  layout
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                >
-                  <Card
-                    sx={{
-                      bgcolor: "rgba(22, 27, 34, 0.7)",
-                      backdropFilter: "blur(10px)",
-                      border: "1px solid #30363d",
-                      borderRadius: "12px",
-                      position: "relative",
-                      overflow: "hidden",
-                      "&:hover": { borderColor: "#58a6ff" },
-                    }}
-                  >
-                    {item.image_url && (
-                      <Box
-                        component="img"
-                        src={item.image_url}
-                        sx={{
-                          width: "100%",
-                          height: 140,
-                          objectFit: "cover",
-                          borderBottom: "1px solid #30363d",
-                        }}
-                      />
-                    )}
-                    <CardContent>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "flex-start",
-                          mb: 2,
-                        }}
-                      >
-                        <Box>
-                          <Typography variant="h6" fontWeight="bold">
-                            {item.name}
-                          </Typography>
-                          <Typography
-                            variant="caption"
-                            sx={{ fontFamily: "monospace", color: "text.secondary" }}
-                          >
-                            {item.sku || "No SKU"}
-                          </Typography>
-                        </Box>
-                        <Checkbox
-                          checked={selectedItems.has(item.id)}
-                          onChange={(e) => {
-                            const newSelected = new Set(selectedItems);
-                            if (e.target.checked) {
-                              newSelected.add(item.id);
-                            } else {
-                              newSelected.delete(item.id);
-                            }
-                            setSelectedItems(newSelected);
-                          }}
-                          sx={{ color: "text.secondary", p: 0 }}
-                        />
-                      </Box>
-
-                      <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
-                        <Chip
-                          label={`${item.stock} in stock`}
-                          size="small"
-                          color={item.stock < 5 ? "warning" : "default"}
-                          sx={{ bgcolor: item.stock < 5 ? "rgba(210, 153, 34, 0.1)" : "rgba(48, 54, 61, 0.5)" }}
-                        />
-                        <Chip
-                          label={item.category}
-                          size="small"
-                          sx={{ bgcolor: "rgba(88, 166, 255, 0.1)", color: "#58a6ff" }}
-                        />
-                      </Stack>
-
-                      <Divider sx={{ my: 1.5, borderColor: "#30363d" }} />
-
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Typography variant="h6" color="primary.main">
-                          ${item.price.toFixed(2)}
-                        </Typography>
-                        <Box>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleOpen(item)}
-                            sx={{ color: "primary.main", mr: 1 }}
-                          >
-                            <EditIcon fontSize="small" />
-                          </IconButton>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleDelete(item.id)}
-                            sx={{ color: "error.main" }}
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        </Box>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              </Grid>
-            ))}
-          </AnimatePresence>
-        </Grid>
+        <InventoryGrid
+          items={filteredItems}
+          selectedItems={selectedItems}
+          onToggleItem={toggleItem}
+          onEdit={handleOpen}
+          onDelete={handleDelete}
+        />
       )}
 
-      {/* Edit/Add Dialog */}
-      <Dialog
+      <InventoryDialog
         open={open}
+        editingItem={editingItem}
+        formData={formData}
+        isMobile={isMobile}
         onClose={handleClose}
-        fullScreen={isMobile}
-        PaperProps={{
-          sx: {
-            bgcolor: "#0d1117",
-            color: "white",
-            border: isMobile ? "none" : "1px solid #30363d",
-            borderRadius: isMobile ? 0 : "12px",
-            minWidth: isMobile ? "100%" : "450px",
-          },
-        }}
-      >
-        <DialogTitle>{editingItem ? "Edit Item" : "Add New Item"}</DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 1 }}>
-            {/* Image Upload Area */}
-            <Box
-              sx={{
-                width: "100%",
-                height: 200,
-                borderRadius: "12px",
-                border: "2px dashed #30363d",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                overflow: "hidden",
-                position: "relative",
-                transition: "border-color 0.2s",
-                "&:hover": { borderColor: "primary.main" },
-              }}
-              onClick={() => document.getElementById("image-upload")?.click()}
-            >
-              {formData.image_url ? (
-                <>
-                  <Box
-                    component="img"
-                    src={formData.image_url}
-                    sx={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  />
-                  <IconButton
-                    sx={{
-                      position: "absolute",
-                      top: 8,
-                      right: 8,
-                      bgcolor: "rgba(0,0,0,0.5)",
-                      "&:hover": { bgcolor: "rgba(0,0,0,0.7)" },
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setFormData({ ...formData, image_url: "" });
-                    }}
-                  >
-                    <DeleteIcon sx={{ color: "white" }} />
-                  </IconButton>
-                </>
-              ) : (
-                <>
-                  <AddPhotoIcon sx={{ fontSize: 40, color: "text.secondary", mb: 1 }} />
-                  <Typography variant="body2" color="text.secondary">
-                    Click to upload photo
-                  </Typography>
-                </>
-              )}
-              <input
-                type="file"
-                id="image-upload"
-                hidden
-                accept="image/*"
-                onChange={handleImageUpload}
-              />
-            </Box>
+        onSave={handleSave}
+        onFormDataChange={setFormData}
+        onGenerateSKU={generateSKU}
+        onImageUpload={handleImageUpload}
+        getBarcodeFormat={getBarcodeFormat}
+      />
 
-            <Box sx={{ display: "flex", gap: 1, alignItems: "flex-start" }}>
-              <TextField
-                label="SKU / Barcode"
-                fullWidth
-                value={formData.sku}
-                onChange={(e) =>
-                  setFormData({ ...formData, sku: e.target.value })
-                }
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    color: "white",
-                    "& fieldset": { borderColor: "#30363d" },
-                  },
-                }}
-                InputLabelProps={{ sx: { color: "text.secondary" } }}
-              />
-              <Tooltip title="Generate SKU">
-                <IconButton
-                  onClick={generateSKU}
-                  sx={{ mt: 1, color: "primary.main" }}
-                >
-                  <RefreshIcon />
-                </IconButton>
-              </Tooltip>
-            </Box>
-
-            {formData.sku && (
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  p: 2,
-                  bgcolor: "white",
-                  borderRadius: "8px",
-                }}
-              >
-                <Barcode
-                  value={formData.sku}
-                  format={getBarcodeFormat(formData.sku)}
-                  width={2.0}
-                  height={50}
-                  fontSize={14}
-                  background="#ffffff"
-                  margin={10}
-                />
-              </Box>
-            )}
-
-            <TextField
-              label="Name"
-              fullWidth
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  color: "white",
-                  "& fieldset": { borderColor: "#30363d" },
-                },
-              }}
-              InputLabelProps={{ sx: { color: "text.secondary" } }}
-            />
-            <TextField
-              label="Category"
-              fullWidth
-              value={formData.category}
-              onChange={(e) =>
-                setFormData({ ...formData, category: e.target.value })
-              }
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  color: "white",
-                  "& fieldset": { borderColor: "#30363d" },
-                },
-              }}
-              InputLabelProps={{ sx: { color: "text.secondary" } }}
-            />
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: isMobile ? "column" : "row",
-                gap: 2,
-              }}
-            >
-              <TextField
-                label="Stock"
-                type="number"
-                fullWidth
-                value={formData.stock}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    stock: parseInt(e.target.value) || 0,
-                  })
-                }
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    color: "white",
-                    "& fieldset": { borderColor: "#30363d" },
-                  },
-                }}
-                InputLabelProps={{ sx: { color: "text.secondary" } }}
-              />
-              <TextField
-                label="Price"
-                type="number"
-                fullWidth
-                value={formData.price}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    price: parseFloat(e.target.value) || 0,
-                  })
-                }
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    color: "white",
-                    "& fieldset": { borderColor: "#30363d" },
-                  },
-                }}
-                InputLabelProps={{ sx: { color: "text.secondary" } }}
-              />
-            </Box>
-          </Box>
-        </DialogContent>
-        <DialogActions sx={{ p: 3 }}>
-          <Button onClick={handleClose} sx={{ color: "text.secondary" }}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave} variant="contained" color="primary">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog
+      <InventoryScanner
         open={scanOpen}
         onClose={() => setScanOpen(false)}
-        maxWidth="xs"
-        fullWidth
-        disableEnforceFocus
-        disableRestoreFocus
-        PaperProps={{
-          sx: {
-            bgcolor: "#0d1117",
-            color: "white",
-            border: "1px solid #30363d",
-            borderRadius: "20px",
-            overflow: "hidden",
-          },
-        }}
-      >
-        <Box sx={{ p: 3, textAlign: "center", position: "relative" }}>
-          <IconButton
-            onClick={() => setScanOpen(false)}
-            sx={{
-              position: "absolute",
-              right: 8,
-              top: 8,
-              color: "text.secondary",
-            }}
-          >
-            <CloseIcon fontSize="small" />
-          </IconButton>
-          <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
-            Scan Barcode
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Align the barcode within the frame
-          </Typography>
+        onScanSuccess={handleScanSuccess}
+        onError={setError}
+      />
 
-          <Box
-            sx={{
-              position: "relative",
-              width: "300px",
-              height: "300px",
-              margin: "0 auto",
-              borderRadius: "16px",
-              overflow: "hidden",
-              boxShadow: "0 0 20px rgba(0,0,0,0.5)",
-              border: "2px solid #30363d",
-            }}
-          >
-            <Box id="reader" sx={{ width: "100%", height: "100%" }} />
-
-            {/* Custom Scanner Overlay */}
-            <Box
-              sx={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                pointerEvents: "none",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {/* Corner Accents */}
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: 20,
-                  left: 20,
-                  width: 30,
-                  height: 30,
-                  borderLeft: "4px solid #58a6ff",
-                  borderTop: "4px solid #58a6ff",
-                  borderRadius: "4px 0 0 0",
-                }}
-              />
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: 20,
-                  right: 20,
-                  width: 30,
-                  height: 30,
-                  borderRight: "4px solid #58a6ff",
-                  borderTop: "4px solid #58a6ff",
-                  borderRadius: "0 4px 0 0",
-                }}
-              />
-              <Box
-                sx={{
-                  position: "absolute",
-                  bottom: 20,
-                  left: 20,
-                  width: 30,
-                  height: 30,
-                  borderLeft: "4px solid #58a6ff",
-                  borderBottom: "4px solid #58a6ff",
-                  borderRadius: "0 0 0 4px",
-                }}
-              />
-              <Box
-                sx={{
-                  position: "absolute",
-                  bottom: 20,
-                  right: 20,
-                  width: 30,
-                  height: 30,
-                  borderRight: "4px solid #58a6ff",
-                  borderBottom: "4px solid #58a6ff",
-                  borderRadius: "0 0 4px 0",
-                }}
-              />
-
-              {/* Pulsing Scan Line */}
-              <motion.div
-                initial={{ top: "15%" }}
-                animate={{ top: "85%" }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                  ease: "linear",
-                }}
-                style={{
-                  position: "absolute",
-                  left: "10%",
-                  right: "10%",
-                  height: "2px",
-                  background:
-                    "linear-gradient(90deg, transparent, #58a6ff, transparent)",
-                  boxShadow: "0 0 15px #58a6ff",
-                  zIndex: 10,
-                }}
-              />
-
-              {/* Semi-transparent Backdrop Mask */}
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  border: "40px solid rgba(13, 17, 23, 0.4)",
-                }}
-              />
-            </Box>
-          </Box>
-
-          <Button
-            onClick={() => setScanOpen(false)}
-            variant="outlined"
-            sx={{
-              mt: 4,
-              color: "text.secondary",
-              borderColor: "#30363d",
-              borderRadius: "10px",
-              px: 4,
-            }}
-          >
-            Cancel
-          </Button>
-        </Box>
-      </Dialog>
-
-      {/* Error Snackbar */}
       <Snackbar
         open={!!error}
         autoHideDuration={6000}
         onClose={() => setError(null)}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert
-          severity="error"
-          sx={{ width: "100%" }}
-          onClose={() => setError(null)}
-        >
+        <Alert severity="error" sx={{ width: "100%" }} onClose={() => setError(null)}>
           {error}
         </Alert>
       </Snackbar>
+
       <BarcodePrinter
         items={items.filter((i) => selectedItems.has(i.id))}
       />
