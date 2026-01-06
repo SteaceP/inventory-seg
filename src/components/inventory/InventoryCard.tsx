@@ -46,7 +46,7 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                     borderRadius: "12px",
                     position: "relative",
                     overflow: "hidden",
-                    "&:hover": { borderColor: "#58a6ff" },
+                    "&:hover": { borderColor: "primary.main" },
                 }}
             >
                 {item.image_url && (
@@ -87,12 +87,11 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                             sx={{ color: "text.secondary", p: 0 }}
                         />
                     </Box>
-
                     <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
                         <Chip
                             label={item.category}
                             size="small"
-                            sx={{ bgcolor: "rgba(88, 166, 255, 0.1)", color: "#58a6ff" }}
+                            sx={{ bgcolor: "rgba(2, 125, 111, 0.1)", color: "primary.main" }}
                         />
                     </Box>
 

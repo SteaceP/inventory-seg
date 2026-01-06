@@ -58,7 +58,12 @@ const darkTheme = createTheme({
   palette: {
     mode: "dark",
     primary: {
-      main: "#58a6ff",
+      main: "#027d6f", // Emerald Teal from logo
+      light: "#4a9c8b",
+      dark: "#0d576a",
+    },
+    secondary: {
+      main: "#1a748b", // Steel Blue from logo
     },
     background: {
       default: "#0d1117",

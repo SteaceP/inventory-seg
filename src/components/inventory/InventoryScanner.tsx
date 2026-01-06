@@ -151,8 +151,9 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
                                 left: 20,
                                 width: 30,
                                 height: 30,
-                                borderLeft: "4px solid #58a6ff",
-                                borderTop: "4px solid #58a6ff",
+                                borderLeft: "4px solid",
+                                borderColor: "primary.main",
+                                borderTop: "4px solid",
                                 borderRadius: "4px 0 0 0",
                             }}
                         />
@@ -163,8 +164,9 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
                                 right: 20,
                                 width: 30,
                                 height: 30,
-                                borderRight: "4px solid #58a6ff",
-                                borderTop: "4px solid #58a6ff",
+                                borderRight: "4px solid",
+                                borderColor: "primary.main",
+                                borderTop: "4px solid",
                                 borderRadius: "0 4px 0 0",
                             }}
                         />
@@ -175,8 +177,9 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
                                 left: 20,
                                 width: 30,
                                 height: 30,
-                                borderLeft: "4px solid #58a6ff",
-                                borderBottom: "4px solid #58a6ff",
+                                borderLeft: "4px solid",
+                                borderColor: "primary.main",
+                                borderBottom: "4px solid",
                                 borderRadius: "0 0 0 4px",
                             }}
                         />
@@ -187,8 +190,9 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
                                 right: 20,
                                 width: 30,
                                 height: 30,
-                                borderRight: "4px solid #58a6ff",
-                                borderBottom: "4px solid #58a6ff",
+                                borderRight: "4px solid",
+                                borderColor: "primary.main",
+                                borderBottom: "4px solid",
                                 borderRadius: "0 0 4px 0",
                             }}
                         />
@@ -209,8 +213,8 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
                                 right: "10%",
                                 height: "2px",
                                 background:
-                                    "linear-gradient(90deg, transparent, #58a6ff, transparent)",
-                                boxShadow: "0 0 15px #58a6ff",
+                                    "linear-gradient(90deg, transparent, #027d6f, transparent)",
+                                boxShadow: "0 0 15px #027d6f",
                                 zIndex: 10,
                             }}
                         />

@@ -21,7 +21,7 @@ const InventorySearch: React.FC<InventorySearchProps> = ({ value, onChange }) =>
                         bgcolor: "rgba(22, 27, 34, 0.7)",
                         color: "white",
                         "& fieldset": { borderColor: "#30363d" },
-                        "&:hover fieldset": { borderColor: "#58a6ff" },
+                        "&:hover fieldset": { borderColor: "primary.main" },
                     },
                 }}
                 InputProps={{

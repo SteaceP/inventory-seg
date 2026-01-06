@@ -131,10 +131,10 @@ const Layout: React.FC = () => {
                   px: collapsed && !isMobile ? 1.5 : 2,
                   justifyContent: collapsed && !isMobile ? "center" : "initial",
                   "&.Mui-selected": {
-                    bgcolor: "rgba(88, 166, 255, 0.1)",
+                    bgcolor: "rgba(2, 125, 111, 0.1)",
                     color: "primary.main",
                     "&:hover": {
-                      bgcolor: "rgba(88, 166, 255, 0.2)",
+                      bgcolor: "rgba(2, 125, 111, 0.2)",
                     },
                   },
                 }}

@@ -146,7 +146,7 @@ const Dashboard: React.FC = () => {
                 alt="Logo"
               />
             }
-            color="#58a6ff"
+            color="#027d6f"
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
