@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Box, CircularProgress, Snackbar, Alert } from "@mui/material";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { supabase } from "../supabaseClient";
@@ -33,7 +33,7 @@ const Inventory: React.FC = () => {
   });
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
-  const { compactView, role } = useThemeContext();
+  const { role } = useThemeContext();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
@@ -85,7 +85,7 @@ const Inventory: React.FC = () => {
       if (isLowStock) {
         // Handle In-App/Browser Notifications
         if (userSettings?.notifications && "Notification" in window && Notification.permission === "granted") {
-          const notificationData: NotificationOptions = {
+          const notificationData: any = {
             body: `L'article "${item.name}" est à ${item.stock} unités.`,
             icon: "/icon.svg",
             badge: "/icon.svg",
@@ -150,7 +150,7 @@ const Inventory: React.FC = () => {
       setError("Erreur lors du téléchargement de l'image. Veuillez réessayer.");
       console.error(err);
     } finally {
-      setLoading(false);
+      setActionLoading(false);
     }
   };
 

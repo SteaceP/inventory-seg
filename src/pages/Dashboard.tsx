@@ -11,7 +11,6 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import {
-  Inventory as InventoryIcon,
   People as PeopleIcon,
   Timeline as TimelineIcon,
 } from "@mui/icons-material";
@@ -75,7 +74,7 @@ const Dashboard: React.FC = () => {
   const [activitiesLoading, setActivitiesLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [recentActivities, setRecentActivities] = useState<any[]>([]);
-  const { compactView, displayName } = useThemeContext();
+  const { displayName } = useThemeContext();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 

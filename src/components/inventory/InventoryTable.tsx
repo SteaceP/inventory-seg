@@ -25,7 +25,7 @@ interface InventoryTableProps {
     onToggleAll: (checked: boolean) => void;
     onToggleItem: (id: string, checked: boolean) => void;
     onEdit: (item: InventoryItem) => void;
-    onDelete: (id: string) => void;
+    onDelete?: (id: string) => void;
 }
 
 import { useThemeContext } from "../../contexts/ThemeContext";

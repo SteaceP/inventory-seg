@@ -19,7 +19,6 @@ import {
 } from "@mui/material";
 import {
   Dashboard as DashboardIcon,
-  Inventory as InventoryIcon,
   Settings as SettingsIcon,
   ExitToApp as LogoutIcon,
   ChevronLeft as ChevronLeftIcon,

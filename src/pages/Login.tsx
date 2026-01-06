@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Paper, Typography, TextField, Button, Container, Alert, IconButton, InputAdornment } from '@mui/material';
-import { Visibility, VisibilityOff, Inventory as InventoryIcon } from '@mui/icons-material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { supabase } from '../supabaseClient';
 import { useNavigate } from 'react-router-dom';

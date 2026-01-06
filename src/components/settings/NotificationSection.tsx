@@ -71,7 +71,7 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
                         onClick={async () => {
                             if (!("Notification" in window)) return;
 
-                            const options: NotificationOptions = {
+                            const options: any = {
                                 body: "Ceci est un test de notification mobile !",
                                 icon: "/icon.svg",
                                 badge: "/icon.svg",
