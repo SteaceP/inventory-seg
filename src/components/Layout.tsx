@@ -40,7 +40,22 @@ const Layout: React.FC = () => {
 
   const menuItems = [
     { text: "Tableau de bord", icon: <DashboardIcon />, path: "/" },
-    { text: "Inventaire", icon: <InventoryIcon />, path: "/inventory" },
+    {
+      text: "Inventaire",
+      icon: (
+        <Box
+          component="img"
+          src="/icon.svg"
+          sx={{
+            width: 24,
+            height: 24,
+            opacity: location.pathname === "/inventory" ? 1 : 0.7,
+            filter: location.pathname === "/inventory" ? "none" : "grayscale(1)"
+          }}
+        />
+      ),
+      path: "/inventory"
+    },
     { text: "Paramètres", icon: <SettingsIcon />, path: "/settings" },
   ];
 
@@ -69,14 +84,22 @@ const Layout: React.FC = () => {
         }}
       >
         {(!collapsed || isMobile) && (
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ fontWeight: "bold", color: "primary.main", ml: 1 }}
-          >
-            Inventaire
-          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", ml: 1 }}>
+            <Box
+              component="img"
+              src="/icon.svg"
+              sx={{ width: 32, height: 32, mr: 1 }}
+              alt="Logo"
+            />
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{ fontWeight: "bold", color: "primary.main" }}
+            >
+              Inventaire
+            </Typography>
+          </Box>
         )}
         {!isMobile && (
           <IconButton
@@ -203,6 +226,12 @@ const Layout: React.FC = () => {
             >
               <MenuIcon />
             </IconButton>
+            <Box
+              component="img"
+              src="/icon.svg"
+              sx={{ width: 32, height: 32, mr: 1.5 }}
+              alt="Logo"
+            />
             <Typography
               variant="h6"
               noWrap

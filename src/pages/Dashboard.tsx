@@ -115,13 +115,20 @@ const Dashboard: React.FC = () => {
 
   return (
     <Box sx={{ p: isMobile ? 0 : 0 }}>
-      <Typography
-        variant={isMobile ? "h5" : "h4"}
-        fontWeight="bold"
-        gutterBottom
-      >
-        Tableau de bord
-      </Typography>
+      <Box sx={{ mb: 2 }}>
+        <Box
+          component="img"
+          src="/logo-secondary.svg"
+          sx={{ width: 180, height: "auto", mb: 2 }}
+          alt="Logo"
+        />
+        <Typography
+          variant={isMobile ? "h5" : "h4"}
+          fontWeight="bold"
+        >
+          Tableau de bord
+        </Typography>
+      </Box>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
         Bienvenue! Que s'est-il passé aujourd'hui?
       </Typography>
@@ -131,7 +138,14 @@ const Dashboard: React.FC = () => {
           <StatCard
             title="Total des articles"
             value={stats.totalItems.toLocaleString()}
-            icon={<InventoryIcon />}
+            icon={
+              <Box
+                component="img"
+                src="/icon.svg"
+                sx={{ width: 24, height: 24 }}
+                alt="Logo"
+              />
+            }
             color="#58a6ff"
           />
         </Grid>

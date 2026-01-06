@@ -28,12 +28,29 @@ const PageLoader = () => (
   <Box
     sx={{
       display: "flex",
+      flexDirection: "column",
       justifyContent: "center",
       alignItems: "center",
       minHeight: "50vh",
+      gap: 2
     }}
   >
-    <CircularProgress />
+    <Box
+      component="img"
+      src="/icon.svg"
+      sx={{
+        width: 60,
+        height: 60,
+        animation: "pulse 2s infinite ease-in-out",
+        "@keyframes pulse": {
+          "0%": { transform: "scale(0.95)", opacity: 0.8 },
+          "50%": { transform: "scale(1.05)", opacity: 1 },
+          "100%": { transform: "scale(0.95)", opacity: 0.8 },
+        }
+      }}
+      alt="Logo"
+    />
+    <CircularProgress size={20} />
   </Box>
 );
 
@@ -100,13 +117,30 @@ function App() {
         <Box
           sx={{
             display: "flex",
+            flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
             minHeight: "100vh",
             bgcolor: "background.default",
+            gap: 3
           }}
         >
-          <CircularProgress />
+          <Box
+            component="img"
+            src="/icon.svg"
+            sx={{
+              width: 80,
+              height: 80,
+              animation: "pulse 2s infinite ease-in-out",
+              "@keyframes pulse": {
+                "0%": { transform: "scale(0.95)", opacity: 0.8 },
+                "50%": { transform: "scale(1.05)", opacity: 1 },
+                "100%": { transform: "scale(0.95)", opacity: 0.8 },
+              }
+            }}
+            alt="Logo"
+          />
+          <CircularProgress size={24} />
         </Box>
       </ThemeProvider>
     );

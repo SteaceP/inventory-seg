@@ -62,7 +62,12 @@ const Login: React.FC = () => {
             }}
           >
             <Box sx={{ mb: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <InventoryIcon sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
+              <Box
+                component="img"
+                src="/logo-secondary.svg"
+                sx={{ width: 120, height: "auto", mb: 2 }}
+                alt="Logo"
+              />
               <Typography variant="h5" fontWeight="bold" color="primary.main">
                 Se Connecter
               </Typography>

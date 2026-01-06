@@ -87,20 +87,40 @@ const Inventory: React.FC = () => {
         .eq("user_id", user.id)
         .single();
 
-      if (
-        userSettings?.email_alerts &&
-        (item.stock || 0) <= userSettings.low_stock_threshold
-      ) {
-        await fetch("/api/send-low-stock-alert", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            itemName: item.name,
-            currentStock: item.stock,
-            threshold: userSettings.low_stock_threshold,
-            userEmail: user.email,
-          }),
-        });
+      const isLowStock = (item.stock || 0) <= (userSettings?.low_stock_threshold ?? 5);
+
+      if (isLowStock) {
+        // Handle In-App/Browser Notifications
+        if (userSettings?.notifications && "Notification" in window && Notification.permission === "granted") {
+          const notificationData = {
+            body: `L'article "${item.name}" est à ${item.stock} unités.`,
+            icon: "/icon.svg",
+            badge: "/icon.svg",
+            tag: "low-stock-" + item.id,
+          };
+
+          if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.ready.then((registration) => {
+              registration.showNotification("Alerte Stock Faible", notificationData);
+            });
+          } else {
+            new Notification("Alerte Stock Faible", notificationData);
+          }
+        }
+
+        // Handle Email Alerts
+        if (userSettings?.email_alerts) {
+          await fetch("/api/send-low-stock-alert", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              itemName: item.name,
+              currentStock: item.stock,
+              threshold: userSettings.low_stock_threshold,
+              userEmail: user.email,
+            }),
+          });
+        }
       }
     } catch (err) {
       console.error("Low stock alert error:", err);

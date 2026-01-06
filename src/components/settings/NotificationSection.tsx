@@ -49,7 +49,13 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
                     control={
                         <Switch
                             checked={notifications}
-                            onChange={(e) => onNotificationsChange(e.target.checked)}
+                            onChange={async (e) => {
+                                const checked = e.target.checked;
+                                if (checked && "Notification" in window && Notification.permission !== "granted") {
+                                    await Notification.requestPermission();
+                                }
+                                onNotificationsChange(checked);
+                            }}
                             color="primary"
                         />
                     }
