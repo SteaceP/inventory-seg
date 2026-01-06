@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Box, Button, Grid, Alert, Snackbar } from "@mui/material";
+import { Typography, Box, Button, Alert, Snackbar } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { supabase } from "../supabaseClient";
 import { useThemeContext } from "../contexts/ThemeContext";
 
@@ -154,7 +155,7 @@ const Settings: React.FC = () => {
       </Typography>
 
       <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <ProfileSection
             displayName={settings.displayName}
             avatarUrl={settings.avatarUrl}
@@ -164,7 +165,7 @@ const Settings: React.FC = () => {
           />
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <NotificationSection
             notifications={settings.notifications}
             emailAlerts={settings.emailAlerts}
@@ -175,7 +176,7 @@ const Settings: React.FC = () => {
           />
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <AppearanceSection
             darkMode={settings.darkMode}
             compactView={settings.compactView}
@@ -184,7 +185,7 @@ const Settings: React.FC = () => {
           />
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <SecuritySection onSignOut={handleSignOut} />
         </Grid>
       </Grid>
