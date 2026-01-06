@@ -18,6 +18,16 @@
   --text-muted: #8b949e;
 }
 
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 body {
   margin: 0;
   display: flex;
@@ -32,6 +42,8 @@ body {
 
 #root {
   width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 h1 {

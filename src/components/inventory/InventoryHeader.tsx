@@ -35,7 +35,7 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
             <Typography variant={isMobile ? "h5" : "h4"} fontWeight="bold">
                 Inventaire
             </Typography>
-            <Box sx={{ display: "flex", gap: 2, width: { xs: "100%", sm: "auto" } }}>
+            <Box sx={{ display: "flex", gap: 2, width: { xs: "100%", sm: "auto" }, flexWrap: { xs: "wrap", sm: "nowrap" } }}>
                 {selectedCount > 0 && (
                     <Button
                         variant="outlined"
@@ -54,7 +54,7 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
                             },
                         }}
                     >
-                        Imprimer {isMobile ? "" : `Étiquettes (${selectedCount})`}
+                        {isMobile ? `(${selectedCount})` : `Imprimer Étiquettes (${selectedCount})`}
                     </Button>
                 )}
                 <Button

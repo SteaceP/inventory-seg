@@ -121,20 +121,21 @@ const Layout: React.FC = () => {
         )}
       </Toolbar>
 
-      <Box sx={{ px: 2, py: compactView ? 1.5 : 2, display: "flex", alignItems: "center", gap: 2 }}>
+      <Box sx={{ px: 2, py: compactView ? 1.5 : 2, display: "flex", alignItems: "center", gap: 2, overflow: "hidden" }}>
         <Avatar
           src={avatarUrl}
           sx={{
             width: collapsed && !isMobile ? 32 : (compactView ? 36 : 40),
             height: collapsed && !isMobile ? 32 : (compactView ? 36 : 40),
             bgcolor: "primary.main",
-            fontSize: "0.875rem"
+            fontSize: "0.875rem",
+            flexShrink: 0
           }}
         >
           {getInitials(displayName)}
         </Avatar>
         {(!collapsed || isMobile) && (
-          <Box sx={{ minWidth: 0 }}>
+          <Box sx={{ minWidth: 0, flex: 1, overflow: "hidden" }}>
             <Typography variant="body2" fontWeight="bold" noWrap>
               {displayName || "Utilisateur"}
             </Typography>
@@ -252,6 +253,8 @@ const Layout: React.FC = () => {
         display: "flex",
         minHeight: "100vh",
         bgcolor: "background.default",
+        maxWidth: "100vw",
+        overflowX: "hidden",
       }}
     >
       <CssBaseline />
@@ -267,27 +270,27 @@ const Layout: React.FC = () => {
             boxShadow: "none",
           }}
         >
-          <Toolbar sx={{ minHeight: compactView ? "48px !important" : "64px !important" }}>
+          <Toolbar sx={{ minHeight: compactView ? "48px !important" : "64px !important", px: { xs: 1, sm: 2 } }}>
             <IconButton
               color="inherit"
               aria-label="open drawer"
               edge="start"
               onClick={handleDrawerToggle}
-              sx={{ mr: 2 }}
+              sx={{ mr: { xs: 1, sm: 2 } }}
             >
               <MenuIcon fontSize={compactView ? "small" : "medium"} />
             </IconButton>
             <Box
               component="img"
               src="/icon.svg"
-              sx={{ width: compactView ? 24 : 32, height: compactView ? 24 : 32, mr: 1.5 }}
+              sx={{ width: compactView ? 20 : 28, height: compactView ? 20 : 28, mr: { xs: 0.75, sm: 1.5 }, flexShrink: 0 }}
               alt="Logo"
             />
             <Typography
               variant={compactView ? "body1" : "h6"}
               noWrap
               component="div"
-              sx={{ fontWeight: "bold", color: "primary.main" }}
+              sx={{ fontWeight: "bold", color: "primary.main", flexGrow: 1, minWidth: 0 }}
             >
               INVENTAIRE
             </Typography>
@@ -349,6 +352,8 @@ const Layout: React.FC = () => {
           p: compactView ? { xs: 1.5, sm: 2, md: 2.5 } : { xs: 2, sm: 3, md: 4 },
           width: { md: `calc(100% - ${currentDrawerWidth}px)` },
           mt: isMobile ? (compactView ? "48px" : "64px") : 0,
+          maxWidth: "100%",
+          overflowX: "hidden",
         }}
       >
         <Outlet />

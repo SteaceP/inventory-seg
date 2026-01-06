@@ -146,7 +146,7 @@ const Dashboard: React.FC = () => {
         {displayName ? "Voici un aperçu de votre inventaire aujourd'hui." : "Gestion globale de votre stock et statistiques."}
       </Typography>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={3} sx={{ justifyContent: { xs: "flex-start", sm: "center" } }}>
         <Grid size={{ xs: 12, sm: 4 }}>
           <StatCard
             title="Total des articles"

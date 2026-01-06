@@ -134,20 +134,22 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                             <TableCell sx={{ borderBottom: "1px solid", borderColor: "divider", fontSize: compactView ? "0.8125rem" : "0.875rem" }}>{item.category}</TableCell>
                             <TableCell sx={{ borderBottom: "1px solid", borderColor: "divider", fontSize: compactView ? "0.8125rem" : "0.875rem" }}>{item.stock}</TableCell>
                             <TableCell align="right" sx={{ borderBottom: "1px solid", borderColor: "divider" }}>
-                                <IconButton
-                                    size="small"
-                                    onClick={() => onEdit(item)}
-                                    sx={{ color: "primary.main", mr: 1 }}
-                                >
-                                    <EditIcon fontSize="small" />
-                                </IconButton>
-                                <IconButton
-                                    size="small"
-                                    onClick={() => onDelete(item.id)}
-                                    sx={{ color: "error.main" }}
-                                >
-                                    <DeleteIcon fontSize="small" />
-                                </IconButton>
+                                <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => onEdit(item)}
+                                        sx={{ color: "primary.main", mr: 1 }}
+                                    >
+                                        <EditIcon fontSize="small" />
+                                    </IconButton>
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => onDelete(item.id)}
+                                        sx={{ color: "error.main" }}
+                                    >
+                                        <DeleteIcon fontSize="small" />
+                                    </IconButton>
+                                </Box>
                             </TableCell>
                         </TableRow>
                     ))}

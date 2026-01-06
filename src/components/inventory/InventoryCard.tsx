@@ -124,7 +124,7 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                         >
                             {item.stock} en stock
                         </Typography>
-                        <Box>
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
                             <IconButton
                                 size="small"
                                 onClick={() => onEdit(item)}
