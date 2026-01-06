@@ -175,39 +175,89 @@ const Inventory: React.FC = () => {
       return;
     }
 
-    if (editingItem) {
-      const { error } = await supabase
-        .from("inventory")
-        .update(sanitizedData)
-        .eq("id", editingItem.id);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
 
-      if (error) {
-        setError("La mise à jour de l'article a échoué. Veuillez réessayer.");
-        return;
-      }
-    } else {
-      const { error } = await supabase
-        .from("inventory")
-        .insert([sanitizedData]);
+      if (editingItem) {
+        const { error } = await supabase
+          .from("inventory")
+          .update(sanitizedData)
+          .eq("id", editingItem.id);
 
-      if (error) {
-        setError("L'ajout de l'article a échoué. Veuillez réessayer.");
-        return;
+        if (error) {
+          setError("La mise à jour de l'article a échoué. Veuillez réessayer.");
+          return;
+        }
+
+        // Log the update activity
+        if (user) {
+          await supabase.from("inventory_activity").insert({
+            inventory_id: editingItem.id,
+            user_id: user.id,
+            action: "updated",
+            item_name: sanitizedData.name,
+            changes: sanitizedData,
+          });
+        }
+      } else {
+        const { data: newItem, error } = await supabase
+          .from("inventory")
+          .insert([sanitizedData])
+          .select()
+          .single();
+
+        if (error) {
+          setError("L'ajout de l'article a échoué. Veuillez réessayer.");
+          return;
+        }
+
+        // Log the create activity
+        if (user && newItem) {
+          await supabase.from("inventory_activity").insert({
+            inventory_id: newItem.id,
+            user_id: user.id,
+            action: "created",
+            item_name: sanitizedData.name,
+            changes: sanitizedData,
+          });
+        }
       }
+
+      checkLowStockAndNotify(sanitizedData);
+      handleClose();
+      fetchInventory();
+    } catch (err) {
+      console.error("Error saving item:", err);
+      setError("Une erreur est survenue. Veuillez réessayer.");
     }
-
-    checkLowStockAndNotify(sanitizedData);
-    handleClose();
-    fetchInventory();
   };
 
   const handleDelete = async (id: string) => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer cet article ?")) {
-      const { error } = await supabase.from("inventory").delete().eq("id", id);
-      if (error) {
-        setError("La suppression de l'article a échoué. Veuillez réessayer.");
-      } else {
-        fetchInventory();
+      try {
+        // Get item name before deleting
+        const item = items.find((i) => i.id === id);
+        const { data: { user } } = await supabase.auth.getUser();
+
+        const { error } = await supabase.from("inventory").delete().eq("id", id);
+        if (error) {
+          setError("La suppression de l'article a échoué. Veuillez réessayer.");
+        } else {
+          // Log the delete activity
+          if (user && item) {
+            await supabase.from("inventory_activity").insert({
+              inventory_id: id,
+              user_id: user.id,
+              action: "deleted",
+              item_name: item.name,
+              changes: null,
+            });
+          }
+          fetchInventory();
+        }
+      } catch (err) {
+        console.error("Error deleting item:", err);
+        setError("Une erreur est survenue. Veuillez réessayer.");
       }
     }
   };

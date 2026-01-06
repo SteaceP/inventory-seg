@@ -16,6 +16,7 @@ import {
 } from "@mui/icons-material";
 import { supabase } from "../supabaseClient";
 import { useThemeContext } from "../contexts/ThemeContext";
+import RecentActivity from "../components/dashboard/RecentActivity";
 
 interface StatCardProps {
   title: string;
@@ -72,6 +73,7 @@ const Dashboard: React.FC = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [recentActivities, setRecentActivities] = useState<any[]>([]);
   const { compactView, displayName } = useThemeContext();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -108,7 +110,42 @@ const Dashboard: React.FC = () => {
       setLoading(false);
     };
 
+    const fetchRecentActivities = async () => {
+      const { data, error } = await supabase
+        .from("inventory_activity")
+        .select(`
+          id,
+          action,
+          item_name,
+          created_at,
+          user_id
+        `)
+        .order("created_at", { ascending: false })
+        .limit(5);
+
+      if (!error && data) {
+        // Fetch user display names
+        const userIds = [...new Set(data.map((a) => a.user_id).filter(Boolean))];
+        const { data: userSettings } = await supabase
+          .from("user_settings")
+          .select("user_id, display_name")
+          .in("user_id", userIds);
+
+        const userMap = new Map(
+          userSettings?.map((u) => [u.user_id, u.display_name]) || []
+        );
+
+        const activitiesWithNames = data.map((activity) => ({
+          ...activity,
+          user_display_name: userMap.get(activity.user_id) || "Utilisateur",
+        }));
+
+        setRecentActivities(activitiesWithNames);
+      }
+    };
+
     fetchStats();
+    fetchRecentActivities();
   }, []);
 
   if (loading) {
@@ -171,6 +208,10 @@ const Dashboard: React.FC = () => {
           />
         </Grid>
       </Grid>
+
+      <Box sx={{ mt: 4 }}>
+        <RecentActivity activities={recentActivities} />
+      </Box>
 
       {/* Error Snackbar */}
       <Snackbar

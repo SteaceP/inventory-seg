@@ -133,5 +133,41 @@ ALTER ROLE anon SET jit = off;
 -- Uncomment the following line if you need real-time updates for the inventory grid/table
 -- ALTER PUBLICATION supabase_realtime ADD TABLE public.inventory;
 
+-- ==========================================
+-- ACTIVITY TRACKING
+-- ==========================================
+
+-- Create inventory_activity table to log all inventory changes
+create table if not exists public.inventory_activity (
+  id uuid default gen_random_uuid() primary key,
+  inventory_id uuid references public.inventory(id) on delete cascade,
+  user_id uuid references auth.users(id) on delete set null,
+  action text not null check (action in ('created', 'updated', 'deleted')),
+  item_name text not null,
+  changes jsonb,
+  created_at timestamp with time zone default now()
+);
+
+-- Enable RLS for activity tracking
+alter table public.inventory_activity enable row level security;
+
+-- Allow authenticated users to view all activity
+drop policy if exists "Allow authenticated to view activity" on public.inventory_activity;
+create policy "Allow authenticated to view activity" on public.inventory_activity
+  for select
+  to authenticated
+  using (true);
+
+-- Allow authenticated users to insert activity logs
+drop policy if exists "Allow authenticated to insert activity" on public.inventory_activity;
+create policy "Allow authenticated to insert activity" on public.inventory_activity
+  for insert
+  to authenticated
+  with check (true);
+
+-- Create index for performance when fetching recent activities
+create index if not exists idx_inventory_activity_created_at 
+  on public.inventory_activity(created_at desc);
+
 
 
