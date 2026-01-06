@@ -12,6 +12,7 @@ import {
 import {
     Edit as EditIcon,
     Delete as DeleteIcon,
+    Exposure as ExposureIcon,
 } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import type { InventoryItem } from "../../types/inventory";
@@ -21,7 +22,7 @@ interface InventoryCardProps {
     isSelected: boolean;
     onToggle: (id: string, checked: boolean) => void;
     onEdit: (item: InventoryItem) => void;
-    onDelete: (id: string) => void;
+    onDelete?: (id: string) => void;
 }
 
 import { useThemeContext } from "../../contexts/ThemeContext";
@@ -130,17 +131,21 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                             <IconButton
                                 size="small"
                                 onClick={() => onEdit(item)}
-                                sx={{ color: "primary.main", mr: 0.5, p: compactView ? 0.5 : 1 }}
+                                sx={{ color: "primary.main", mr: onDelete ? 0.5 : 0, p: compactView ? 0.5 : 1 }}
+                                title={onDelete ? "Modifier" : "Gérer le stock"}
                             >
-                                <EditIcon fontSize={compactView ? "inherit" : "small"} />
+                                {onDelete ? <EditIcon fontSize={compactView ? "inherit" : "small"} /> : <ExposureIcon fontSize={compactView ? "inherit" : "small"} />}
                             </IconButton>
-                            <IconButton
-                                size="small"
-                                onClick={() => onDelete(item.id)}
-                                sx={{ color: "error.main", p: compactView ? 0.5 : 1 }}
-                            >
-                                <DeleteIcon fontSize={compactView ? "inherit" : "small"} />
-                            </IconButton>
+                            {onDelete && (
+                                <IconButton
+                                    size="small"
+                                    onClick={() => onDelete(item.id)}
+                                    sx={{ color: "error.main", p: compactView ? 0.5 : 1 }}
+                                    title="Supprimer"
+                                >
+                                    <DeleteIcon fontSize={compactView ? "inherit" : "small"} />
+                                </IconButton>
+                            )}
                         </Box>
                     </Box>
                 </CardContent>

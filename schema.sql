@@ -12,19 +12,55 @@ create table public.inventory (
 -- Enable Row Level Security
 alter table public.inventory enable row level security;
 
--- Create policy to allow all actions for AUTHENTICATED users only
--- Drop any potentially redundant policies first
+-- Drop old policies
 drop policy if exists "Allow authenticated actions" on public.inventory;
 drop policy if exists "Allow authenticated select" on public.inventory;
 drop policy if exists "Allow authenticated insert" on public.inventory;
 drop policy if exists "Allow authenticated update" on public.inventory;
 drop policy if exists "Allow authenticated delete" on public.inventory;
+drop policy if exists "Admin full access" on public.inventory;
+drop policy if exists "User view access" on public.inventory;
+drop policy if exists "User stock update" on public.inventory;
 
-create policy "Allow authenticated actions" on public.inventory 
-  for all 
-  to authenticated 
-  using (true) 
-  with check (true);
+-- Admin full access policy
+create policy "Admin full access" on public.inventory
+  for all
+  to authenticated
+  using (
+    EXISTS (
+      SELECT 1 FROM public.user_settings
+      WHERE user_id = auth.uid() AND role = 'admin'
+    )
+  )
+  with check (
+    EXISTS (
+      SELECT 1 FROM public.user_settings
+      WHERE user_id = auth.uid() AND role = 'admin'
+    )
+  );
+
+-- User can view all items
+create policy "User view access" on public.inventory
+  for select
+  to authenticated
+  using (true);
+
+-- User can only update stock field
+create policy "User stock update" on public.inventory
+  for update
+  to authenticated
+  using (
+    EXISTS (
+      SELECT 1 FROM public.user_settings
+      WHERE user_id = auth.uid() AND role = 'user'
+    )
+  )
+  with check (
+    EXISTS (
+      SELECT 1 FROM public.user_settings
+      WHERE user_id = auth.uid() AND role = 'user'
+    )
+  );
 
 -- Storage Setup (Production Ready)
 -- 1. Create the bucket
@@ -50,8 +86,17 @@ create table if not exists public.user_settings (
   dark_mode boolean default true,
   compact_view boolean default false,
   avatar_url text,
+  role text default 'admin' check (role in ('admin', 'user')),
   updated_at timestamp with time zone default now()
 );
+
+-- Ensure role column exists (for existing tables)
+do $$ 
+begin 
+  if not exists (select 1 from information_schema.columns where table_name = 'user_settings' and column_name = 'role') then
+    alter table public.user_settings add column role text default 'admin' check (role in ('admin', 'user'));
+  end if; 
+end $$;
 
 -- Storage Setup for Avatars (Run in Supabase SQL Editor if not exists)
 -- insert into storage.buckets (id, name, public) values ('avatars', 'avatars', true);

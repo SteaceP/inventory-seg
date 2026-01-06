@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, CircularProgress, Snackbar, Alert } from "@mui/material";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { supabase } from "../supabaseClient";
+import { useThemeContext } from "../contexts/ThemeContext";
 import BarcodePrinter from "../components/BarcodePrinter";
 import type { InventoryItem } from "../types/inventory";
 
@@ -12,11 +13,13 @@ import InventoryTable from "../components/inventory/InventoryTable";
 import InventoryGrid from "../components/inventory/InventoryGrid";
 import InventoryDialog from "../components/inventory/InventoryDialog";
 import InventoryScanner from "../components/inventory/InventoryScanner";
+import StockAdjustmentDialog from "../components/inventory/StockAdjustmentDialog";
 
 const Inventory: React.FC = () => {
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [stockDialogOpen, setStockDialogOpen] = useState(false);
   const [scanOpen, setScanOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +32,7 @@ const Inventory: React.FC = () => {
   });
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
-
+  const { compactView, role } = useThemeContext();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
@@ -55,6 +58,12 @@ const Inventory: React.FC = () => {
   }, [fetchInventory]);
 
   const handleOpen = React.useCallback((item?: InventoryItem) => {
+    if (role === 'user' && item) {
+      setEditingItem(item);
+      setStockDialogOpen(true);
+      return;
+    }
+
     if (item) {
       setEditingItem(item);
       setFormData(item);
@@ -63,7 +72,7 @@ const Inventory: React.FC = () => {
       setFormData({ name: "", category: "", sku: "", stock: 0, image_url: "" });
     }
     setOpen(true);
-  }, []);
+  }, [role]);
 
   const handleClose = () => {
     setOpen(false);
@@ -159,6 +168,42 @@ const Inventory: React.FC = () => {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleStockSave = async (itemId: string, newStock: number) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      const { error } = await supabase
+        .from("inventory")
+        .update({ stock: newStock })
+        .eq("id", itemId);
+
+      if (error) throw error;
+
+      // Log the stock update activity
+      if (user) {
+        const item = items.find(i => i.id === itemId);
+        await supabase.from("inventory_activity").insert({
+          inventory_id: itemId,
+          user_id: user.id,
+          action: "updated",
+          item_name: item?.name || "Unknown Item",
+          changes: { stock: newStock, old_stock: item?.stock },
+        });
+      }
+
+      const updatedItem = items.find(i => i.id === itemId);
+      if (updatedItem) {
+        checkLowStockAndNotify({ ...updatedItem, stock: newStock });
+      }
+
+      setStockDialogOpen(false);
+      fetchInventory();
+    } catch (err) {
+      console.error("Error updating stock:", err);
+      setError("Erreur lors de la mise à jour du stock.");
     }
   };
 
@@ -322,7 +367,7 @@ const Inventory: React.FC = () => {
         selectedCount={selectedItems.size}
         onPrint={() => window.print()}
         onScan={() => setScanOpen(true)}
-        onAdd={() => handleOpen()}
+        onAdd={role === 'admin' ? () => handleOpen() : undefined}
       />
 
       <InventorySearch
@@ -337,7 +382,7 @@ const Inventory: React.FC = () => {
           onToggleAll={toggleAll}
           onToggleItem={toggleItem}
           onEdit={handleOpen}
-          onDelete={handleDelete}
+          onDelete={role === 'admin' ? handleDelete : undefined}
         />
       ) : (
         <InventoryGrid
@@ -345,7 +390,7 @@ const Inventory: React.FC = () => {
           selectedItems={selectedItems}
           onToggleItem={toggleItem}
           onEdit={handleOpen}
-          onDelete={handleDelete}
+          onDelete={role === 'admin' ? handleDelete : undefined}
         />
       )}
 
@@ -360,6 +405,15 @@ const Inventory: React.FC = () => {
         onGenerateSKU={generateSKU}
         onImageUpload={handleImageUpload}
         getBarcodeFormat={getBarcodeFormat}
+        role={role}
+      />
+
+      <StockAdjustmentDialog
+        open={stockDialogOpen}
+        item={editingItem}
+        isMobile={isMobile}
+        onClose={() => setStockDialogOpen(false)}
+        onSave={handleStockSave}
       />
 
       <InventoryScanner

@@ -11,7 +11,7 @@ interface InventoryHeaderProps {
     selectedCount: number;
     onPrint: () => void;
     onScan: () => void;
-    onAdd: () => void;
+    onAdd?: () => void;
 }
 
 const InventoryHeader: React.FC<InventoryHeaderProps> = ({
@@ -66,14 +66,16 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
                 >
                     Scanner
                 </Button>
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    fullWidth={isMobile}
-                    onClick={onAdd}
-                >
-                    Ajouter
-                </Button>
+                {onAdd && (
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        fullWidth={isMobile}
+                        onClick={onAdd}
+                    >
+                        Ajouter
+                    </Button>
+                )}
             </Box>
         </Box>
     );

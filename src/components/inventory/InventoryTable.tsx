@@ -15,6 +15,7 @@ import {
     Edit as EditIcon,
     Delete as DeleteIcon,
     Image as ImageIcon,
+    Exposure as ExposureIcon,
 } from "@mui/icons-material";
 import type { InventoryItem } from "../../types/inventory";
 
@@ -132,17 +133,21 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                                     <IconButton
                                         size="small"
                                         onClick={() => onEdit(item)}
-                                        sx={{ color: "primary.main", mr: 1 }}
+                                        sx={{ color: "primary.main", mr: onDelete ? 1 : 0 }}
+                                        title={onDelete ? "Modifier" : "Gérer le stock"}
                                     >
-                                        <EditIcon fontSize="small" />
+                                        {onDelete ? <EditIcon fontSize="small" /> : <ExposureIcon fontSize="small" />}
                                     </IconButton>
-                                    <IconButton
-                                        size="small"
-                                        onClick={() => onDelete(item.id)}
-                                        sx={{ color: "error.main" }}
-                                    >
-                                        <DeleteIcon fontSize="small" />
-                                    </IconButton>
+                                    {onDelete && (
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => onDelete(item.id)}
+                                            sx={{ color: "error.main" }}
+                                            title="Supprimer"
+                                        >
+                                            <DeleteIcon fontSize="small" />
+                                        </IconButton>
+                                    )}
                                 </Box>
                             </TableCell>
                         </TableRow>

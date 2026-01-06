@@ -30,6 +30,7 @@ interface InventoryDialogProps {
     onGenerateSKU: () => void;
     onImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
     getBarcodeFormat: (sku: string) => any;
+    role?: string;
 }
 
 const InventoryDialog: React.FC<InventoryDialogProps> = ({
@@ -43,7 +44,10 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
     onGenerateSKU,
     onImageUpload,
     getBarcodeFormat,
+    role = "user",
 }) => {
+    const isAdmin = role === "admin";
+
     return (
         <Dialog
             open={open}
@@ -81,7 +85,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                             transition: "border-color 0.2s",
                             "&:hover": { borderColor: "primary.main" },
                         }}
-                        onClick={() => document.getElementById("image-upload")?.click()}
+                        onClick={() => isAdmin && document.getElementById("image-upload")?.click()}
                     >
                         {formData.image_url ? (
                             <>
@@ -90,29 +94,32 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                                     src={formData.image_url}
                                     sx={{ width: "100%", height: "100%", objectFit: "cover" }}
                                 />
-                                <IconButton
-                                    sx={{
-                                        position: "absolute",
-                                        top: 8,
-                                        right: 8,
-                                        bgcolor: "rgba(0,0,0,0.5)",
-                                        "&:hover": { bgcolor: "rgba(0,0,0,0.7)" },
-                                    }}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        onFormDataChange({ ...formData, image_url: "" });
-                                    }}
-                                >
-                                    <DeleteIcon sx={{ color: "white" }} />
-                                </IconButton>
+
+                                {isAdmin && (
+                                    <IconButton
+                                        sx={{
+                                            position: "absolute",
+                                            top: 8,
+                                            right: 8,
+                                            bgcolor: "rgba(0,0,0,0.5)",
+                                            "&:hover": { bgcolor: "rgba(0,0,0,0.7)" },
+                                        }}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onFormDataChange({ ...formData, image_url: "" });
+                                        }}
+                                    >
+                                        <DeleteIcon sx={{ color: "white" }} />
+                                    </IconButton>
+                                )}
                             </>
                         ) : (
-                            <>
-                                <AddPhotoIcon sx={{ fontSize: 40, color: "text.secondary", mb: 1 }} />
-                                <Typography variant="body2" color="text.secondary">
-                                    Cliquez pour télécharger une photo
+                            <Box sx={{ textAlign: "center", color: "text.secondary" }}>
+                                <AddPhotoIcon sx={{ fontSize: 40, mb: 1, color: isAdmin ? "primary.main" : "text.disabled" }} />
+                                <Typography variant="body2">
+                                    {isAdmin ? "Cliquez ou glissez une image ici" : "Pas d'image"}
                                 </Typography>
-                            </>
+                            </Box>
                         )}
                         <input
                             type="file"
@@ -120,17 +127,38 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                             hidden
                             accept="image/*"
                             onChange={onImageUpload}
+                            disabled={!isAdmin}
                         />
                     </Box>
 
-                    <Box sx={{ display: "flex", gap: 1, alignItems: "flex-start" }}>
+                    <TextField
+                        autoFocus
+                        label="Nom de l'article"
+                        fullWidth
+                        value={formData.name || ""}
+                        onChange={(e) => onFormDataChange({ name: e.target.value })}
+                        disabled={!isAdmin}
+                        sx={{
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": { borderColor: "divider" },
+                            },
+                        }}
+                        InputLabelProps={{ sx: { color: "text.secondary" } }}
+                    />
+
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: isMobile ? "column" : "row",
+                            gap: 2,
+                        }}
+                    >
                         <TextField
-                            label="SKU / Code-barres"
+                            label="Catégorie"
                             fullWidth
-                            value={formData.sku || ""}
-                            onChange={(e) =>
-                                onFormDataChange({ ...formData, sku: e.target.value })
-                            }
+                            value={formData.category || ""}
+                            onChange={(e) => onFormDataChange({ category: e.target.value })}
+                            disabled={!isAdmin}
                             sx={{
                                 "& .MuiOutlinedInput-root": {
                                     "& fieldset": { borderColor: "divider" },
@@ -138,14 +166,51 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                             }}
                             InputLabelProps={{ sx: { color: "text.secondary" } }}
                         />
-                        <Tooltip title="Générer un SKU">
-                            <IconButton
-                                onClick={onGenerateSKU}
-                                sx={{ mt: 1, color: "primary.main" }}
-                            >
-                                <RefreshIcon />
-                            </IconButton>
-                        </Tooltip>
+                        <TextField
+                            label="Stock"
+                            type="number"
+                            fullWidth
+                            value={formData.stock || ""}
+                            onChange={(e) => onFormDataChange({ stock: parseInt(e.target.value) || 0 })}
+                            sx={{
+                                "& .MuiOutlinedInput-root": {
+                                    "& fieldset": { borderColor: "divider" },
+                                },
+                            }}
+                            InputLabelProps={{ sx: { color: "text.secondary" } }}
+                        />
+                    </Box>
+
+                    <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
+                        <TextField
+                            label="Code-barres (SKU)"
+                            fullWidth
+                            value={formData.sku || ""}
+                            onChange={(e) => onFormDataChange({ sku: e.target.value })}
+                            disabled={!isAdmin}
+                            sx={{
+                                "& .MuiOutlinedInput-root": {
+                                    "& fieldset": { borderColor: "divider" },
+                                },
+                            }}
+                            InputLabelProps={{ sx: { color: "text.secondary" } }}
+                        />
+                        {isAdmin && (
+                            <Tooltip title="Générer un SKU aléatoire">
+                                <IconButton
+                                    onClick={onGenerateSKU}
+                                    sx={{
+                                        border: "1px solid",
+                                        borderColor: "divider",
+                                        borderRadius: "4px",
+                                        width: 56,
+                                        height: 56,
+                                    }}
+                                >
+                                    <RefreshIcon />
+                                </IconButton>
+                            </Tooltip>
+                        )}
                     </Box>
 
                     {formData.sku && (
@@ -170,60 +235,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                         </Box>
                     )}
 
-                    <TextField
-                        label="Nom"
-                        fullWidth
-                        value={formData.name || ""}
-                        onChange={(e) =>
-                            onFormDataChange({ ...formData, name: e.target.value })
-                        }
-                        sx={{
-                            "& .MuiOutlinedInput-root": {
-                                "& fieldset": { borderColor: "divider" },
-                            },
-                        }}
-                        InputLabelProps={{ sx: { color: "text.secondary" } }}
-                    />
-                    <TextField
-                        label="Catégorie"
-                        fullWidth
-                        value={formData.category || ""}
-                        onChange={(e) =>
-                            onFormDataChange({ ...formData, category: e.target.value })
-                        }
-                        sx={{
-                            "& .MuiOutlinedInput-root": {
-                                "& fieldset": { borderColor: "divider" },
-                            },
-                        }}
-                        InputLabelProps={{ sx: { color: "text.secondary" } }}
-                    />
-                    <Box
-                        sx={{
-                            display: "flex",
-                            flexDirection: isMobile ? "column" : "row",
-                            gap: 2,
-                        }}
-                    >
-                        <TextField
-                            label="Stock"
-                            type="number"
-                            fullWidth
-                            value={formData.stock || 0}
-                            onChange={(e) =>
-                                onFormDataChange({
-                                    ...formData,
-                                    stock: parseInt(e.target.value) || 0,
-                                })
-                            }
-                            sx={{
-                                "& .MuiOutlinedInput-root": {
-                                    "& fieldset": { borderColor: "divider" },
-                                },
-                            }}
-                            InputLabelProps={{ sx: { color: "text.secondary" } }}
-                        />
-                    </Box>
+
                 </Box>
             </DialogContent>
             <DialogActions sx={{ p: 3 }}>
@@ -234,7 +246,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                     Enregistrer
                 </Button>
             </DialogActions>
-        </Dialog>
+        </Dialog >
     );
 };
 

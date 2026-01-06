@@ -6,6 +6,7 @@ interface ThemeContextType {
     compactView: boolean;
     displayName: string;
     avatarUrl: string;
+    role: string;
     toggleDarkMode: (enabled: boolean) => void;
     toggleCompactView: (enabled: boolean) => void;
     setUserProfile: (profile: { displayName?: string; avatarUrl?: string }) => void;
@@ -18,6 +19,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [compactView, setCompactView] = useState(false);
     const [displayName, setDisplayName] = useState("");
     const [avatarUrl, setAvatarUrl] = useState("");
+    const [role, setRole] = useState("user");
     const [userId, setUserId] = useState<string | null>(null);
 
     useEffect(() => {
@@ -27,7 +29,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 setUserId(session.user.id);
                 const { data: settings } = await supabase
                     .from("user_settings")
-                    .select("dark_mode, compact_view, display_name, avatar_url")
+                    .select("dark_mode, compact_view, display_name, avatar_url, role")
                     .eq("user_id", session.user.id)
                     .single();
 
@@ -36,6 +38,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                     setCompactView(settings.compact_view ?? false);
                     setDisplayName(settings.display_name || "");
                     setAvatarUrl(settings.avatar_url || "");
+                    setRole(settings.role || "user");
                 }
             }
         };
@@ -46,7 +49,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             setUserId(session?.user?.id || null);
             if (session?.user) {
                 supabase.from("user_settings")
-                    .select("dark_mode, compact_view, display_name, avatar_url")
+                    .select("dark_mode, compact_view, display_name, avatar_url, role")
                     .eq("user_id", session.user.id)
                     .single()
                     .then(({ data }) => {
@@ -55,6 +58,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                             setCompactView(data.compact_view ?? false);
                             setDisplayName(data.display_name || "");
                             setAvatarUrl(data.avatar_url || "");
+                            setRole(data.role || "user");
                         }
                     });
             }
@@ -95,6 +99,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             compactView,
             displayName,
             avatarUrl,
+            role,
             toggleDarkMode,
             toggleCompactView,
             setUserProfile
