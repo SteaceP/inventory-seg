@@ -159,7 +159,7 @@ const Layout: React.FC = () => {
             </Tooltip>
           ))}
         </List>
-        <Divider sx={{ my: 2, borderColor: "#30363d" }} />
+        <Divider sx={{ my: 2, borderColor: "divider" }} />
         <List>
           <Tooltip
             title={collapsed && !isMobile ? "Logout" : ""}
@@ -210,9 +210,10 @@ const Layout: React.FC = () => {
           position="fixed"
           sx={{
             width: "100%",
-            background: "rgba(22, 27, 34, 0.8)",
+            background: (theme) => theme.palette.mode === "dark" ? "rgba(22, 27, 34, 0.8)" : "#ffffff",
             backdropFilter: "blur(10px)",
-            borderBottom: "1px solid #30363d",
+            borderBottom: "1px solid",
+            borderColor: "divider",
             boxShadow: "none",
           }}
         >
@@ -259,9 +260,10 @@ const Layout: React.FC = () => {
               "& .MuiDrawer-paper": {
                 boxSizing: "border-box",
                 width: drawerWidth,
-                background: "#0d1117",
-                borderRight: "1px solid #30363d",
-                color: "#c9d1d9",
+                bgcolor: "background.paper",
+                borderRight: "1px solid",
+                borderColor: "divider",
+                color: "text.primary",
               },
             }}
           >
@@ -275,10 +277,11 @@ const Layout: React.FC = () => {
               "& .MuiDrawer-paper": {
                 boxSizing: "border-box",
                 width: currentDrawerWidth,
-                background: "rgba(22, 27, 34, 0.8)",
+                background: (theme) => theme.palette.mode === "dark" ? "rgba(22, 27, 34, 0.8)" : "#ffffff",
                 backdropFilter: "blur(10px)",
-                borderRight: "1px solid #30363d",
-                color: "#c9d1d9",
+                borderRight: "1px solid",
+                borderColor: "divider",
+                color: "text.primary",
                 transition: "width 0.2s ease-in-out",
                 overflowX: "hidden",
               },

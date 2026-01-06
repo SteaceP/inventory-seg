@@ -27,9 +27,10 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => (
   <Paper
     sx={{
       p: 3,
-      background: "rgba(22, 27, 34, 0.7)",
+      background: (theme) => theme.palette.mode === "dark" ? "rgba(22, 27, 34, 0.7)" : "#ffffff",
       backdropFilter: "blur(10px)",
-      border: "1px solid #30363d",
+      border: "1px solid",
+      borderColor: "divider",
       borderRadius: "12px",
     }}
   >

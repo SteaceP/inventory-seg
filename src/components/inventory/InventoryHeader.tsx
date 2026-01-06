@@ -43,11 +43,14 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
                         fullWidth={isMobile}
                         onClick={onPrint}
                         sx={{
-                            border: "1px solid #30363d",
+                            border: "1px solid",
+                            borderColor: "divider",
                             color: "text.primary",
                             "&:hover": {
                                 borderColor: "primary.main",
-                                bgcolor: "rgba(88, 166, 255, 0.1)",
+                                bgcolor: (theme) => theme.palette.mode === "dark"
+                                    ? "rgba(2, 125, 111, 0.1)"
+                                    : "rgba(2, 125, 111, 0.05)",
                             },
                         }}
                     >
@@ -59,7 +62,7 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
                     startIcon={<ScanIcon />}
                     fullWidth={isMobile}
                     onClick={onScan}
-                    sx={{ border: "1px solid #30363d", color: "text.primary" }}
+                    sx={{ border: "1px solid", borderColor: "divider", color: "text.primary" }}
                 >
                     Scanner
                 </Button>

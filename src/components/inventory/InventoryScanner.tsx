@@ -88,9 +88,10 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
             disableRestoreFocus
             PaperProps={{
                 sx: {
-                    bgcolor: "#0d1117",
-                    color: "white",
-                    border: "1px solid #30363d",
+                    bgcolor: "background.paper",
+                    color: "text.primary",
+                    border: "1px solid",
+                    borderColor: "divider",
                     borderRadius: "20px",
                     overflow: "hidden",
                 },
@@ -123,8 +124,11 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
                         margin: "0 auto",
                         borderRadius: "16px",
                         overflow: "hidden",
-                        boxShadow: "0 0 20px rgba(0,0,0,0.5)",
-                        border: "2px solid #30363d",
+                        boxShadow: (theme) => theme.palette.mode === "dark"
+                            ? "0 0 20px rgba(0,0,0,0.5)"
+                            : "0 4px 20px rgba(0,0,0,0.1)",
+                        border: "1px solid",
+                        borderColor: "divider",
                     }}
                 >
                     <Box id="reader" sx={{ width: "100%", height: "100%" }} />
@@ -239,7 +243,7 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
                     sx={{
                         mt: 4,
                         color: "text.secondary",
-                        borderColor: "#30363d",
+                        borderColor: "divider",
                         borderRadius: "10px",
                         px: 4,
                     }}

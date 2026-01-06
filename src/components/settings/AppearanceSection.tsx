@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Paper, Typography, FormControlLabel, Switch } from "@mui/material";
 import { Palette as PaletteIcon } from "@mui/icons-material";
+import { useThemeContext } from "../../contexts/ThemeContext";
 
 interface AppearanceSectionProps {
     darkMode: boolean;
@@ -15,13 +16,20 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
     onDarkModeChange,
     onCompactViewChange,
 }) => {
+    const { toggleDarkMode } = useThemeContext();
+
+    const handleThemeToggle = (enabled: boolean) => {
+        onDarkModeChange(enabled);
+        toggleDarkMode(enabled);
+    };
     return (
         <Paper
             sx={{
                 p: 3,
-                background: "rgba(22, 27, 34, 0.7)",
+                background: (theme) => theme.palette.mode === "dark" ? "rgba(22, 27, 34, 0.7)" : "#ffffff",
                 backdropFilter: "blur(10px)",
-                border: "1px solid #30363d",
+                border: "1px solid",
+                borderColor: "divider",
                 borderRadius: "12px",
                 height: "100%",
             }}
@@ -38,7 +46,7 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
                     control={
                         <Switch
                             checked={darkMode}
-                            onChange={(e) => onDarkModeChange(e.target.checked)}
+                            onChange={(e) => handleThemeToggle(e.target.checked)}
                             color="primary"
                         />
                     }

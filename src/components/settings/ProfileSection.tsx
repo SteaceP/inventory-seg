@@ -23,9 +23,10 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
         <Paper
             sx={{
                 p: 3,
-                background: "rgba(22, 27, 34, 0.7)",
+                background: (theme) => theme.palette.mode === "dark" ? "rgba(22, 27, 34, 0.7)" : "#ffffff",
                 backdropFilter: "blur(10px)",
-                border: "1px solid #30363d",
+                border: "1px solid",
+                borderColor: "divider",
                 borderRadius: "12px",
                 height: "100%",
             }}
@@ -58,8 +59,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
                     onChange={(e) => onDisplayNameChange(e.target.value)}
                     sx={{
                         "& .MuiOutlinedInput-root": {
-                            color: "white",
-                            "& fieldset": { borderColor: "#30363d" },
+                            "& fieldset": { borderColor: "divider" },
                         },
                     }}
                     InputLabelProps={{ sx: { color: "text.secondary" } }}
@@ -72,8 +72,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
                     disabled
                     sx={{
                         "& .MuiOutlinedInput-root": {
-                            color: "white",
-                            "& fieldset": { borderColor: "#30363d" },
+                            "& fieldset": { borderColor: "divider" },
                         },
                     }}
                     InputLabelProps={{ sx: { color: "text.secondary" } }}

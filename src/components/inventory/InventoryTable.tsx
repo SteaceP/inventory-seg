@@ -39,9 +39,10 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
         <TableContainer
             component={Paper}
             sx={{
-                background: "rgba(22, 27, 34, 0.7)",
+                background: (theme) => theme.palette.mode === "dark" ? "rgba(22, 27, 34, 0.7)" : "#ffffff",
                 backdropFilter: "blur(10px)",
-                border: "1px solid #30363d",
+                border: "1px solid",
+                borderColor: "divider",
                 borderRadius: "12px",
                 width: "100%",
                 overflowX: "auto",
@@ -50,7 +51,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell padding="checkbox" sx={{ borderBottom: "1px solid #30363d" }}>
+                        <TableCell padding="checkbox" sx={{ borderBottom: "1px solid", borderColor: "divider" }}>
                             <Checkbox
                                 indeterminate={
                                     selectedItems.size > 0 && selectedItems.size < items.length
@@ -60,22 +61,22 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                                 sx={{ color: "text.secondary" }}
                             />
                         </TableCell>
-                        <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid #30363d" }}>
+                        <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider" }}>
                             Image
                         </TableCell>
-                        <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid #30363d" }}>
+                        <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider" }}>
                             SKU
                         </TableCell>
-                        <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid #30363d" }}>
+                        <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider" }}>
                             Nom
                         </TableCell>
-                        <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid #30363d" }}>
+                        <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider" }}>
                             Catégorie
                         </TableCell>
-                        <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid #30363d" }}>
+                        <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider" }}>
                             Stock
                         </TableCell>
-                        <TableCell align="right" sx={{ color: "text.secondary", borderBottom: "1px solid #30363d" }}>
+                        <TableCell align="right" sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider" }}>
                             Actions
                         </TableCell>
                     </TableRow>
@@ -83,14 +84,14 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                 <TableBody>
                     {items.map((item) => (
                         <TableRow key={item.id} selected={selectedItems.has(item.id)}>
-                            <TableCell padding="checkbox" sx={{ borderBottom: "1px solid #30363d" }}>
+                            <TableCell padding="checkbox" sx={{ borderBottom: "1px solid", borderColor: "divider" }}>
                                 <Checkbox
                                     checked={selectedItems.has(item.id)}
                                     onChange={(e) => onToggleItem(item.id, e.target.checked)}
                                     sx={{ color: "text.secondary" }}
                                 />
                             </TableCell>
-                            <TableCell sx={{ borderBottom: "1px solid #30363d", width: 60 }}>
+                            <TableCell sx={{ borderBottom: "1px solid", borderColor: "divider", width: 60 }}>
                                 {item.image_url ? (
                                     <Box
                                         component="img"
@@ -100,7 +101,8 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                                             height: 40,
                                             borderRadius: "8px",
                                             objectFit: "cover",
-                                            border: "1px solid #30363d",
+                                            border: "1px solid",
+                                            borderColor: "divider",
                                         }}
                                     />
                                 ) : (
@@ -109,24 +111,25 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                                             width: 40,
                                             height: 40,
                                             borderRadius: "8px",
-                                            bgcolor: "rgba(255,255,255,0.05)",
+                                            bgcolor: "action.hover",
                                             display: "flex",
                                             alignItems: "center",
                                             justifyContent: "center",
-                                            border: "1px solid #30363d",
+                                            border: "1px solid",
+                                            borderColor: "divider",
                                         }}
                                     >
                                         <ImageIcon sx={{ color: "text.secondary", fontSize: 20 }} />
                                     </Box>
                                 )}
                             </TableCell>
-                            <TableCell sx={{ borderBottom: "1px solid #30363d", fontFamily: "monospace" }}>
+                            <TableCell sx={{ borderBottom: "1px solid", borderColor: "divider", fontFamily: "monospace" }}>
                                 {item.sku || "-"}
                             </TableCell>
-                            <TableCell sx={{ borderBottom: "1px solid #30363d" }}>{item.name}</TableCell>
-                            <TableCell sx={{ borderBottom: "1px solid #30363d" }}>{item.category}</TableCell>
-                            <TableCell sx={{ borderBottom: "1px solid #30363d" }}>{item.stock}</TableCell>
-                            <TableCell align="right" sx={{ borderBottom: "1px solid #30363d" }}>
+                            <TableCell sx={{ borderBottom: "1px solid", borderColor: "divider" }}>{item.name}</TableCell>
+                            <TableCell sx={{ borderBottom: "1px solid", borderColor: "divider" }}>{item.category}</TableCell>
+                            <TableCell sx={{ borderBottom: "1px solid", borderColor: "divider" }}>{item.stock}</TableCell>
+                            <TableCell align="right" sx={{ borderBottom: "1px solid", borderColor: "divider" }}>
                                 <IconButton
                                     size="small"
                                     onClick={() => onEdit(item)}

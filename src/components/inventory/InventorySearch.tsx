@@ -18,9 +18,8 @@ const InventorySearch: React.FC<InventorySearchProps> = ({ value, onChange }) =>
                 onChange={(e) => onChange(e.target.value)}
                 sx={{
                     "& .MuiOutlinedInput-root": {
-                        bgcolor: "rgba(22, 27, 34, 0.7)",
-                        color: "white",
-                        "& fieldset": { borderColor: "#30363d" },
+                        bgcolor: (theme) => theme.palette.mode === "dark" ? "rgba(22, 27, 34, 0.7)" : "#ffffff",
+                        "& fieldset": { borderColor: "divider" },
                         "&:hover fieldset": { borderColor: "primary.main" },
                     },
                 }}

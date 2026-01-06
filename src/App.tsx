@@ -54,9 +54,9 @@ const PageLoader = () => (
   </Box>
 );
 
-const darkTheme = createTheme({
+const getTheme = (mode: "light" | "dark") => createTheme({
   palette: {
-    mode: "dark",
+    mode,
     primary: {
       main: "#027d6f", // Emerald Teal from logo
       light: "#4a9c8b",
@@ -66,18 +66,25 @@ const darkTheme = createTheme({
       main: "#1a748b", // Steel Blue from logo
     },
     background: {
-      default: "#0d1117",
-      paper: "#161b22",
+      default: mode === "dark" ? "#0d1117" : "#f6f8fa",
+      paper: mode === "dark" ? "#161b22" : "#ffffff",
     },
     text: {
-      primary: "#c9d1d9",
-      secondary: "#8b949e",
+      primary: mode === "dark" ? "#c9d1d9" : "#1F2328",
+      secondary: mode === "dark" ? "#8b949e" : "#636c76",
     },
   },
   typography: {
     fontFamily: "Inter, system-ui, sans-serif",
   },
   components: {
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: "none",
+        },
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {
@@ -89,16 +96,22 @@ const darkTheme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          backgroundColor: "#0d1117",
+          backgroundColor: mode === "dark" ? "#0d1117" : "#f6f8fa",
+          backgroundImage: mode === "dark"
+            ? "radial-gradient(circle at top right, rgba(2, 125, 111, 0.05), transparent 400px), radial-gradient(circle at bottom left, rgba(13, 87, 106, 0.05), transparent 400px)"
+            : "radial-gradient(circle at top right, rgba(2, 125, 111, 0.03), transparent 400px), radial-gradient(circle at bottom left, rgba(13, 87, 106, 0.03), transparent 400px)",
         },
       },
     },
   },
 });
 
-function App() {
+import { ThemeProvider as CustomThemeProvider, useThemeContext } from "./contexts/ThemeContext";
+
+const AppContent = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const { darkMode } = useThemeContext();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -115,9 +128,11 @@ function App() {
     return () => subscription.unsubscribe();
   }, []);
 
+  const theme = getTheme(darkMode ? "dark" : "light");
+
   if (loading) {
     return (
-      <ThemeProvider theme={darkTheme}>
+      <ThemeProvider theme={theme}>
         <CssBaseline />
         <Box
           sx={{
@@ -145,14 +160,14 @@ function App() {
             }}
             alt="Logo"
           />
-          <CircularProgress size={24} />
+          <CircularProgress size={24} color="primary" />
         </Box>
       </ThemeProvider>
     );
   }
 
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
         <Suspense fallback={<PageLoader />}>
@@ -173,6 +188,14 @@ function App() {
         </Suspense>
       </Router>
     </ThemeProvider>
+  );
+};
+
+function App() {
+  return (
+    <CustomThemeProvider>
+      <AppContent />
+    </CustomThemeProvider>
   );
 }
 

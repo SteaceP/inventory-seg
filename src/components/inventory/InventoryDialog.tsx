@@ -51,9 +51,10 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
             fullScreen={isMobile}
             PaperProps={{
                 sx: {
-                    bgcolor: "#0d1117",
-                    color: "white",
-                    border: isMobile ? "none" : "1px solid #30363d",
+                    bgcolor: "background.paper",
+                    color: "text.primary",
+                    border: isMobile ? "none" : "1px solid",
+                    borderColor: "divider",
                     borderRadius: isMobile ? 0 : "12px",
                     minWidth: isMobile ? "100%" : "450px",
                 },
@@ -68,7 +69,8 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                             width: "100%",
                             height: 200,
                             borderRadius: "12px",
-                            border: "2px dashed #30363d",
+                            border: "2px dashed",
+                            borderColor: "divider",
                             display: "flex",
                             flexDirection: "column",
                             alignItems: "center",
@@ -131,8 +133,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                             }
                             sx={{
                                 "& .MuiOutlinedInput-root": {
-                                    color: "white",
-                                    "& fieldset": { borderColor: "#30363d" },
+                                    "& fieldset": { borderColor: "divider" },
                                 },
                             }}
                             InputLabelProps={{ sx: { color: "text.secondary" } }}
@@ -178,8 +179,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                         }
                         sx={{
                             "& .MuiOutlinedInput-root": {
-                                color: "white",
-                                "& fieldset": { borderColor: "#30363d" },
+                                "& fieldset": { borderColor: "divider" },
                             },
                         }}
                         InputLabelProps={{ sx: { color: "text.secondary" } }}
@@ -193,8 +193,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                         }
                         sx={{
                             "& .MuiOutlinedInput-root": {
-                                color: "white",
-                                "& fieldset": { borderColor: "#30363d" },
+                                "& fieldset": { borderColor: "divider" },
                             },
                         }}
                         InputLabelProps={{ sx: { color: "text.secondary" } }}
@@ -219,8 +218,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                             }
                             sx={{
                                 "& .MuiOutlinedInput-root": {
-                                    color: "white",
-                                    "& fieldset": { borderColor: "#30363d" },
+                                    "& fieldset": { borderColor: "divider" },
                                 },
                             }}
                             InputLabelProps={{ sx: { color: "text.secondary" } }}
