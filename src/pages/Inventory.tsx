@@ -3,6 +3,7 @@ import { Box, CircularProgress, Snackbar, Alert } from "@mui/material";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { supabase } from "../supabaseClient";
 import { useThemeContext } from "../contexts/ThemeContext";
+import { useInventoryContext } from "../contexts/InventoryContext";
 import BarcodePrinter from "../components/BarcodePrinter";
 import type { InventoryItem } from "../types/inventory";
 
@@ -16,8 +17,8 @@ import InventoryScanner from "../components/inventory/InventoryScanner";
 import StockAdjustmentDialog from "../components/inventory/StockAdjustmentDialog";
 
 const Inventory: React.FC = () => {
-  const [items, setItems] = useState<InventoryItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { items, loading: inventoryLoading, refreshInventory } = useInventoryContext();
+  const [actionLoading, setActionLoading] = useState(false); // For local actions like upload/save
   const [open, setOpen] = useState(false);
   const [stockDialogOpen, setStockDialogOpen] = useState(false);
   const [scanOpen, setScanOpen] = useState(false);
@@ -37,25 +38,7 @@ const Inventory: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
-  const fetchInventory = React.useCallback(async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("inventory")
-      .select("*")
-      .order("category")
-      .order("name");
 
-    if (error) {
-      setError("Le chargement de l'inventaire a échoué. Veuillez réessayer.");
-    } else {
-      setItems(data || []);
-    }
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    fetchInventory();
-  }, [fetchInventory]);
 
   const handleOpen = React.useCallback((item?: InventoryItem) => {
     if (role === 'user' && item) {
@@ -147,7 +130,7 @@ const Inventory: React.FC = () => {
     if (!file) return;
 
     try {
-      setLoading(true);
+      setActionLoading(true);
       const fileExt = file.name.split(".").pop();
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `${fileName}`;
@@ -200,7 +183,7 @@ const Inventory: React.FC = () => {
       }
 
       setStockDialogOpen(false);
-      fetchInventory();
+      refreshInventory();
     } catch (err) {
       console.error("Error updating stock:", err);
       setError("Erreur lors de la mise à jour du stock.");
@@ -242,7 +225,7 @@ const Inventory: React.FC = () => {
             user_id: user.id,
             action: "updated",
             item_name: sanitizedData.name,
-            changes: sanitizedData,
+            changes: { ...sanitizedData, old_stock: editingItem.stock },
           });
         }
       } else {
@@ -271,7 +254,7 @@ const Inventory: React.FC = () => {
 
       checkLowStockAndNotify(sanitizedData);
       handleClose();
-      fetchInventory();
+      refreshInventory();
     } catch (err) {
       console.error("Error saving item:", err);
       setError("Une erreur est survenue. Veuillez réessayer.");
@@ -296,10 +279,10 @@ const Inventory: React.FC = () => {
               user_id: user.id,
               action: "deleted",
               item_name: item.name,
-              changes: null,
+              changes: { stock: item.stock },
             });
           }
-          fetchInventory();
+          refreshInventory();
         }
       } catch (err) {
         console.error("Error deleting item:", err);
@@ -352,7 +335,7 @@ const Inventory: React.FC = () => {
     );
   });
 
-  if (loading && items.length === 0) {
+  if (inventoryLoading || actionLoading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
         <CircularProgress />

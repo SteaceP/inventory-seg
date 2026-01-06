@@ -137,6 +137,7 @@ const getTheme = (mode: "light" | "dark", compact: boolean) => createTheme({
 });
 
 import { ThemeProvider as CustomThemeProvider, useThemeContext } from "./contexts/ThemeContext";
+import { InventoryProvider } from "./contexts/InventoryContext";
 
 const AppContent = () => {
   const [session, setSession] = useState<Session | null>(null);
@@ -208,7 +209,15 @@ const AppContent = () => {
             />
             <Route
               path="/"
-              element={session ? <Layout /> : <Navigate to="/login" />}
+              element={
+                session ? (
+                  <InventoryProvider>
+                    <Layout />
+                  </InventoryProvider>
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
             >
               <Route index element={<Dashboard />} />
               <Route path="inventory" element={<Inventory />} />

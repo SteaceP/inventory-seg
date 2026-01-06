@@ -136,7 +136,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                                         sx={{ color: "primary.main", mr: onDelete ? 1 : 0 }}
                                         title={onDelete ? "Modifier" : "Gérer le stock"}
                                     >
-                                        {onDelete ? <EditIcon fontSize="small" /> : <ExposureIcon fontSize="small" />}
+                                        {onDelete ? <EditIcon fontSize="small" /> : <ExposureIcon sx={{ fontSize: "3.75rem" }} />}
                                     </IconButton>
                                     {onDelete && (
                                         <IconButton

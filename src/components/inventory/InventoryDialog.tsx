@@ -136,7 +136,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                         label="Nom de l'article"
                         fullWidth
                         value={formData.name || ""}
-                        onChange={(e) => onFormDataChange({ name: e.target.value })}
+                        onChange={(e) => onFormDataChange({ ...formData, name: e.target.value })}
                         disabled={!isAdmin}
                         sx={{
                             "& .MuiOutlinedInput-root": {
@@ -157,7 +157,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                             label="Catégorie"
                             fullWidth
                             value={formData.category || ""}
-                            onChange={(e) => onFormDataChange({ category: e.target.value })}
+                            onChange={(e) => onFormDataChange({ ...formData, category: e.target.value })}
                             disabled={!isAdmin}
                             sx={{
                                 "& .MuiOutlinedInput-root": {
@@ -171,7 +171,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                             type="number"
                             fullWidth
                             value={formData.stock || ""}
-                            onChange={(e) => onFormDataChange({ stock: parseInt(e.target.value) || 0 })}
+                            onChange={(e) => onFormDataChange({ ...formData, stock: parseInt(e.target.value) || 0 })}
                             sx={{
                                 "& .MuiOutlinedInput-root": {
                                     "& fieldset": { borderColor: "divider" },
@@ -186,7 +186,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                             label="Code-barres (SKU)"
                             fullWidth
                             value={formData.sku || ""}
-                            onChange={(e) => onFormDataChange({ sku: e.target.value })}
+                            onChange={(e) => onFormDataChange({ ...formData, sku: e.target.value })}
                             disabled={!isAdmin}
                             sx={{
                                 "& .MuiOutlinedInput-root": {

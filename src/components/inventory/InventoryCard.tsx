@@ -134,7 +134,7 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                                 sx={{ color: "primary.main", mr: onDelete ? 0.5 : 0, p: compactView ? 0.5 : 1 }}
                                 title={onDelete ? "Modifier" : "Gérer le stock"}
                             >
-                                {onDelete ? <EditIcon fontSize={compactView ? "inherit" : "small"} /> : <ExposureIcon fontSize={compactView ? "inherit" : "small"} />}
+                                {onDelete ? <EditIcon fontSize={compactView ? "inherit" : "small"} /> : <ExposureIcon sx={{ fontSize: "3.75rem" }} />}
                             </IconButton>
                             {onDelete && (
                                 <IconButton
