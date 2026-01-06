@@ -12,10 +12,17 @@ import SecuritySection from "../components/settings/SecuritySection";
 const Settings: React.FC = () => {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { darkMode, compactView, toggleDarkMode, toggleCompactView } = useThemeContext();
+  const {
+    darkMode,
+    compactView,
+    toggleDarkMode,
+    toggleCompactView,
+    setUserProfile
+  } = useThemeContext();
 
   const [settings, setSettings] = useState({
     displayName: "",
+    avatarUrl: "",
     email: "",
     notifications: true,
     emailAlerts: false,
@@ -42,6 +49,7 @@ const Settings: React.FC = () => {
         if (userSettings) {
           setSettings({
             displayName: userSettings.display_name || "",
+            avatarUrl: userSettings.avatar_url || "",
             email: user.email || "",
             notifications: userSettings.notifications ?? true,
             emailAlerts: userSettings.email_alerts ?? false,
@@ -49,7 +57,11 @@ const Settings: React.FC = () => {
             darkMode: userSettings.dark_mode ?? true,
             compactView: userSettings.compact_view ?? false,
           });
-          // Also sync context if it's different
+          // Sync context
+          setUserProfile({
+            displayName: userSettings.display_name || "",
+            avatarUrl: userSettings.avatar_url || "",
+          });
           if (userSettings.dark_mode !== darkMode) toggleDarkMode(userSettings.dark_mode);
           if (userSettings.compact_view !== compactView) toggleCompactView(userSettings.compact_view);
         } else {
@@ -62,6 +74,41 @@ const Settings: React.FC = () => {
     };
     loadUserData();
   }, []);
+
+  const handleAvatarUpload = async (file: File) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("No user found");
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      setSettings({ ...settings, avatarUrl: publicUrl });
+      setUserProfile({ avatarUrl: publicUrl });
+
+      // Update database immediately for avatar
+      const { error: dbError } = await supabase.from("user_settings").upsert({
+        user_id: user.id,
+        avatar_url: publicUrl,
+      }, { onConflict: "user_id" });
+
+      if (dbError) throw dbError;
+      setSaveSuccess(true);
+    } catch (err: any) {
+      setError(err.message || "L'upload de l'avatar a échoué.");
+    }
+  };
 
   const handleSaveSettings = async () => {
     try {
@@ -77,6 +124,7 @@ const Settings: React.FC = () => {
           low_stock_threshold: settings.lowStockThreshold,
           dark_mode: settings.darkMode,
           compact_view: settings.compactView,
+          avatar_url: settings.avatarUrl,
         },
         {
           onConflict: "user_id",
@@ -84,6 +132,7 @@ const Settings: React.FC = () => {
       );
 
       if (error) throw error;
+      setUserProfile({ displayName: settings.displayName });
       setSaveSuccess(true);
     } catch {
       setError("L'enregistrement des paramètres a échoué. Veuillez réessayer.");
@@ -108,8 +157,10 @@ const Settings: React.FC = () => {
         <Grid item xs={12} md={6}>
           <ProfileSection
             displayName={settings.displayName}
+            avatarUrl={settings.avatarUrl}
             email={settings.email}
             onDisplayNameChange={(name) => setSettings({ ...settings, displayName: name })}
+            onAvatarChange={handleAvatarUpload}
           />
         </Grid>
 

@@ -15,6 +15,7 @@ import {
   useMediaQuery,
   useTheme,
   CssBaseline,
+  Avatar,
 } from "@mui/material";
 import {
   Dashboard as DashboardIcon,
@@ -26,17 +27,13 @@ import {
 } from "@mui/icons-material";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { supabase } from "../supabaseClient";
-
-const drawerWidth = 240;
-const collapsedWidth = 64;
-
 import { useThemeContext } from "../contexts/ThemeContext";
 
 const Layout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
-  const { compactView } = useThemeContext();
+  const { compactView, displayName, avatarUrl } = useThemeContext();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const drawerWidth = 240;
@@ -44,6 +41,11 @@ const Layout: React.FC = () => {
 
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const getInitials = (name: string) => {
+    if (name) return name.substring(0, 2).toUpperCase();
+    return "U";
+  };
 
   const menuItems = [
     { text: "Tableau de bord", icon: <DashboardIcon />, path: "/" },
@@ -73,6 +75,7 @@ const Layout: React.FC = () => {
       setCollapsed(!collapsed);
     }
   };
+
   const currentDrawerWidth = isMobile
     ? drawerWidth
     : collapsed
@@ -117,6 +120,33 @@ const Layout: React.FC = () => {
           </IconButton>
         )}
       </Toolbar>
+
+      <Box sx={{ px: 2, py: compactView ? 1.5 : 2, display: "flex", alignItems: "center", gap: 2 }}>
+        <Avatar
+          src={avatarUrl}
+          sx={{
+            width: collapsed && !isMobile ? 32 : (compactView ? 36 : 40),
+            height: collapsed && !isMobile ? 32 : (compactView ? 36 : 40),
+            bgcolor: "primary.main",
+            fontSize: "0.875rem"
+          }}
+        >
+          {getInitials(displayName)}
+        </Avatar>
+        {(!collapsed || isMobile) && (
+          <Box sx={{ minWidth: 0 }}>
+            <Typography variant="body2" fontWeight="bold" noWrap>
+              {displayName || "Utilisateur"}
+            </Typography>
+            <Typography variant="caption" color="text.secondary" noWrap display="block">
+              Connecté
+            </Typography>
+          </Box>
+        )}
+      </Box>
+
+      <Divider sx={{ borderColor: "divider" }} />
+
       <Box sx={{ overflow: "auto", mt: compactView ? 1 : 2 }}>
         <List dense={compactView}>
           {menuItems.map((item) => (

@@ -49,8 +49,14 @@ create table if not exists public.user_settings (
   low_stock_threshold integer default 5,
   dark_mode boolean default true,
   compact_view boolean default false,
+  avatar_url text,
   updated_at timestamp with time zone default now()
 );
+
+-- Storage Setup for Avatars (Run in Supabase SQL Editor if not exists)
+-- insert into storage.buckets (id, name, public) values ('avatars', 'avatars', true);
+-- create policy "Avatar viewing" on storage.objects for select using ( bucket_id = 'avatars' );
+-- create policy "Avatar management" on storage.objects for all to authenticated using ( bucket_id = 'avatars' );
 
 -- Enable RLS for user_settings
 alter table public.user_settings enable row level security;
@@ -91,3 +97,41 @@ create trigger update_user_settings_updated_at
   before update on public.user_settings
   for each row
   execute function public.update_updated_at_column();
+
+-- ==========================================
+-- REALTIME OPTIMIZATIONS
+-- ==========================================
+
+-- 1. Optimize Replica Identity (Reduces WAL volume and processing time)
+-- By setting to DEFAULT, only the primary key and changed columns are logged
+ALTER TABLE public.inventory REPLICA IDENTITY DEFAULT;
+ALTER TABLE public.user_settings REPLICA IDENTITY DEFAULT;
+
+-- 2. Refine Realtime Publication
+-- Limit real-time processing to only what is strictly necessary
+DROP PUBLICATION IF EXISTS supabase_realtime;
+CREATE PUBLICATION supabase_realtime;
+
+-- Add tables that require real-time synchronization
+-- Theme, compact view, and profile updates are synced via user_settings
+ALTER PUBLICATION supabase_realtime ADD TABLE public.user_settings;
+
+-- 3. Explicitly set timezone to prevent discovery probes (Speed up connections)
+-- This avoids the expensive 'select name from pg_timezone_names' query
+ALTER ROLE postgres SET timezone TO 'UTC';
+ALTER ROLE authenticator SET timezone TO 'UTC';
+ALTER ROLE authenticated SET timezone TO 'UTC';
+ALTER ROLE anon SET timezone TO 'UTC';
+
+-- 4. Disable JIT for management roles to speed up complex introspection (Dashboard/API)
+-- For metadata-heavy queries, JIT compilation overhead can exceed execution time
+ALTER ROLE postgres SET jit = off;
+ALTER ROLE authenticator SET jit = off;
+ALTER ROLE authenticated SET jit = off;
+ALTER ROLE anon SET jit = off;
+
+-- Uncomment the following line if you need real-time updates for the inventory grid/table
+-- ALTER PUBLICATION supabase_realtime ADD TABLE public.inventory;
+
+
+

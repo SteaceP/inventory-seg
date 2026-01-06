@@ -1,22 +1,38 @@
 import React from "react";
 import { Box, Paper, Typography, Avatar, TextField } from "@mui/material";
-import { Person as PersonIcon } from "@mui/icons-material";
+import { Person as PersonIcon, PhotoCamera as CameraIcon } from "@mui/icons-material";
 
 interface ProfileSectionProps {
     displayName: string;
+    avatarUrl: string;
     email: string;
     onDisplayNameChange: (name: string) => void;
+    onAvatarChange: (file: File) => void;
 }
 
 const ProfileSection: React.FC<ProfileSectionProps> = ({
     displayName,
+    avatarUrl,
     email,
     onDisplayNameChange,
+    onAvatarChange,
 }) => {
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
+
     const getInitials = (name: string, emailStr: string) => {
         if (name) return name.substring(0, 2).toUpperCase();
         if (emailStr) return emailStr.substring(0, 2).toUpperCase();
         return "U";
+    };
+
+    const handleAvatarClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files?.[0]) {
+            onAvatarChange(e.target.files[0]);
+        }
     };
 
     return (
@@ -40,16 +56,55 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
 
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
-                    <Avatar
+                    <Box
                         sx={{
-                            width: 80,
-                            height: 80,
-                            bgcolor: "primary.main",
-                            fontSize: "1.5rem",
+                            position: "relative",
+                            cursor: "pointer",
+                            "&:hover .avatar-overlay": { opacity: 1 },
                         }}
+                        onClick={handleAvatarClick}
                     >
-                        {getInitials(displayName, email)}
-                    </Avatar>
+                        <Avatar
+                            src={avatarUrl}
+                            sx={{
+                                width: 100,
+                                height: 100,
+                                bgcolor: "primary.main",
+                                fontSize: "2rem",
+                                border: "4px solid",
+                                borderColor: "background.paper",
+                                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                            }}
+                        >
+                            {getInitials(displayName, email)}
+                        </Avatar>
+                        <Box
+                            className="avatar-overlay"
+                            sx={{
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                width: "100%",
+                                height: "100%",
+                                borderRadius: "50%",
+                                bgcolor: "rgba(0, 0, 0, 0.4)",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                opacity: 0,
+                                transition: "opacity 0.2s",
+                            }}
+                        >
+                            <CameraIcon sx={{ color: "white" }} />
+                        </Box>
+                        <input
+                            type="file"
+                            hidden
+                            ref={fileInputRef}
+                            accept="image/*"
+                            onChange={handleFileChange}
+                        />
+                    </Box>
                 </Box>
 
                 <TextField

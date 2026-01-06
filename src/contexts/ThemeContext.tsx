@@ -4,8 +4,11 @@ import { supabase } from '../supabaseClient';
 interface ThemeContextType {
     darkMode: boolean;
     compactView: boolean;
+    displayName: string;
+    avatarUrl: string;
     toggleDarkMode: (enabled: boolean) => void;
     toggleCompactView: (enabled: boolean) => void;
+    setUserProfile: (profile: { displayName?: string; avatarUrl?: string }) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -13,6 +16,8 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [darkMode, setDarkMode] = useState(true);
     const [compactView, setCompactView] = useState(false);
+    const [displayName, setDisplayName] = useState("");
+    const [avatarUrl, setAvatarUrl] = useState("");
     const [userId, setUserId] = useState<string | null>(null);
 
     useEffect(() => {
@@ -22,13 +27,15 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 setUserId(session.user.id);
                 const { data: settings } = await supabase
                     .from("user_settings")
-                    .select("dark_mode, compact_view")
+                    .select("dark_mode, compact_view, display_name, avatar_url")
                     .eq("user_id", session.user.id)
                     .single();
 
                 if (settings) {
                     setDarkMode(settings.dark_mode ?? true);
                     setCompactView(settings.compact_view ?? false);
+                    setDisplayName(settings.display_name || "");
+                    setAvatarUrl(settings.avatar_url || "");
                 }
             }
         };
@@ -39,13 +46,15 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             setUserId(session?.user?.id || null);
             if (session?.user) {
                 supabase.from("user_settings")
-                    .select("dark_mode, compact_view")
+                    .select("dark_mode, compact_view, display_name, avatar_url")
                     .eq("user_id", session.user.id)
                     .single()
                     .then(({ data }) => {
                         if (data) {
                             setDarkMode(data.dark_mode ?? true);
                             setCompactView(data.compact_view ?? false);
+                            setDisplayName(data.display_name || "");
+                            setAvatarUrl(data.avatar_url || "");
                         }
                     });
             }
@@ -75,8 +84,21 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     };
 
+    const setUserProfile = (profile: { displayName?: string; avatarUrl?: string }) => {
+        if (profile.displayName !== undefined) setDisplayName(profile.displayName);
+        if (profile.avatarUrl !== undefined) setAvatarUrl(profile.avatarUrl);
+    };
+
     return (
-        <ThemeContext.Provider value={{ darkMode, compactView, toggleDarkMode, toggleCompactView }}>
+        <ThemeContext.Provider value={{
+            darkMode,
+            compactView,
+            displayName,
+            avatarUrl,
+            toggleDarkMode,
+            toggleCompactView,
+            setUserProfile
+        }}>
             {children}
         </ThemeContext.Provider>
     );

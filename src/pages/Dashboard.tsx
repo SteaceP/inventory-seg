@@ -66,37 +66,42 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => {
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState({
     totalItems: 0,
-    topCategory: "N/A",
+    lowStockItems: 0,
+    totalStock: 0,
+    topCategory: "",
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { compactView, displayName } = useThemeContext();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   useEffect(() => {
     const fetchStats = async () => {
       setLoading(true);
-      const { data, error } = await supabase.from("inventory").select("*");
+      const { data: items, error } = await supabase.from("inventory").select("*");
 
       if (error) {
         setError("Le chargement des statistiques du tableau de bord a echoué. Veuillez réessayer.");
-      } else if (data) {
-        const totalItems = data.length;
-
-        const categories = data.reduce(
-          (acc: { [key: string]: number }, item) => {
-            acc[item.category] = (acc[item.category] || 0) + 1;
-            return acc;
-          },
-          {}
-        );
-
+      } else if (items) {
+        const lowStock = items.filter((item) => item.stock < 5).length;
+        const totalStock = items.reduce((acc, item) => acc + item.stock, 0);
+        const categories = items.map((item) => item.category);
         const topCategory =
-          Object.entries(categories).sort((a, b) => b[1] - a[1])[0]?.[0] ||
-          "N/A";
+          categories.length > 0
+            ? categories
+              .sort(
+                (a, b) =>
+                  categories.filter((v) => v === a).length -
+                  categories.filter((v) => v === b).length
+              )
+              .pop() || ""
+            : "";
 
         setStats({
-          totalItems,
+          totalItems: items.length,
+          lowStockItems: lowStock,
+          totalStock,
           topCategory,
         });
       }
@@ -134,11 +139,11 @@ const Dashboard: React.FC = () => {
           variant={isMobile ? "h5" : "h4"}
           fontWeight="bold"
         >
-          Tableau de bord
+          {displayName ? `Bonjour, ${displayName} !` : "Tableau de bord"}
         </Typography>
       </Box>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        Bienvenue! Que s'est-il passé aujourd'hui?
+        {displayName ? "Voici un aperçu de votre inventaire aujourd'hui." : "Gestion globale de votre stock et statistiques."}
       </Typography>
 
       <Grid container spacing={3}>
