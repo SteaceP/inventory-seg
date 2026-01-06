@@ -5,7 +5,6 @@ create table public.inventory (
   category text not null,
   sku text unique,
   stock integer default 0,
-  price numeric(10, 2) default 0.00,
   image_url text,
   created_at timestamp with time zone default now()
 );
@@ -33,3 +32,4 @@ create policy "Allow authenticated actions" on public.inventory
 
 -- Migration command for existing tables:
 -- ALTER TABLE public.inventory ADD COLUMN IF NOT EXISTS image_url text;
+-- ALTER TABLE public.inventory DROP COLUMN IF EXISTS price;

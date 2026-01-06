@@ -25,7 +25,6 @@ const Inventory: React.FC = () => {
     category: "",
     sku: "",
     stock: 0,
-    price: 0,
     image_url: "",
   });
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
@@ -60,7 +59,7 @@ const Inventory: React.FC = () => {
       setFormData(item);
     } else {
       setEditingItem(null);
-      setFormData({ name: "", category: "", sku: "", stock: 0, price: 0, image_url: "" });
+      setFormData({ name: "", category: "", sku: "", stock: 0, image_url: "" });
     }
     setOpen(true);
   }, []);
@@ -144,7 +143,6 @@ const Inventory: React.FC = () => {
       category: formData.category?.trim(),
       sku: formData.sku?.trim(),
       stock: Math.max(0, formData.stock || 0),
-      price: Math.max(0, formData.price || 0),
     };
 
     if (!sanitizedData.name) {
@@ -201,7 +199,7 @@ const Inventory: React.FC = () => {
       handleOpen(item);
     } else {
       setEditingItem(null);
-      setFormData({ name: "", category: "", sku: decodedText, stock: 0, price: 0, image_url: "" });
+      setFormData({ name: "", category: "", sku: decodedText, stock: 0, image_url: "" });
       setOpen(true);
     }
   };

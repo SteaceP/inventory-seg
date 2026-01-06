@@ -225,25 +225,6 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                             }}
                             InputLabelProps={{ sx: { color: "text.secondary" } }}
                         />
-                        <TextField
-                            label="Prix"
-                            type="number"
-                            fullWidth
-                            value={formData.price || 0}
-                            onChange={(e) =>
-                                onFormDataChange({
-                                    ...formData,
-                                    price: parseFloat(e.target.value) || 0,
-                                })
-                            }
-                            sx={{
-                                "& .MuiOutlinedInput-root": {
-                                    color: "white",
-                                    "& fieldset": { borderColor: "#30363d" },
-                                },
-                            }}
-                            InputLabelProps={{ sx: { color: "text.secondary" } }}
-                        />
                     </Box>
                 </Box>
             </DialogContent>

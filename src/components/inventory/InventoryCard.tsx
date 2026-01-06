@@ -117,9 +117,7 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                             alignItems: "center",
                         }}
                     >
-                        <Typography variant="h6" color="primary.main">
-                            ${item.price.toFixed(2)}
-                        </Typography>
+                        <Box />
                         <Box>
                             <IconButton
                                 size="small"

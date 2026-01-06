@@ -4,6 +4,5 @@ export interface InventoryItem {
     category: string;
     sku: string;
     stock: number;
-    price: number;
     image_url?: string;
 }

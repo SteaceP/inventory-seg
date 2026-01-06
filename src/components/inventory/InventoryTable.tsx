@@ -75,9 +75,6 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                         <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid #30363d" }}>
                             Stock
                         </TableCell>
-                        <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid #30363d" }}>
-                            Prix
-                        </TableCell>
                         <TableCell align="right" sx={{ color: "text.secondary", borderBottom: "1px solid #30363d" }}>
                             Actions
                         </TableCell>
@@ -129,9 +126,6 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                             <TableCell sx={{ borderBottom: "1px solid #30363d" }}>{item.name}</TableCell>
                             <TableCell sx={{ borderBottom: "1px solid #30363d" }}>{item.category}</TableCell>
                             <TableCell sx={{ borderBottom: "1px solid #30363d" }}>{item.stock}</TableCell>
-                            <TableCell sx={{ borderBottom: "1px solid #30363d" }}>
-                                ${item.price.toFixed(2)}
-                            </TableCell>
                             <TableCell align="right" sx={{ borderBottom: "1px solid #30363d" }}>
                                 <IconButton
                                     size="small"

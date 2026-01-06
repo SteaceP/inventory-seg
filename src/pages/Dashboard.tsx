@@ -12,7 +12,6 @@ import {
 import Grid from "@mui/material/Grid2";
 import {
   Inventory as InventoryIcon,
-  TrendingUp as TrendingUpIcon,
   People as PeopleIcon,
 } from "@mui/icons-material";
 import { supabase } from "../supabaseClient";
@@ -59,7 +58,6 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => (
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState({
     totalItems: 0,
-    totalValue: 0,
     topCategory: "N/A",
   });
   const [loading, setLoading] = useState(true);
@@ -76,10 +74,6 @@ const Dashboard: React.FC = () => {
         setError("Le chargement des statistiques du tableau de bord a echoué. Veuillez réessayer.");
       } else if (data) {
         const totalItems = data.length;
-        const totalValue = data.reduce(
-          (sum, item) => sum + item.price * item.stock,
-          0
-        );
 
         const categories = data.reduce(
           (acc: { [key: string]: number }, item) => {
@@ -95,7 +89,6 @@ const Dashboard: React.FC = () => {
 
         setStats({
           totalItems,
-          totalValue,
           topCategory,
         });
       }
@@ -140,17 +133,6 @@ const Dashboard: React.FC = () => {
             value={stats.totalItems.toLocaleString()}
             icon={<InventoryIcon />}
             color="#58a6ff"
-          />
-        </Grid>
-        <Grid size={{ xs: 12, sm: 4 }}>
-          <StatCard
-            title="Valeur Totale"
-            value={`$${stats.totalValue.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}`}
-            icon={<TrendingUpIcon />}
-            color="#3fb950"
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
