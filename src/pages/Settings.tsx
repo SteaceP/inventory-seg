@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Box, Button, Alert, Snackbar } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import { Typography, Box, Button, Alert, Snackbar, Grid } from "@mui/material";
 import { supabase } from "../supabaseClient";
 import { useThemeContext } from "../contexts/ThemeContext";
 

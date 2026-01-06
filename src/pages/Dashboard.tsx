@@ -8,8 +8,8 @@ import {
   useMediaQuery,
   Snackbar,
   Alert,
+  Grid,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
 import {
   People as PeopleIcon,
   Timeline as TimelineIcon,

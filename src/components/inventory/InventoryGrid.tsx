@@ -1,5 +1,5 @@
 import React from "react";
-import Grid from "@mui/material/Grid2";
+import { Grid } from "@mui/material";
 import { AnimatePresence } from "framer-motion";
 import type { InventoryItem } from "../../types/inventory";
 import InventoryCard from "./InventoryCard";

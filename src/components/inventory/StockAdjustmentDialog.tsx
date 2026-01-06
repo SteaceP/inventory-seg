@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import {
-    Dialog,
-    DialogTitle,
     DialogContent,
     Box,
     Button,
-    Grid2 as Grid,
+    Grid,
     Typography,
     IconButton,
 } from "@mui/material";
