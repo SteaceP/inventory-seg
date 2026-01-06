@@ -12,7 +12,7 @@ interface InventoryGridProps {
     onDelete?: (id: string) => void;
 }
 
-import { useThemeContext } from "../../contexts/ThemeContext";
+import { useThemeContext } from "../../contexts/useThemeContext";
 
 const InventoryGrid: React.FC<InventoryGridProps> = ({
     items,

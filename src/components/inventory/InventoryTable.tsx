@@ -28,7 +28,7 @@ interface InventoryTableProps {
     onDelete?: (id: string) => void;
 }
 
-import { useThemeContext } from "../../contexts/ThemeContext";
+import { useThemeContext } from "../../contexts/useThemeContext";
 
 const InventoryTable: React.FC<InventoryTableProps> = ({
     items,
@@ -99,12 +99,14 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                                         component="img"
                                         src={item.image_url}
                                         sx={{
+                                            display: 'block',
                                             width: compactView ? 30 : 40,
                                             height: compactView ? 30 : 40,
                                             borderRadius: "4px",
                                             objectFit: "cover",
                                             border: "1px solid",
                                             borderColor: "divider",
+                                            overflow: 'hidden',
                                         }}
                                     />
                                 ) : (

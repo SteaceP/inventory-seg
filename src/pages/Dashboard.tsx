@@ -15,8 +15,8 @@ import {
   Timeline as TimelineIcon,
 } from "@mui/icons-material";
 import { supabase } from "../supabaseClient";
-import { useThemeContext } from "../contexts/ThemeContext";
-import { useInventoryContext } from "../contexts/InventoryContext";
+import { useThemeContext } from "../contexts/useThemeContext";
+import { useInventoryContext } from "../contexts/useInventoryContext";
 import RecentActivity from "../components/dashboard/RecentActivity";
 
 interface StatCardProps {
@@ -73,7 +73,9 @@ const Dashboard: React.FC = () => {
   const [dailyStats, setDailyStats] = useState({ in: 0, out: 0 });
   const [activitiesLoading, setActivitiesLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [recentActivities, setRecentActivities] = useState<any[]>([]);
+  type ActivityRow = { action?: string; changes?: Record<string, unknown> };
+  type RecentActivityItem = { id: string; action: "created" | "updated" | "deleted"; item_name: string; created_at: string; user_display_name?: string };
+  const [recentActivities, setRecentActivities] = useState<RecentActivityItem[]>([]);
   const { displayName } = useThemeContext();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -121,22 +123,27 @@ const Dashboard: React.FC = () => {
           let stockIn = 0;
           let stockOut = 0;
 
-          dailyActivities.forEach((activity: any) => {
-            const changes = activity.changes || {};
+          const getNumber = (obj: Record<string, unknown>, key: string) => {
+            const v = obj[key];
+            if (typeof v === 'number') return v;
+            if (typeof v === 'string' && v.trim() !== '' && !Number.isNaN(Number(v))) return Number(v);
+            return 0;
+          };
+
+          dailyActivities.forEach((activity: ActivityRow) => {
+            const changes = (activity.changes || {}) as Record<string, unknown>;
 
             if (activity.action === "created") {
-              stockIn += (changes.stock || 0);
+              stockIn += getNumber(changes, 'stock');
             } else if (activity.action === "deleted") {
-              stockOut += (changes.stock || 0);
+              stockOut += getNumber(changes, 'stock');
             } else if (activity.action === "updated") {
-              const newStock = changes.stock;
-              const oldStock = changes.old_stock;
+              const newStock = getNumber(changes, 'stock');
+              const oldStock = getNumber(changes, 'old_stock');
 
-              if (typeof newStock === "number" && typeof oldStock === "number") {
-                const diff = newStock - oldStock;
-                if (diff > 0) stockIn += diff;
-                else if (diff < 0) stockOut += Math.abs(diff);
-              }
+              const diff = newStock - oldStock;
+              if (diff > 0) stockIn += diff;
+              else if (diff < 0) stockOut += Math.abs(diff);
             }
           });
 

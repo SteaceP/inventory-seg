@@ -20,6 +20,7 @@ import "./App.css";
 // Lazy load pages for better bundle size
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Inventory = lazy(() => import("./pages/Inventory"));
+const Appliances = lazy(() => import("./pages/Appliances"));
 const Login = lazy(() => import("./pages/Login"));
 const Settings = lazy(() => import("./pages/Settings"));
 
@@ -136,7 +137,8 @@ const getTheme = (mode: "light" | "dark", compact: boolean) => createTheme({
   },
 });
 
-import { ThemeProvider as CustomThemeProvider, useThemeContext } from "./contexts/ThemeContext";
+import { ThemeProvider as CustomThemeProvider } from "./contexts/ThemeContext";
+import { useThemeContext } from "./contexts/useThemeContext";
 import { InventoryProvider } from "./contexts/InventoryContext";
 
 const AppContent = () => {
@@ -221,6 +223,7 @@ const AppContent = () => {
             >
               <Route index element={<Dashboard />} />
               <Route path="inventory" element={<Inventory />} />
+              <Route path="appliances" element={<Appliances />} />
               <Route path="settings" element={<Settings />} />
             </Route>
           </Routes>

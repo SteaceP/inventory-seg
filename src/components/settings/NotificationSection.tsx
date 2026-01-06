@@ -71,13 +71,13 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
                         onClick={async () => {
                             if (!("Notification" in window)) return;
 
-                            const options: any = {
+                            const options = {
                                 body: "Ceci est un test de notification mobile !",
                                 icon: "/icon.svg",
                                 badge: "/icon.svg",
                                 vibrate: [200, 100, 200],
                                 requireInteraction: true,
-                            };
+                            } as NotificationOptions & { vibrate?: number[] };
 
                             if ("serviceWorker" in navigator && Notification.permission === "granted") {
                                 const registration = await navigator.serviceWorker.ready;

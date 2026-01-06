@@ -1,18 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-
-interface ThemeContextType {
-    darkMode: boolean;
-    compactView: boolean;
-    displayName: string;
-    avatarUrl: string;
-    role: string;
-    toggleDarkMode: (enabled: boolean) => void;
-    toggleCompactView: (enabled: boolean) => void;
-    setUserProfile: (profile: { displayName?: string; avatarUrl?: string }) => void;
-}
-
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+import { ThemeContext } from './theme-context';
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [darkMode, setDarkMode] = useState(true);
@@ -109,10 +97,5 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     );
 };
 
-export const useThemeContext = () => {
-    const context = useContext(ThemeContext);
-    if (context === undefined) {
-        throw new Error('useThemeContext must be used within a ThemeProvider');
-    }
-    return context;
-};
+// NOTE: `useThemeContext` is defined in `src/contexts/useThemeContext.ts` to satisfy
+// react-refresh rules (TSX files should only export components).

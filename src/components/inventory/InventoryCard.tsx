@@ -25,7 +25,7 @@ interface InventoryCardProps {
     onDelete?: (id: string) => void;
 }
 
-import { useThemeContext } from "../../contexts/ThemeContext";
+import { useThemeContext } from "../../contexts/useThemeContext";
 
 const InventoryCard: React.FC<InventoryCardProps> = ({
     item,
@@ -60,11 +60,14 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                         component="img"
                         src={item.image_url}
                         sx={{
+                            display: 'block',
                             width: "100%",
                             height: compactView ? 80 : 140,
                             objectFit: "cover",
                             borderBottom: "1px solid",
                             borderColor: "divider",
+                            borderTopLeftRadius: compactView ? "8px" : "12px",
+                            borderTopRightRadius: compactView ? "8px" : "12px",
                         }}
                     />
                 )}

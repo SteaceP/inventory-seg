@@ -1,15 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import type { InventoryItem } from "../types/inventory";
-
-interface InventoryContextType {
-    items: InventoryItem[];
-    loading: boolean;
-    error: string | null;
-    refreshInventory: () => Promise<void>;
-}
-
-const InventoryContext = createContext<InventoryContextType | undefined>(undefined);
+import { InventoryContext } from "./inventory-context";
 
 export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [items, setItems] = useState<InventoryItem[]>([]);
@@ -27,7 +19,7 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             if (error) throw error;
             setItems(data || []);
             setError(null);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Error fetching inventory:", err);
             setError("Impossible de charger l'inventaire.");
         } finally {
@@ -61,10 +53,3 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     );
 };
 
-export const useInventoryContext = () => {
-    const context = useContext(InventoryContext);
-    if (context === undefined) {
-        throw new Error("useInventoryContext must be used within an InventoryProvider");
-    }
-    return context;
-};

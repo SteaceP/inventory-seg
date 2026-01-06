@@ -17,6 +17,7 @@ import {
     AddPhotoAlternate as AddPhotoIcon,
 } from "@mui/icons-material";
 import Barcode from "react-barcode";
+import type { BarcodeProps } from "react-barcode";
 import type { InventoryItem } from "../../types/inventory";
 
 interface InventoryDialogProps {
@@ -29,7 +30,7 @@ interface InventoryDialogProps {
     onFormDataChange: (data: Partial<InventoryItem>) => void;
     onGenerateSKU: () => void;
     onImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    getBarcodeFormat: (sku: string) => any;
+    getBarcodeFormat: (sku: string) => BarcodeProps['format'];
     role?: string;
 }
 
@@ -92,7 +93,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                                 <Box
                                     component="img"
                                     src={formData.image_url}
-                                    sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                    sx={{ display: 'block', width: "100%", height: "100%", objectFit: "cover", borderRadius: '12px' }}
                                 />
 
                                 {isAdmin && (

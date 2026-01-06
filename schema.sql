@@ -244,3 +244,77 @@ create index if not exists idx_inventory_activity_created_at
 
 
 
+
+-- ==========================================
+-- APPLIANCES & REPAIRS TRACKING
+-- ==========================================
+
+-- 1. Create appliances table
+create table if not exists public.appliances (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users(id) on delete cascade not null,
+  name text not null,
+  type text,
+  brand text,
+  model text,
+  serial_number text,
+  purchase_date date,
+  warranty_expiry date,
+  notes text,
+  photo_url text,
+  sku text,
+  created_at timestamp with time zone default now(),
+  updated_at timestamp with time zone default now()
+);
+
+-- 2. Create repairs table
+create table if not exists public.repairs (
+  id uuid default gen_random_uuid() primary key,
+  appliance_id uuid references public.appliances(id) on delete cascade not null,
+  repair_date date default CURRENT_DATE,
+  description text not null,
+  cost numeric(10, 2),
+  service_provider text,
+  created_at timestamp with time zone default now()
+);
+
+-- 3. Enable RLS
+alter table public.appliances enable row level security;
+alter table public.repairs enable row level security;
+
+-- 4. RLS Policies for Appliances
+-- Users can manage their own appliances
+create policy "Users can manage own appliances" on public.appliances
+  for all to authenticated
+  using (user_id = auth.uid())
+  with check (user_id = auth.uid());
+
+-- 5. RLS Policies for Repairs
+-- Users can manage repairs for appliances they own
+create policy "Users can manage own repairs" on public.repairs
+  for all to authenticated
+  using (
+    exists (
+      select 1 from public.appliances
+      where id = repairs.appliance_id
+      and user_id = auth.uid()
+    )
+  )
+  with check (
+    exists (
+      select 1 from public.appliances
+      where id = appliance_id -- check the NEW appliance_id
+      and user_id = auth.uid()
+    )
+  );
+
+-- 6. Trigger for updated_at on appliances
+drop trigger if exists update_appliances_updated_at on public.appliances;
+create trigger update_appliances_updated_at
+  before update on public.appliances
+  for each row
+  execute function public.update_updated_at_column();
+
+-- 7. Add to Realtime Publication
+alter publication supabase_realtime add table public.appliances;
+alter publication supabase_realtime add table public.repairs;

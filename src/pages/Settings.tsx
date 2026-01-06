@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Typography, Box, Button, Alert, Snackbar, Grid } from "@mui/material";
 import { supabase } from "../supabaseClient";
-import { useThemeContext } from "../contexts/ThemeContext";
+import { useThemeContext } from "../contexts/useThemeContext";
 
 // Sub-components
 import ProfileSection from "../components/settings/ProfileSection";
@@ -73,7 +73,7 @@ const Settings: React.FC = () => {
       }
     };
     loadUserData();
-  }, []);
+  }, [darkMode, compactView, setUserProfile, toggleDarkMode, toggleCompactView]);
 
   const handleAvatarUpload = async (file: File) => {
     try {
@@ -105,8 +105,9 @@ const Settings: React.FC = () => {
 
       if (dbError) throw dbError;
       setSaveSuccess(true);
-    } catch (err: any) {
-      setError(err.message || "L'upload de l'avatar a échoué.");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      setError(message || "L'upload de l'avatar a échoué.");
     }
   };
 

@@ -23,10 +23,11 @@ import {
   ExitToApp as LogoutIcon,
   ChevronLeft as ChevronLeftIcon,
   Menu as MenuIcon,
+  Kitchen as AppliancesIcon,
 } from "@mui/icons-material";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { supabase } from "../supabaseClient";
-import { useThemeContext } from "../contexts/ThemeContext";
+import { useThemeContext } from "../contexts/useThemeContext";
 
 const Layout: React.FC = () => {
   const navigate = useNavigate();
@@ -64,6 +65,7 @@ const Layout: React.FC = () => {
       path: "/inventory"
     },
     { text: "Paramètres", icon: <SettingsIcon />, path: "/settings" },
+    { text: "Appareils", icon: <AppliancesIcon />, path: "/appliances" },
   ];
 
   const handleDrawerToggle = () => {

@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Box, CircularProgress, Snackbar, Alert } from "@mui/material";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { supabase } from "../supabaseClient";
-import { useThemeContext } from "../contexts/ThemeContext";
-import { useInventoryContext } from "../contexts/InventoryContext";
+import { useThemeContext } from "../contexts/useThemeContext";
+import { useInventoryContext } from "../contexts/useInventoryContext";
 import BarcodePrinter from "../components/BarcodePrinter";
 import type { InventoryItem } from "../types/inventory";
 
@@ -85,7 +85,7 @@ const Inventory: React.FC = () => {
       if (isLowStock) {
         // Handle In-App/Browser Notifications
         if (userSettings?.notifications && "Notification" in window && Notification.permission === "granted") {
-          const notificationData: any = {
+          const notificationData = {
             body: `L'article "${item.name}" est à ${item.stock} unités.`,
             icon: "/icon.svg",
             badge: "/icon.svg",
@@ -95,7 +95,7 @@ const Inventory: React.FC = () => {
             data: {
               url: "/inventory"
             }
-          };
+          } as NotificationOptions & { vibrate?: number[] };
 
           if ("serviceWorker" in navigator) {
             navigator.serviceWorker.ready.then((registration) => {
