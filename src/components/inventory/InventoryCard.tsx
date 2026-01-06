@@ -5,7 +5,6 @@ import {
     CardContent,
     Typography,
     Checkbox,
-    Stack,
     Chip,
     Divider,
     IconButton,
@@ -89,24 +88,13 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                         />
                     </Box>
 
-                    <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
-                        <Chip
-                            label={`${item.stock} en stock`}
-                            size="small"
-                            color={item.stock < 5 ? "warning" : "default"}
-                            sx={{
-                                bgcolor:
-                                    item.stock < 5
-                                        ? "rgba(210, 153, 34, 0.1)"
-                                        : "rgba(48, 54, 61, 0.5)",
-                            }}
-                        />
+                    <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
                         <Chip
                             label={item.category}
                             size="small"
                             sx={{ bgcolor: "rgba(88, 166, 255, 0.1)", color: "#58a6ff" }}
                         />
-                    </Stack>
+                    </Box>
 
                     <Divider sx={{ my: 1.5, borderColor: "#30363d" }} />
 
@@ -117,7 +105,15 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                             alignItems: "center",
                         }}
                     >
-                        <Box />
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                color: item.stock < 5 ? "warning.main" : "text.secondary",
+                                fontWeight: "medium",
+                            }}
+                        >
+                            {item.stock} en stock
+                        </Typography>
                         <Box>
                             <IconButton
                                 size="small"
