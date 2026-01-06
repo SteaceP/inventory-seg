@@ -30,11 +30,18 @@ import { supabase } from "../supabaseClient";
 const drawerWidth = 240;
 const collapsedWidth = 64;
 
+import { useThemeContext } from "../contexts/ThemeContext";
+
 const Layout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
+  const { compactView } = useThemeContext();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  const drawerWidth = 240;
+  const collapsedWidth = 64;
+
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -47,8 +54,8 @@ const Layout: React.FC = () => {
           component="img"
           src="/icon.svg"
           sx={{
-            width: 24,
-            height: 24,
+            width: compactView ? 20 : 24,
+            height: compactView ? 20 : 24,
             opacity: location.pathname === "/inventory" ? 1 : 0.7,
             filter: location.pathname === "/inventory" ? "none" : "grayscale(1)"
           }}
@@ -66,7 +73,6 @@ const Layout: React.FC = () => {
       setCollapsed(!collapsed);
     }
   };
-
   const currentDrawerWidth = isMobile
     ? drawerWidth
     : collapsed
@@ -81,6 +87,7 @@ const Layout: React.FC = () => {
           alignItems: "center",
           justifyContent: collapsed && !isMobile ? "center" : "space-between",
           px: [1],
+          minHeight: compactView ? "48px !important" : "64px !important",
         }}
       >
         {(!collapsed || isMobile) && (
@@ -88,11 +95,11 @@ const Layout: React.FC = () => {
             <Box
               component="img"
               src="/icon.svg"
-              sx={{ width: 32, height: 32, mr: 1 }}
+              sx={{ width: compactView ? 24 : 32, height: compactView ? 24 : 32, mr: 1 }}
               alt="Logo"
             />
             <Typography
-              variant="h6"
+              variant={compactView ? "body1" : "h6"}
               noWrap
               component="div"
               sx={{ fontWeight: "bold", color: "primary.main" }}
@@ -104,14 +111,14 @@ const Layout: React.FC = () => {
         {!isMobile && (
           <IconButton
             onClick={handleDrawerToggle}
-            sx={{ color: "primary.main" }}
+            sx={{ color: "primary.main", p: compactView ? 0.5 : 1 }}
           >
-            {collapsed ? <MenuIcon /> : <ChevronLeftIcon />}
+            {collapsed ? <MenuIcon fontSize={compactView ? "small" : "medium"} /> : <ChevronLeftIcon fontSize={compactView ? "small" : "medium"} />}
           </IconButton>
         )}
       </Toolbar>
-      <Box sx={{ overflow: "auto", mt: 2 }}>
-        <List>
+      <Box sx={{ overflow: "auto", mt: compactView ? 1 : 2 }}>
+        <List dense={compactView}>
           {menuItems.map((item) => (
             <Tooltip
               key={item.text}
@@ -129,6 +136,7 @@ const Layout: React.FC = () => {
                   borderRadius: "8px",
                   mb: 0.5,
                   px: collapsed && !isMobile ? 1.5 : 2,
+                  py: compactView ? 0.5 : 1,
                   justifyContent: collapsed && !isMobile ? "center" : "initial",
                   "&.Mui-selected": {
                     bgcolor: "rgba(2, 125, 111, 0.1)",
@@ -153,14 +161,20 @@ const Layout: React.FC = () => {
                   {item.icon}
                 </ListItemIcon>
                 {(!collapsed || isMobile) && (
-                  <ListItemText primary={item.text} />
+                  <ListItemText
+                    primary={item.text}
+                    primaryTypographyProps={{
+                      fontSize: compactView ? "0.8125rem" : "0.875rem",
+                      fontWeight: location.pathname === item.path ? 600 : 400
+                    }}
+                  />
                 )}
               </ListItemButton>
             </Tooltip>
           ))}
         </List>
-        <Divider sx={{ my: 2, borderColor: "divider" }} />
-        <List>
+        <Divider sx={{ my: compactView ? 1 : 2, borderColor: "divider" }} />
+        <List dense={compactView}>
           <Tooltip
             title={collapsed && !isMobile ? "Logout" : ""}
             placement="right"
@@ -170,6 +184,7 @@ const Layout: React.FC = () => {
                 mx: 1,
                 borderRadius: "8px",
                 px: collapsed && !isMobile ? 1.5 : 2,
+                py: compactView ? 0.5 : 1,
                 justifyContent: collapsed && !isMobile ? "center" : "initial",
               }}
               onClick={async () => {
@@ -186,9 +201,14 @@ const Layout: React.FC = () => {
                   justifyContent: "center",
                 }}
               >
-                <LogoutIcon />
+                <LogoutIcon fontSize={compactView ? "small" : "medium"} />
               </ListItemIcon>
-              {(!collapsed || isMobile) && <ListItemText primary="Logout" />}
+              {(!collapsed || isMobile) && (
+                <ListItemText
+                  primary="Logout"
+                  primaryTypographyProps={{ fontSize: compactView ? "0.8125rem" : "0.875rem" }}
+                />
+              )}
             </ListItemButton>
           </Tooltip>
         </List>
@@ -217,7 +237,7 @@ const Layout: React.FC = () => {
             boxShadow: "none",
           }}
         >
-          <Toolbar>
+          <Toolbar sx={{ minHeight: compactView ? "48px !important" : "64px !important" }}>
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -225,16 +245,16 @@ const Layout: React.FC = () => {
               onClick={handleDrawerToggle}
               sx={{ mr: 2 }}
             >
-              <MenuIcon />
+              <MenuIcon fontSize={compactView ? "small" : "medium"} />
             </IconButton>
             <Box
               component="img"
               src="/icon.svg"
-              sx={{ width: 32, height: 32, mr: 1.5 }}
+              sx={{ width: compactView ? 24 : 32, height: compactView ? 24 : 32, mr: 1.5 }}
               alt="Logo"
             />
             <Typography
-              variant="h6"
+              variant={compactView ? "body1" : "h6"}
               noWrap
               component="div"
               sx={{ fontWeight: "bold", color: "primary.main" }}
@@ -296,9 +316,9 @@ const Layout: React.FC = () => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: { xs: 2, sm: 3, md: 4 },
+          p: compactView ? { xs: 1.5, sm: 2, md: 2.5 } : { xs: 2, sm: 3, md: 4 },
           width: { md: `calc(100% - ${currentDrawerWidth}px)` },
-          mt: isMobile ? "64px" : 0,
+          mt: isMobile ? (compactView ? "48px" : "64px") : 0,
         }}
       >
         <Outlet />

@@ -12,6 +12,8 @@ interface InventoryGridProps {
     onDelete: (id: string) => void;
 }
 
+import { useThemeContext } from "../../contexts/ThemeContext";
+
 const InventoryGrid: React.FC<InventoryGridProps> = ({
     items,
     selectedItems,
@@ -19,11 +21,13 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
     onEdit,
     onDelete,
 }) => {
+    const { compactView } = useThemeContext();
+
     return (
-        <Grid container spacing={2}>
+        <Grid container spacing={compactView ? 1 : 2}>
             <AnimatePresence>
                 {items.map((item) => (
-                    <Grid size={{ xs: 12, sm: 6 }} key={item.id}>
+                    <Grid size={{ xs: 12, sm: compactView ? 4 : 6, md: compactView ? 3 : 4 }} key={item.id}>
                         <InventoryCard
                             item={item}
                             isSelected={selectedItems.has(item.id)}

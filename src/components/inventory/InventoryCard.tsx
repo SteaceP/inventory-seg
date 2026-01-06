@@ -24,6 +24,8 @@ interface InventoryCardProps {
     onDelete: (id: string) => void;
 }
 
+import { useThemeContext } from "../../contexts/ThemeContext";
+
 const InventoryCard: React.FC<InventoryCardProps> = ({
     item,
     isSelected,
@@ -31,6 +33,8 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
     onEdit,
     onDelete,
 }) => {
+    const { compactView } = useThemeContext();
+
     return (
         <motion.div
             layout
@@ -40,10 +44,11 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
         >
             <Card
                 sx={{
-                    bgcolor: "rgba(22, 27, 34, 0.7)",
+                    bgcolor: "background.paper",
                     backdropFilter: "blur(10px)",
-                    border: "1px solid #30363d",
-                    borderRadius: "12px",
+                    border: "1px solid",
+                    borderColor: "divider",
+                    borderRadius: compactView ? "8px" : "12px",
                     position: "relative",
                     overflow: "hidden",
                     "&:hover": { borderColor: "primary.main" },
@@ -55,23 +60,24 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                         src={item.image_url}
                         sx={{
                             width: "100%",
-                            height: 140,
+                            height: compactView ? 80 : 140,
                             objectFit: "cover",
-                            borderBottom: "1px solid #30363d",
+                            borderBottom: "1px solid",
+                            borderColor: "divider",
                         }}
                     />
                 )}
-                <CardContent>
+                <CardContent sx={{ p: compactView ? 1.5 : 2, "&:last-child": { pb: compactView ? 1.5 : 2 } }}>
                     <Box
                         sx={{
                             display: "flex",
                             justifyContent: "space-between",
                             alignItems: "flex-start",
-                            mb: 2,
+                            mb: compactView ? 1 : 2,
                         }}
                     >
                         <Box>
-                            <Typography variant="h6" fontWeight="bold">
+                            <Typography variant={compactView ? "body1" : "h6"} fontWeight="bold" noWrap>
                                 {item.name}
                             </Typography>
                             <Typography
@@ -87,15 +93,20 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                             sx={{ color: "text.secondary", p: 0 }}
                         />
                     </Box>
-                    <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+                    <Box sx={{ display: "flex", justifyContent: compactView ? "flex-start" : "center", mb: compactView ? 1 : 2 }}>
                         <Chip
                             label={item.category}
                             size="small"
-                            sx={{ bgcolor: "rgba(2, 125, 111, 0.1)", color: "primary.main" }}
+                            sx={{
+                                bgcolor: "rgba(2, 125, 111, 0.1)",
+                                color: "primary.main",
+                                height: compactView ? 20 : 24,
+                                fontSize: compactView ? "0.65rem" : "0.75rem"
+                            }}
                         />
                     </Box>
 
-                    <Divider sx={{ my: 1.5, borderColor: "#30363d" }} />
+                    <Divider sx={{ my: compactView ? 1 : 1.5, borderColor: "divider" }} />
 
                     <Box
                         sx={{
@@ -105,9 +116,9 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                         }}
                     >
                         <Typography
-                            variant="body2"
+                            variant="caption"
                             sx={{
-                                color: item.stock < 5 ? "warning.main" : "text.secondary",
+                                color: (item.stock || 0) < 5 ? "warning.main" : "text.secondary",
                                 fontWeight: "medium",
                             }}
                         >
@@ -117,16 +128,16 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                             <IconButton
                                 size="small"
                                 onClick={() => onEdit(item)}
-                                sx={{ color: "primary.main", mr: 1 }}
+                                sx={{ color: "primary.main", mr: 0.5, p: compactView ? 0.5 : 1 }}
                             >
-                                <EditIcon fontSize="small" />
+                                <EditIcon fontSize={compactView ? "inherit" : "small"} />
                             </IconButton>
                             <IconButton
                                 size="small"
                                 onClick={() => onDelete(item.id)}
-                                sx={{ color: "error.main" }}
+                                sx={{ color: "error.main", p: compactView ? 0.5 : 1 }}
                             >
-                                <DeleteIcon fontSize="small" />
+                                <DeleteIcon fontSize={compactView ? "inherit" : "small"} />
                             </IconButton>
                         </Box>
                     </Box>

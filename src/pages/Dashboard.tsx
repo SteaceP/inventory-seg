@@ -15,6 +15,7 @@ import {
   People as PeopleIcon,
 } from "@mui/icons-material";
 import { supabase } from "../supabaseClient";
+import { useThemeContext } from "../contexts/ThemeContext";
 
 interface StatCardProps {
   title: string;
@@ -23,38 +24,44 @@ interface StatCardProps {
   color: string;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => (
-  <Paper
-    sx={{
-      p: 3,
-      background: (theme) => theme.palette.mode === "dark" ? "rgba(22, 27, 34, 0.7)" : "#ffffff",
-      backdropFilter: "blur(10px)",
-      border: "1px solid",
-      borderColor: "divider",
-      borderRadius: "12px",
-    }}
-  >
-    <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-      <Box
-        sx={{
-          p: 1,
-          borderRadius: "8px",
-          bgcolor: `${color}20`,
-          color: color,
-          mr: 2,
-        }}
-      >
-        {icon}
+const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => {
+  const { compactView } = useThemeContext();
+
+  return (
+    <Paper
+      sx={{
+        p: compactView ? 2 : 3,
+        background: (theme) => theme.palette.mode === "dark" ? "rgba(22, 27, 34, 0.7)" : "#ffffff",
+        backdropFilter: "blur(10px)",
+        border: "1px solid",
+        borderColor: "divider",
+        borderRadius: "12px",
+      }}
+    >
+      <Box sx={{ display: "flex", alignItems: "center", mb: compactView ? 1 : 2 }}>
+        <Box
+          sx={{
+            p: compactView ? 0.5 : 1,
+            borderRadius: "8px",
+            bgcolor: `${color}20`,
+            color: color,
+            mr: 2,
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          {icon}
+        </Box>
+        <Typography variant="body2" color="text.secondary">
+          {title}
+        </Typography>
       </Box>
-      <Typography variant="body2" color="text.secondary">
-        {title}
+      <Typography variant={compactView ? "h5" : "h4"} fontWeight="bold">
+        {value}
       </Typography>
-    </Box>
-    <Typography variant="h4" fontWeight="bold">
-      {value}
-    </Typography>
-  </Paper>
-);
+    </Paper>
+  );
+};
 
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState({

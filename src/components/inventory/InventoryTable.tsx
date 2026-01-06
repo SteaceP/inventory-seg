@@ -27,6 +27,8 @@ interface InventoryTableProps {
     onDelete: (id: string) => void;
 }
 
+import { useThemeContext } from "../../contexts/ThemeContext";
+
 const InventoryTable: React.FC<InventoryTableProps> = ({
     items,
     selectedItems,
@@ -35,6 +37,8 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     onEdit,
     onDelete,
 }) => {
+    const { compactView } = useThemeContext();
+
     return (
         <TableContainer
             component={Paper}
@@ -43,12 +47,12 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                 backdropFilter: "blur(10px)",
                 border: "1px solid",
                 borderColor: "divider",
-                borderRadius: "12px",
+                borderRadius: compactView ? "8px" : "12px",
                 width: "100%",
                 overflowX: "auto",
             }}
         >
-            <Table>
+            <Table size={compactView ? "small" : "medium"}>
                 <TableHead>
                     <TableRow>
                         <TableCell padding="checkbox" sx={{ borderBottom: "1px solid", borderColor: "divider" }}>
@@ -61,22 +65,22 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                                 sx={{ color: "text.secondary" }}
                             />
                         </TableCell>
-                        <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider" }}>
+                        <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider", fontSize: compactView ? "0.75rem" : "inherit" }}>
                             Image
                         </TableCell>
-                        <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider" }}>
+                        <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider", fontSize: compactView ? "0.75rem" : "inherit" }}>
                             SKU
                         </TableCell>
-                        <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider" }}>
+                        <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider", fontSize: compactView ? "0.75rem" : "inherit" }}>
                             Nom
                         </TableCell>
-                        <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider" }}>
+                        <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider", fontSize: compactView ? "0.75rem" : "inherit" }}>
                             Catégorie
                         </TableCell>
-                        <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider" }}>
+                        <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider", fontSize: compactView ? "0.75rem" : "inherit" }}>
                             Stock
                         </TableCell>
-                        <TableCell align="right" sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider" }}>
+                        <TableCell align="right" sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider", fontSize: compactView ? "0.75rem" : "inherit" }}>
                             Actions
                         </TableCell>
                     </TableRow>
@@ -91,15 +95,15 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                                     sx={{ color: "text.secondary" }}
                                 />
                             </TableCell>
-                            <TableCell sx={{ borderBottom: "1px solid", borderColor: "divider", width: 60 }}>
+                            <TableCell sx={{ borderBottom: "1px solid", borderColor: "divider", width: compactView ? 40 : 60 }}>
                                 {item.image_url ? (
                                     <Box
                                         component="img"
                                         src={item.image_url}
                                         sx={{
-                                            width: 40,
-                                            height: 40,
-                                            borderRadius: "8px",
+                                            width: compactView ? 30 : 40,
+                                            height: compactView ? 30 : 40,
+                                            borderRadius: "4px",
                                             objectFit: "cover",
                                             border: "1px solid",
                                             borderColor: "divider",
@@ -108,9 +112,9 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                                 ) : (
                                     <Box
                                         sx={{
-                                            width: 40,
-                                            height: 40,
-                                            borderRadius: "8px",
+                                            width: compactView ? 30 : 40,
+                                            height: compactView ? 30 : 40,
+                                            borderRadius: "4px",
                                             bgcolor: "action.hover",
                                             display: "flex",
                                             alignItems: "center",
@@ -119,16 +123,16 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                                             borderColor: "divider",
                                         }}
                                     >
-                                        <ImageIcon sx={{ color: "text.secondary", fontSize: 20 }} />
+                                        <ImageIcon sx={{ color: "text.secondary", fontSize: compactView ? 16 : 20 }} />
                                     </Box>
                                 )}
                             </TableCell>
-                            <TableCell sx={{ borderBottom: "1px solid", borderColor: "divider", fontFamily: "monospace" }}>
+                            <TableCell sx={{ borderBottom: "1px solid", borderColor: "divider", fontFamily: "monospace", fontSize: compactView ? "0.75rem" : "0.875rem" }}>
                                 {item.sku || "-"}
                             </TableCell>
-                            <TableCell sx={{ borderBottom: "1px solid", borderColor: "divider" }}>{item.name}</TableCell>
-                            <TableCell sx={{ borderBottom: "1px solid", borderColor: "divider" }}>{item.category}</TableCell>
-                            <TableCell sx={{ borderBottom: "1px solid", borderColor: "divider" }}>{item.stock}</TableCell>
+                            <TableCell sx={{ borderBottom: "1px solid", borderColor: "divider", fontSize: compactView ? "0.8125rem" : "0.875rem" }}>{item.name}</TableCell>
+                            <TableCell sx={{ borderBottom: "1px solid", borderColor: "divider", fontSize: compactView ? "0.8125rem" : "0.875rem" }}>{item.category}</TableCell>
+                            <TableCell sx={{ borderBottom: "1px solid", borderColor: "divider", fontSize: compactView ? "0.8125rem" : "0.875rem" }}>{item.stock}</TableCell>
                             <TableCell align="right" sx={{ borderBottom: "1px solid", borderColor: "divider" }}>
                                 <IconButton
                                     size="small"

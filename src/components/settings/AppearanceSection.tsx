@@ -16,11 +16,16 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
     onDarkModeChange,
     onCompactViewChange,
 }) => {
-    const { toggleDarkMode } = useThemeContext();
+    const { toggleDarkMode, toggleCompactView } = useThemeContext();
 
     const handleThemeToggle = (enabled: boolean) => {
         onDarkModeChange(enabled);
         toggleDarkMode(enabled);
+    };
+
+    const handleCompactToggle = (enabled: boolean) => {
+        onCompactViewChange(enabled);
+        toggleCompactView(enabled);
     };
     return (
         <Paper
@@ -56,7 +61,7 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
                     control={
                         <Switch
                             checked={compactView}
-                            onChange={(e) => onCompactViewChange(e.target.checked)}
+                            onChange={(e) => handleCompactToggle(e.target.checked)}
                             color="primary"
                         />
                     }

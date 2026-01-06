@@ -54,7 +54,7 @@ const PageLoader = () => (
   </Box>
 );
 
-const getTheme = (mode: "light" | "dark") => createTheme({
+const getTheme = (mode: "light" | "dark", compact: boolean) => createTheme({
   palette: {
     mode,
     primary: {
@@ -74,10 +74,39 @@ const getTheme = (mode: "light" | "dark") => createTheme({
       secondary: mode === "dark" ? "#8b949e" : "#636c76",
     },
   },
+  spacing: compact ? 6 : 8,
   typography: {
     fontFamily: "Inter, system-ui, sans-serif",
+    fontSize: compact ? 13 : 14,
+    h4: {
+      fontSize: compact ? "1.75rem" : "2.125rem",
+    },
+    h5: {
+      fontSize: compact ? "1.25rem" : "1.5rem",
+    },
+    h6: {
+      fontSize: compact ? "1rem" : "1.25rem",
+    },
   },
   components: {
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          padding: compact ? "8px 12px" : "16px",
+        },
+        paddingCheckbox: {
+          padding: compact ? "0 8px" : "0 16px",
+        }
+      }
+    },
+    MuiListItemButton: {
+      styleOverrides: {
+        root: {
+          paddingTop: compact ? "4px" : "8px",
+          paddingBottom: compact ? "4px" : "8px",
+        }
+      }
+    },
     MuiPaper: {
       styleOverrides: {
         root: {
@@ -90,6 +119,7 @@ const getTheme = (mode: "light" | "dark") => createTheme({
         root: {
           textTransform: "none",
           borderRadius: "8px",
+          padding: compact ? "4px 12px" : "6px 16px",
         },
       },
     },
@@ -111,7 +141,7 @@ import { ThemeProvider as CustomThemeProvider, useThemeContext } from "./context
 const AppContent = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const { darkMode } = useThemeContext();
+  const { darkMode, compactView } = useThemeContext();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -128,7 +158,7 @@ const AppContent = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const theme = getTheme(darkMode ? "dark" : "light");
+  const theme = getTheme(darkMode ? "dark" : "light", compactView);
 
   if (loading) {
     return (

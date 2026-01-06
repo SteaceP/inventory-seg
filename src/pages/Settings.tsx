@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Typography, Box, Button, Grid, Alert, Snackbar } from "@mui/material";
 import { supabase } from "../supabaseClient";
+import { useThemeContext } from "../contexts/ThemeContext";
 
 // Sub-components
 import ProfileSection from "../components/settings/ProfileSection";
@@ -11,6 +12,7 @@ import SecuritySection from "../components/settings/SecuritySection";
 const Settings: React.FC = () => {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { darkMode, compactView, toggleDarkMode, toggleCompactView } = useThemeContext();
 
   const [settings, setSettings] = useState({
     displayName: "",
@@ -18,9 +20,14 @@ const Settings: React.FC = () => {
     notifications: true,
     emailAlerts: false,
     lowStockThreshold: 5,
-    darkMode: true,
-    compactView: false,
+    darkMode: darkMode,
+    compactView: compactView,
   });
+
+  useEffect(() => {
+    // Update local state when context changes (instant feedback)
+    setSettings(prev => ({ ...prev, darkMode, compactView }));
+  }, [darkMode, compactView]);
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -42,6 +49,9 @@ const Settings: React.FC = () => {
             darkMode: userSettings.dark_mode ?? true,
             compactView: userSettings.compact_view ?? false,
           });
+          // Also sync context if it's different
+          if (userSettings.dark_mode !== darkMode) toggleDarkMode(userSettings.dark_mode);
+          if (userSettings.compact_view !== compactView) toggleCompactView(userSettings.compact_view);
         } else {
           setSettings((prev) => ({
             ...prev,
