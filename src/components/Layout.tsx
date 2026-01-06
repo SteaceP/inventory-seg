@@ -57,7 +57,6 @@ const Layout: React.FC = () => {
           sx={{
             width: compactView ? 20 : 24,
             height: compactView ? 20 : 24,
-            opacity: location.pathname === "/inventory" ? 1 : 0.7,
             filter: location.pathname === "/inventory" ? "none" : "grayscale(1)"
           }}
         />
@@ -182,7 +181,8 @@ const Layout: React.FC = () => {
                     color:
                       location.pathname === item.path
                         ? "primary.main"
-                        : "inherit",
+                        : "text.secondary",
+                    opacity: location.pathname === item.path ? 1 : 0.7,
                     minWidth: 0,
                     mr: collapsed && !isMobile ? 0 : 2,
                     justifyContent: "center",

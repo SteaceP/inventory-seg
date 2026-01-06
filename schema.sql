@@ -19,23 +19,48 @@ drop policy if exists "Allow authenticated insert" on public.inventory;
 drop policy if exists "Allow authenticated update" on public.inventory;
 drop policy if exists "Allow authenticated delete" on public.inventory;
 drop policy if exists "Admin full access" on public.inventory;
+drop policy if exists "Admin insert access" on public.inventory;
+drop policy if exists "Admin update access" on public.inventory;
+drop policy if exists "Admin delete access" on public.inventory;
 drop policy if exists "User view access" on public.inventory;
 drop policy if exists "User stock update" on public.inventory;
+drop policy if exists "Authenticated update access" on public.inventory;
 
 -- Admin full access policy
-create policy "Admin full access" on public.inventory
-  for all
+-- Admin access policies (Split to avoid overlapping SELECT with "User view access")
+create policy "Admin insert access" on public.inventory
+  for insert
+  to authenticated
+  with check (
+    EXISTS (
+      SELECT 1 FROM public.user_settings
+      WHERE user_id = (select auth.uid()) AND role = 'admin'
+    )
+  );
+
+create policy "Authenticated update access" on public.inventory
+  for update
   to authenticated
   using (
     EXISTS (
       SELECT 1 FROM public.user_settings
-      WHERE user_id = auth.uid() AND role = 'admin'
+      WHERE user_id = (select auth.uid())
     )
   )
   with check (
     EXISTS (
       SELECT 1 FROM public.user_settings
-      WHERE user_id = auth.uid() AND role = 'admin'
+      WHERE user_id = (select auth.uid())
+    )
+  );
+
+create policy "Admin delete access" on public.inventory
+  for delete
+  to authenticated
+  using (
+    EXISTS (
+      SELECT 1 FROM public.user_settings
+      WHERE user_id = (select auth.uid()) AND role = 'admin'
     )
   );
 
@@ -46,21 +71,7 @@ create policy "User view access" on public.inventory
   using (true);
 
 -- User can only update stock field
-create policy "User stock update" on public.inventory
-  for update
-  to authenticated
-  using (
-    EXISTS (
-      SELECT 1 FROM public.user_settings
-      WHERE user_id = auth.uid() AND role = 'user'
-    )
-  )
-  with check (
-    EXISTS (
-      SELECT 1 FROM public.user_settings
-      WHERE user_id = auth.uid() AND role = 'user'
-    )
-  );
+-- "User stock update" consolidated into "Authenticated update access"
 
 -- Storage Setup (Production Ready)
 -- 1. Create the bucket
@@ -114,14 +125,25 @@ drop policy if exists "Users can view own settings" on public.user_settings;
 drop policy if exists "Users can insert own settings" on public.user_settings;
 drop policy if exists "Users can delete own settings" on public.user_settings;
 drop policy if exists "Users can manage own settings" on public.user_settings;
+drop policy if exists "Users can modify own settings" on public.user_settings;
 
-create policy "Users can manage own settings" on public.user_settings
-  for all
+create policy "Users can modify own settings" on public.user_settings
+  for insert
   to authenticated
-  using (user_id = (select auth.uid()))
   with check (user_id = (select auth.uid()));
 
+create policy "Users can update own settings" on public.user_settings
+  for update
+  to authenticated
+  using (user_id = (select auth.uid()));
+
+create policy "Users can delete own settings" on public.user_settings
+  for delete
+  to authenticated
+  using (user_id = (select auth.uid()));
+
 -- Allow authenticated users to view all profiles (needed for dashboard activity)
+drop policy if exists "Authenticated can view all profiles" on public.user_settings;
 create policy "Authenticated can view all profiles" on public.user_settings
   for select
   to authenticated

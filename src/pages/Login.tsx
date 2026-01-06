@@ -69,7 +69,7 @@ const Login: React.FC = () => {
                 sx={{ width: 120, height: "auto", mb: 2 }}
                 alt="Logo"
               />
-              <Typography variant="h5" fontWeight="bold" color="primary.main">
+              <Typography variant="h5" fontWeight="bold" color="text.primary">
                 Se Connecter
               </Typography>
             </Box>
