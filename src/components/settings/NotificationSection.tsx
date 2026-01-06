@@ -6,6 +6,7 @@ import {
     FormControlLabel,
     Switch,
     TextField,
+    Button,
 } from "@mui/material";
 import { Notifications as NotificationsIcon } from "@mui/icons-material";
 
@@ -61,6 +62,36 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
                     }
                     label="Activer les notifications"
                 />
+
+                {notifications && (
+                    <Button
+                        size="small"
+                        variant="outlined"
+                        onClick={async () => {
+                            if (!("Notification" in window)) return;
+
+                            const options: NotificationOptions = {
+                                body: "Ceci est un test de notification mobile !",
+                                icon: "/icon.svg",
+                                badge: "/icon.svg",
+                                vibrate: [200, 100, 200],
+                                requireInteraction: true,
+                            };
+
+                            if ("serviceWorker" in navigator && Notification.permission === "granted") {
+                                const registration = await navigator.serviceWorker.ready;
+                                registration.showNotification("Test Inventaire SEG", options);
+                            } else if (Notification.permission === "granted") {
+                                new Notification("Test Inventaire SEG", options);
+                            } else {
+                                await Notification.requestPermission();
+                            }
+                        }}
+                        sx={{ ml: 4, mb: 1, textTransform: 'none', borderRadius: '12px', fontSize: '0.8rem' }}
+                    >
+                        Tester la notification sur mon téléphone
+                    </Button>
+                )}
                 <FormControlLabel
                     control={
                         <Switch

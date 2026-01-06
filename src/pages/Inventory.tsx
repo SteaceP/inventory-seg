@@ -92,11 +92,16 @@ const Inventory: React.FC = () => {
       if (isLowStock) {
         // Handle In-App/Browser Notifications
         if (userSettings?.notifications && "Notification" in window && Notification.permission === "granted") {
-          const notificationData = {
+          const notificationData: NotificationOptions = {
             body: `L'article "${item.name}" est à ${item.stock} unités.`,
             icon: "/icon.svg",
             badge: "/icon.svg",
             tag: "low-stock-" + item.id,
+            vibrate: [200, 100, 200],
+            requireInteraction: true,
+            data: {
+              url: "/inventory"
+            }
           };
 
           if ("serviceWorker" in navigator) {
