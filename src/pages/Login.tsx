@@ -64,7 +64,7 @@ const Login: React.FC = () => {
             <Box sx={{ mb: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <InventoryIcon sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
               <Typography variant="h5" fontWeight="bold" color="primary.main">
-                Inventory Login
+                Se Connecter
               </Typography>
             </Box>
 
@@ -80,7 +80,7 @@ const Login: React.FC = () => {
                 required
                 fullWidth
                 id="email"
-                label="Email Address"
+                label="Adresse e-mail"
                 name="email"
                 autoComplete="email"
                 autoFocus
@@ -93,7 +93,7 @@ const Login: React.FC = () => {
                 required
                 fullWidth
                 name="password"
-                label="Password"
+                label="Mot de passe"
                 type={showPassword ? 'text' : 'password'}
                 id="password"
                 autoComplete="current-password"
@@ -103,7 +103,7 @@ const Login: React.FC = () => {
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
-                        aria-label="toggle password visibility"
+                        aria-label="basculer la visibilité du mot de passe"
                         onClick={() => setShowPassword(!showPassword)}
                         edge="end"
                       >
@@ -126,12 +126,12 @@ const Login: React.FC = () => {
                   boxShadow: '0 4px 14px 0 rgba(88, 166, 255, 0.39)',
                 }}
               >
-                {loading ? 'Signing in...' : 'Sign In'}
+                {loading ? 'Connexion en cours...' : 'Se connecter'}
               </Button>
             </Box>
-            
+
             <Typography variant="body2" sx={{ mt: 3, color: 'text.secondary' }}>
-              Don't have an account? Contact your administrator.
+              Vous n'avez pas de compte ? Contactez votre administrateur.
             </Typography>
           </Paper>
         </motion.div>

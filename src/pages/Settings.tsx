@@ -76,7 +76,7 @@ const Settings: React.FC = () => {
       if (error) throw error;
       setSaveSuccess(true);
     } catch {
-      setError("Failed to save settings. Please try again.");
+      setError("L'enregistrement des paramètres a échoué. Veuillez réessayer.");
     }
   };
 
@@ -88,10 +88,10 @@ const Settings: React.FC = () => {
   return (
     <Box>
       <Typography variant="h4" fontWeight="bold" gutterBottom>
-        Settings
+        Paramètres
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        Manage your account settings and preferences
+        Gérez vos paramètres de compte et vos préférences
       </Typography>
 
       <Grid container spacing={3}>
@@ -130,7 +130,7 @@ const Settings: React.FC = () => {
 
       <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end" }}>
         <Button variant="contained" size="large" onClick={handleSaveSettings} sx={{ px: 4 }}>
-          Save Changes
+          Enregistrer les modifications
         </Button>
       </Box>
 
@@ -141,7 +141,7 @@ const Settings: React.FC = () => {
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert severity="success" sx={{ width: "100%" }}>
-          Settings saved successfully!
+          Paramètres enregistrés avec succès !
         </Alert>
       </Snackbar>
 

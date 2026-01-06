@@ -39,9 +39,9 @@ const Layout: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const menuItems = [
-    { text: "Dashboard", icon: <DashboardIcon />, path: "/" },
-    { text: "Inventory", icon: <InventoryIcon />, path: "/inventory" },
-    { text: "Settings", icon: <SettingsIcon />, path: "/settings" },
+    { text: "Tableau de bord", icon: <DashboardIcon />, path: "/" },
+    { text: "Inventaire", icon: <InventoryIcon />, path: "/inventory" },
+    { text: "Paramètres", icon: <SettingsIcon />, path: "/settings" },
   ];
 
   const handleDrawerToggle = () => {
@@ -55,8 +55,8 @@ const Layout: React.FC = () => {
   const currentDrawerWidth = isMobile
     ? drawerWidth
     : collapsed
-    ? collapsedWidth
-    : drawerWidth;
+      ? collapsedWidth
+      : drawerWidth;
 
   const drawerContent = (
     <>
@@ -75,7 +75,7 @@ const Layout: React.FC = () => {
             component="div"
             sx={{ fontWeight: "bold", color: "primary.main", ml: 1 }}
           >
-            INVENTORY
+            Inventaire
           </Typography>
         )}
         {!isMobile && (
@@ -209,7 +209,7 @@ const Layout: React.FC = () => {
               component="div"
               sx={{ fontWeight: "bold", color: "primary.main" }}
             >
-              INVENTORY
+              INVENTAIRE
             </Typography>
           </Toolbar>
         </AppBar>

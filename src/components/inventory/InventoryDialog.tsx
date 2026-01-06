@@ -59,7 +59,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                 },
             }}
         >
-            <DialogTitle>{editingItem ? "Edit Item" : "Add New Item"}</DialogTitle>
+            <DialogTitle>{editingItem ? "Modifier l'article" : "Ajouter un nouvel article"}</DialogTitle>
             <DialogContent>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 1 }}>
                     {/* Image Upload Area */}
@@ -108,7 +108,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                             <>
                                 <AddPhotoIcon sx={{ fontSize: 40, color: "text.secondary", mb: 1 }} />
                                 <Typography variant="body2" color="text.secondary">
-                                    Click to upload photo
+                                    Cliquez pour télécharger une photo
                                 </Typography>
                             </>
                         )}
@@ -123,7 +123,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
 
                     <Box sx={{ display: "flex", gap: 1, alignItems: "flex-start" }}>
                         <TextField
-                            label="SKU / Barcode"
+                            label="SKU / Code-barres"
                             fullWidth
                             value={formData.sku || ""}
                             onChange={(e) =>
@@ -137,7 +137,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                             }}
                             InputLabelProps={{ sx: { color: "text.secondary" } }}
                         />
-                        <Tooltip title="Generate SKU">
+                        <Tooltip title="Générer un SKU">
                             <IconButton
                                 onClick={onGenerateSKU}
                                 sx={{ mt: 1, color: "primary.main" }}
@@ -170,7 +170,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                     )}
 
                     <TextField
-                        label="Name"
+                        label="Nom"
                         fullWidth
                         value={formData.name || ""}
                         onChange={(e) =>
@@ -185,7 +185,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                         InputLabelProps={{ sx: { color: "text.secondary" } }}
                     />
                     <TextField
-                        label="Category"
+                        label="Catégorie"
                         fullWidth
                         value={formData.category || ""}
                         onChange={(e) =>
@@ -226,7 +226,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                             InputLabelProps={{ sx: { color: "text.secondary" } }}
                         />
                         <TextField
-                            label="Price"
+                            label="Prix"
                             type="number"
                             fullWidth
                             value={formData.price || 0}
@@ -249,10 +249,10 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
             </DialogContent>
             <DialogActions sx={{ p: 3 }}>
                 <Button onClick={onClose} sx={{ color: "text.secondary" }}>
-                    Cancel
+                    Annuler
                 </Button>
                 <Button onClick={onSave} variant="contained" color="primary">
-                    Save
+                    Enregistrer
                 </Button>
             </DialogActions>
         </Dialog>

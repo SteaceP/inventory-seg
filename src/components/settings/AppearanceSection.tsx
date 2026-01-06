@@ -29,7 +29,7 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
             <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
                 <PaletteIcon sx={{ mr: 1, color: "primary.main" }} />
                 <Typography variant="h6" fontWeight="bold">
-                    Appearance
+                    Apparence
                 </Typography>
             </Box>
 
@@ -42,7 +42,7 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
                             color="primary"
                         />
                     }
-                    label="Dark Mode"
+                    label="Mode Sombre"
                 />
                 <FormControlLabel
                     control={
@@ -52,7 +52,7 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
                             color="primary"
                         />
                     }
-                    label="Compact View"
+                    label="Vue Compacte"
                 />
             </Box>
         </Paper>

@@ -67,16 +67,16 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                             SKU
                         </TableCell>
                         <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid #30363d" }}>
-                            Name
+                            Nom
                         </TableCell>
                         <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid #30363d" }}>
-                            Category
+                            Catégorie
                         </TableCell>
                         <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid #30363d" }}>
                             Stock
                         </TableCell>
                         <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid #30363d" }}>
-                            Price
+                            Prix
                         </TableCell>
                         <TableCell align="right" sx={{ color: "text.secondary", borderBottom: "1px solid #30363d" }}>
                             Actions

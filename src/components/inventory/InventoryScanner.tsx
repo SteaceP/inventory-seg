@@ -61,7 +61,7 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
                         () => { }
                     );
                 } catch {
-                    onError("Unable to start camera. Please check permissions.");
+                    onError("Impossible de démarrer la caméra. Veuillez vérifier les permissions.");
                     onClose();
                 }
             }, 300);
@@ -109,10 +109,10 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
                     <CloseIcon fontSize="small" />
                 </IconButton>
                 <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
-                    Scan Barcode
+                    Scanner le code-barres
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                    Align the barcode within the frame
+                    Alignez le code-barres dans le cadre
                 </Typography>
 
                 <Box
@@ -240,7 +240,7 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
                         px: 4,
                     }}
                 >
-                    Cancel
+                    Annuler
                 </Button>
             </Box>
         </Dialog>

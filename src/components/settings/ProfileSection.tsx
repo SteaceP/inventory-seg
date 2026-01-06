@@ -33,7 +33,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
             <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
                 <PersonIcon sx={{ mr: 1, color: "primary.main" }} />
                 <Typography variant="h6" fontWeight="bold">
-                    Profile
+                    Profil
                 </Typography>
             </Box>
 
@@ -52,7 +52,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
                 </Box>
 
                 <TextField
-                    label="Display Name"
+                    label="Nom d'affichage"
                     fullWidth
                     value={displayName}
                     onChange={(e) => onDisplayNameChange(e.target.value)}
@@ -66,7 +66,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
                 />
 
                 <TextField
-                    label="Email"
+                    label="E-mail"
                     fullWidth
                     value={email}
                     disabled

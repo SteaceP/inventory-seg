@@ -21,7 +21,7 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({ onSignOut }) => {
             <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
                 <SecurityIcon sx={{ mr: 1, color: "primary.main" }} />
                 <Typography variant="h6" fontWeight="bold">
-                    Security
+                    Sécurité
                 </Typography>
             </Box>
 
@@ -37,7 +37,7 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({ onSignOut }) => {
                         },
                     }}
                 >
-                    Change Password
+                    Changer le mot de passe
                 </Button>
                 <Button
                     variant="outlined"
@@ -45,7 +45,7 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({ onSignOut }) => {
                     fullWidth
                     onClick={onSignOut}
                 >
-                    Sign Out
+                    Se déconnecter
                 </Button>
             </Box>
         </Paper>

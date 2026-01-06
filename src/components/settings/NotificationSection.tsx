@@ -53,7 +53,7 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
                             color="primary"
                         />
                     }
-                    label="Enable Notifications"
+                    label="Activer les notifications"
                 />
                 <FormControlLabel
                     control={
@@ -63,11 +63,11 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
                             color="primary"
                         />
                     }
-                    label="Email Alerts for Low Stock"
+                    label="Alertes e-mail pour stock faible"
                 />
                 {emailAlerts && (
                     <TextField
-                        label="Low Stock Threshold"
+                        label="Seuil de stock faible"
                         type="number"
                         fullWidth
                         value={lowStockThreshold}

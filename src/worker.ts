@@ -52,18 +52,18 @@ export default {
             'content-type': 'application/json',
           },
           body: JSON.stringify({
-            sender: { name: 'Inventory App', email: env.BREVO_SENDER_EMAIL || 'noreply@coderage.pro' },
+            sender: { name: 'Inventaire SEG', email: env.BREVO_SENDER_EMAIL || 'noreply@coderage.pro' },
             to: [{ email: userEmail }],
-            subject: `Low Stock Alert: ${itemName}`,
+            subject: `Alerte Stock Faible: ${itemName}`,
             htmlContent: `
               <div style="font-family: sans-serif; padding: 20px; color: #333;">
-                <h2 style="color: #d32f2f;">Low Stock Alert</h2>
-                <p>The following item has fallen below your threshold of <strong>${threshold}</strong>:</p>
+                <h2 style="color: #d32f2f;">Alerte Stock Faible</h2>
+                <p>L'article suivant est tombé en dessous de votre seuil de <strong>${threshold}</strong> :</p>
                 <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                  <p style="margin: 5px 0;"><strong>Item:</strong> ${itemName}</p>
-                  <p style="margin: 5px 0;"><strong>Current Stock:</strong> ${currentStock}</p>
+                  <p style="margin: 5px 0;"><strong>Article :</strong> ${itemName}</p>
+                  <p style="margin: 5px 0;"><strong>Stock Actuel :</strong> ${currentStock}</p>
                 </div>
-                <p>Please log in to your inventory dashboard to restock.</p>
+                <p>Veuillez vous connecter à votre tableau de bord d'inventaire pour vous réapprovisionner.</p>
               </div>
             `,
           }),
@@ -81,7 +81,7 @@ export default {
       } catch (error) {
         console.error("Worker Error:", error);
         const message = error instanceof Error ? error.message : 'An unknown error occurred';
-        return new Response(JSON.stringify({ 
+        return new Response(JSON.stringify({
           error: message,
           timestamp: new Date().toISOString()
         }), {

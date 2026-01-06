@@ -43,7 +43,7 @@ const Inventory: React.FC = () => {
       .order("name");
 
     if (error) {
-      setError("Failed to load inventory. Please try again.");
+      setError("Le chargement de l'inventaire a échoué. Veuillez réessayer.");
     } else {
       setItems(data || []);
     }
@@ -130,7 +130,7 @@ const Inventory: React.FC = () => {
 
       setFormData({ ...formData, image_url: publicUrl });
     } catch (err) {
-      setError("Error uploading image. Please try again.");
+      setError("Erreur lors du téléchargement de l'image. Veuillez réessayer.");
       console.error(err);
     } finally {
       setLoading(false);
@@ -148,7 +148,7 @@ const Inventory: React.FC = () => {
     };
 
     if (!sanitizedData.name) {
-      alert("Item name is required.");
+      alert("Le nom de l'article est requis.");
       return;
     }
 
@@ -159,7 +159,7 @@ const Inventory: React.FC = () => {
         .eq("id", editingItem.id);
 
       if (error) {
-        setError("Failed to update item. Please try again.");
+        setError("La mise à jour de l'article a échoué. Veuillez réessayer.");
         return;
       }
     } else {
@@ -168,7 +168,7 @@ const Inventory: React.FC = () => {
         .insert([sanitizedData]);
 
       if (error) {
-        setError("Failed to add item. Please try again.");
+        setError("L'ajout de l'article a échoué. Veuillez réessayer.");
         return;
       }
     }
@@ -179,10 +179,10 @@ const Inventory: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this item?")) {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer cet article ?")) {
       const { error } = await supabase.from("inventory").delete().eq("id", id);
       if (error) {
-        setError("Failed to delete item. Please try again.");
+        setError("La suppression de l'article a échoué. Veuillez réessayer.");
       } else {
         fetchInventory();
       }

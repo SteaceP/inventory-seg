@@ -79,7 +79,7 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                                 variant="caption"
                                 sx={{ fontFamily: "monospace", color: "text.secondary" }}
                             >
-                                {item.sku || "No SKU"}
+                                {item.sku || "Pas de SKU"}
                             </Typography>
                         </Box>
                         <Checkbox
@@ -91,7 +91,7 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
 
                     <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
                         <Chip
-                            label={`${item.stock} in stock`}
+                            label={`${item.stock} en stock`}
                             size="small"
                             color={item.stock < 5 ? "warning" : "default"}
                             sx={{

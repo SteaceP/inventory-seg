@@ -73,7 +73,7 @@ const Dashboard: React.FC = () => {
       const { data, error } = await supabase.from("inventory").select("*");
 
       if (error) {
-        setError("Failed to load dashboard statistics. Please try again.");
+        setError("Le chargement des statistiques du tableau de bord a echoué. Veuillez réessayer.");
       } else if (data) {
         const totalItems = data.length;
         const totalValue = data.reduce(
@@ -127,16 +127,16 @@ const Dashboard: React.FC = () => {
         fontWeight="bold"
         gutterBottom
       >
-        Dashboard
+        Tableau de bord
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        Welcome back! Here's what's happening today.
+        Bienvenue! Que s'est-il passé aujourd'hui?
       </Typography>
 
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, sm: 4 }}>
           <StatCard
-            title="Total Items"
+            title="Total des articles"
             value={stats.totalItems.toLocaleString()}
             icon={<InventoryIcon />}
             color="#58a6ff"
@@ -144,7 +144,7 @@ const Dashboard: React.FC = () => {
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
           <StatCard
-            title="Total Value"
+            title="Valeur Totale"
             value={`$${stats.totalValue.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
@@ -155,7 +155,7 @@ const Dashboard: React.FC = () => {
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
           <StatCard
-            title="Top Category"
+            title="Catégorie Principale"
             value={stats.topCategory}
             icon={<PeopleIcon />}
             color="#d29922"

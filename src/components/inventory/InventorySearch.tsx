@@ -13,7 +13,7 @@ const InventorySearch: React.FC<InventorySearchProps> = ({ value, onChange }) =>
             <TextField
                 fullWidth
                 variant="outlined"
-                placeholder="Search items by name, SKU, or category..."
+                placeholder="Rechercher des articles par nom, SKU ou catégorie..."
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 sx={{
