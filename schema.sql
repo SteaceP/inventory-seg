@@ -121,6 +121,12 @@ create policy "Users can manage own settings" on public.user_settings
   using (user_id = (select auth.uid()))
   with check (user_id = (select auth.uid()));
 
+-- Allow authenticated users to view all profiles (needed for dashboard activity)
+create policy "Authenticated can view all profiles" on public.user_settings
+  for select
+  to authenticated
+  using (true);
+
 -- Function to update the updated_at column
 -- Setting search_path to empty and using explicit schema for now() is the most secure approach
 drop function if exists public.update_updated_at_column() cascade;
