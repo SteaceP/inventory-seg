@@ -13,7 +13,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^6.5.0",
-    "@mui/material": "^6.5.0",
+    "@mui/material": "^7.3.6",
     "@supabase/supabase-js": "^2.89.0",
     "framer-motion": "^12.23.26",
     "html5-qrcode": "^2.3.8",
