@@ -5,10 +5,9 @@ import { supabase } from "../supabaseClient";
 import { useThemeContext } from "../contexts/useThemeContext";
 import { useTranslation } from "../i18n";
 import { useInventoryContext } from "../contexts/useInventoryContext";
+import { useAlert } from "../contexts/useAlertContext";
 import BarcodePrinter from "../components/BarcodePrinter";
 import type { InventoryItem } from "../types/inventory";
-
-// Sub-components
 import InventoryHeader from "../components/inventory/InventoryHeader";
 import InventorySearch from "../components/inventory/InventorySearch";
 import InventoryTable from "../components/inventory/InventoryTable";
@@ -16,7 +15,6 @@ import InventoryGrid from "../components/inventory/InventoryGrid";
 import InventoryDialog from "../components/inventory/InventoryDialog";
 import InventoryScanner from "../components/inventory/InventoryScanner";
 import StockAdjustmentDialog from "../components/inventory/StockAdjustmentDialog";
-import { useAlert } from "../contexts/useAlertContext";
 
 const Inventory: React.FC = () => {
   const {
@@ -45,7 +43,7 @@ const Inventory: React.FC = () => {
   const isDesktop = !isTablet;
 
   const { t } = useTranslation();
-  const { showError } = useAlert(); // Initialize useAlert
+  const { showError } = useAlert();
 
   // Server-side fetch for DataGrid: supports pagination, optional search and sorting
   const fetchServerRows = async ({

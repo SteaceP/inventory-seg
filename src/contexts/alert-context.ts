@@ -7,4 +7,6 @@ interface AlertContextType {
   showWarning: (message: string) => void;
 }
 
-export const AlertContext = createContext<AlertContextType | undefined>(undefined);
+export const AlertContext = createContext<AlertContextType | undefined>(
+  undefined
+);

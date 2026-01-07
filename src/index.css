@@ -42,8 +42,16 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background-color: var(--bg-primary);
-  background-image: radial-gradient(circle at top right, rgba(2, 125, 111, 0.05), transparent 400px),
-    radial-gradient(circle at bottom left, rgba(13, 87, 106, 0.05), transparent 400px);
+  background-image: radial-gradient(
+      circle at top right,
+      rgba(2, 125, 111, 0.05),
+      transparent 400px
+    ),
+    radial-gradient(
+      circle at bottom left,
+      rgba(13, 87, 106, 0.05),
+      transparent 400px
+    );
   color: var(--text-main);
 }
 

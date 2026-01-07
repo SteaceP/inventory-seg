@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -8,11 +8,11 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          'mui-vendor': ['@mui/material', '@mui/icons-material'],
-          'scanner-vendor': ['html5-qrcode'],
-          'framer-vendor': ['framer-motion'],
+          "mui-vendor": ["@mui/material", "@mui/icons-material"],
+          "scanner-vendor": ["html5-qrcode"],
+          "framer-vendor": ["framer-motion"],
         },
       },
     },
   },
-})
+});

@@ -16,43 +16,60 @@ export default {
     const url = new URL(request.url);
 
     // Handle API routes
-    if (url.pathname === '/api/send-low-stock-alert' && request.method === 'POST') {
+    if (
+      url.pathname === "/api/send-low-stock-alert" &&
+      request.method === "POST"
+    ) {
       try {
         let body: RequestBody;
         try {
-          body = await request.json() as RequestBody;
+          body = (await request.json()) as RequestBody;
         } catch {
-          return new Response(JSON.stringify({ error: 'Invalid or missing JSON body' }), {
-            status: 400,
-            headers: { 'Content-Type': 'application/json' },
-          });
+          return new Response(
+            JSON.stringify({ error: "Invalid or missing JSON body" }),
+            {
+              status: 400,
+              headers: { "Content-Type": "application/json" },
+            }
+          );
         }
 
         const { itemName, currentStock, threshold, userEmail } = body;
 
         if (!env.BREVO_API_KEY) {
           console.error("BREVO_API_KEY is missing from environment variables");
-          return new Response(JSON.stringify({ error: 'BREVO_API_KEY not configured on server' }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' },
-          });
+          return new Response(
+            JSON.stringify({ error: "BREVO_API_KEY not configured on server" }),
+            {
+              status: 500,
+              headers: { "Content-Type": "application/json" },
+            }
+          );
         }
 
         if (!userEmail || !itemName) {
-          return new Response(JSON.stringify({ error: 'Missing required fields (itemName or userEmail)' }), {
-            status: 400,
-            headers: { 'Content-Type': 'application/json' },
-          });
+          return new Response(
+            JSON.stringify({
+              error: "Missing required fields (itemName or userEmail)",
+            }),
+            {
+              status: 400,
+              headers: { "Content-Type": "application/json" },
+            }
+          );
         }
 
-        const response = await fetch('https://api.brevo.com/v3/smtp/email', {
-          method: 'POST',
+        const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+          method: "POST",
           headers: {
-            'api-key': env.BREVO_API_KEY,
-            'content-type': 'application/json',
+            "api-key": env.BREVO_API_KEY,
+            "content-type": "application/json",
           },
           body: JSON.stringify({
-            sender: { name: 'Inventaire SEG', email: env.BREVO_SENDER_EMAIL || 'noreply@coderage.pro' },
+            sender: {
+              name: "Inventaire SEG",
+              email: env.BREVO_SENDER_EMAIL || "noreply@coderage.pro",
+            },
             to: [{ email: userEmail }],
             subject: `Alerte Stock Faible: ${itemName}`,
             htmlContent: `
@@ -69,25 +86,29 @@ export default {
           }),
         });
 
-        const result = await response.json() as { message?: string };
+        const result = (await response.json()) as { message?: string };
 
         if (!response.ok) {
-          throw new Error(result.message || 'Failed to send email');
+          throw new Error(result.message || "Failed to send email");
         }
 
         return new Response(JSON.stringify({ success: true }), {
-          headers: { 'Content-Type': 'application/json' },
+          headers: { "Content-Type": "application/json" },
         });
       } catch (error) {
         console.error("Worker Error:", error);
-        const message = error instanceof Error ? error.message : 'An unknown error occurred';
-        return new Response(JSON.stringify({
-          error: message,
-          timestamp: new Date().toISOString()
-        }), {
-          status: 500,
-          headers: { 'Content-Type': 'application/json' },
-        });
+        const message =
+          error instanceof Error ? error.message : "An unknown error occurred";
+        return new Response(
+          JSON.stringify({
+            error: message,
+            timestamp: new Date().toISOString(),
+          }),
+          {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
       }
     }
 

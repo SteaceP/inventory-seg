@@ -12,6 +12,9 @@ import type {
   GridSortModel,
 } from "@mui/x-data-grid";
 import type { InventoryItem } from "../../types/inventory";
+import { useThemeContext } from "../../contexts/useThemeContext";
+import { useTranslation } from "../../i18n";
+import { useAlert } from "../../contexts/useAlertContext";
 
 interface InventoryTableProps {
   items: InventoryItem[];
@@ -31,10 +34,6 @@ interface InventoryTableProps {
   searchQuery?: string;
   isDesktop?: boolean;
 }
-
-import { useThemeContext } from "../../contexts/useThemeContext";
-import { useTranslation } from "../../i18n";
-import { useAlert } from "../../contexts/useAlertContext";
 
 const InventoryTable: React.FC<InventoryTableProps> = ({
   items,
@@ -132,8 +131,6 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     },
   ];
 
-  // Use built-in v8 toolbar with `showToolbar` prop for standard functionality
-
   const rowSelectionModel = useMemo(
     () => ({
       ids: new Set(Array.from(selectedItems)),
@@ -183,7 +180,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     return () => {
       mounted = false;
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     fetchServerRows,
     paginationModel.page,

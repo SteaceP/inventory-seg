@@ -20,6 +20,14 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
       const {
         data: { session },
       } = await supabase.auth.getSession();
+      // Listen for messages from service worker
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.addEventListener("message", (event) => {
+          if (event.data.type === "SETTINGS_FETCH_ERROR") {
+            showError(event.data.message);
+          }
+        });
+      }
       if (session?.user) {
         setUserId(session.user.id);
         const { data: settings } = await supabase
@@ -68,8 +76,14 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     });
 
-    return () => subscription.unsubscribe();
-  }, []);
+    // Cleanup
+    return () => {
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.removeEventListener("message", () => {});
+      }
+      subscription.unsubscribe();
+    };
+  }, [showError]);
 
   const toggleDarkMode = async (enabled: boolean) => {
     setDarkMode(enabled);
@@ -143,6 +157,3 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     </ThemeContext.Provider>
   );
 };
-
-// NOTE: `useThemeContext` is defined in `src/contexts/useThemeContext.ts` to satisfy
-// react-refresh rules (TSX files should only export components).

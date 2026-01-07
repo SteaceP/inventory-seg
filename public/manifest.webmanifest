@@ -1,17 +1,17 @@
 {
-    "name": "Inventaire SEG",
-    "short_name": "Inventaire",
-    "description": "Système de gestion d'inventaire moderne",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#0d1117",
-    "theme_color": "#58a6ff",
-    "icons": [
-        {
-            "src": "/icon.svg",
-            "sizes": "any",
-            "type": "image/svg+xml",
-            "purpose": "any maskable"
-        }
-    ]
+  "name": "Inventaire SEG",
+  "short_name": "Inventaire",
+  "description": "Système de gestion d'inventaire moderne",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#58a6ff",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }

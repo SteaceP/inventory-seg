@@ -6,7 +6,7 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
-      timezone: "UTC"
+      timezone: "America/Montreal"
     open-pull-requests-limit: 10
     labels:
       - "dependencies"
@@ -40,7 +40,7 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
-      timezone: "UTC"
+      timezone: "America/Montreal"
     open-pull-requests-limit: 5
     labels:
       - "dependencies"

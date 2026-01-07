@@ -17,7 +17,7 @@ import {
   CircularProgress,
   CardMedia,
   InputAdornment,
-  Grid
+  Grid,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -340,9 +340,11 @@ const Appliances: React.FC = () => {
                   transition: "transform 0.2s, box-shadow 0.2s",
                   overflow: "hidden",
                   "&:hover": {
-                    transform: compactView ? "translateY(-2px)" : "translateY(-4px)",
-                    boxShadow: compactView 
-                      ? "0 8px 16px -8px rgba(0, 0, 0, 0.2)" 
+                    transform: compactView
+                      ? "translateY(-2px)"
+                      : "translateY(-4px)",
+                    boxShadow: compactView
+                      ? "0 8px 16px -8px rgba(0, 0, 0, 0.2)"
                       : "0 12px 24px -10px rgba(0, 0, 0, 0.2)",
                   },
                 }}
@@ -365,7 +367,10 @@ const Appliances: React.FC = () => {
                       mb: 1,
                     }}
                   >
-                    <Typography variant={compactView ? "subtitle1" : "h6"} fontWeight="bold">
+                    <Typography
+                      variant={compactView ? "subtitle1" : "h6"}
+                      fontWeight="bold"
+                    >
                       {appliance.name}
                     </Typography>
                     <Chip

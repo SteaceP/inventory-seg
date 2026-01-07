@@ -51,9 +51,9 @@ const Layout: React.FC = () => {
   };
 
   const menuItems = [
-    { text: t('menu.dashboard'), icon: <DashboardIcon />, path: "/" },
+    { text: t("menu.dashboard"), icon: <DashboardIcon />, path: "/" },
     {
-      text: t('menu.inventory'),
+      text: t("menu.inventory"),
       icon: (
         <Box
           component="img"
@@ -61,15 +61,20 @@ const Layout: React.FC = () => {
           sx={{
             width: compactView ? 20 : 24,
             height: compactView ? 20 : 24,
-            filter: location.pathname === "/inventory" ? "none" : "grayscale(1)"
+            filter:
+              location.pathname === "/inventory" ? "none" : "grayscale(1)",
           }}
         />
       ),
-      path: "/inventory"
+      path: "/inventory",
     },
-    { text: t('menu.appliances'), icon: <AppliancesIcon />, path: "/appliances" },
+    {
+      text: t("menu.appliances"),
+      icon: <AppliancesIcon />,
+      path: "/appliances",
+    },
     // Keep Settings last in this section
-    { text: t('menu.settings'), icon: <SettingsIcon />, path: "/settings" },
+    { text: t("menu.settings"), icon: <SettingsIcon />, path: "/settings" },
   ];
 
   const handleDrawerToggle = () => {
@@ -83,8 +88,8 @@ const Layout: React.FC = () => {
   const currentDrawerWidth = isMobile
     ? drawerWidth
     : collapsed
-      ? collapsedWidth
-      : drawerWidth;
+    ? collapsedWidth
+    : drawerWidth;
 
   const drawerContent = (
     <>
@@ -97,12 +102,16 @@ const Layout: React.FC = () => {
           minHeight: compactView ? "48px !important" : "64px !important",
         }}
       >
-            {(!collapsed || isMobile) && (
+        {(!collapsed || isMobile) && (
           <Box sx={{ display: "flex", alignItems: "center", ml: 1 }}>
             <Box
               component="img"
               src="/icon.svg"
-              sx={{ width: compactView ? 24 : 32, height: compactView ? 24 : 32, mr: 1 }}
+              sx={{
+                width: compactView ? 24 : 32,
+                height: compactView ? 24 : 32,
+                mr: 1,
+              }}
               alt="Logo"
             />
             <Typography
@@ -111,7 +120,7 @@ const Layout: React.FC = () => {
               component="div"
               sx={{ fontWeight: "bold", color: "primary.main" }}
             >
-                  {t('app.title')}
+              {t("app.title")}
             </Typography>
           </Box>
         )}
@@ -120,20 +129,33 @@ const Layout: React.FC = () => {
             onClick={handleDrawerToggle}
             sx={{ color: "primary.main", p: compactView ? 0.5 : 1 }}
           >
-            {collapsed ? <MenuIcon fontSize={compactView ? "small" : "medium"} /> : <ChevronLeftIcon fontSize={compactView ? "small" : "medium"} />}
+            {collapsed ? (
+              <MenuIcon fontSize={compactView ? "small" : "medium"} />
+            ) : (
+              <ChevronLeftIcon fontSize={compactView ? "small" : "medium"} />
+            )}
           </IconButton>
         )}
       </Toolbar>
 
-      <Box sx={{ px: 2, py: compactView ? 1.5 : 2, display: "flex", alignItems: "center", gap: 2, overflow: "hidden" }}>
-            <Avatar
+      <Box
+        sx={{
+          px: 2,
+          py: compactView ? 1.5 : 2,
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
+          overflow: "hidden",
+        }}
+      >
+        <Avatar
           src={avatarUrl}
           sx={{
-            width: collapsed && !isMobile ? 32 : (compactView ? 36 : 40),
-            height: collapsed && !isMobile ? 32 : (compactView ? 36 : 40),
+            width: collapsed && !isMobile ? 32 : compactView ? 36 : 40,
+            height: collapsed && !isMobile ? 32 : compactView ? 36 : 40,
             bgcolor: "primary.main",
             fontSize: "0.875rem",
-            flexShrink: 0
+            flexShrink: 0,
           }}
         >
           {getInitials(displayName)}
@@ -141,10 +163,15 @@ const Layout: React.FC = () => {
         {(!collapsed || isMobile) && (
           <Box sx={{ minWidth: 0, flex: 1, overflow: "hidden" }}>
             <Typography variant="body2" fontWeight="bold" noWrap>
-              {displayName || t('user.default')}
+              {displayName || t("user.default")}
             </Typography>
-            <Typography variant="caption" color="text.secondary" noWrap display="block">
-              {t('user.online')}
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              noWrap
+              display="block"
+            >
+              {t("user.online")}
             </Typography>
           </Box>
         )}
@@ -201,7 +228,7 @@ const Layout: React.FC = () => {
                     primary={item.text}
                     primaryTypographyProps={{
                       fontSize: compactView ? "0.8125rem" : "0.875rem",
-                      fontWeight: location.pathname === item.path ? 600 : 400
+                      fontWeight: location.pathname === item.path ? 600 : 400,
                     }}
                   />
                 )}
@@ -212,7 +239,7 @@ const Layout: React.FC = () => {
         <Divider sx={{ my: compactView ? 1 : 2, borderColor: "divider" }} />
         <List dense={compactView}>
           <Tooltip
-            title={collapsed && !isMobile ? t('security.signOut') : ""}
+            title={collapsed && !isMobile ? t("security.signOut") : ""}
             placement="right"
           >
             <ListItemButton
@@ -241,8 +268,10 @@ const Layout: React.FC = () => {
               </ListItemIcon>
               {(!collapsed || isMobile) && (
                 <ListItemText
-                  primary={t('security.signOut')}
-                  primaryTypographyProps={{ fontSize: compactView ? "0.8125rem" : "0.875rem" }}
+                  primary={t("security.signOut")}
+                  primaryTypographyProps={{
+                    fontSize: compactView ? "0.8125rem" : "0.875rem",
+                  }}
                 />
               )}
             </ListItemButton>
@@ -268,14 +297,22 @@ const Layout: React.FC = () => {
           position="fixed"
           sx={{
             width: "100%",
-            background: (theme) => theme.palette.mode === "dark" ? "rgba(22, 27, 34, 0.8)" : "#ffffff",
+            background: (theme) =>
+              theme.palette.mode === "dark"
+                ? "rgba(22, 27, 34, 0.8)"
+                : "#ffffff",
             backdropFilter: "blur(10px)",
             borderBottom: "1px solid",
             borderColor: "divider",
             boxShadow: "none",
           }}
         >
-            <Toolbar sx={{ minHeight: compactView ? "48px !important" : "64px !important", px: { xs: 1, sm: 2 } }}>
+          <Toolbar
+            sx={{
+              minHeight: compactView ? "48px !important" : "64px !important",
+              px: { xs: 1, sm: 2 },
+            }}
+          >
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -288,16 +325,26 @@ const Layout: React.FC = () => {
             <Box
               component="img"
               src="/icon.svg"
-              sx={{ width: compactView ? 20 : 28, height: compactView ? 20 : 28, mr: { xs: 0.75, sm: 1.5 }, flexShrink: 0 }}
+              sx={{
+                width: compactView ? 20 : 28,
+                height: compactView ? 20 : 28,
+                mr: { xs: 0.75, sm: 1.5 },
+                flexShrink: 0,
+              }}
               alt="Logo"
             />
             <Typography
               variant={compactView ? "body1" : "h6"}
               noWrap
               component="div"
-              sx={{ fontWeight: "bold", color: "primary.main", flexGrow: 1, minWidth: 0 }}
+              sx={{
+                fontWeight: "bold",
+                color: "primary.main",
+                flexGrow: 1,
+                minWidth: 0,
+              }}
             >
-              {t('app.title').toUpperCase()}
+              {t("app.title").toUpperCase()}
             </Typography>
           </Toolbar>
         </AppBar>
@@ -313,7 +360,7 @@ const Layout: React.FC = () => {
             open={mobileOpen}
             onClose={handleDrawerToggle}
             ModalProps={{ keepMounted: true }}
-              sx={{
+            sx={{
               display: { xs: "block", sm: "none" },
               "& .MuiDrawer-paper": {
                 boxSizing: "border-box",
@@ -335,7 +382,10 @@ const Layout: React.FC = () => {
               "& .MuiDrawer-paper": {
                 boxSizing: "border-box",
                 width: currentDrawerWidth,
-                background: (theme) => theme.palette.mode === "dark" ? "rgba(22, 27, 34, 0.8)" : "#ffffff",
+                background: (theme) =>
+                  theme.palette.mode === "dark"
+                    ? "rgba(22, 27, 34, 0.8)"
+                    : "#ffffff",
                 backdropFilter: "blur(10px)",
                 borderRight: "1px solid",
                 borderColor: "divider",
@@ -354,7 +404,9 @@ const Layout: React.FC = () => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: compactView ? { xs: 1.5, sm: 2, md: 2.5 } : { xs: 2, sm: 3, md: 4 },
+          p: compactView
+            ? { xs: 1.5, sm: 2, md: 2.5 }
+            : { xs: 2, sm: 3, md: 4 },
           width: { sm: `calc(100% - ${currentDrawerWidth}px)` },
           mt: isMobile ? (compactView ? "48px" : "64px") : 0,
           maxWidth: "100%",
