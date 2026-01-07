@@ -3,6 +3,7 @@ import { Box, CircularProgress, Snackbar, Alert } from "@mui/material";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { supabase } from "../supabaseClient";
 import { useThemeContext } from "../contexts/useThemeContext";
+import { useTranslation } from "../i18n";
 import { useInventoryContext } from "../contexts/useInventoryContext";
 import BarcodePrinter from "../components/BarcodePrinter";
 import type { InventoryItem } from "../types/inventory";
@@ -37,6 +38,8 @@ const Inventory: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
+
+  const { t } = useTranslation();
 
 
 
@@ -147,7 +150,7 @@ const Inventory: React.FC = () => {
 
       setFormData({ ...formData, image_url: publicUrl });
     } catch (err) {
-      setError("Erreur lors du téléchargement de l'image. Veuillez réessayer.");
+      setError(t('errors.uploadImage'));
       console.error(err);
     } finally {
       setActionLoading(false);
@@ -186,7 +189,7 @@ const Inventory: React.FC = () => {
       refreshInventory();
     } catch (err) {
       console.error("Error updating stock:", err);
-      setError("Erreur lors de la mise à jour du stock.");
+      setError(t('errors.updateStock'));
     }
   };
 
@@ -200,7 +203,7 @@ const Inventory: React.FC = () => {
     };
 
     if (!sanitizedData.name) {
-      alert("Le nom de l'article est requis.");
+      alert(t('inventory.nameRequired'));
       return;
     }
 
@@ -214,7 +217,7 @@ const Inventory: React.FC = () => {
           .eq("id", editingItem.id);
 
         if (error) {
-          setError("La mise à jour de l'article a échoué. Veuillez réessayer.");
+          setError(t('errors.updateItem'));
           return;
         }
 
@@ -236,7 +239,7 @@ const Inventory: React.FC = () => {
           .single();
 
         if (error) {
-          setError("L'ajout de l'article a échoué. Veuillez réessayer.");
+          setError(t('errors.addItem'));
           return;
         }
 
@@ -257,12 +260,12 @@ const Inventory: React.FC = () => {
       refreshInventory();
     } catch (err) {
       console.error("Error saving item:", err);
-      setError("Une erreur est survenue. Veuillez réessayer.");
+      setError(t('errors.saveItem'));
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer cet article ?")) {
+    if (window.confirm(t('inventory.deleteConfirm'))) {
       try {
         // Get item name before deleting
         const item = items.find((i) => i.id === id);
@@ -270,7 +273,7 @@ const Inventory: React.FC = () => {
 
         const { error } = await supabase.from("inventory").delete().eq("id", id);
         if (error) {
-          setError("La suppression de l'article a échoué. Veuillez réessayer.");
+          setError(t('errors.deleteItem'));
         } else {
           // Log the delete activity
           if (user && item) {
@@ -286,7 +289,7 @@ const Inventory: React.FC = () => {
         }
       } catch (err) {
         console.error("Error deleting item:", err);
-        setError("Une erreur est survenue. Veuillez réessayer.");
+        setError(t('errors.saveItem'));
       }
     }
   };

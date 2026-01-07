@@ -8,6 +8,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [displayName, setDisplayName] = useState("");
     const [avatarUrl, setAvatarUrl] = useState("");
     const [role, setRole] = useState("user");
+    const [language, setLanguageState] = useState<'fr' | 'en'>('fr');
     const [userId, setUserId] = useState<string | null>(null);
 
     useEffect(() => {
@@ -17,7 +18,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 setUserId(session.user.id);
                 const { data: settings } = await supabase
                     .from("user_settings")
-                    .select("dark_mode, compact_view, display_name, avatar_url, role")
+                    .select("dark_mode, compact_view, display_name, avatar_url, role, language")
                     .eq("user_id", session.user.id)
                     .single();
 
@@ -27,6 +28,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                     setDisplayName(settings.display_name || "");
                     setAvatarUrl(settings.avatar_url || "");
                     setRole(settings.role || "user");
+                    setLanguageState((settings.language as 'fr' | 'en') || 'fr');
                 }
             }
         };
@@ -37,7 +39,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             setUserId(session?.user?.id || null);
             if (session?.user) {
                 supabase.from("user_settings")
-                    .select("dark_mode, compact_view, display_name, avatar_url, role")
+                    .select("dark_mode, compact_view, display_name, avatar_url, role, language")
                     .eq("user_id", session.user.id)
                     .single()
                     .then(({ data }) => {
@@ -47,6 +49,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                             setDisplayName(data.display_name || "");
                             setAvatarUrl(data.avatar_url || "");
                             setRole(data.role || "user");
+                                setLanguageState((data.language as 'fr' | 'en') || 'fr');
                         }
                     });
             }
@@ -76,6 +79,21 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     };
 
+    const setLanguage = async (lang: 'fr' | 'en') => {
+        setLanguageState(lang);
+        if (userId) {
+            try {
+                const { error } = await supabase.from('user_settings').upsert(
+                    { user_id: userId, language: lang },
+                    { onConflict: 'user_id' }
+                );
+                if (error) throw error;
+            } catch (err) {
+                console.error('Failed to persist language to user_settings:', err);
+            }
+        }
+    };
+
     const setUserProfile = (profile: { displayName?: string; avatarUrl?: string }) => {
         if (profile.displayName !== undefined) setDisplayName(profile.displayName);
         if (profile.avatarUrl !== undefined) setAvatarUrl(profile.avatarUrl);
@@ -88,9 +106,11 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             displayName,
             avatarUrl,
             role,
+            language,
             toggleDarkMode,
             toggleCompactView,
-            setUserProfile
+            setUserProfile,
+            setLanguage
         }}>
             {children}
         </ThemeContext.Provider>

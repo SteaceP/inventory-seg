@@ -9,6 +9,7 @@ import {
     Button,
 } from "@mui/material";
 import { Notifications as NotificationsIcon } from "@mui/icons-material";
+import { useTranslation } from "../../i18n";
 
 interface NotificationSectionProps {
     notifications: boolean;
@@ -27,6 +28,8 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
     onEmailAlertsChange,
     onThresholdChange,
 }) => {
+    const { t } = useTranslation();
+
     return (
         <Paper
             sx={{
@@ -42,7 +45,7 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
             <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
                 <NotificationsIcon sx={{ mr: 1, color: "primary.main" }} />
                 <Typography variant="h6" fontWeight="bold">
-                    Notifications
+                    {t('notifications.title')}
                 </Typography>
             </Box>
 
@@ -61,7 +64,7 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
                             color="primary"
                         />
                     }
-                    label="Activer les notifications"
+                    label={t('notifications.enable')}
                 />
 
                 {notifications && (
@@ -90,7 +93,7 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
                         }}
                         sx={{ ml: 4, mb: 1, textTransform: 'none', borderRadius: '12px', fontSize: '0.8rem' }}
                     >
-                        Tester la notification sur mon téléphone
+                        {t('notifications.testMobile')}
                     </Button>
                 )}
                 <FormControlLabel
@@ -101,11 +104,11 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
                             color="primary"
                         />
                     }
-                    label="Alertes e-mail pour stock faible"
+                    label={t('notifications.emailAlerts')}
                 />
                 {emailAlerts && (
                     <TextField
-                        label="Seuil de stock faible"
+                        label={t('notifications.lowStockThreshold')}
                         type="number"
                         fullWidth
                         value={lowStockThreshold}

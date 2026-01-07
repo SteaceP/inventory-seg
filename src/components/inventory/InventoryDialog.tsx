@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "../../i18n";
 import {
     Dialog,
     DialogTitle,
@@ -48,6 +49,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
     role = "user",
 }) => {
     const isAdmin = role === "admin";
+    const { t } = useTranslation();
 
     return (
         <Dialog
@@ -65,7 +67,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                 },
             }}
         >
-            <DialogTitle>{editingItem ? "Modifier l'article" : "Ajouter un nouvel article"}</DialogTitle>
+            <DialogTitle>{editingItem ? t('inventory.edit') : t('inventory.add')}</DialogTitle>
             <DialogContent>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 1 }}>
                     {/* Image Upload Area */}
@@ -118,7 +120,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                             <Box sx={{ textAlign: "center", color: "text.secondary" }}>
                                 <AddPhotoIcon sx={{ fontSize: 40, mb: 1, color: isAdmin ? "primary.main" : "text.disabled" }} />
                                 <Typography variant="body2">
-                                    {isAdmin ? "Cliquez ou glissez une image ici" : "Pas d'image"}
+                                    {isAdmin ? t('inventory.image.clickOrDrop') : t('inventory.image.noImage')}
                                 </Typography>
                             </Box>
                         )}
@@ -134,7 +136,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
 
                     <TextField
                         autoFocus
-                        label="Nom de l'article"
+                        label={t('inventory.nameLabel')}
                         fullWidth
                         value={formData.name || ""}
                         onChange={(e) => onFormDataChange({ ...formData, name: e.target.value })}
@@ -155,7 +157,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                         }}
                     >
                         <TextField
-                            label="Catégorie"
+                            label={t('inventory.category')}
                             fullWidth
                             value={formData.category || ""}
                             onChange={(e) => onFormDataChange({ ...formData, category: e.target.value })}
@@ -168,7 +170,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                             InputLabelProps={{ sx: { color: "text.secondary" } }}
                         />
                         <TextField
-                            label="Stock"
+                            label={t('inventory.stockLabel')}
                             type="number"
                             fullWidth
                             value={formData.stock || ""}
@@ -184,7 +186,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
 
                     <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
                         <TextField
-                            label="Code-barres (SKU)"
+                            label={t('inventory.skuLabel')}
                             fullWidth
                             value={formData.sku || ""}
                             onChange={(e) => onFormDataChange({ ...formData, sku: e.target.value })}
@@ -197,7 +199,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                             InputLabelProps={{ sx: { color: "text.secondary" } }}
                         />
                         {isAdmin && (
-                            <Tooltip title="Générer un SKU aléatoire">
+                            <Tooltip title={t('inventory.generateSku')}>
                                 <IconButton
                                     onClick={onGenerateSKU}
                                     sx={{
@@ -239,12 +241,12 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
 
                 </Box>
             </DialogContent>
-            <DialogActions sx={{ p: 3 }}>
+                <DialogActions sx={{ p: 3 }}>
                 <Button onClick={onClose} sx={{ color: "text.secondary" }}>
-                    Annuler
+                    {t('inventory.cancel')}
                 </Button>
                 <Button onClick={onSave} variant="contained" color="primary">
-                    Enregistrer
+                    {t('inventory.save')}
                 </Button>
             </DialogActions>
         </Dialog >

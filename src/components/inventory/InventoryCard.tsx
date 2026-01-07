@@ -26,6 +26,7 @@ interface InventoryCardProps {
 }
 
 import { useThemeContext } from "../../contexts/useThemeContext";
+import { useTranslation } from "../../i18n";
 
 const InventoryCard: React.FC<InventoryCardProps> = ({
     item,
@@ -35,6 +36,7 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
     onDelete,
 }) => {
     const { compactView } = useThemeContext();
+    const { t } = useTranslation();
 
     return (
         <motion.div
@@ -121,21 +123,21 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                             alignItems: "center",
                         }}
                     >
-                        <Typography
+                            <Typography
                             variant="caption"
                             sx={{
                                 color: (item.stock || 0) < 5 ? "warning.main" : "text.secondary",
                                 fontWeight: "medium",
                             }}
                         >
-                            {item.stock} en stock
+                            {item.stock} {t('inventory.stock')}
                         </Typography>
                         <Box sx={{ display: "flex", alignItems: "center" }}>
                             <IconButton
                                 size="small"
                                 onClick={() => onEdit(item)}
                                 sx={{ color: "primary.main", mr: onDelete ? 0.5 : 0, p: compactView ? 0.5 : 1 }}
-                                title={onDelete ? "Modifier" : "Gérer le stock"}
+                                title={onDelete ? t('inventory.edit') : t('inventory.manageStock')}
                             >
                                 {onDelete ? <EditIcon fontSize={compactView ? "inherit" : "small"} /> : <ExposureIcon sx={{ fontSize: "3.75rem" }} />}
                             </IconButton>
@@ -144,7 +146,7 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                                     size="small"
                                     onClick={() => onDelete(item.id)}
                                     sx={{ color: "error.main", p: compactView ? 0.5 : 1 }}
-                                    title="Supprimer"
+                                    title={t('inventory.delete')}
                                 >
                                     <DeleteIcon fontSize={compactView ? "inherit" : "small"} />
                                 </IconButton>

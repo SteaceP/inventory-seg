@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Paper, Typography, FormControlLabel, Switch } from "@mui/material";
 import { Palette as PaletteIcon } from "@mui/icons-material";
 import { useThemeContext } from "../../contexts/useThemeContext";
+import { useTranslation } from "../../i18n";
 
 interface AppearanceSectionProps {
     darkMode: boolean;
@@ -17,6 +18,7 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
     onCompactViewChange,
 }) => {
     const { toggleDarkMode, toggleCompactView } = useThemeContext();
+    const { t } = useTranslation();
 
     const handleThemeToggle = (enabled: boolean) => {
         onDarkModeChange(enabled);
@@ -42,7 +44,7 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
             <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
                 <PaletteIcon sx={{ mr: 1, color: "primary.main" }} />
                 <Typography variant="h6" fontWeight="bold">
-                    Apparence
+                    {t('appearance.title')}
                 </Typography>
             </Box>
 
@@ -55,7 +57,7 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
                             color="primary"
                         />
                     }
-                    label="Mode Sombre"
+                    label={t('appearance.darkMode')}
                 />
                 <FormControlLabel
                     control={
@@ -65,7 +67,7 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
                             color="primary"
                         />
                     }
-                    label="Vue Compacte"
+                    label={t('appearance.compactView')}
                 />
             </Box>
         </Paper>

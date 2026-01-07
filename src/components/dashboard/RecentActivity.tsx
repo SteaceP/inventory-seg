@@ -13,6 +13,8 @@ import {
     Delete as DeleteIcon,
 } from "@mui/icons-material";
 
+import { useTranslation } from "../../i18n";
+
 interface Activity {
     id: string;
     action: "created" | "updated" | "deleted";
@@ -26,6 +28,7 @@ interface RecentActivityProps {
 }
 
 const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) => {
+    const { t, lang } = useTranslation();
     const getActionIcon = (action: string) => {
         switch (action) {
             case "created":
@@ -40,16 +43,9 @@ const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) => {
     };
 
     const getActionText = (action: string) => {
-        switch (action) {
-            case "created":
-                return "ajouté";
-            case "updated":
-                return "modifié";
-            case "deleted":
-                return "supprimé";
-            default:
-                return action;
-        }
+        const actionText = t(`recentActivity.action.${action}`) || action;
+        // French uses the auxiliary "a" (has) before the past participle
+        return lang === 'fr' ? `a ${actionText}` : actionText;
     };
 
     const getTimeAgo = (dateString: string) => {
@@ -57,17 +53,25 @@ const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) => {
         const past = new Date(dateString);
         const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000);
 
-        if (diffInSeconds < 60) return "il y a quelques secondes";
+        const isFr = lang === 'fr';
+
+        if (diffInSeconds < 60) return isFr ? 'il y a quelques secondes' : 'a few seconds ago';
         if (diffInSeconds < 3600) {
             const minutes = Math.floor(diffInSeconds / 60);
-            return `il y a ${minutes} minute${minutes > 1 ? "s" : ""}`;
+            return isFr
+                ? `il y a ${minutes} minute${minutes > 1 ? 's' : ''}`
+                : `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
         }
         if (diffInSeconds < 86400) {
             const hours = Math.floor(diffInSeconds / 3600);
-            return `il y a ${hours} heure${hours > 1 ? "s" : ""}`;
+            return isFr
+                ? `il y a ${hours} heure${hours > 1 ? 's' : ''}`
+                : `${hours} hour${hours > 1 ? 's' : ''} ago`;
         }
         const days = Math.floor(diffInSeconds / 86400);
-        return `il y a ${days} jour${days > 1 ? "s" : ""}`;
+        return isFr
+            ? `il y a ${days} jour${days > 1 ? 's' : ''}`
+            : `${days} day${days > 1 ? 's' : ''} ago`;
     };
 
     return (
@@ -82,11 +86,11 @@ const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) => {
             }}
         >
             <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
-                Activité Récente
+                {t('recentActivity.title')}
             </Typography>
             {activities.length === 0 ? (
                 <Typography variant="body2" color="text.secondary">
-                    Aucune activité récente
+                    {t('recentActivity.none')}
                 </Typography>
             ) : (
                 <List sx={{ p: 0 }}>
@@ -106,7 +110,7 @@ const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) => {
                             <ListItemText
                                 primary={
                                     <Typography variant="body2">
-                                        <strong>{activity.user_display_name || "Utilisateur"}</strong> a{" "}
+                                        <strong>{activity.user_display_name || t('recentActivity.user')}</strong>{' '}
                                         {getActionText(activity.action)} <strong>{activity.item_name}</strong>
                                     </Typography>
                                 }

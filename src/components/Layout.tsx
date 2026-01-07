@@ -28,6 +28,7 @@ import {
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import { useThemeContext } from "../contexts/useThemeContext";
+import { useTranslation } from "../i18n";
 
 const Layout: React.FC = () => {
   const navigate = useNavigate();
@@ -35,6 +36,8 @@ const Layout: React.FC = () => {
   const theme = useTheme();
   const { compactView, displayName, avatarUrl } = useThemeContext();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  const { t } = useTranslation();
 
   const drawerWidth = 240;
   const collapsedWidth = 64;
@@ -48,9 +51,9 @@ const Layout: React.FC = () => {
   };
 
   const menuItems = [
-    { text: "Tableau de bord", icon: <DashboardIcon />, path: "/" },
+    { text: t('menu.dashboard'), icon: <DashboardIcon />, path: "/" },
     {
-      text: "Inventaire",
+      text: t('menu.inventory'),
       icon: (
         <Box
           component="img"
@@ -64,8 +67,8 @@ const Layout: React.FC = () => {
       ),
       path: "/inventory"
     },
-    { text: "Paramètres", icon: <SettingsIcon />, path: "/settings" },
-    { text: "Appareils", icon: <AppliancesIcon />, path: "/appliances" },
+    { text: t('menu.settings'), icon: <SettingsIcon />, path: "/settings" },
+    { text: t('menu.appliances'), icon: <AppliancesIcon />, path: "/appliances" },
   ];
 
   const handleDrawerToggle = () => {
@@ -93,7 +96,7 @@ const Layout: React.FC = () => {
           minHeight: compactView ? "48px !important" : "64px !important",
         }}
       >
-        {(!collapsed || isMobile) && (
+            {(!collapsed || isMobile) && (
           <Box sx={{ display: "flex", alignItems: "center", ml: 1 }}>
             <Box
               component="img"
@@ -107,7 +110,7 @@ const Layout: React.FC = () => {
               component="div"
               sx={{ fontWeight: "bold", color: "primary.main" }}
             >
-              Inventaire
+                  {t('app.title')}
             </Typography>
           </Box>
         )}
@@ -122,7 +125,7 @@ const Layout: React.FC = () => {
       </Toolbar>
 
       <Box sx={{ px: 2, py: compactView ? 1.5 : 2, display: "flex", alignItems: "center", gap: 2, overflow: "hidden" }}>
-        <Avatar
+            <Avatar
           src={avatarUrl}
           sx={{
             width: collapsed && !isMobile ? 32 : (compactView ? 36 : 40),
@@ -137,10 +140,10 @@ const Layout: React.FC = () => {
         {(!collapsed || isMobile) && (
           <Box sx={{ minWidth: 0, flex: 1, overflow: "hidden" }}>
             <Typography variant="body2" fontWeight="bold" noWrap>
-              {displayName || "Utilisateur"}
+              {displayName || t('user.default')}
             </Typography>
             <Typography variant="caption" color="text.secondary" noWrap display="block">
-              Connecté
+              {t('user.online')}
             </Typography>
           </Box>
         )}
@@ -208,7 +211,7 @@ const Layout: React.FC = () => {
         <Divider sx={{ my: compactView ? 1 : 2, borderColor: "divider" }} />
         <List dense={compactView}>
           <Tooltip
-            title={collapsed && !isMobile ? "Logout" : ""}
+            title={collapsed && !isMobile ? t('security.signOut') : ""}
             placement="right"
           >
             <ListItemButton
@@ -237,7 +240,7 @@ const Layout: React.FC = () => {
               </ListItemIcon>
               {(!collapsed || isMobile) && (
                 <ListItemText
-                  primary="Logout"
+                  primary={t('security.signOut')}
                   primaryTypographyProps={{ fontSize: compactView ? "0.8125rem" : "0.875rem" }}
                 />
               )}
@@ -271,7 +274,7 @@ const Layout: React.FC = () => {
             boxShadow: "none",
           }}
         >
-          <Toolbar sx={{ minHeight: compactView ? "48px !important" : "64px !important", px: { xs: 1, sm: 2 } }}>
+            <Toolbar sx={{ minHeight: compactView ? "48px !important" : "64px !important", px: { xs: 1, sm: 2 } }}>
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -293,7 +296,7 @@ const Layout: React.FC = () => {
               component="div"
               sx={{ fontWeight: "bold", color: "primary.main", flexGrow: 1, minWidth: 0 }}
             >
-              INVENTAIRE
+              {t('app.title').toUpperCase()}
             </Typography>
           </Toolbar>
         </AppBar>

@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, TextField, InputAdornment } from "@mui/material";
 import { Search as SearchIcon } from "@mui/icons-material";
+import { useTranslation } from "../../i18n";
 
 interface InventorySearchProps {
     value: string;
@@ -8,12 +9,13 @@ interface InventorySearchProps {
 }
 
 const InventorySearch: React.FC<InventorySearchProps> = ({ value, onChange }) => {
+    const { t } = useTranslation();
     return (
         <Box sx={{ mb: 4 }}>
             <TextField
                 fullWidth
                 variant="outlined"
-                placeholder="Rechercher des articles par nom, SKU ou catégorie..."
+                placeholder={t('inventory.searchPlaceholder')}
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 sx={{

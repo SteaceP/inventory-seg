@@ -5,6 +5,7 @@ import {
     QrCodeScanner as ScanIcon,
     Print as PrintIcon,
 } from "@mui/icons-material";
+import { useTranslation } from "../../i18n";
 
 interface InventoryHeaderProps {
     isMobile: boolean;
@@ -21,6 +22,7 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
     onScan,
     onAdd,
 }) => {
+    const { t } = useTranslation();
     return (
         <Box
             sx={{
@@ -33,7 +35,7 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
             }}
         >
             <Typography variant={isMobile ? "h5" : "h4"} fontWeight="bold">
-                Inventaire
+                {t('inventory.title') || 'Inventaire'}
             </Typography>
             <Box sx={{ display: "flex", gap: 2, width: { xs: "100%", sm: "auto" }, flexWrap: { xs: "wrap", sm: "nowrap" } }}>
                 {selectedCount > 0 && (
@@ -54,7 +56,7 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
                             },
                         }}
                     >
-                        {isMobile ? `(${selectedCount})` : `Imprimer Étiquettes (${selectedCount})`}
+                        {isMobile ? `(${selectedCount})` : `${t('inventory.printLabels')} (${selectedCount})`}
                     </Button>
                 )}
                 <Button
@@ -64,7 +66,7 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
                     onClick={onScan}
                     sx={{ border: "1px solid", borderColor: "divider", color: "text.primary" }}
                 >
-                    Scanner
+                    {t('inventory.scan')}
                 </Button>
                 {onAdd && (
                     <Button
@@ -73,7 +75,7 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
                         fullWidth={isMobile}
                         onClick={onAdd}
                     >
-                        Ajouter
+                        {t('inventory.addButton')}
                     </Button>
                 )}
             </Box>

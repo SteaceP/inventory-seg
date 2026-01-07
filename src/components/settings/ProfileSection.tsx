@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Paper, Typography, Avatar, TextField } from "@mui/material";
 import { Person as PersonIcon, PhotoCamera as CameraIcon } from "@mui/icons-material";
+import { useTranslation } from "../../i18n";
 
 interface ProfileSectionProps {
     displayName: string;
@@ -18,6 +19,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
     onAvatarChange,
 }) => {
     const fileInputRef = React.useRef<HTMLInputElement>(null);
+    const { t } = useTranslation();
 
     const getInitials = (name: string, emailStr: string) => {
         if (name) return name.substring(0, 2).toUpperCase();
@@ -50,7 +52,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
             <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
                 <PersonIcon sx={{ mr: 1, color: "primary.main" }} />
                 <Typography variant="h6" fontWeight="bold">
-                    Profil
+                    {t('profile.title')}
                 </Typography>
             </Box>
 
@@ -108,7 +110,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
                 </Box>
 
                 <TextField
-                    label="Nom d'affichage"
+                    label={t('profile.displayName')}
                     fullWidth
                     value={displayName}
                     onChange={(e) => onDisplayNameChange(e.target.value)}
@@ -121,7 +123,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
                 />
 
                 <TextField
-                    label="E-mail"
+                    label={t('profile.email')}
                     fullWidth
                     value={email}
                     disabled

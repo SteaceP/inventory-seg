@@ -32,6 +32,7 @@ import {
 import Barcode from 'react-barcode';
 import { supabase } from '../supabaseClient';
 import { useThemeContext } from '../contexts/useThemeContext';
+import { useTranslation } from '../i18n';
 import InventoryScanner from '../components/inventory/InventoryScanner';
 
 interface Appliance {
@@ -58,6 +59,7 @@ interface Repair {
 
 const Appliances: React.FC = () => {
     const { compactView } = useThemeContext();
+    const { t } = useTranslation();
     const [appliances, setAppliances] = useState<Appliance[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedAppliance, setSelectedAppliance] = useState<Appliance | null>(null);
@@ -143,7 +145,7 @@ const Appliances: React.FC = () => {
     };
 
     const handleDeleteAppliance = async (id: string) => {
-        if (confirm("Êtes-vous sûr de vouloir supprimer cet appareil ?")) {
+        if (confirm(t('appliances.deleteConfirm'))) {
             await supabase.from('appliances').delete().eq('id', id);
             fetchAppliances();
         }
@@ -238,7 +240,7 @@ const Appliances: React.FC = () => {
 
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                 <Typography variant="h4" fontWeight="bold" sx={{ color: 'text.primary' }}>
-                    Appareils
+                    {t('menu.appliances')}
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 2 }}>
                     <Button
@@ -251,7 +253,7 @@ const Appliances: React.FC = () => {
                             fontWeight: 'bold',
                         }}
                     >
-                        Scanner
+                        {t('inventory.scan')}
                     </Button>
                     <Button
                         variant="contained"
@@ -264,7 +266,7 @@ const Appliances: React.FC = () => {
                             boxShadow: '0 3px 5px 2px rgba(2, 125, 111, .3)',
                         }}
                     >
-                        Ajouter un appareil
+                        {t('appliances.add')}
                     </Button>
                 </Box>
             </Box>
@@ -333,13 +335,13 @@ const Appliances: React.FC = () => {
                                         startIcon={<HistoryIcon />}
                                         onClick={() => handleViewRepairs(appliance)}
                                     >
-                                        Historique
+                                        {t('appliances.history')}
                                     </Button>
                                     <Box>
                                         <IconButton
                                             size="small"
                                             onClick={() => setPrintAppliance(appliance)}
-                                            title="Imprimer Étiquette"
+                                            title={t('appliances.printLabel')}
                                         >
                                             <PrintIcon />
                                         </IconButton>
@@ -350,7 +352,7 @@ const Appliances: React.FC = () => {
                                                 setSelectedAppliance(appliance);
                                                 setOpenAddRepair(true);
                                             }}
-                                            title="Ajouter une réparation"
+                                            title={t('appliances.addRepair')}
                                         >
                                             <BuildIcon />
                                         </IconButton>
@@ -358,7 +360,7 @@ const Appliances: React.FC = () => {
                                             size="small"
                                             color="error"
                                             onClick={() => handleDeleteAppliance(appliance.id)}
-                                            title="Supprimer"
+                                            title={t('appliances.delete')}
                                         >
                                             <DeleteIcon />
                                         </IconButton>
@@ -372,12 +374,12 @@ const Appliances: React.FC = () => {
 
             {/* Add Appliance Dialog */}
             <Dialog open={openAddAppliance} onClose={() => setOpenAddAppliance(false)}>
-                <DialogTitle>Ajouter un appareil</DialogTitle>
+                <DialogTitle>{t('appliances.add')}</DialogTitle>
                 <DialogContent>
                     <TextField
                         autoFocus
                         margin="dense"
-                        label="Nom (ex: Frigo Cuisine)"
+                        label={t('appliances.nameLabel')}
                         fullWidth
                         value={newAppliance.name || ''}
                         onChange={(e) => setNewAppliance({ ...newAppliance, name: e.target.value })}
@@ -390,7 +392,7 @@ const Appliances: React.FC = () => {
                             startIcon={<PhotoCamera />}
                             disabled={uploading}
                         >
-                            {uploading ? 'Upload...' : 'Ajouter Photo'}
+                            {uploading ? t('appliances.uploading') : t('appliances.addPhoto')}
                             <input
                                 hidden
                                 accept="image/*"
@@ -400,21 +402,21 @@ const Appliances: React.FC = () => {
                         </Button>
                         {newAppliance.photo_url && (
                             <Typography variant="caption" color="success.main">
-                                Photo ajoutée !
+                                {t('appliances.photoAdded')}
                             </Typography>
                         )}
                     </Box>
 
                     <TextField
                         margin="dense"
-                        label="SKU"
+                        label={t('appliances.skuLabel')}
                         fullWidth
                         value={newAppliance.sku || ''}
                         onChange={(e) => setNewAppliance({ ...newAppliance, sku: e.target.value })}
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
-                                    <IconButton onClick={generateSKU} edge="end" title="Générer SKU">
+                                    <IconButton onClick={generateSKU} edge="end" title={t('appliances.generateSku')}>
                                         <AutoRenewIcon />
                                     </IconButton>
                                 </InputAdornment>
@@ -424,28 +426,28 @@ const Appliances: React.FC = () => {
 
                     <TextField
                         margin="dense"
-                        label="Type (ex: Réfrigérateur)"
+                        label={t('appliances.type')}
                         fullWidth
                         value={newAppliance.type || ''}
                         onChange={(e) => setNewAppliance({ ...newAppliance, type: e.target.value })}
                     />
                     <TextField
                         margin="dense"
-                        label="Marque"
+                        label={t('appliances.brand')}
                         fullWidth
                         value={newAppliance.brand || ''}
                         onChange={(e) => setNewAppliance({ ...newAppliance, brand: e.target.value })}
                     />
                     <TextField
                         margin="dense"
-                        label="Modèle"
+                        label={t('appliances.model')}
                         fullWidth
                         value={newAppliance.model || ''}
                         onChange={(e) => setNewAppliance({ ...newAppliance, model: e.target.value })}
                     />
                     <TextField
                         margin="dense"
-                        label="Date d'achat"
+                        label={t('appliances.purchaseDate')}
                         type="date"
                         fullWidth
                         InputLabelProps={{ shrink: true }}
@@ -454,7 +456,7 @@ const Appliances: React.FC = () => {
                     />
                     <TextField
                         margin="dense"
-                        label="Notes"
+                        label={t('appliances.notes')}
                         fullWidth
                         multiline
                         rows={2}
@@ -463,19 +465,19 @@ const Appliances: React.FC = () => {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setOpenAddAppliance(false)}>Annuler</Button>
-                    <Button onClick={handleCreateAppliance} variant="contained">Ajouter</Button>
+                    <Button onClick={() => setOpenAddAppliance(false)}>{t('appliances.cancel')}</Button>
+                    <Button onClick={handleCreateAppliance} variant="contained">{t('appliances.add')}</Button>
                 </DialogActions>
             </Dialog>
 
             {/* Add Repair Dialog */}
             <Dialog open={openAddRepair} onClose={() => setOpenAddRepair(false)}>
-                <DialogTitle>Ajouter une réparation pour {selectedAppliance?.name}</DialogTitle>
+                <DialogTitle>{`${t('appliances.addRepair')} ${selectedAppliance?.name || ''}`}</DialogTitle>
                 <DialogContent>
                     <TextField
                         autoFocus
                         margin="dense"
-                        label="Description de la réparation"
+                        label={t('appliances.repairDescription')}
                         fullWidth
                         multiline
                         rows={2}
@@ -484,7 +486,7 @@ const Appliances: React.FC = () => {
                     />
                     <TextField
                         margin="dense"
-                        label="Date"
+                        label={t('appliances.date')}
                         type="date"
                         fullWidth
                         InputLabelProps={{ shrink: true }}
@@ -493,7 +495,7 @@ const Appliances: React.FC = () => {
                     />
                     <TextField
                         margin="dense"
-                        label="Coût ($)"
+                        label={t('appliances.cost')}
                         type="number"
                         fullWidth
                         value={newRepair.cost || ''}
@@ -501,26 +503,26 @@ const Appliances: React.FC = () => {
                     />
                     <TextField
                         margin="dense"
-                        label="Prestataire (ex: Darty, Moi-même)"
+                        label={t('appliances.serviceProvider')}
                         fullWidth
                         value={newRepair.service_provider || ''}
                         onChange={(e) => setNewRepair({ ...newRepair, service_provider: e.target.value })}
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setOpenAddRepair(false)}>Annuler</Button>
-                    <Button onClick={handleCreateRepair} variant="contained">Enregistrer</Button>
+                    <Button onClick={() => setOpenAddRepair(false)}>{t('appliances.cancel')}</Button>
+                    <Button onClick={handleCreateRepair} variant="contained">{t('appliances.save')}</Button>
                 </DialogActions>
             </Dialog>
 
             {/* View History Dialog */}
             <Dialog open={openRepairsList} onClose={() => setOpenRepairsList(false)} maxWidth="sm" fullWidth>
-                <DialogTitle>Historique: {selectedAppliance?.name}</DialogTitle>
+                <DialogTitle>{`${t('appliances.history')}: ${selectedAppliance?.name}`}</DialogTitle>
                 <DialogContent dividers>
                     {loadingRepairs ? (
                         <CircularProgress />
                     ) : repairs.length === 0 ? (
-                        <Typography color="text.secondary">Aucune réparation enregistrée.</Typography>
+                        <Typography color="text.secondary">{t('appliances.noRepairs')}</Typography>
                     ) : (
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                             {repairs.map(repair => (
@@ -530,10 +532,10 @@ const Appliances: React.FC = () => {
                                         <Typography variant="caption" color="text.secondary">{repair.repair_date}</Typography>
                                     </Box>
                                     <Typography variant="body2" sx={{ mt: 1 }}>
-                                        Coût: {repair.cost ? `${repair.cost} $` : 'N/A'}
+                                        {t('appliances.cost')}: {repair.cost ? `${repair.cost} $` : t('appliances.unknown')}
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary">
-                                        Par: {repair.service_provider || 'Inconnu'}
+                                        {t('appliances.serviceProvider')}: {repair.service_provider || t('appliances.unknown')}
                                     </Typography>
                                 </Paper>
                             ))}
@@ -541,13 +543,13 @@ const Appliances: React.FC = () => {
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setOpenRepairsList(false)}>Fermer</Button>
+                    <Button onClick={() => setOpenRepairsList(false)}>{t('appliances.close')}</Button>
                 </DialogActions>
             </Dialog>
 
             {/* Print Barcode Dialog */}
             <Dialog open={!!printAppliance} onClose={() => setPrintAppliance(null)} maxWidth="xs" fullWidth>
-                <DialogTitle>Étiquette pour {printAppliance?.name}</DialogTitle>
+                <DialogTitle>{`${t('appliances.printLabel')} ${printAppliance?.name}`}</DialogTitle>
                 <DialogContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 4 }}>
                     <div id="printable-area" style={{ textAlign: 'center' }}>
                         <Typography variant="h6" fontWeight="bold">{printAppliance?.name}</Typography>
@@ -556,15 +558,15 @@ const Appliances: React.FC = () => {
                             {printAppliance?.sku ? (
                                 <Barcode value={printAppliance.sku} width={2} height={50} fontSize={14} />
                             ) : (
-                                <Typography color="error">Pas de SKU</Typography>
+                                <Typography color="error">{t('appliances.noSku')}</Typography>
                             )}
                         </Box>
                     </div>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setPrintAppliance(null)}>Fermer</Button>
+                    <Button onClick={() => setPrintAppliance(null)}>{t('appliances.close')}</Button>
                     <Button onClick={handlePrint} variant="contained" startIcon={<PrintIcon />}>
-                        Imprimer
+                        {t('appliances.print')}
                     </Button>
                 </DialogActions>
             </Dialog>

@@ -9,6 +9,7 @@ import {
 import { Close as CloseIcon } from "@mui/icons-material";
 import { Html5Qrcode } from "html5-qrcode";
 import { motion } from "framer-motion";
+import { useTranslation } from "../../i18n";
 
 interface InventoryScannerProps {
     open: boolean;
@@ -23,6 +24,7 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
     onScanSuccess,
     onError,
 }) => {
+    const { t } = useTranslation();
     const scannerRef = useRef<Html5Qrcode | null>(null);
     const onScanSuccessRef = useRef(onScanSuccess);
 
@@ -110,10 +112,10 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
                     <CloseIcon fontSize="small" />
                 </IconButton>
                 <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
-                    Scanner le code-barres
+                    {t('inventory.scanner.title')}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                    Alignez le code-barres dans le cadre
+                    {t('inventory.scanner.instructions')}
                 </Typography>
 
                 <Box
@@ -248,7 +250,7 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
                         px: 4,
                     }}
                 >
-                    Annuler
+                    {t('inventory.cancel')}
                 </Button>
             </Box>
         </Dialog>

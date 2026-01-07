@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Box, Paper, Typography, TextField, Button, Container, Alert, IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { motion } from 'framer-motion';
+import { useTranslation } from '../i18n';
 import { supabase } from '../supabaseClient';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,6 +13,7 @@ const Login: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +64,7 @@ const Login: React.FC = () => {
               borderRadius: '16px',
             }}
           >
-            <Box sx={{ mb: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <Box sx={{ mb: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <Box
                 component="img"
                 src="/logo-secondary.svg"
@@ -70,7 +72,7 @@ const Login: React.FC = () => {
                 alt="Logo"
               />
               <Typography variant="h5" fontWeight="bold" color="text.primary">
-                Se Connecter
+                {t('login.signIn')}
               </Typography>
             </Box>
 
@@ -86,7 +88,7 @@ const Login: React.FC = () => {
                 required
                 fullWidth
                 id="email"
-                label="Adresse e-mail"
+                label={t('login.email')}
                 name="email"
                 autoComplete="email"
                 autoFocus
@@ -99,7 +101,7 @@ const Login: React.FC = () => {
                 required
                 fullWidth
                 name="password"
-                label="Mot de passe"
+                label={t('login.password')}
                 type={showPassword ? 'text' : 'password'}
                 id="password"
                 autoComplete="current-password"
@@ -132,12 +134,12 @@ const Login: React.FC = () => {
                   boxShadow: '0 4px 14px 0 rgba(88, 166, 255, 0.39)',
                 }}
               >
-                {loading ? 'Connexion en cours...' : 'Se connecter'}
+                {loading ? t('login.signingIn') : t('login.signIn')}
               </Button>
             </Box>
 
             <Typography variant="body2" sx={{ mt: 3, color: 'text.secondary' }}>
-              Vous n'avez pas de compte ? Contactez votre administrateur.
+              {t('login.noAccount')}
             </Typography>
           </Paper>
         </motion.div>

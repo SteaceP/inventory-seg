@@ -16,6 +16,7 @@ import {
     Backspace as BackspaceIcon,
 } from "@mui/icons-material";
 import type { InventoryItem } from "../../types/inventory";
+import { useTranslation } from "../../i18n";
 
 interface StockAdjustmentDialogProps {
     open: boolean;
@@ -36,6 +37,7 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
 }) => {
     const [mode, setMode] = useState<Mode>("menu");
     const [inputValue, setInputValue] = useState("");
+    const { t } = useTranslation();
 
     const handleClose = () => {
         setMode("menu");
@@ -83,9 +85,9 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
                 },
             }}
         >
-            <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", pb: 1 }}>
+                <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", pb: 1 }}>
                 <Typography variant="h6" fontWeight="bold" component="span">
-                    {mode === "menu" ? "Gérer le stock" : mode === "add" ? "Ajouter du stock" : "Retirer du stock"}
+                    {mode === "menu" ? t('inventory.manageStock') : mode === "add" ? t('inventory.addStock') : t('inventory.removeStock')}
                 </Typography>
                 <IconButton onClick={handleClose} size="small">
                     <CloseIcon />
@@ -95,7 +97,7 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
             <DialogContent>
                 <Box sx={{ mb: 2, textAlign: "center" }}>
                     <Typography variant="body2" color="text.secondary">
-                        Article:
+                        {t('inventory.current')}
                     </Typography>
                     <Typography variant="h6" color="primary.main" fontWeight="medium">
                         {item.name}
@@ -122,7 +124,7 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
                             }}
                         >
                             <AddIcon sx={{ fontSize: 40 }} />
-                            Ajouter
+                            {t('inventory.addStock')}
                         </Button>
                         <Button
                             variant="contained"
@@ -139,7 +141,7 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
                             }}
                         >
                             <RemoveIcon sx={{ fontSize: 40 }} />
-                            Retirer
+                            {t('inventory.removeStock')}
                         </Button>
                     </Box>
                 ) : (
@@ -221,7 +223,7 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
                                         fontWeight: "bold",
                                     }}
                                 >
-                                    {mode === "add" ? "Ajouter" : "Retirer"}
+                                    {mode === "add" ? t('inventory.addButton') : t('inventory.removeStock')}
                                 </Button>
                             </Grid>
                         </Grid>
@@ -231,7 +233,7 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
                             onClick={() => { setMode("menu"); setInputValue(""); }}
                             sx={{ mt: 1 }}
                         >
-                            Retour
+                            {t('inventory.back')}
                         </Button>
                     </Box>
                 )}

@@ -16,6 +16,7 @@ import {
 } from "@mui/icons-material";
 import { supabase } from "../supabaseClient";
 import { useThemeContext } from "../contexts/useThemeContext";
+import { useTranslation } from "../i18n";
 import { useInventoryContext } from "../contexts/useInventoryContext";
 import RecentActivity from "../components/dashboard/RecentActivity";
 
@@ -77,6 +78,7 @@ const Dashboard: React.FC = () => {
   type RecentActivityItem = { id: string; action: "created" | "updated" | "deleted"; item_name: string; created_at: string; user_display_name?: string };
   const [recentActivities, setRecentActivities] = useState<RecentActivityItem[]>([]);
   const { displayName } = useThemeContext();
+  const { t } = useTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -176,21 +178,21 @@ const Dashboard: React.FC = () => {
 
           const activitiesWithNames = data.map((activity) => ({
             ...activity,
-            user_display_name: userMap.get(activity.user_id) || "Utilisateur",
+            user_display_name: userMap.get(activity.user_id) || t('user.default'),
           }));
 
           setRecentActivities(activitiesWithNames);
         }
-      } catch (err) {
+        } catch (err) {
         console.error("Error fetching dashboard data:", err);
-        setError("Erreur de chargement du tableau de bord.");
+        setError(t('errors.loadDashboard'));
       } finally {
         setActivitiesLoading(false);
       }
     };
 
     fetchDashboardData();
-  }, []);
+  }, [t]);
 
   const loading = inventoryLoading || activitiesLoading;
 
@@ -222,17 +224,17 @@ const Dashboard: React.FC = () => {
           variant={isMobile ? "h5" : "h4"}
           fontWeight="bold"
         >
-          {displayName ? `Bonjour, ${displayName} !` : "Tableau de bord"}
+          {displayName ? `${t('dashboard.hello')}, ${displayName} !` : t('dashboard.title')}
         </Typography>
       </Box>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        {displayName ? "Voici un aperçu de votre inventaire aujourd'hui." : "Gestion globale de votre stock et statistiques."}
-      </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+          {displayName ? t('dashboard.description.withName') : t('dashboard.description.default')}
+        </Typography>
 
       <Grid container spacing={3} sx={{ justifyContent: { xs: "flex-start", sm: "center" } }}>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <StatCard
-            title="Total des articles"
+            <StatCard
+            title={t('dashboard.totalItems')}
             value={stats.totalItems.toLocaleString()}
             icon={
               <Box
@@ -247,7 +249,7 @@ const Dashboard: React.FC = () => {
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
           <StatCard
-            title="Catégorie Principale"
+            title={t('dashboard.topCategory')}
             value={stats.topCategory}
             icon={<PeopleIcon />}
             color="#d29922"
@@ -255,7 +257,7 @@ const Dashboard: React.FC = () => {
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
           <StatCard
-            title="Mouvements (Stock)"
+            title={t('dashboard.movements')}
             value={`+${dailyStats.in} / -${dailyStats.out}`}
             icon={<TimelineIcon />}
             color="#0969da"

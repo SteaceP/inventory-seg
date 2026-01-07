@@ -1,12 +1,15 @@
 import React from "react";
 import { Box, Paper, Typography, Button } from "@mui/material";
 import { Security as SecurityIcon } from "@mui/icons-material";
+import { useTranslation } from "../../i18n";
 
 interface SecuritySectionProps {
     onSignOut: () => void;
 }
 
 const SecuritySection: React.FC<SecuritySectionProps> = ({ onSignOut }) => {
+    const { t } = useTranslation();
+
     return (
         <Paper
             sx={{
@@ -22,7 +25,7 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({ onSignOut }) => {
             <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
                 <SecurityIcon sx={{ mr: 1, color: "primary.main" }} />
                 <Typography variant="h6" fontWeight="bold">
-                    Sécurité
+                    {t('security.title')}
                 </Typography>
             </Box>
 
@@ -38,7 +41,7 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({ onSignOut }) => {
                         },
                     }}
                 >
-                    Changer le mot de passe
+                    {t('security.changePassword')}
                 </Button>
                 <Button
                     variant="outlined"
@@ -46,7 +49,7 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({ onSignOut }) => {
                     fullWidth
                     onClick={onSignOut}
                 >
-                    Se déconnecter
+                    {t('security.signOut')}
                 </Button>
             </Box>
         </Paper>

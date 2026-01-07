@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Typography, Box, Button, Alert, Snackbar, Grid } from "@mui/material";
+import React, { useState, useEffect, useRef } from "react";
+import { Typography, Box, Button, Alert, Snackbar, Grid, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { useTranslation } from "../i18n";
 import { supabase } from "../supabaseClient";
 import { useThemeContext } from "../contexts/useThemeContext";
 
@@ -17,8 +18,12 @@ const Settings: React.FC = () => {
     compactView,
     toggleDarkMode,
     toggleCompactView,
-    setUserProfile
+    setUserProfile,
+    language,
+    setLanguage
   } = useThemeContext();
+
+  const { t } = useTranslation();
 
   const [settings, setSettings] = useState({
     displayName: "",
@@ -29,6 +34,7 @@ const Settings: React.FC = () => {
     lowStockThreshold: 5,
     darkMode: darkMode,
     compactView: compactView,
+    language: language,
   });
 
   useEffect(() => {
@@ -36,7 +42,15 @@ const Settings: React.FC = () => {
     setSettings(prev => ({ ...prev, darkMode, compactView }));
   }, [darkMode, compactView]);
 
+  const languageChangeRef = useRef(false);
+
   useEffect(() => {
+    if (languageChangeRef.current) {
+      // Skip this load if the language was just changed by the user to avoid
+      // briefly reverting to the DB value while the new preference persists.
+      languageChangeRef.current = false;
+      return;
+    }
     const loadUserData = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
@@ -56,6 +70,7 @@ const Settings: React.FC = () => {
             lowStockThreshold: userSettings.low_stock_threshold ?? 5,
             darkMode: userSettings.dark_mode ?? true,
             compactView: userSettings.compact_view ?? false,
+            language: (userSettings.language as 'fr' | 'en') || 'fr',
           });
           // Sync context
           setUserProfile({
@@ -64,6 +79,7 @@ const Settings: React.FC = () => {
           });
           if (userSettings.dark_mode !== darkMode) toggleDarkMode(userSettings.dark_mode);
           if (userSettings.compact_view !== compactView) toggleCompactView(userSettings.compact_view);
+          if ((userSettings.language as 'fr' | 'en') !== language) setLanguage((userSettings.language as 'fr' | 'en') || 'fr');
         } else {
           setSettings((prev) => ({
             ...prev,
@@ -73,7 +89,7 @@ const Settings: React.FC = () => {
       }
     };
     loadUserData();
-  }, [darkMode, compactView, setUserProfile, toggleDarkMode, toggleCompactView]);
+  }, [darkMode, compactView, language, setUserProfile, toggleDarkMode, toggleCompactView, setLanguage]);
 
   const handleAvatarUpload = async (file: File) => {
     try {
@@ -107,7 +123,7 @@ const Settings: React.FC = () => {
       setSaveSuccess(true);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
-      setError(message || "L'upload de l'avatar a échoué.");
+      setError(message || t('settings.avatarUploadError'));
     }
   };
 
@@ -126,6 +142,7 @@ const Settings: React.FC = () => {
           dark_mode: settings.darkMode,
           compact_view: settings.compactView,
           avatar_url: settings.avatarUrl,
+          language: settings.language,
         },
         {
           onConflict: "user_id",
@@ -136,7 +153,7 @@ const Settings: React.FC = () => {
       setUserProfile({ displayName: settings.displayName });
       setSaveSuccess(true);
     } catch {
-      setError("L'enregistrement des paramètres a échoué. Veuillez réessayer.");
+      setError(t('settings.saveError'));
     }
   };
 
@@ -148,10 +165,10 @@ const Settings: React.FC = () => {
   return (
     <Box>
       <Typography variant="h4" fontWeight="bold" gutterBottom>
-        Paramètres
+        {t('settings.title')}
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        Gérez vos paramètres de compte et vos préférences
+        {t('settings.description')}
       </Typography>
 
       <Grid container spacing={3}>
@@ -186,13 +203,38 @@ const Settings: React.FC = () => {
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
+          <Box sx={{ p: 3, background: (theme) => theme.palette.mode === 'dark' ? 'rgba(22, 27, 34, 0.7)' : '#ffffff', border: '1px solid', borderColor: 'divider', borderRadius: '12px', height: '100%' }}>
+            <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>{t('settings.language')}</Typography>
+            <FormControl fullWidth>
+              <InputLabel id="language-select-label">{t('settings.language')}</InputLabel>
+              <Select
+                labelId="language-select-label"
+                value={settings.language}
+                label={t('settings.language')}
+                onChange={(e) => {
+                  const val = e.target.value as 'fr' | 'en';
+                  // mark that the language change originated from the UI so the
+                  // settings loader won't immediately overwrite it from the DB
+                  languageChangeRef.current = true;
+                  setSettings({ ...settings, language: val });
+                  setLanguage(val);
+                }}
+              >
+                <MenuItem value={'fr'}>{t('lang.fr')}</MenuItem>
+                <MenuItem value={'en'}>{t('lang.en')}</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 6 }}>
           <SecuritySection onSignOut={handleSignOut} />
         </Grid>
       </Grid>
 
-      <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end" }}>
+        <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end" }}>
         <Button variant="contained" size="large" onClick={handleSaveSettings} sx={{ px: 4 }}>
-          Enregistrer les modifications
+          {t('settings.save')}
         </Button>
       </Box>
 
@@ -203,7 +245,7 @@ const Settings: React.FC = () => {
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert severity="success" sx={{ width: "100%" }}>
-          Paramètres enregistrés avec succès !
+          {t('settings.saved')}
         </Alert>
       </Snackbar>
 
@@ -214,7 +256,7 @@ const Settings: React.FC = () => {
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert severity="error" sx={{ width: "100%" }} onClose={() => setError(null)}>
-          {error}
+          {error || t('settings.saveError')}
         </Alert>
       </Snackbar>
     </Box>

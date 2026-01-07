@@ -29,6 +29,7 @@ interface InventoryTableProps {
 }
 
 import { useThemeContext } from "../../contexts/useThemeContext";
+import { useTranslation } from "../../i18n";
 
 const InventoryTable: React.FC<InventoryTableProps> = ({
     items,
@@ -39,6 +40,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     onDelete,
 }) => {
     const { compactView } = useThemeContext();
+    const { t } = useTranslation();
 
     return (
         <TableContainer
@@ -67,19 +69,19 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                             />
                         </TableCell>
                         <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider", fontSize: compactView ? "0.75rem" : "inherit" }}>
-                            Image
+                            {t('table.image')}
                         </TableCell>
                         <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider", fontSize: compactView ? "0.75rem" : "inherit" }}>
-                            Nom
+                            {t('table.name')}
                         </TableCell>
                         <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider", fontSize: compactView ? "0.75rem" : "inherit" }}>
-                            Catégorie
+                            {t('table.category')}
                         </TableCell>
                         <TableCell sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider", fontSize: compactView ? "0.75rem" : "inherit" }}>
-                            Stock
+                            {t('table.stock')}
                         </TableCell>
                         <TableCell align="right" sx={{ color: "text.secondary", borderBottom: "1px solid", borderColor: "divider", fontSize: compactView ? "0.75rem" : "inherit" }}>
-                            Actions
+                            {t('table.actions')}
                         </TableCell>
                     </TableRow>
                 </TableHead>
@@ -132,11 +134,11 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                             <TableCell sx={{ borderBottom: "1px solid", borderColor: "divider", fontSize: compactView ? "0.8125rem" : "0.875rem" }}>{item.stock}</TableCell>
                             <TableCell align="right" sx={{ borderBottom: "1px solid", borderColor: "divider" }}>
                                 <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-                                    <IconButton
+                                        <IconButton
                                         size="small"
                                         onClick={() => onEdit(item)}
                                         sx={{ color: "primary.main", mr: onDelete ? 1 : 0 }}
-                                        title={onDelete ? "Modifier" : "Gérer le stock"}
+                                        title={onDelete ? t('inventory.edit') : t('inventory.manageStock')}
                                     >
                                         {onDelete ? <EditIcon fontSize="small" /> : <ExposureIcon sx={{ fontSize: "3.75rem" }} />}
                                     </IconButton>
@@ -145,7 +147,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                                             size="small"
                                             onClick={() => onDelete(item.id)}
                                             sx={{ color: "error.main" }}
-                                            title="Supprimer"
+                                            title={t('inventory.delete')}
                                         >
                                             <DeleteIcon fontSize="small" />
                                         </IconButton>

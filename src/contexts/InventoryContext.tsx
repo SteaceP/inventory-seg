@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../supabaseClient";
 import type { InventoryItem } from "../types/inventory";
 import { InventoryContext } from "./inventory-context";
+import { useTranslation } from "../i18n";
 
 export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [items, setItems] = useState<InventoryItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const { t } = useTranslation();
 
-    const fetchInventory = async () => {
+    const fetchInventory = useCallback(async () => {
         try {
             const { data, error } = await supabase
                 .from("inventory")
@@ -21,11 +23,11 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             setError(null);
         } catch (err: unknown) {
             console.error("Error fetching inventory:", err);
-            setError("Impossible de charger l'inventaire.");
+            setError(t('errors.loadInventory'));
         } finally {
             setLoading(false);
         }
-    };
+    }, [t]);
 
     useEffect(() => {
         fetchInventory();
@@ -44,7 +46,7 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         return () => {
             subscription.unsubscribe();
         };
-    }, []);
+    }, [fetchInventory]);
 
     return (
         <InventoryContext.Provider value={{ items, loading, error, refreshInventory: fetchInventory }}>
