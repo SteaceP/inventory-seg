@@ -3,12 +3,14 @@ import { supabase } from "../supabaseClient";
 import type { InventoryItem } from "../types/inventory";
 import { InventoryContext } from "./inventory-context";
 import { useTranslation } from "../i18n";
+import { useAlert } from "./useAlertContext";
 
 export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [items, setItems] = useState<InventoryItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const { t } = useTranslation();
+    const { showError } = useAlert();
 
     const fetchInventory = useCallback(async () => {
         try {
@@ -22,11 +24,12 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             setItems(data || []);
             setError(null);
         } catch (err: unknown) {
-            console.error("Error fetching inventory:", err);
+            showError(t('errors.fetchInventory') + ': ' + (err as Error).message);
             setError(t('errors.loadInventory'));
         } finally {
             setLoading(false);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [t]);
 
     useEffect(() => {

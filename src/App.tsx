@@ -1,3 +1,7 @@
+import { AlertProvider } from "./contexts/AlertContext";
+import { ThemeProvider as CustomThemeProvider } from "./contexts/ThemeContext";
+import { useThemeContext } from "./contexts/useThemeContext";
+import { InventoryProvider } from "./contexts/InventoryContext";
 import { useState, useEffect, lazy, Suspense } from "react";
 import {
   BrowserRouter as Router,
@@ -33,7 +37,7 @@ const PageLoader = () => (
       justifyContent: "center",
       alignItems: "center",
       minHeight: "50vh",
-      gap: 2
+      gap: 2,
     }}
   >
     <Box
@@ -47,7 +51,7 @@ const PageLoader = () => (
           "0%": { transform: "scale(0.95)", opacity: 0.8 },
           "50%": { transform: "scale(1.05)", opacity: 1 },
           "100%": { transform: "scale(0.95)", opacity: 0.8 },
-        }
+        },
       }}
       alt="Logo"
     />
@@ -55,91 +59,89 @@ const PageLoader = () => (
   </Box>
 );
 
-const getTheme = (mode: "light" | "dark", compact: boolean) => createTheme({
-  palette: {
-    mode,
-    primary: {
-      main: "#027d6f", // Emerald Teal from logo
-      light: "#4a9c8b",
-      dark: "#0d576a",
+const getTheme = (mode: "light" | "dark", compact: boolean) =>
+  createTheme({
+    palette: {
+      mode,
+      primary: {
+        main: "#027d6f", // Emerald Teal from logo
+        light: "#4a9c8b",
+        dark: "#0d576a",
+      },
+      secondary: {
+        main: "#1a748b", // Steel Blue from logo
+      },
+      background: {
+        default: mode === "dark" ? "#0d1117" : "#f6f8fa",
+        paper: mode === "dark" ? "#161b22" : "#ffffff",
+      },
+      text: {
+        primary: mode === "dark" ? "#c9d1d9" : "#1F2328",
+        secondary: mode === "dark" ? "#8b949e" : "#636c76",
+      },
     },
-    secondary: {
-      main: "#1a748b", // Steel Blue from logo
+    spacing: compact ? 6 : 8,
+    typography: {
+      fontFamily: "Inter, system-ui, sans-serif",
+      fontSize: compact ? 13 : 14,
+      h4: {
+        fontSize: compact ? "1.75rem" : "2.125rem",
+      },
+      h5: {
+        fontSize: compact ? "1.25rem" : "1.5rem",
+      },
+      h6: {
+        fontSize: compact ? "1rem" : "1.25rem",
+      },
     },
-    background: {
-      default: mode === "dark" ? "#0d1117" : "#f6f8fa",
-      paper: mode === "dark" ? "#161b22" : "#ffffff",
-    },
-    text: {
-      primary: mode === "dark" ? "#c9d1d9" : "#1F2328",
-      secondary: mode === "dark" ? "#8b949e" : "#636c76",
-    },
-  },
-  spacing: compact ? 6 : 8,
-  typography: {
-    fontFamily: "Inter, system-ui, sans-serif",
-    fontSize: compact ? 13 : 14,
-    h4: {
-      fontSize: compact ? "1.75rem" : "2.125rem",
-    },
-    h5: {
-      fontSize: compact ? "1.25rem" : "1.5rem",
-    },
-    h6: {
-      fontSize: compact ? "1rem" : "1.25rem",
-    },
-  },
-  components: {
-    MuiTableCell: {
-      styleOverrides: {
-        root: {
-          padding: compact ? "8px 12px" : "16px",
+    components: {
+      MuiTableCell: {
+        styleOverrides: {
+          root: {
+            padding: compact ? "8px 12px" : "16px",
+          },
+          paddingCheckbox: {
+            padding: compact ? "0 8px" : "0 16px",
+          },
         },
-        paddingCheckbox: {
-          padding: compact ? "0 8px" : "0 16px",
-        }
-      }
-    },
-    MuiListItemButton: {
-      styleOverrides: {
-        root: {
-          paddingTop: compact ? "4px" : "8px",
-          paddingBottom: compact ? "4px" : "8px",
-        }
-      }
-    },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          backgroundImage: "none",
+      },
+      MuiListItemButton: {
+        styleOverrides: {
+          root: {
+            paddingTop: compact ? "4px" : "8px",
+            paddingBottom: compact ? "4px" : "8px",
+          },
+        },
+      },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backgroundImage: "none",
+          },
+        },
+      },
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            textTransform: "none",
+            borderRadius: "8px",
+            padding: compact ? "4px 12px" : "6px 16px",
+          },
+        },
+      },
+      MuiCssBaseline: {
+        styleOverrides: {
+          body: {
+            backgroundColor: mode === "dark" ? "#0d1117" : "#f6f8fa",
+            backgroundImage:
+              mode === "dark"
+                ? "radial-gradient(circle at top right, rgba(2, 125, 111, 0.05), transparent 400px), radial-gradient(circle at bottom left, rgba(13, 87, 106, 0.05), transparent 400px)"
+                : "radial-gradient(circle at top right, rgba(2, 125, 111, 0.03), transparent 400px), radial-gradient(circle at bottom left, rgba(13, 87, 106, 0.03), transparent 400px)",
+          },
         },
       },
     },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: "none",
-          borderRadius: "8px",
-          padding: compact ? "4px 12px" : "6px 16px",
-        },
-      },
-    },
-    MuiCssBaseline: {
-      styleOverrides: {
-        body: {
-          backgroundColor: mode === "dark" ? "#0d1117" : "#f6f8fa",
-          backgroundImage: mode === "dark"
-            ? "radial-gradient(circle at top right, rgba(2, 125, 111, 0.05), transparent 400px), radial-gradient(circle at bottom left, rgba(13, 87, 106, 0.05), transparent 400px)"
-            : "radial-gradient(circle at top right, rgba(2, 125, 111, 0.03), transparent 400px), radial-gradient(circle at bottom left, rgba(13, 87, 106, 0.03), transparent 400px)",
-        },
-      },
-    },
-  },
-});
-
-import { ThemeProvider as CustomThemeProvider } from "./contexts/ThemeContext";
-import { useThemeContext } from "./contexts/useThemeContext";
-import { InventoryProvider } from "./contexts/InventoryContext";
+  });
 
 const AppContent = () => {
   const [session, setSession] = useState<Session | null>(null);
@@ -175,7 +177,7 @@ const AppContent = () => {
             alignItems: "center",
             minHeight: "100vh",
             bgcolor: "background.default",
-            gap: 3
+            gap: 3,
           }}
         >
           <Box
@@ -189,7 +191,7 @@ const AppContent = () => {
                 "0%": { transform: "scale(0.95)", opacity: 0.8 },
                 "50%": { transform: "scale(1.05)", opacity: 1 },
                 "100%": { transform: "scale(0.95)", opacity: 0.8 },
-              }
+              },
             }}
             alt="Logo"
           />
@@ -235,9 +237,11 @@ const AppContent = () => {
 
 function App() {
   return (
-    <CustomThemeProvider>
-      <AppContent />
-    </CustomThemeProvider>
+    <AlertProvider>
+      <CustomThemeProvider>
+        <AppContent />
+      </CustomThemeProvider>
+    </AlertProvider>
   );
 }
 

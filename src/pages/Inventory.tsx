@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, CircularProgress, Snackbar, Alert } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { supabase } from "../supabaseClient";
 import { useThemeContext } from "../contexts/useThemeContext";
@@ -16,15 +16,19 @@ import InventoryGrid from "../components/inventory/InventoryGrid";
 import InventoryDialog from "../components/inventory/InventoryDialog";
 import InventoryScanner from "../components/inventory/InventoryScanner";
 import StockAdjustmentDialog from "../components/inventory/StockAdjustmentDialog";
+import { useAlert } from "../contexts/useAlertContext";
 
 const Inventory: React.FC = () => {
-  const { items, loading: inventoryLoading, refreshInventory } = useInventoryContext();
+  const {
+    items,
+    loading: inventoryLoading,
+    refreshInventory,
+  } = useInventoryContext();
   const [actionLoading, setActionLoading] = useState(false); // For local actions like upload/save
   const [open, setOpen] = useState(false);
   const [stockDialogOpen, setStockDialogOpen] = useState(false);
   const [scanOpen, setScanOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<InventoryItem>>({
     name: "",
     category: "",
@@ -41,11 +45,24 @@ const Inventory: React.FC = () => {
   const isDesktop = !isTablet;
 
   const { t } = useTranslation();
+  const { showError } = useAlert(); // Initialize useAlert
 
   // Server-side fetch for DataGrid: supports pagination, optional search and sorting
-  const fetchServerRows = async ({ page, pageSize, search, sortField, sortDir }: { page: number; pageSize: number; search?: string; sortField?: string; sortDir?: 'asc' | 'desc' }) => {
+  const fetchServerRows = async ({
+    page,
+    pageSize,
+    search,
+    sortField,
+    sortDir,
+  }: {
+    page: number;
+    pageSize: number;
+    search?: string;
+    sortField?: string;
+    sortDir?: "asc" | "desc";
+  }) => {
     try {
-      let query = supabase.from('inventory').select('*', { count: 'exact' });
+      let query = supabase.from("inventory").select("*", { count: "exact" });
 
       // Search across name, sku, category when provided
       if (search && search.trim().length > 0) {
@@ -55,9 +72,9 @@ const Inventory: React.FC = () => {
 
       // Sorting
       if (sortField) {
-        query = query.order(sortField, { ascending: sortDir !== 'desc' });
+        query = query.order(sortField, { ascending: sortDir !== "desc" });
       } else {
-        query = query.order('name', { ascending: true });
+        query = query.order("name", { ascending: true });
       }
 
       const from = page * pageSize;
@@ -66,31 +83,43 @@ const Inventory: React.FC = () => {
       const { data, error, count } = await query.range(from, to);
       if (error) throw error;
 
-      return { rows: (data || []) as InventoryItem[], total: count ?? (data || []).length };
-    } catch (err) {
-      console.error('fetchServerRows error', err);
+      return {
+        rows: (data || []) as InventoryItem[],
+        total: count ?? (data || []).length,
+      };
+    } catch (err: unknown) {
+      showError(
+        t("inventory.fetchServerError") + ": " + (err as Error).message
+      );
       return { rows: [], total: 0 };
     }
   };
 
+  const handleOpen = React.useCallback(
+    (item?: InventoryItem) => {
+      if (role === "user" && item) {
+        setEditingItem(item);
+        setStockDialogOpen(true);
+        return;
+      }
 
-
-  const handleOpen = React.useCallback((item?: InventoryItem) => {
-    if (role === 'user' && item) {
-      setEditingItem(item);
-      setStockDialogOpen(true);
-      return;
-    }
-
-    if (item) {
-      setEditingItem(item);
-      setFormData(item);
-    } else {
-      setEditingItem(null);
-      setFormData({ name: "", category: "", sku: "", stock: 0, image_url: "" });
-    }
-    setOpen(true);
-  }, [role]);
+      if (item) {
+        setEditingItem(item);
+        setFormData(item);
+      } else {
+        setEditingItem(null);
+        setFormData({
+          name: "",
+          category: "",
+          sku: "",
+          stock: 0,
+          image_url: "",
+        });
+      }
+      setOpen(true);
+    },
+    [role]
+  );
 
   const handleClose = () => {
     setOpen(false);
@@ -106,7 +135,9 @@ const Inventory: React.FC = () => {
 
   const checkLowStockAndNotify = async (item: Partial<InventoryItem>) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data: userSettings } = await supabase
@@ -115,11 +146,16 @@ const Inventory: React.FC = () => {
         .eq("user_id", user.id)
         .single();
 
-      const isLowStock = (item.stock || 0) <= (userSettings?.low_stock_threshold ?? 5);
+      const isLowStock =
+        (item.stock || 0) <= (userSettings?.low_stock_threshold ?? 5);
 
       if (isLowStock) {
         // Handle In-App/Browser Notifications
-        if (userSettings?.notifications && "Notification" in window && Notification.permission === "granted") {
+        if (
+          userSettings?.notifications &&
+          "Notification" in window &&
+          Notification.permission === "granted"
+        ) {
           const notificationData = {
             body: `L'article "${item.name}" est à ${item.stock} unités.`,
             icon: "/icon.svg",
@@ -128,13 +164,16 @@ const Inventory: React.FC = () => {
             vibrate: [200, 100, 200],
             requireInteraction: true,
             data: {
-              url: "/inventory"
-            }
+              url: "/inventory",
+            },
           } as NotificationOptions & { vibrate?: number[] };
 
           if ("serviceWorker" in navigator) {
             navigator.serviceWorker.ready.then((registration) => {
-              registration.showNotification("Alerte Stock Faible", notificationData);
+              registration.showNotification(
+                "Alerte Stock Faible",
+                notificationData
+              );
             });
           } else {
             new Notification("Alerte Stock Faible", notificationData);
@@ -155,12 +194,16 @@ const Inventory: React.FC = () => {
           });
         }
       }
-    } catch (err) {
-      console.error("Low stock alert error:", err);
+    } catch (err: unknown) {
+      showError(
+        t("inventory.lowStockAlertError") + ": " + (err as Error).message
+      );
     }
   };
 
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -176,14 +219,13 @@ const Inventory: React.FC = () => {
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("inventory-images")
-        .getPublicUrl(filePath);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("inventory-images").getPublicUrl(filePath);
 
       setFormData({ ...formData, image_url: publicUrl });
-    } catch (err) {
-      setError(t('errors.uploadImage'));
-      console.error(err);
+    } catch (err: unknown) {
+      showError(t("errors.uploadImage") + ": " + (err as Error).message);
     } finally {
       setActionLoading(false);
     }
@@ -191,7 +233,9 @@ const Inventory: React.FC = () => {
 
   const handleStockSave = async (itemId: string, newStock: number) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       const { error } = await supabase
         .from("inventory")
@@ -202,7 +246,7 @@ const Inventory: React.FC = () => {
 
       // Log the stock update activity
       if (user) {
-        const item = items.find(i => i.id === itemId);
+        const item = items.find((i) => i.id === itemId);
         await supabase.from("inventory_activity").insert({
           inventory_id: itemId,
           user_id: user.id,
@@ -212,16 +256,17 @@ const Inventory: React.FC = () => {
         });
       }
 
-      const updatedItem = items.find(i => i.id === itemId);
+      const updatedItem = items.find((i) => i.id === itemId);
       if (updatedItem) {
         checkLowStockAndNotify({ ...updatedItem, stock: newStock });
       }
 
       setStockDialogOpen(false);
       refreshInventory();
-    } catch (err) {
-      console.error("Error updating stock:", err);
-      setError(t('errors.updateStock'));
+    } catch (err: unknown) {
+      showError(
+        t("inventory.updateStockError") + ": " + (err as Error).message
+      );
     }
   };
 
@@ -235,12 +280,14 @@ const Inventory: React.FC = () => {
     };
 
     if (!sanitizedData.name) {
-      alert(t('inventory.nameRequired'));
+      showError(t("inventory.nameRequired"));
       return;
     }
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       if (editingItem) {
         const { error } = await supabase
@@ -249,7 +296,7 @@ const Inventory: React.FC = () => {
           .eq("id", editingItem.id);
 
         if (error) {
-          setError(t('errors.updateItem'));
+          showError(t("errors.updateItem") + ": " + error.message);
           return;
         }
 
@@ -271,7 +318,7 @@ const Inventory: React.FC = () => {
           .single();
 
         if (error) {
-          setError(t('errors.addItem'));
+          showError(t("errors.addItem") + ": " + error.message);
           return;
         }
 
@@ -290,22 +337,26 @@ const Inventory: React.FC = () => {
       checkLowStockAndNotify(sanitizedData);
       handleClose();
       refreshInventory();
-    } catch (err) {
-      console.error("Error saving item:", err);
-      setError(t('errors.saveItem'));
+    } catch (err: unknown) {
+      showError(t("inventory.saveItemError") + ": " + (err as Error).message);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm(t('inventory.deleteConfirm'))) {
+    if (window.confirm(t("inventory.deleteConfirm"))) {
       try {
         // Get item name before deleting
         const item = items.find((i) => i.id === id);
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
-        const { error } = await supabase.from("inventory").delete().eq("id", id);
+        const { error } = await supabase
+          .from("inventory")
+          .delete()
+          .eq("id", id);
         if (error) {
-          setError(t('errors.deleteItem'));
+          showError(t("errors.deleteItem") + ": " + error.message);
         } else {
           // Log the delete activity
           if (user && item) {
@@ -319,9 +370,10 @@ const Inventory: React.FC = () => {
           }
           refreshInventory();
         }
-      } catch (err) {
-        console.error("Error deleting item:", err);
-        setError(t('errors.saveItem'));
+      } catch (err: unknown) {
+        showError(
+          t("inventory.deleteItemError") + ": " + (err as Error).message
+        );
       }
     }
   };
@@ -338,7 +390,13 @@ const Inventory: React.FC = () => {
       handleOpen(item);
     } else {
       setEditingItem(null);
-      setFormData({ name: "", category: "", sku: decodedText, stock: 0, image_url: "" });
+      setFormData({
+        name: "",
+        category: "",
+        sku: decodedText,
+        stock: 0,
+        image_url: "",
+      });
       setOpen(true);
     }
   };
@@ -372,7 +430,14 @@ const Inventory: React.FC = () => {
 
   if (inventoryLoading || actionLoading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "50vh",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -385,14 +450,11 @@ const Inventory: React.FC = () => {
         selectedCount={selectedItems.size}
         onPrint={() => window.print()}
         onScan={() => setScanOpen(true)}
-        onAdd={role === 'admin' ? () => handleOpen() : undefined}
+        onAdd={role === "admin" ? () => handleOpen() : undefined}
       />
 
       {!isDesktop && (
-        <InventorySearch
-          value={searchQuery}
-          onChange={setSearchQuery}
-        />
+        <InventorySearch value={searchQuery} onChange={setSearchQuery} />
       )}
 
       {!isTablet ? (
@@ -402,7 +464,7 @@ const Inventory: React.FC = () => {
           onToggleAll={toggleAll}
           onToggleItem={toggleItem}
           onEdit={handleOpen}
-          onDelete={role === 'admin' ? handleDelete : undefined}
+          onDelete={role === "admin" ? handleDelete : undefined}
           fetchServerRows={fetchServerRows}
           searchQuery={searchQuery}
           isDesktop={isDesktop}
@@ -413,7 +475,7 @@ const Inventory: React.FC = () => {
           selectedItems={selectedItems}
           onToggleItem={toggleItem}
           onEdit={handleOpen}
-          onDelete={role === 'admin' ? handleDelete : undefined}
+          onDelete={role === "admin" ? handleDelete : undefined}
         />
       )}
 
@@ -443,23 +505,10 @@ const Inventory: React.FC = () => {
         open={scanOpen}
         onClose={() => setScanOpen(false)}
         onScanSuccess={handleScanSuccess}
-        onError={setError}
+        onError={(msg) => showError(t("inventory.scanError") + ": " + msg)}
       />
 
-      <Snackbar
-        open={!!error}
-        autoHideDuration={6000}
-        onClose={() => setError(null)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert severity="error" sx={{ width: "100%" }} onClose={() => setError(null)}>
-          {error}
-        </Alert>
-      </Snackbar>
-
-      <BarcodePrinter
-        items={items.filter((i) => selectedItems.has(i.id))}
-      />
+      <BarcodePrinter items={items.filter((i) => selectedItems.has(i.id))} />
     </Box>
   );
 };

@@ -6,8 +6,6 @@ import {
   CircularProgress,
   useTheme,
   useMediaQuery,
-  Snackbar,
-  Alert,
   Grid,
 } from "@mui/material";
 import {
@@ -19,6 +17,7 @@ import { useThemeContext } from "../contexts/useThemeContext";
 import { useTranslation } from "../i18n";
 import { useInventoryContext } from "../contexts/useInventoryContext";
 import RecentActivity from "../components/dashboard/RecentActivity";
+import { useAlert } from "../contexts/useAlertContext";
 
 interface StatCardProps {
   title: string;
@@ -73,7 +72,6 @@ const Dashboard: React.FC = () => {
   const { items, loading: inventoryLoading } = useInventoryContext();
   const [dailyStats, setDailyStats] = useState({ in: 0, out: 0 });
   const [activitiesLoading, setActivitiesLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   type ActivityRow = { action?: string; changes?: Record<string, unknown> };
   type RecentActivityItem = { id: string; action: "created" | "updated" | "deleted"; item_name: string; created_at: string; user_display_name?: string };
   const [recentActivities, setRecentActivities] = useState<RecentActivityItem[]>([]);
@@ -81,6 +79,7 @@ const Dashboard: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const { showError } = useAlert(); // Initialize useAlert
 
   const stats = useMemo(() => {
     if (!items) return { totalItems: 0, lowStockItems: 0, totalStock: 0, topCategory: "" };
@@ -182,17 +181,18 @@ const Dashboard: React.FC = () => {
           }));
 
           setRecentActivities(activitiesWithNames);
+        } else if (error) { // Handle error for fetching recent activities
+          throw error;
         }
-        } catch (err) {
-        console.error("Error fetching dashboard data:", err);
-        setError(t('errors.loadDashboard'));
+      } catch (err) {
+        showError(t('errors.loadDashboard') + ': ' + (err as Error).message);
       } finally {
         setActivitiesLoading(false);
       }
     };
 
     fetchDashboardData();
-  }, [t]);
+  }, [t, showError]); // Add showError to dependency array
 
   const loading = inventoryLoading || activitiesLoading;
 
@@ -268,22 +268,6 @@ const Dashboard: React.FC = () => {
       <Box sx={{ mt: 4 }}>
         <RecentActivity activities={recentActivities} />
       </Box>
-
-      {/* Error Snackbar */}
-      <Snackbar
-        open={!!error}
-        autoHideDuration={6000}
-        onClose={() => setError(null)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          severity="error"
-          sx={{ width: "100%" }}
-          onClose={() => setError(null)}
-        >
-          {error}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 };

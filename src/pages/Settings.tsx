@@ -70,7 +70,7 @@ const Settings: React.FC = () => {
             lowStockThreshold: userSettings.low_stock_threshold ?? 5,
             darkMode: userSettings.dark_mode ?? true,
             compactView: userSettings.compact_view ?? false,
-            language: (userSettings.language as 'fr' | 'en') || 'fr',
+            language: (userSettings.language as 'fr' | 'en' | 'ar') || 'fr',
           });
           // Sync context
           setUserProfile({
@@ -79,7 +79,7 @@ const Settings: React.FC = () => {
           });
           if (userSettings.dark_mode !== darkMode) toggleDarkMode(userSettings.dark_mode);
           if (userSettings.compact_view !== compactView) toggleCompactView(userSettings.compact_view);
-          if ((userSettings.language as 'fr' | 'en') !== language) setLanguage((userSettings.language as 'fr' | 'en') || 'fr');
+          if ((userSettings.language as 'fr' | 'en' | 'ar') !== language) setLanguage((userSettings.language as 'fr' | 'en' | 'ar') || 'fr');
         } else {
           setSettings((prev) => ({
             ...prev,
@@ -212,7 +212,7 @@ const Settings: React.FC = () => {
                 value={settings.language}
                 label={t('settings.language')}
                 onChange={(e) => {
-                  const val = e.target.value as 'fr' | 'en';
+                  const val = e.target.value as 'fr' | 'en' | 'ar';
                   // mark that the language change originated from the UI so the
                   // settings loader won't immediately overwrite it from the DB
                   languageChangeRef.current = true;
@@ -222,6 +222,7 @@ const Settings: React.FC = () => {
               >
                 <MenuItem value={'fr'}>{t('lang.fr')}</MenuItem>
                 <MenuItem value={'en'}>{t('lang.en')}</MenuItem>
+                <MenuItem value={'ar'}>{t('lang.ar')}</MenuItem>
               </Select>
             </FormControl>
           </Box>
