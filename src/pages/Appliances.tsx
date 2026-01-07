@@ -4,7 +4,6 @@ import {
   Typography,
   Paper,
   Button,
-  Grid,
   Card,
   CardContent,
   CardActions,
@@ -18,6 +17,7 @@ import {
   CircularProgress,
   CardMedia,
   InputAdornment,
+  Grid
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -68,12 +68,12 @@ const Appliances: React.FC = () => {
   );
   const [repairs, setRepairs] = useState<Repair[]>([]);
   const [loadingRepairs, setLoadingRepairs] = useState(false);
-  const { showError } = useAlert(); // Initialize useAlert
+  const { showError } = useAlert();
 
   // Modal states
   const [openAddAppliance, setOpenAddAppliance] = useState(false);
   const [openAddRepair, setOpenAddRepair] = useState(false);
-  const [openRepairsList, setOpenRepairsList] = useState(false); // To view history
+  const [openRepairsList, setOpenRepairsList] = useState(false);
   const [printAppliance, setPrintAppliance] = useState<Appliance | null>(null);
   const [scanOpen, setScanOpen] = useState(false);
 
@@ -100,11 +100,10 @@ const Appliances: React.FC = () => {
   }
 
   useEffect(() => {
-    // Defer the initial load to avoid synchronous setState inside effect
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       fetchAppliances();
     }, 0);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -161,7 +160,7 @@ const Appliances: React.FC = () => {
     } else {
       setOpenAddRepair(false);
       setNewRepair({});
-      fetchRepairs(selectedAppliance.id); // Refresh repairs list
+      fetchRepairs(selectedAppliance.id);
     }
   };
 
@@ -228,26 +227,24 @@ const Appliances: React.FC = () => {
 
       if (printWindow) {
         const htmlContent = `
-                <!DOCTYPE html>
-                <html>
-                    <head>
-                        <title>Print Label</title>
-                        <style>
-                            body { font-family: sans-serif; text-align: center; }
-                        </style>
-                    </head>
-                    <body>
-                        ${printContent.innerHTML}
-                    </body>
-                </html>
-            `;
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>Print Label</title>
+              <style>
+                body { font-family: sans-serif; text-align: center; }
+              </style>
+            </head>
+            <body>
+              ${printContent.innerHTML}
+            </body>
+          </html>
+        `;
 
-        // Write content using the modern approach
         printWindow.document.open();
         printWindow.document.write(htmlContent);
         printWindow.document.close();
 
-        // Set up print trigger
         printWindow.onload = function () {
           printWindow.print();
           printWindow.close();
@@ -273,86 +270,93 @@ const Appliances: React.FC = () => {
     if (appliance) {
       handleViewRepairs(appliance);
     } else {
-      // Pre-fill SKU for new appliance
       setNewAppliance({ sku: decodedText });
       setOpenAddAppliance(true);
     }
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: { xs: "column", sm: "row" },
-        justifyContent: "space-between",
-        alignItems: { xs: "stretch", sm: "center" },
-        gap: 2,
-        mb: 3,
-      }}
-    >
-      <Typography variant="h4" fontWeight="bold" sx={{ color: "text.primary" }}>
-        {t("menu.appliances")}
-      </Typography>
-      <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-        <Button
-          variant="outlined"
-          startIcon={<ScanIcon />}
-          onClick={() => setScanOpen(true)}
-          sx={{
-            color: "text.primary",
-            borderColor: "divider",
-            fontWeight: "bold",
-            flex: { xs: 1, sm: "0 1 auto" },
-          }}
+    <Box sx={{ p: compactView ? 2 : 3 }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          justifyContent: "space-between",
+          alignItems: { xs: "stretch", sm: "center" },
+          gap: 2,
+          mb: compactView ? 2 : 3,
+        }}
+      >
+        <Typography
+          variant={compactView ? "h5" : "h4"}
+          fontWeight="bold"
+          sx={{ color: "text.primary" }}
         >
-          {t("inventory.scan")}
-        </Button>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setOpenAddAppliance(true)}
-          sx={{
-            background: "linear-gradient(45deg, #027d6f 30%, #1a748b 90%)",
-            color: "white",
-            fontWeight: "bold",
-            boxShadow: "0 3px 5px 2px rgba(2, 125, 111, .3)",
-            flex: { xs: 1, sm: "0 1 auto" },
-          }}
-        >
-          {t("appliances.add")}
-        </Button>
+          {t("menu.appliances")}
+        </Typography>
+        <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+          <Button
+            variant="outlined"
+            startIcon={<ScanIcon />}
+            onClick={() => setScanOpen(true)}
+            sx={{
+              color: "text.primary",
+              borderColor: "divider",
+              fontWeight: "bold",
+              flex: { xs: 1, sm: "0 1 auto" },
+            }}
+          >
+            {t("inventory.scan")}
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setOpenAddAppliance(true)}
+            sx={{
+              background: "linear-gradient(45deg, #027d6f 30%, #1a748b 90%)",
+              color: "white",
+              fontWeight: "bold",
+              boxShadow: "0 3px 5px 2px rgba(2, 125, 111, .3)",
+              flex: { xs: 1, sm: "0 1 auto" },
+            }}
+          >
+            {t("appliances.add")}
+          </Button>
+        </Box>
       </Box>
 
       {loading ? (
         <CircularProgress />
       ) : (
-        <Grid container spacing={3}>
+        <Grid container spacing={compactView ? 2 : 3}>
           {appliances.map((appliance) => (
             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={appliance.id}>
               <Card
                 elevation={0}
                 sx={{
-                  borderRadius: 3,
+                  borderRadius: compactView ? 2 : 3,
                   border: "1px solid",
                   borderColor: "divider",
                   transition: "transform 0.2s, box-shadow 0.2s",
                   overflow: "hidden",
                   "&:hover": {
-                    transform: "translateY(-4px)",
-                    boxShadow: "0 12px 24px -10px rgba(0, 0, 0, 0.2)",
+                    transform: compactView ? "translateY(-2px)" : "translateY(-4px)",
+                    boxShadow: compactView 
+                      ? "0 8px 16px -8px rgba(0, 0, 0, 0.2)" 
+                      : "0 12px 24px -10px rgba(0, 0, 0, 0.2)",
                   },
                 }}
               >
                 {appliance.photo_url && (
                   <CardMedia
                     component="img"
-                    height="140"
+                    height={compactView ? 100 : 140}
                     image={appliance.photo_url}
                     alt={appliance.name}
                     sx={{ objectFit: "cover", display: "block", width: "100%" }}
                   />
                 )}
-                <CardContent>
+                <CardContent sx={{ p: compactView ? 1.5 : 2 }}>
                   <Box
                     sx={{
                       display: "flex",
@@ -361,7 +365,7 @@ const Appliances: React.FC = () => {
                       mb: 1,
                     }}
                   >
-                    <Typography variant="h6" fontWeight="bold">
+                    <Typography variant={compactView ? "subtitle1" : "h6"} fontWeight="bold">
                       {appliance.name}
                     </Typography>
                     <Chip
@@ -371,6 +375,7 @@ const Appliances: React.FC = () => {
                         bgcolor: "rgba(2, 125, 111, 0.1)",
                         color: "primary.main",
                         fontWeight: "bold",
+                        height: compactView ? 20 : 24,
                       }}
                     />
                   </Box>
@@ -404,15 +409,16 @@ const Appliances: React.FC = () => {
                     flexDirection: { xs: "column", sm: "row" },
                     justifyContent: "space-between",
                     alignItems: { xs: "stretch", sm: "center" },
-                    px: 2,
-                    pb: 2,
+                    px: compactView ? 1.5 : 2,
+                    pb: compactView ? 1.5 : 2,
                     gap: 1,
                   }}
                 >
                   <Button
-                    size="small"
+                    size={compactView ? "small" : "medium"}
                     startIcon={<HistoryIcon />}
                     onClick={() => handleViewRepairs(appliance)}
+                    sx={{ width: { xs: "100%", sm: "auto" } }}
                   >
                     {t("appliances.history")}
                   </Button>
@@ -425,6 +431,7 @@ const Appliances: React.FC = () => {
                   >
                     <IconButton
                       size="small"
+                      sx={{ p: compactView ? 0.5 : 1 }}
                       onClick={() => setPrintAppliance(appliance)}
                       title={t("appliances.printLabel")}
                     >
@@ -433,6 +440,7 @@ const Appliances: React.FC = () => {
                     <IconButton
                       size="small"
                       color="primary"
+                      sx={{ p: compactView ? 0.5 : 1 }}
                       onClick={() => {
                         setSelectedAppliance(appliance);
                         setOpenAddRepair(true);
@@ -444,6 +452,7 @@ const Appliances: React.FC = () => {
                     <IconButton
                       size="small"
                       color="error"
+                      sx={{ p: compactView ? 0.5 : 1 }}
                       onClick={() => handleDeleteAppliance(appliance.id)}
                       title={t("appliances.delete")}
                     >
@@ -463,10 +472,9 @@ const Appliances: React.FC = () => {
         onClose={() => setOpenAddAppliance(false)}
         fullWidth
         maxWidth="sm"
-        sx={{ px: { xs: 2, sm: 3 } }}
       >
         <DialogTitle>{t("appliances.add")}</DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ px: { xs: 2, sm: 3 } }}>
           <TextField
             autoFocus
             margin="dense"
@@ -592,12 +600,11 @@ const Appliances: React.FC = () => {
         onClose={() => setOpenAddRepair(false)}
         fullWidth
         maxWidth="sm"
-        sx={{ px: { xs: 2, sm: 3 } }}
       >
         <DialogTitle>{`${t("appliances.addRepair")} ${
           selectedAppliance?.name || ""
         }`}</DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ px: { xs: 2, sm: 3 } }}>
           <TextField
             autoFocus
             margin="dense"
@@ -659,12 +666,11 @@ const Appliances: React.FC = () => {
         onClose={() => setOpenRepairsList(false)}
         fullWidth
         maxWidth="sm"
-        sx={{ px: { xs: 2, sm: 3 } }}
       >
         <DialogTitle>{`${t("appliances.history")}: ${
           selectedAppliance?.name
         }`}</DialogTitle>
-        <DialogContent dividers>
+        <DialogContent dividers sx={{ px: { xs: 2, sm: 3 } }}>
           {loadingRepairs ? (
             <CircularProgress />
           ) : repairs.length === 0 ? (
@@ -714,8 +720,7 @@ const Appliances: React.FC = () => {
         open={!!printAppliance}
         onClose={() => setPrintAppliance(null)}
         fullWidth
-        maxWidth="sm"
-        sx={{ px: { xs: 2, sm: 3 } }}
+        maxWidth="xs"
       >
         <DialogTitle>{`${t("appliances.printLabel")} ${
           printAppliance?.name
@@ -726,6 +731,7 @@ const Appliances: React.FC = () => {
             flexDirection: "column",
             alignItems: "center",
             py: 4,
+            px: { xs: 2, sm: 3 },
           }}
         >
           <div id="printable-area" style={{ textAlign: "center" }}>
