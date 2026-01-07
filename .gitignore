@@ -24,8 +24,6 @@ node
 
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
 .idea
 .DS_Store
 *.suo
@@ -33,5 +31,3 @@ node
 *.njsproj
 *.sln
 *.sw?
-user_settings_schema.sql
-update_settings_schema.sql

@@ -35,7 +35,7 @@ const Layout: React.FC = () => {
   const location = useLocation();
   const theme = useTheme();
   const { compactView, displayName, avatarUrl } = useThemeContext();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const { t } = useTranslation();
 
@@ -67,8 +67,9 @@ const Layout: React.FC = () => {
       ),
       path: "/inventory"
     },
-    { text: t('menu.settings'), icon: <SettingsIcon />, path: "/settings" },
     { text: t('menu.appliances'), icon: <AppliancesIcon />, path: "/appliances" },
+    // Keep Settings last in this section
+    { text: t('menu.settings'), icon: <SettingsIcon />, path: "/settings" },
   ];
 
   const handleDrawerToggle = () => {
@@ -304,7 +305,7 @@ const Layout: React.FC = () => {
 
       <Box
         component="nav"
-        sx={{ width: { md: currentDrawerWidth }, flexShrink: { md: 0 } }}
+        sx={{ width: { sm: currentDrawerWidth }, flexShrink: { sm: 0 } }}
       >
         {isMobile ? (
           <Drawer
@@ -312,8 +313,8 @@ const Layout: React.FC = () => {
             open={mobileOpen}
             onClose={handleDrawerToggle}
             ModalProps={{ keepMounted: true }}
-            sx={{
-              display: { xs: "block", md: "none" },
+              sx={{
+              display: { xs: "block", sm: "none" },
               "& .MuiDrawer-paper": {
                 boxSizing: "border-box",
                 width: drawerWidth,
@@ -330,7 +331,7 @@ const Layout: React.FC = () => {
           <Drawer
             variant="permanent"
             sx={{
-              display: { xs: "none", md: "block" },
+              display: { xs: "none", sm: "block" },
               "& .MuiDrawer-paper": {
                 boxSizing: "border-box",
                 width: currentDrawerWidth,
@@ -354,7 +355,7 @@ const Layout: React.FC = () => {
         sx={{
           flexGrow: 1,
           p: compactView ? { xs: 1.5, sm: 2, md: 2.5 } : { xs: 2, sm: 3, md: 4 },
-          width: { md: `calc(100% - ${currentDrawerWidth}px)` },
+          width: { sm: `calc(100% - ${currentDrawerWidth}px)` },
           mt: isMobile ? (compactView ? "48px" : "64px") : 0,
           maxWidth: "100%",
           overflowX: "hidden",

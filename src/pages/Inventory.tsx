@@ -38,8 +38,40 @@ const Inventory: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
+  const isDesktop = !isTablet;
 
   const { t } = useTranslation();
+
+  // Server-side fetch for DataGrid: supports pagination, optional search and sorting
+  const fetchServerRows = async ({ page, pageSize, search, sortField, sortDir }: { page: number; pageSize: number; search?: string; sortField?: string; sortDir?: 'asc' | 'desc' }) => {
+    try {
+      let query = supabase.from('inventory').select('*', { count: 'exact' });
+
+      // Search across name, sku, category when provided
+      if (search && search.trim().length > 0) {
+        const q = `%${search.trim()}%`;
+        query = query.or(`name.ilike.${q},sku.ilike.${q},category.ilike.${q}`);
+      }
+
+      // Sorting
+      if (sortField) {
+        query = query.order(sortField, { ascending: sortDir !== 'desc' });
+      } else {
+        query = query.order('name', { ascending: true });
+      }
+
+      const from = page * pageSize;
+      const to = from + pageSize - 1;
+
+      const { data, error, count } = await query.range(from, to);
+      if (error) throw error;
+
+      return { rows: (data || []) as InventoryItem[], total: count ?? (data || []).length };
+    } catch (err) {
+      console.error('fetchServerRows error', err);
+      return { rows: [], total: 0 };
+    }
+  };
 
 
 
@@ -356,10 +388,12 @@ const Inventory: React.FC = () => {
         onAdd={role === 'admin' ? () => handleOpen() : undefined}
       />
 
-      <InventorySearch
-        value={searchQuery}
-        onChange={setSearchQuery}
-      />
+      {!isDesktop && (
+        <InventorySearch
+          value={searchQuery}
+          onChange={setSearchQuery}
+        />
+      )}
 
       {!isTablet ? (
         <InventoryTable
@@ -369,6 +403,9 @@ const Inventory: React.FC = () => {
           onToggleItem={toggleItem}
           onEdit={handleOpen}
           onDelete={role === 'admin' ? handleDelete : undefined}
+          fetchServerRows={fetchServerRows}
+          searchQuery={searchQuery}
+          isDesktop={isDesktop}
         />
       ) : (
         <InventoryGrid
