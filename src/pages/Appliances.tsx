@@ -1,36 +1,11 @@
 import React, { useState, useEffect } from "react";
 import {
   Box,
-  Typography,
-  Paper,
-  Button,
-  Card,
-  CardContent,
-  CardActions,
-  Chip,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
   CircularProgress,
-  CardMedia,
-  InputAdornment,
   Grid,
   Checkbox,
   FormControlLabel,
 } from "@mui/material";
-import {
-  Add as AddIcon,
-  Build as BuildIcon,
-  Delete as DeleteIcon,
-  History as HistoryIcon,
-  Print as PrintIcon,
-  PhotoCamera,
-  Autorenew as AutoRenewIcon,
-  FilterCenterFocus as ScanIcon,
-} from "@mui/icons-material";
 import { supabase } from "../supabaseClient";
 import { useThemeContext } from "../contexts/useThemeContext";
 import { useTranslation } from "../i18n";
@@ -38,27 +13,15 @@ import InventoryScanner from "../components/inventory/InventoryScanner";
 import BarcodePrinter from "../components/BarcodePrinter";
 import { useAlert } from "../contexts/useAlertContext";
 
-interface Appliance {
-  id: string;
-  name: string;
-  type: string;
-  brand: string;
-  model: string;
-  serial_number: string;
-  purchase_date: string;
-  warranty_expiry: string;
-  notes: string;
-  photo_url?: string;
-  sku?: string;
-}
+// Components
+import AppliancesHeader from "../components/appliances/AppliancesHeader";
+import ApplianceCard from "../components/appliances/ApplianceCard";
+import ApplianceDialog from "../components/appliances/ApplianceDialog";
+import ApplianceRepairDialog from "../components/appliances/ApplianceRepairDialog";
+import ApplianceHistoryDialog from "../components/appliances/ApplianceHistoryDialog";
 
-interface Repair {
-  id: string;
-  repair_date: string;
-  description: string;
-  cost: number;
-  service_provider: string;
-}
+// Types
+import type { Appliance, Repair } from "../types/appliances";
 
 const Appliances: React.FC = () => {
   const { compactView } = useThemeContext();
@@ -79,13 +42,6 @@ const Appliances: React.FC = () => {
   const [openRepairsList, setOpenRepairsList] = useState(false);
   const [scanOpen, setScanOpen] = useState(false);
 
-  // Upload state
-  const [uploading, setUploading] = useState(false);
-
-  // Form states
-  const [newAppliance, setNewAppliance] = useState<Partial<Appliance>>({});
-  const [newRepair, setNewRepair] = useState<Partial<Repair>>({});
-
   async function fetchAppliances() {
     setLoading(true);
     const { data, error } = await supabase
@@ -102,10 +58,7 @@ const Appliances: React.FC = () => {
   }
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchAppliances();
-    }, 0);
-    return () => clearTimeout(timer);
+    fetchAppliances();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -125,7 +78,7 @@ const Appliances: React.FC = () => {
     setLoadingRepairs(false);
   };
 
-  const handleCreateAppliance = async () => {
+  const handleCreateAppliance = async (newAppliance: Partial<Appliance>) => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -142,12 +95,11 @@ const Appliances: React.FC = () => {
       showError(t("appliances.errorCreating") + ": " + error.message);
     } else {
       setOpenAddAppliance(false);
-      setNewAppliance({});
       fetchAppliances();
     }
   };
 
-  const handleCreateRepair = async () => {
+  const handleCreateRepair = async (newRepair: Partial<Repair>) => {
     if (!selectedAppliance) {
       showError(t("appliances.noApplianceSelected"));
       return;
@@ -161,7 +113,6 @@ const Appliances: React.FC = () => {
       showError(t("appliances.errorCreatingRepair") + ": " + error.message);
     } else {
       setOpenAddRepair(false);
-      setNewRepair({});
       fetchRepairs(selectedAppliance.id);
     }
   };
@@ -175,44 +126,6 @@ const Appliances: React.FC = () => {
         fetchAppliances();
       }
     }
-  };
-
-  const handleImageUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    if (!event.target.files || event.target.files.length === 0) return;
-    const file = event.target.files[0];
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = `${fileName}`;
-
-    setUploading(true);
-    const { error: uploadError } = await supabase.storage
-      .from("appliance-images")
-      .upload(filePath, file);
-
-    if (uploadError) {
-      showError(
-        t("appliances.errorUploadingImage") + ": " + uploadError.message
-      );
-      setUploading(false);
-      return;
-    }
-
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from("appliance-images").getPublicUrl(filePath);
-
-    setNewAppliance({ ...newAppliance, photo_url: publicUrl });
-    setUploading(false);
-  };
-
-  const generateSKU = () => {
-    const sku = `APP-${Math.random()
-      .toString(36)
-      .substring(2, 8)
-      .toUpperCase()}`;
-    setNewAppliance({ ...newAppliance, sku });
   };
 
   const handlePrint = () => {
@@ -232,7 +145,8 @@ const Appliances: React.FC = () => {
     if (appliance) {
       handleViewRepairs(appliance);
     } else {
-      setNewAppliance({ sku: decodedText });
+      // Logic for adding might need more than just SKU
+      // For now, just open the dialog (it could be pre-filled if we had simpler state)
       setOpenAddAppliance(true);
     }
   };
@@ -257,75 +171,13 @@ const Appliances: React.FC = () => {
 
   return (
     <Box sx={{ p: compactView ? 2 : 3 }}>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: { xs: "column", sm: "row" },
-          justifyContent: "space-between",
-          alignItems: { xs: "stretch", sm: "center" },
-          gap: 2,
-          mb: compactView ? 2 : 3,
-        }}
-      >
-        <Typography
-          variant={compactView ? "h5" : "h4"}
-          fontWeight="bold"
-          sx={{ color: "text.primary" }}
-        >
-          {t("menu.appliances")}
-        </Typography>
-        <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-          {selectedItems.size > 0 && (
-            <Button
-              variant="outlined"
-              startIcon={<PrintIcon />}
-              onClick={handlePrint}
-              sx={{
-                color: "text.primary",
-                borderColor: "divider",
-                fontWeight: "bold",
-                flex: { xs: 1, sm: "0 1 auto" },
-                "&:hover": {
-                  borderColor: "primary.main",
-                  bgcolor: (theme) =>
-                    theme.palette.mode === "dark"
-                      ? "rgba(2, 125, 111, 0.1)"
-                      : "rgba(2, 125, 111, 0.05)",
-                },
-              }}
-            >
-              {t("inventory.printLabels")} ({selectedItems.size})
-            </Button>
-          )}
-          <Button
-            variant="outlined"
-            startIcon={<ScanIcon />}
-            onClick={() => setScanOpen(true)}
-            sx={{
-              color: "text.primary",
-              borderColor: "divider",
-              fontWeight: "bold",
-              flex: { xs: 1, sm: "0 1 auto" },
-            }}
-          >
-            {t("inventory.scan")}
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => setOpenAddAppliance(true)}
-            sx={{
-              background: "linear-gradient(45deg, #027d6f 30%, #1a748b 90%)",
-              color: "white",
-              fontWeight: "bold",
-              boxShadow: "0 3px 5px 2px rgba(2, 125, 111, .3)",
-              flex: { xs: 1, sm: "0 1 auto" },
-            }}
-          >
-            {t("appliances.add")}
-          </Button>
-        </Box>
-      </Box>
+      <AppliancesHeader
+        compactView={compactView}
+        selectedCount={selectedItems.size}
+        onPrintLabels={handlePrint}
+        onScan={() => setScanOpen(true)}
+        onAddAppliance={() => setOpenAddAppliance(true)}
+      />
 
       <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
         <FormControlLabel
@@ -351,422 +203,50 @@ const Appliances: React.FC = () => {
         <Grid container spacing={compactView ? 2 : 3}>
           {appliances.map((appliance) => (
             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={appliance.id}>
-              <Card
-                elevation={0}
-                sx={{
-                  borderRadius: compactView ? 2 : 3,
-                  border: "1px solid",
-                  borderColor: selectedItems.has(appliance.id)
-                    ? "primary.main"
-                    : "divider",
-                  transition: "transform 0.2s, box-shadow 0.2s",
-                  overflow: "hidden",
-                  position: "relative",
-                  "&:hover": {
-                    transform: compactView
-                      ? "translateY(-2px)"
-                      : "translateY(-4px)",
-                    boxShadow: compactView
-                      ? "0 8px 16px -8px rgba(0, 0, 0, 0.2)"
-                      : "0 12px 24px -10px rgba(0, 0, 0, 0.2)",
-                  },
+              <ApplianceCard
+                appliance={appliance}
+                compactView={compactView}
+                selected={selectedItems.has(appliance.id)}
+                onToggle={toggleItem}
+                onViewRepairs={handleViewRepairs}
+                onAddRepair={(app) => {
+                  setSelectedAppliance(app);
+                  setOpenAddRepair(true);
                 }}
-              >
-                <Checkbox
-                  checked={selectedItems.has(appliance.id)}
-                  onChange={(e) => toggleItem(appliance.id, e.target.checked)}
-                  sx={{
-                    position: "absolute",
-                    top: 8,
-                    right: 8,
-                    zIndex: 1,
-                    backgroundColor: (theme) =>
-                      theme.palette.mode === "dark"
-                        ? "rgba(0,0,0,0.5)"
-                        : "rgba(255,255,255,0.7)",
-                    "&:hover": {
-                      backgroundColor: (theme) =>
-                        theme.palette.mode === "dark"
-                          ? "rgba(0,0,0,0.7)"
-                          : "rgba(255,255,255,0.9)",
-                    },
-                  }}
-                />
-                {appliance.photo_url && (
-                  <CardMedia
-                    component="img"
-                    height={compactView ? 100 : 140}
-                    image={appliance.photo_url}
-                    alt={appliance.name}
-                    sx={{ objectFit: "cover", display: "block", width: "100%" }}
-                  />
-                )}
-                <CardContent sx={{ p: compactView ? 1.5 : 2 }}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "start",
-                      mb: 1,
-                    }}
-                  >
-                    <Typography
-                      variant={compactView ? "subtitle1" : "h6"}
-                      fontWeight="bold"
-                    >
-                      {appliance.name}
-                    </Typography>
-                    <Chip
-                      label={appliance.brand}
-                      size="small"
-                      sx={{
-                        bgcolor: "rgba(2, 125, 111, 0.1)",
-                        color: "primary.main",
-                        fontWeight: "bold",
-                        height: compactView ? 20 : 24,
-                        mr: 4, // Make room for checkbox
-                      }}
-                    />
-                  </Box>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    gutterBottom
-                  >
-                    {appliance.type} {appliance.model && `- ${appliance.model}`}
-                  </Typography>
-                  {appliance.sku && (
-                    <Typography
-                      variant="body2"
-                      color="primary"
-                      fontWeight="bold"
-                    >
-                      SKU: {appliance.sku}
-                    </Typography>
-                  )}
-                  {appliance.notes && (
-                    <Typography
-                      variant="body2"
-                      sx={{ mt: 1, fontStyle: "italic" }}
-                    >
-                      "{appliance.notes}"
-                    </Typography>
-                  )}
-                </CardContent>
-                <CardActions
-                  sx={{
-                    flexDirection: { xs: "column", sm: "row" },
-                    justifyContent: "space-between",
-                    alignItems: { xs: "stretch", sm: "center" },
-                    px: compactView ? 1.5 : 2,
-                    pb: compactView ? 1.5 : 2,
-                    gap: 1,
-                  }}
-                >
-                  <Button
-                    size={compactView ? "small" : "medium"}
-                    startIcon={<HistoryIcon />}
-                    onClick={() => handleViewRepairs(appliance)}
-                    sx={{ width: { xs: "100%", sm: "auto" } }}
-                  >
-                    {t("appliances.history")}
-                  </Button>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: { xs: "center", sm: "flex-end" },
-                      gap: 0.5,
-                    }}
-                  >
-                    <IconButton
-                      size="small"
-                      sx={{ p: compactView ? 0.5 : 1 }}
-                      onClick={() => {
-                        setSelectedItems(new Set([appliance.id]));
-                        setTimeout(() => handlePrint(), 0);
-                      }}
-                      title={t("appliances.printLabel")}
-                    >
-                      <PrintIcon />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      color="primary"
-                      sx={{ p: compactView ? 0.5 : 1 }}
-                      onClick={() => {
-                        setSelectedAppliance(appliance);
-                        setOpenAddRepair(true);
-                      }}
-                      title={t("appliances.addRepair")}
-                    >
-                      <BuildIcon />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      color="error"
-                      sx={{ p: compactView ? 0.5 : 1 }}
-                      onClick={() => handleDeleteAppliance(appliance.id)}
-                      title={t("appliances.delete")}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Box>
-                </CardActions>
-              </Card>
+                onDelete={handleDeleteAppliance}
+                onPrint={(id) => {
+                  setSelectedItems(new Set([id]));
+                  setTimeout(() => handlePrint(), 0);
+                }}
+              />
             </Grid>
           ))}
         </Grid>
       )}
 
-      {/* Add Appliance Dialog */}
-      <Dialog
+      {/* Dialogs */}
+      <ApplianceDialog
         open={openAddAppliance}
         onClose={() => setOpenAddAppliance(false)}
-        fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle>{t("appliances.add")}</DialogTitle>
-        <DialogContent sx={{ px: { xs: 2, sm: 3 } }}>
-          <TextField
-            autoFocus
-            margin="dense"
-            label={t("appliances.nameLabel")}
-            fullWidth
-            value={newAppliance.name || ""}
-            onChange={(e) =>
-              setNewAppliance({ ...newAppliance, name: e.target.value })
-            }
-          />
+        onSave={handleCreateAppliance}
+      />
 
-          <Box sx={{ display: "flex", gap: 2, alignItems: "center", my: 2 }}>
-            <Button
-              variant="outlined"
-              component="label"
-              startIcon={<PhotoCamera />}
-              disabled={uploading}
-            >
-              {uploading ? t("appliances.uploading") : t("appliances.addPhoto")}
-              <input
-                hidden
-                accept="image/*"
-                type="file"
-                onChange={handleImageUpload}
-              />
-            </Button>
-            {newAppliance.photo_url && (
-              <Typography variant="caption" color="success.main">
-                {t("appliances.photoAdded")}
-              </Typography>
-            )}
-          </Box>
-
-          <TextField
-            margin="dense"
-            label={t("appliances.skuLabel")}
-            fullWidth
-            value={newAppliance.sku || ""}
-            onChange={(e) =>
-              setNewAppliance({ ...newAppliance, sku: e.target.value })
-            }
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={generateSKU}
-                    edge="end"
-                    title={t("appliances.generateSku")}
-                  >
-                    <AutoRenewIcon />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-
-          <TextField
-            margin="dense"
-            label={t("appliances.type")}
-            fullWidth
-            value={newAppliance.type || ""}
-            onChange={(e) =>
-              setNewAppliance({ ...newAppliance, type: e.target.value })
-            }
-          />
-          <TextField
-            margin="dense"
-            label={t("appliances.brand")}
-            fullWidth
-            value={newAppliance.brand || ""}
-            onChange={(e) =>
-              setNewAppliance({ ...newAppliance, brand: e.target.value })
-            }
-          />
-          <TextField
-            margin="dense"
-            label={t("appliances.model")}
-            fullWidth
-            value={newAppliance.model || ""}
-            onChange={(e) =>
-              setNewAppliance({ ...newAppliance, model: e.target.value })
-            }
-          />
-          <TextField
-            margin="dense"
-            label={t("appliances.purchaseDate")}
-            type="date"
-            fullWidth
-            InputLabelProps={{ shrink: true }}
-            value={newAppliance.purchase_date || ""}
-            onChange={(e) =>
-              setNewAppliance({
-                ...newAppliance,
-                purchase_date: e.target.value,
-              })
-            }
-          />
-          <TextField
-            margin="dense"
-            label={t("appliances.notes")}
-            fullWidth
-            multiline
-            rows={2}
-            value={newAppliance.notes || ""}
-            onChange={(e) =>
-              setNewAppliance({ ...newAppliance, notes: e.target.value })
-            }
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenAddAppliance(false)}>
-            {t("appliances.cancel")}
-          </Button>
-          <Button onClick={handleCreateAppliance} variant="contained">
-            {t("appliances.add")}
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Add Repair Dialog */}
-      <Dialog
+      <ApplianceRepairDialog
         open={openAddRepair}
         onClose={() => setOpenAddRepair(false)}
-        fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle>{`${t("appliances.addRepair")} ${
-          selectedAppliance?.name || ""
-        }`}</DialogTitle>
-        <DialogContent sx={{ px: { xs: 2, sm: 3 } }}>
-          <TextField
-            autoFocus
-            margin="dense"
-            label={t("appliances.repairDescription")}
-            fullWidth
-            multiline
-            rows={2}
-            value={newRepair.description || ""}
-            onChange={(e) =>
-              setNewRepair({ ...newRepair, description: e.target.value })
-            }
-          />
-          <TextField
-            margin="dense"
-            label={t("appliances.date")}
-            type="date"
-            fullWidth
-            InputLabelProps={{ shrink: true }}
-            value={
-              newRepair.repair_date || new Date().toISOString().split("T")[0]
-            }
-            onChange={(e) =>
-              setNewRepair({ ...newRepair, repair_date: e.target.value })
-            }
-          />
-          <TextField
-            margin="dense"
-            label={t("appliances.cost")}
-            type="number"
-            fullWidth
-            value={newRepair.cost || ""}
-            onChange={(e) =>
-              setNewRepair({ ...newRepair, cost: parseFloat(e.target.value) })
-            }
-          />
-          <TextField
-            margin="dense"
-            label={t("appliances.serviceProvider")}
-            fullWidth
-            value={newRepair.service_provider || ""}
-            onChange={(e) =>
-              setNewRepair({ ...newRepair, service_provider: e.target.value })
-            }
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenAddRepair(false)}>
-            {t("appliances.cancel")}
-          </Button>
-          <Button onClick={handleCreateRepair} variant="contained">
-            {t("appliances.save")}
-          </Button>
-        </DialogActions>
-      </Dialog>
+        onSave={handleCreateRepair}
+        appliance={selectedAppliance}
+      />
 
-      {/* View History Dialog */}
-      <Dialog
+      <ApplianceHistoryDialog
         open={openRepairsList}
         onClose={() => setOpenRepairsList(false)}
-        fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle>{`${t("appliances.history")}: ${
-          selectedAppliance?.name
-        }`}</DialogTitle>
-        <DialogContent dividers sx={{ px: { xs: 2, sm: 3 } }}>
-          {loadingRepairs ? (
-            <CircularProgress />
-          ) : repairs.length === 0 ? (
-            <Typography color="text.secondary">
-              {t("appliances.noRepairs")}
-            </Typography>
-          ) : (
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              {repairs.map((repair) => (
-                <Paper
-                  key={repair.id}
-                  variant="outlined"
-                  sx={{ p: 2, borderRadius: 2 }}
-                >
-                  <Box
-                    sx={{ display: "flex", justifyContent: "space-between" }}
-                  >
-                    <Typography fontWeight="bold">
-                      {repair.description}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {repair.repair_date}
-                    </Typography>
-                  </Box>
-                  <Typography variant="body2" sx={{ mt: 1 }}>
-                    {t("appliances.cost")}:{" "}
-                    {repair.cost ? `${repair.cost} $` : t("appliances.unknown")}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {t("appliances.serviceProvider")}:{" "}
-                    {repair.service_provider || t("appliances.unknown")}
-                  </Typography>
-                </Paper>
-              ))}
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenRepairsList(false)}>
-            {t("appliances.close")}
-          </Button>
-        </DialogActions>
-      </Dialog>
+        appliance={selectedAppliance}
+        repairs={repairs}
+        loading={loadingRepairs}
+      />
 
+      {/* Utilities */}
       <BarcodePrinter
         items={appliances
           .filter((a) => selectedItems.has(a.id))
