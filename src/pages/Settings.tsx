@@ -26,8 +26,6 @@ const Settings: React.FC = () => {
   const {
     darkMode,
     compactView,
-    toggleDarkMode,
-    toggleCompactView,
   } = useThemeContext();
 
   const {
@@ -36,7 +34,6 @@ const Settings: React.FC = () => {
     language,
     setLanguage,
     setUserProfile,
-    loading: userLoading,
   } = useUserContext();
 
   const { t } = useTranslation();

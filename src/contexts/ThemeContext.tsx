@@ -31,20 +31,22 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [showError]);
 
   useEffect(() => {
+    if (!("serviceWorker" in navigator)) return;
+
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data.type === "SETTINGS_FETCH_ERROR") {
+        showError(event.data.message);
+      }
+    };
+    navigator.serviceWorker.addEventListener("message", handleMessage);
+    return () => navigator.serviceWorker.removeEventListener("message", handleMessage);
+  }, [showError]);
+
+  useEffect(() => {
     const initTheme = async () => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-
-      if ("serviceWorker" in navigator) {
-        const handleMessage = (event: MessageEvent) => {
-          if (event.data.type === "SETTINGS_FETCH_ERROR") {
-            showError(event.data.message);
-          }
-        };
-        navigator.serviceWorker.addEventListener("message", handleMessage);
-        return () => navigator.serviceWorker.removeEventListener("message", handleMessage);
-      }
 
       if (session?.user) {
         setUserId(session.user.id);
@@ -52,7 +54,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     };
 
-    const cleanupSW = initTheme();
+    initTheme();
 
     const {
       data: { subscription },
@@ -64,10 +66,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     });
 
     return () => {
-      if (typeof cleanupSW === 'function') cleanupSW();
       subscription.unsubscribe();
     };
-  }, [fetchThemeSettings, showError]);
+  }, [fetchThemeSettings]);
 
   const toggleDarkMode = async (enabled: boolean) => {
     setDarkMode(enabled);

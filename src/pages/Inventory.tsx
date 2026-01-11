@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Box, CircularProgress } from "@mui/material";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { supabase } from "../supabaseClient";
-import { useThemeContext } from "../contexts/useThemeContext";
 import { useUserContext } from "../contexts/useUserContext";
 import { useTranslation } from "../i18n";
 import { useInventoryContext } from "../contexts/useInventoryContext";
