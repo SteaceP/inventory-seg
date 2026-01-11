@@ -102,9 +102,9 @@ const fr = {
   "appliances.close": "Fermer",
   "appliances.noSku": "Pas de SKU",
   "appliances.print": "Imprimer",
-  "notifications.testMobile": "Tester la notification sur mon téléphone",
+  "notifications.testMobile": "Tester la notification",
   "notifications.title": "Notifications",
-  "notifications.enable": "Activer les notifications",
+  "notifications.pushEnabled": "Activer les notifications Push sur cet appareil",
   "notifications.emailAlerts": "Alertes par e-mail pour faible stock",
   "notifications.lowStockThreshold": "Seuil de stock faible",
   "login.noAccount":

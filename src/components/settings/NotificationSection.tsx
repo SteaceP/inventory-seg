@@ -12,23 +12,47 @@ import { Notifications as NotificationsIcon } from "@mui/icons-material";
 import { useTranslation } from "../../i18n";
 
 interface NotificationSectionProps {
-  notifications: boolean;
   emailAlerts: boolean;
   lowStockThreshold: number;
-  onNotificationsChange: (enabled: boolean) => void;
+  pushEnabled: boolean;
   onEmailAlertsChange: (enabled: boolean) => void;
   onThresholdChange: (threshold: number) => void;
+  onPushToggle: (enabled: boolean) => void;
 }
 
 const NotificationSection: React.FC<NotificationSectionProps> = ({
-  notifications,
   emailAlerts,
   lowStockThreshold,
-  onNotificationsChange,
+  pushEnabled,
   onEmailAlertsChange,
   onThresholdChange,
+  onPushToggle,
 }) => {
   const { t } = useTranslation();
+
+  const handleTestNotification = async () => {
+    if (!("Notification" in window)) return;
+
+    const options = {
+      body: "Ceci est un test de notification !",
+      icon: "/icon.svg",
+      badge: "/icon.svg",
+      vibrate: [200, 100, 200],
+      requireInteraction: true,
+    } as NotificationOptions & { vibrate?: number[] };
+
+    if (
+      "serviceWorker" in navigator &&
+      Notification.permission === "granted"
+    ) {
+      const registration = await navigator.serviceWorker.ready;
+      registration.showNotification("Test Inventaire SEG", options);
+    } else if (Notification.permission === "granted") {
+      new Notification("Test Inventaire SEG", options);
+    } else {
+      await Notification.requestPermission();
+    }
+  };
 
   return (
     <Paper
@@ -54,62 +78,30 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
         <FormControlLabel
           control={
             <Switch
-              checked={notifications}
-              onChange={async (e) => {
-                const checked = e.target.checked;
-                if (
-                  checked &&
-                  "Notification" in window &&
-                  Notification.permission !== "granted"
-                ) {
-                  await Notification.requestPermission();
-                }
-                onNotificationsChange(checked);
-              }}
+              checked={pushEnabled}
+              onChange={(e) => onPushToggle(e.target.checked)}
               color="primary"
             />
           }
-          label={t("notifications.enable")}
+          label={t("notifications.pushEnabled")}
         />
 
-        {notifications && (
-          <Button
-            size="small"
-            variant="outlined"
-            onClick={async () => {
-              if (!("Notification" in window)) return;
+        <Button
+          size="small"
+          variant="outlined"
+          onClick={handleTestNotification}
+          sx={{
+            ml: 4,
+            mb: 1,
+            textTransform: "none",
+            borderRadius: "12px",
+            fontSize: "0.8rem",
+            alignSelf: "flex-start"
+          }}
+        >
+          {t("notifications.testMobile")}
+        </Button>
 
-              const options = {
-                body: "Ceci est un test de notification mobile !",
-                icon: "/icon.svg",
-                badge: "/icon.svg",
-                vibrate: [200, 100, 200],
-                requireInteraction: true,
-              } as NotificationOptions & { vibrate?: number[] };
-
-              if (
-                "serviceWorker" in navigator &&
-                Notification.permission === "granted"
-              ) {
-                const registration = await navigator.serviceWorker.ready;
-                registration.showNotification("Test Inventaire SEG", options);
-              } else if (Notification.permission === "granted") {
-                new Notification("Test Inventaire SEG", options);
-              } else {
-                await Notification.requestPermission();
-              }
-            }}
-            sx={{
-              ml: 4,
-              mb: 1,
-              textTransform: "none",
-              borderRadius: "12px",
-              fontSize: "0.8rem",
-            }}
-          >
-            {t("notifications.testMobile")}
-          </Button>
-        )}
         <FormControlLabel
           control={
             <Switch

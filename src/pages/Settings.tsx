@@ -19,6 +19,11 @@ import ProfileSection from "../components/settings/ProfileSection";
 import NotificationSection from "../components/settings/NotificationSection";
 import AppearanceSection from "../components/settings/AppearanceSection";
 import SecuritySection from "../components/settings/SecuritySection";
+import {
+  checkPushSubscription,
+  subscribeToPush,
+  unsubscribeFromPush,
+} from "../utils/push-notifications";
 
 const Settings: React.FC = () => {
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -42,12 +47,12 @@ const Settings: React.FC = () => {
     displayName: displayName,
     avatarUrl: avatarUrl,
     email: "",
-    notifications: true,
     emailAlerts: false,
     lowStockThreshold: 5,
     darkMode: darkMode,
     compactView: compactView,
     language: language,
+    pushEnabled: false,
   });
 
   useEffect(() => {
@@ -79,18 +84,20 @@ const Settings: React.FC = () => {
 
         const { data: userSettings } = await supabase
           .from("user_settings")
-          .select("notifications, email_alerts, low_stock_threshold")
+          .select("email_alerts, low_stock_threshold")
           .eq("user_id", user.id)
           .single();
 
         if (userSettings) {
           setSettings(prev => ({
             ...prev,
-            notifications: userSettings.notifications ?? true,
             emailAlerts: userSettings.email_alerts ?? false,
             lowStockThreshold: userSettings.low_stock_threshold ?? 5,
           }));
         }
+
+        const isSubscribed = await checkPushSubscription();
+        setSettings(prev => ({ ...prev, pushEnabled: isSubscribed }));
       }
     };
     loadUserData();
@@ -148,7 +155,6 @@ const Settings: React.FC = () => {
         {
           user_id: user.id,
           display_name: settings.displayName,
-          notifications: settings.notifications,
           email_alerts: settings.emailAlerts,
           low_stock_threshold: settings.lowStockThreshold,
           dark_mode: settings.darkMode,
@@ -198,18 +204,28 @@ const Settings: React.FC = () => {
 
         <Grid size={{ xs: 12, md: 6 }}>
           <NotificationSection
-            notifications={settings.notifications}
             emailAlerts={settings.emailAlerts}
             lowStockThreshold={settings.lowStockThreshold}
-            onNotificationsChange={(enabled) =>
-              setSettings({ ...settings, notifications: enabled })
-            }
+            pushEnabled={settings.pushEnabled}
             onEmailAlertsChange={(enabled) =>
               setSettings({ ...settings, emailAlerts: enabled })
             }
             onThresholdChange={(val) =>
               setSettings({ ...settings, lowStockThreshold: val })
             }
+            onPushToggle={async (enabled) => {
+              try {
+                if (enabled) {
+                  await subscribeToPush();
+                  setSettings((prev) => ({ ...prev, pushEnabled: true }));
+                } else {
+                  await unsubscribeFromPush();
+                  setSettings((prev) => ({ ...prev, pushEnabled: false }));
+                }
+              } catch (err: unknown) {
+                setError(err instanceof Error ? err.message : String(err));
+              }
+            }}
           />
         </Grid>
 

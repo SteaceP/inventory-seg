@@ -129,18 +129,43 @@ self.addEventListener("fetch", (event) => {
   }
 });
 
+// Handle push event
+self.addEventListener("push", (event) => {
+  if (!event.data) return;
+
+  try {
+    const data = event.data.json();
+    const options = {
+      body: data.body,
+      icon: data.icon || "/icon.svg",
+      badge: data.badge || "/icon.svg",
+      vibrate: data.vibrate || [200, 100, 200],
+      data: data.data || { url: "/" },
+      tag: data.tag || "inventory-alert",
+      requireInteraction: data.requireInteraction || false,
+    };
+
+    event.waitUntil(self.registration.showNotification(data.title, options));
+  } catch (err) {
+    console.error("Error receiving push notification:", err);
+  }
+});
+
 // Handle notification click
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
+  const urlToOpen =
+    (event.notification.data && event.notification.data.url) || "/";
+
   event.waitUntil(
-    clients.matchAll({ type: "window" }).then((clientList) => {
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
       for (const client of clientList) {
-        if (client.url === "/" && "focus" in client) {
+        if (client.url === urlToOpen && "focus" in client) {
           return client.focus();
         }
       }
       if (clients.openWindow) {
-        return clients.openWindow("/");
+        return clients.openWindow(urlToOpen);
       }
     })
   );

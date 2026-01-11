@@ -173,36 +173,6 @@ const Inventory: React.FC = () => {
         (item.stock || 0) <= (userSettings?.low_stock_threshold ?? 5);
 
       if (isLowStock) {
-        // Handle In-App/Browser Notifications
-        if (
-          userSettings?.notifications &&
-          "Notification" in window &&
-          Notification.permission === "granted"
-        ) {
-          const notificationData = {
-            body: `L'article "${item.name}" est à ${item.stock} unités.`,
-            icon: "/icon.svg",
-            badge: "/icon.svg",
-            tag: "low-stock-" + item.id,
-            vibrate: [200, 100, 200],
-            requireInteraction: true,
-            data: {
-              url: "/inventory",
-            },
-          } as NotificationOptions & { vibrate?: number[] };
-
-          if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.ready.then((registration) => {
-              registration.showNotification(
-                "Alerte Stock Faible",
-                notificationData
-              );
-            });
-          } else {
-            new Notification("Alerte Stock Faible", notificationData);
-          }
-        }
-
         // Handle Email Alerts
         if (userSettings?.email_alerts) {
           await fetch("/api/send-low-stock-alert", {
@@ -213,6 +183,7 @@ const Inventory: React.FC = () => {
               currentStock: item.stock,
               threshold: userSettings.low_stock_threshold,
               userEmail: user.email,
+              userId: user.id,
             }),
           });
         }

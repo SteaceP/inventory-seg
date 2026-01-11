@@ -64,9 +64,9 @@ const en = {
   "appearance.darkMode": "Dark mode",
 
   // Notifications
-  "notifications.testMobile": "Test notification on my phone",
+  "notifications.testMobile": "Test notification",
   "notifications.title": "Notifications",
-  "notifications.enable": "Enable notifications",
+  "notifications.pushEnabled": "Enable Push Notifications on this device",
   "notifications.emailAlerts": "Email alerts for low stock",
   "notifications.lowStockThreshold": "Low stock threshold",
 
