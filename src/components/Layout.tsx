@@ -28,13 +28,15 @@ import {
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import { useThemeContext } from "../contexts/useThemeContext";
+import { useUserContext } from "../contexts/useUserContext";
 import { useTranslation } from "../i18n";
 
 const Layout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
-  const { compactView, displayName, avatarUrl } = useThemeContext();
+  const { compactView } = useThemeContext();
+  const { displayName, avatarUrl } = useUserContext();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const { t } = useTranslation();
@@ -88,8 +90,8 @@ const Layout: React.FC = () => {
   const currentDrawerWidth = isMobile
     ? drawerWidth
     : collapsed
-    ? collapsedWidth
-    : drawerWidth;
+      ? collapsedWidth
+      : drawerWidth;
 
   const drawerContent = (
     <>

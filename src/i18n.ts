@@ -1,4 +1,4 @@
-import { useThemeContext } from "./contexts/useThemeContext";
+import { useUserContext } from "./contexts/useUserContext";
 import { useCallback } from "react";
 
 type Lang = "fr" | "en" | "ar";
@@ -251,6 +251,11 @@ const translations: Record<Lang, Record<string, string>> = {
     "inventory.title": "Inventaire",
     "inventory.printLabels": "Imprimer Étiquettes",
     "inventory.scan": "Scanner",
+    "login.title": "Connexion",
+    "login.email": "Adresse e-mail",
+    "login.password": "Mot de passe",
+    "login.signIn": "Se connecter",
+    "login.signingIn": "Connexion en cours...",
   },
   en: {
     "settings.title": "Settings",
@@ -392,7 +397,7 @@ const translations: Record<Lang, Record<string, string>> = {
 };
 
 export function useTranslation() {
-  const { language } = useThemeContext();
+  const { language } = useUserContext();
   const t = useCallback(
     (key: string) => translations[language || "fr"][key] || key,
     [language]

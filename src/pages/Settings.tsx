@@ -14,6 +14,7 @@ import {
 import { useTranslation } from "../i18n";
 import { supabase } from "../supabaseClient";
 import { useThemeContext } from "../contexts/useThemeContext";
+import { useUserContext } from "../contexts/useUserContext";
 import ProfileSection from "../components/settings/ProfileSection";
 import NotificationSection from "../components/settings/NotificationSection";
 import AppearanceSection from "../components/settings/AppearanceSection";
@@ -27,16 +28,22 @@ const Settings: React.FC = () => {
     compactView,
     toggleDarkMode,
     toggleCompactView,
-    setUserProfile,
+  } = useThemeContext();
+
+  const {
+    displayName,
+    avatarUrl,
     language,
     setLanguage,
-  } = useThemeContext();
+    setUserProfile,
+    loading: userLoading,
+  } = useUserContext();
 
   const { t } = useTranslation();
 
   const [settings, setSettings] = useState({
-    displayName: "",
-    avatarUrl: "",
+    displayName: displayName,
+    avatarUrl: avatarUrl,
     email: "",
     notifications: true,
     emailAlerts: false,
@@ -47,6 +54,18 @@ const Settings: React.FC = () => {
   });
 
   useEffect(() => {
+    // Sync local state when context values are loaded/changed
+    setSettings(prev => ({
+      ...prev,
+      displayName: displayName || prev.displayName,
+      avatarUrl: avatarUrl || prev.avatarUrl,
+      darkMode,
+      compactView,
+      language
+    }));
+  }, [displayName, avatarUrl, darkMode, compactView, language]);
+
+  useEffect(() => {
     // Update local state when context changes (instant feedback)
     setSettings((prev) => ({ ...prev, darkMode, compactView }));
   }, [darkMode, compactView]);
@@ -54,64 +73,31 @@ const Settings: React.FC = () => {
   const languageChangeRef = useRef(false);
 
   useEffect(() => {
-    if (languageChangeRef.current) {
-      // Skip this load if the language was just changed by the user to avoid
-      // briefly reverting to the DB value while the new preference persists.
-      languageChangeRef.current = false;
-      return;
-    }
     const loadUserData = async () => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
       if (user) {
+        setSettings(prev => ({ ...prev, email: user.email || "" }));
+
         const { data: userSettings } = await supabase
           .from("user_settings")
-          .select("*")
+          .select("notifications, email_alerts, low_stock_threshold")
           .eq("user_id", user.id)
           .single();
 
         if (userSettings) {
-          setSettings({
-            displayName: userSettings.display_name || "",
-            avatarUrl: userSettings.avatar_url || "",
-            email: user.email || "",
+          setSettings(prev => ({
+            ...prev,
             notifications: userSettings.notifications ?? true,
             emailAlerts: userSettings.email_alerts ?? false,
             lowStockThreshold: userSettings.low_stock_threshold ?? 5,
-            darkMode: userSettings.dark_mode ?? true,
-            compactView: userSettings.compact_view ?? false,
-            language: (userSettings.language as "fr" | "en" | "ar") || "fr",
-          });
-          // Sync context
-          setUserProfile({
-            displayName: userSettings.display_name || "",
-            avatarUrl: userSettings.avatar_url || "",
-          });
-          if (userSettings.dark_mode !== darkMode)
-            toggleDarkMode(userSettings.dark_mode);
-          if (userSettings.compact_view !== compactView)
-            toggleCompactView(userSettings.compact_view);
-          if ((userSettings.language as "fr" | "en" | "ar") !== language)
-            setLanguage((userSettings.language as "fr" | "en" | "ar") || "fr");
-        } else {
-          setSettings((prev) => ({
-            ...prev,
-            email: user.email || "",
           }));
         }
       }
     };
     loadUserData();
-  }, [
-    darkMode,
-    compactView,
-    language,
-    setUserProfile,
-    toggleDarkMode,
-    toggleCompactView,
-    setLanguage,
-  ]);
+  }, []);
 
   const handleAvatarUpload = async (file: File) => {
     try {

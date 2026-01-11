@@ -14,6 +14,7 @@ import {
 } from "@mui/icons-material";
 import { supabase } from "../supabaseClient";
 import { useThemeContext } from "../contexts/useThemeContext";
+import { useUserContext } from "../contexts/useUserContext";
 import { useTranslation } from "../i18n";
 import { useInventoryContext } from "../contexts/useInventoryContext";
 import RecentActivity from "../components/dashboard/RecentActivity";
@@ -95,7 +96,7 @@ const Dashboard: React.FC = () => {
   const [recentActivities, setRecentActivities] = useState<
     RecentActivityItem[]
   >([]);
-  const { displayName } = useThemeContext();
+  const { displayName } = useUserContext();
   const { t } = useTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -116,12 +117,12 @@ const Dashboard: React.FC = () => {
     const topCategory =
       categories.length > 0
         ? categories
-            .sort(
-              (a, b) =>
-                categories.filter((v) => v === a).length -
-                categories.filter((v) => v === b).length
-            )
-            .pop() || ""
+          .sort(
+            (a, b) =>
+              categories.filter((v) => v === a).length -
+              categories.filter((v) => v === b).length
+          )
+          .pop() || ""
         : "";
 
     return {

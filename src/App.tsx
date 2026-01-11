@@ -1,4 +1,5 @@
 import { AlertProvider } from "./contexts/AlertContext";
+import { UserProvider } from "./contexts/UserContext";
 import { ThemeProvider as CustomThemeProvider } from "./contexts/ThemeContext";
 import { useThemeContext } from "./contexts/useThemeContext";
 import { InventoryProvider } from "./contexts/InventoryContext";
@@ -238,9 +239,11 @@ const AppContent = () => {
 function App() {
   return (
     <AlertProvider>
-      <CustomThemeProvider>
-        <AppContent />
-      </CustomThemeProvider>
+      <UserProvider>
+        <CustomThemeProvider>
+          <AppContent />
+        </CustomThemeProvider>
+      </UserProvider>
     </AlertProvider>
   );
 }

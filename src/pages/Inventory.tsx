@@ -3,6 +3,7 @@ import { Box, CircularProgress } from "@mui/material";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { supabase } from "../supabaseClient";
 import { useThemeContext } from "../contexts/useThemeContext";
+import { useUserContext } from "../contexts/useUserContext";
 import { useTranslation } from "../i18n";
 import { useInventoryContext } from "../contexts/useInventoryContext";
 import { useAlert } from "../contexts/useAlertContext";
@@ -36,7 +37,7 @@ const Inventory: React.FC = () => {
   });
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
-  const { role } = useThemeContext();
+  const { role } = useUserContext();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
