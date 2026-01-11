@@ -2,6 +2,9 @@
   "name": "inventory-seg",
   "main": "src/worker.ts",
   "compatibility_date": "2026-01-02",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "assets": {
     "directory": "./dist"
   }
