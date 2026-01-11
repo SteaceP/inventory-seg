@@ -173,20 +173,18 @@ const Inventory: React.FC = () => {
         (item.stock || 0) <= (userSettings?.low_stock_threshold ?? 5);
 
       if (isLowStock) {
-        // Handle Email Alerts
-        if (userSettings?.email_alerts) {
-          await fetch("/api/send-low-stock-alert", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              itemName: item.name,
-              currentStock: item.stock,
-              threshold: userSettings.low_stock_threshold,
-              userEmail: user.email,
-              userId: user.id,
-            }),
-          });
-        }
+        // Call the Alerter API (handles both Push and Email)
+        await fetch("/api/send-low-stock-alert", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            itemName: item.name,
+            currentStock: item.stock,
+            threshold: userSettings?.low_stock_threshold ?? 5,
+            userEmail: user.email,
+            userId: user.id,
+          }),
+        });
       }
     } catch (err: unknown) {
       showError(

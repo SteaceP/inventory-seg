@@ -53,6 +53,7 @@ const Settings: React.FC = () => {
     compactView: compactView,
     language: language,
     pushEnabled: false,
+    userId: null as string | null,
   });
 
   useEffect(() => {
@@ -80,7 +81,7 @@ const Settings: React.FC = () => {
         data: { user },
       } = await supabase.auth.getUser();
       if (user) {
-        setSettings(prev => ({ ...prev, email: user.email || "" }));
+        setSettings(prev => ({ ...prev, email: user.email || "", userId: user.id }));
 
         const { data: userSettings } = await supabase
           .from("user_settings")
@@ -204,6 +205,7 @@ const Settings: React.FC = () => {
 
         <Grid size={{ xs: 12, md: 6 }}>
           <NotificationSection
+            userId={settings.userId}
             emailAlerts={settings.emailAlerts}
             lowStockThreshold={settings.lowStockThreshold}
             pushEnabled={settings.pushEnabled}

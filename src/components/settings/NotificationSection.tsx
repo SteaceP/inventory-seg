@@ -12,6 +12,7 @@ import { Notifications as NotificationsIcon } from "@mui/icons-material";
 import { useTranslation } from "../../i18n";
 
 interface NotificationSectionProps {
+  userId: string | null;
   emailAlerts: boolean;
   lowStockThreshold: number;
   pushEnabled: boolean;
@@ -21,6 +22,7 @@ interface NotificationSectionProps {
 }
 
 const NotificationSection: React.FC<NotificationSectionProps> = ({
+  userId,
   emailAlerts,
   lowStockThreshold,
   pushEnabled,
@@ -31,26 +33,20 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
   const { t } = useTranslation();
 
   const handleTestNotification = async () => {
-    if (!("Notification" in window)) return;
-
-    const options = {
-      body: "Ceci est un test de notification !",
-      icon: "/icon.svg",
-      badge: "/icon.svg",
-      vibrate: [200, 100, 200],
-      requireInteraction: true,
-    } as NotificationOptions & { vibrate?: number[] };
-
-    if (
-      "serviceWorker" in navigator &&
-      Notification.permission === "granted"
-    ) {
-      const registration = await navigator.serviceWorker.ready;
-      registration.showNotification("Test Inventaire SEG", options);
-    } else if (Notification.permission === "granted") {
-      new Notification("Test Inventaire SEG", options);
-    } else {
-      await Notification.requestPermission();
+    if (!userId) return;
+    
+    try {
+      const response = await fetch("/api/send-test-push", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+    } catch (err) {
+      console.error("Test push failed:", err);
     }
   };
 

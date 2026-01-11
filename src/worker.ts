@@ -34,9 +34,71 @@ interface PushSubscriptionRow {
   created_at: string;
 }
 
+interface TestPushBody {
+  userId: string;
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+
+    // Handle Test Push
+    if (url.pathname === "/api/send-test-push" && request.method === "POST") {
+      try {
+        const { userId } = (await request.json()) as TestPushBody;
+
+        if (userId && env.SUPABASE_URL && env.SUPABASE_SERVICE_ROLE_KEY) {
+          const subResponse = await fetch(
+            `${env.SUPABASE_URL}/rest/v1/push_subscriptions?user_id=eq.${userId}`,
+            {
+              headers: {
+                apikey: env.SUPABASE_SERVICE_ROLE_KEY,
+                Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+              },
+            }
+          );
+
+          if (subResponse.ok) {
+            const subscriptions = (await subResponse.json()) as PushSubscriptionRow[];
+
+            if (subscriptions.length > 0 && env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY) {
+              webpush.setVapidDetails(
+                "mailto:admin@coderage.pro",
+                env.VAPID_PUBLIC_KEY,
+                env.VAPID_PRIVATE_KEY
+              );
+
+              const payload = JSON.stringify({
+                title: "Test de Notification",
+                body: "Ceci est une notification de test envoyée depuis le serveur !",
+                icon: "/icon.svg",
+                data: { url: "/settings" },
+                tag: "test-notification",
+                requireInteraction: true,
+              });
+
+              await Promise.allSettled(
+                subscriptions.map((sub) =>
+                  webpush.sendNotification(sub.subscription, payload).catch(() => {})
+                )
+              );
+              return new Response(JSON.stringify({ success: true }), {
+                headers: { "Content-Type": "application/json" },
+              });
+            }
+          }
+        }
+        return new Response(JSON.stringify({ error: "No subscriptions found" }), {
+          status: 404,
+          headers: { "Content-Type": "application/json" },
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ error: (err as Error).message }), {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+    }
 
     // Handle API routes
     if (
@@ -105,44 +167,47 @@ export default {
           if (subResponse.ok) {
             const subscriptions = await subResponse.json() as PushSubscriptionRow[];
             
-            if (subscriptions.length > 0 && env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY) {
-              webpush.setVapidDetails(
-                "mailto:admin@coderage.pro",
-                env.VAPID_PUBLIC_KEY,
-                env.VAPID_PRIVATE_KEY
-              );
+            if (subscriptions.length > 0) {
+              if (env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY) {
+                webpush.setVapidDetails(
+                  "mailto:admin@coderage.pro",
+                  env.VAPID_PUBLIC_KEY,
+                  env.VAPID_PRIVATE_KEY
+                );
 
-              const payload = JSON.stringify({
-                title: "Alerte Stock Faible",
-                body: `L'article "${itemName}" est à ${currentStock} unités.`,
-                icon: "/icon.svg",
-                data: { url: "/inventory?filter=lowStock" },
-                tag: `low-stock-${itemName}`,
-                requireInteraction: true
-              });
+                const payload = JSON.stringify({
+                  title: "Alerte Stock Faible",
+                  body: `L'article "${itemName}" est à ${currentStock} unités.`,
+                  icon: "/icon.svg",
+                  data: { url: "/inventory?filter=lowStock" },
+                  tag: `low-stock-${itemName}`,
+                  requireInteraction: true
+                });
 
-              // Send to all devices
-              await Promise.allSettled(
-                subscriptions.map(sub => 
-                  webpush.sendNotification(sub.subscription, payload)
-                    .catch(error => {
-                      console.error("Push Error:", error);
-                      // If the subscription is no longer valid, we should ideally delete it
-                      if (error.statusCode === 410 || error.statusCode === 404) {
-                        fetch(
-                          `${env.SUPABASE_URL}/rest/v1/push_subscriptions?id=eq.${sub.id}`,
-                          {
-                            method: "DELETE",
-                            headers: {
-                              apikey: env.SUPABASE_SERVICE_ROLE_KEY,
-                              Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
-                            },
-                          }
-                        ).catch(console.error);
-                      }
-                    })
-                )
-              );
+                // Send to all devices
+                await Promise.allSettled(
+                  subscriptions.map(sub => 
+                    webpush.sendNotification(sub.subscription, payload)
+                      .catch(error => {
+                        // If the subscription is no longer valid, we should ideally delete it
+                        if (error.statusCode === 410 || error.statusCode === 404) {
+                          fetch(
+                            `${env.SUPABASE_URL}/rest/v1/push_subscriptions?id=eq.${sub.id}`,
+                            {
+                              method: "DELETE",
+                              headers: {
+                                apikey: env.SUPABASE_SERVICE_ROLE_KEY,
+                                Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+                              },
+                            }
+                          ).catch(() => {});
+                        }
+                      })
+                  )
+                );
+              } else {
+                console.error("VAPID keys missing in env!");
+              }
             }
           }
         }
