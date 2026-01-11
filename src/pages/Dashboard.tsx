@@ -22,6 +22,8 @@ import RecentActivity from "../components/dashboard/RecentActivity";
 import LowStockAlert from "../components/dashboard/LowStockAlert";
 import { useAlert } from "../contexts/useAlertContext";
 
+import type { ActivityRow, RecentActivityItem } from "../types/activity";
+
 interface StatCardProps {
   title: string;
   value: string | number;
@@ -88,14 +90,6 @@ const Dashboard: React.FC = () => {
   const { lowStockThreshold, displayName } = useUserContext();
   const [dailyStats, setDailyStats] = useState({ in: 0, out: 0 });
   const [activitiesLoading, setActivitiesLoading] = useState(true);
-  type ActivityRow = { action?: string; changes?: Record<string, unknown> };
-  type RecentActivityItem = {
-    id: string;
-    action: "created" | "updated" | "deleted";
-    item_name: string;
-    created_at: string;
-    user_display_name?: string;
-  };
   const [recentActivities, setRecentActivities] = useState<
     RecentActivityItem[]
   >([]);

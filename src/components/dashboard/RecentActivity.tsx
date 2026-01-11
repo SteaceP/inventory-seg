@@ -15,16 +15,10 @@ import {
 
 import { useTranslation } from "../../i18n";
 
-interface Activity {
-  id: string;
-  action: "created" | "updated" | "deleted";
-  item_name: string;
-  created_at: string;
-  user_display_name?: string;
-}
+import type { RecentActivityItem } from "../../types/activity";
 
 interface RecentActivityProps {
-  activities: Activity[];
+  activities: RecentActivityItem[];
 }
 
 const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) => {

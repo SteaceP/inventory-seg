@@ -6,3 +6,10 @@ export interface InventoryItem {
   stock: number;
   image_url?: string;
 }
+
+export interface InventoryContextType {
+  items: InventoryItem[];
+  loading: boolean;
+  error: string | null;
+  refreshInventory: () => Promise<void>;
+}

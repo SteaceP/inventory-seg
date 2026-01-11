@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../supabaseClient";
 import { UserContext } from "./user-context";
 import { useAlert } from "./useAlertContext";
+import type { Language, UserProfile } from "../types/user";
 
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
@@ -10,7 +11,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     const [displayName, setDisplayName] = useState("");
     const [avatarUrl, setAvatarUrl] = useState("");
     const [role, setRole] = useState("user");
-    const [language, setLanguageState] = useState<"fr" | "en" | "ar">("fr");
+    const [language, setLanguageState] = useState<Language>("fr");
     const [lowStockThreshold, setLowStockThresholdState] = useState(5);
     const [userId, setUserId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -114,10 +115,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
         }
     };
 
-    const setUserProfile = (profile: {
-        displayName?: string;
-        avatarUrl?: string;
-    }) => {
+    const setUserProfile = (profile: Partial<UserProfile>) => {
         if (profile.displayName !== undefined) setDisplayName(profile.displayName);
         if (profile.avatarUrl !== undefined) setAvatarUrl(profile.avatarUrl);
     };
