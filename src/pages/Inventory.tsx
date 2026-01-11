@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, CircularProgress } from "@mui/material";
 import { useTheme, useMediaQuery } from "@mui/material";
+import { useSearchParams } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import { useUserContext } from "../contexts/useUserContext";
 import { useTranslation } from "../i18n";
@@ -9,7 +10,6 @@ import { useAlert } from "../contexts/useAlertContext";
 import BarcodePrinter from "../components/BarcodePrinter";
 import type { InventoryItem } from "../types/inventory";
 import InventoryHeader from "../components/inventory/InventoryHeader";
-import InventorySearch from "../components/inventory/InventorySearch";
 import InventoryTable from "../components/inventory/InventoryTable";
 import InventoryGrid from "../components/inventory/InventoryGrid";
 import InventoryDialog from "../components/inventory/InventoryDialog";
@@ -17,12 +17,13 @@ import InventoryScanner from "../components/inventory/InventoryScanner";
 import StockAdjustmentDialog from "../components/inventory/StockAdjustmentDialog";
 
 const Inventory: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const {
     items,
     loading: inventoryLoading,
     refreshInventory,
   } = useInventoryContext();
-  const [actionLoading, setActionLoading] = useState(false); // For local actions like upload/save
+  const [actionLoading, setActionLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [stockDialogOpen, setStockDialogOpen] = useState(false);
   const [scanOpen, setScanOpen] = useState(false);
@@ -35,8 +36,11 @@ const Inventory: React.FC = () => {
     image_url: "",
   });
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
-  const [searchQuery, setSearchQuery] = useState("");
-  const { role } = useUserContext();
+  const [searchQuery] = useState("");
+  const [isLowStockFilter, setIsLowStockFilter] = useState(
+    searchParams.get("filter") === "lowStock"
+  );
+  const { role, lowStockThreshold } = useUserContext();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
@@ -45,7 +49,24 @@ const Inventory: React.FC = () => {
   const { t } = useTranslation();
   const { showError } = useAlert();
 
-  // Server-side fetch for DataGrid: supports pagination, optional search and sorting
+  useEffect(() => {
+    const filter = searchParams.get("filter");
+    if (filter === "lowStock") {
+      setIsLowStockFilter(true);
+    }
+  }, [searchParams]);
+
+  const toggleLowStockFilter = () => {
+    const newValue = !isLowStockFilter;
+    setIsLowStockFilter(newValue);
+    if (newValue) {
+      setSearchParams({ filter: "lowStock" });
+    } else {
+      searchParams.delete("filter");
+      setSearchParams(searchParams);
+    }
+  };
+
   const fetchServerRows = async ({
     page,
     pageSize,
@@ -61,6 +82,10 @@ const Inventory: React.FC = () => {
   }) => {
     try {
       let query = supabase.from("inventory").select("*", { count: "exact" });
+
+      if (isLowStockFilter) {
+        query = query.lte("stock", lowStockThreshold);
+      }
 
       // Search across name, sku, category when provided
       if (search && search.trim().length > 0) {
@@ -419,11 +444,15 @@ const Inventory: React.FC = () => {
 
   const filteredItems = items.filter((item) => {
     const query = searchQuery.toLowerCase();
-    return (
+    const matchesSearch =
       item.name.toLowerCase().includes(query) ||
       (item.sku && item.sku.toLowerCase().includes(query)) ||
-      (item.category && item.category.toLowerCase().includes(query))
-    );
+      (item.category && item.category.toLowerCase().includes(query));
+
+    if (isLowStockFilter) {
+      return matchesSearch && item.stock <= lowStockThreshold;
+    }
+    return matchesSearch;
   });
 
   if (inventoryLoading || actionLoading) {
@@ -449,11 +478,9 @@ const Inventory: React.FC = () => {
         onPrint={() => window.print()}
         onScan={() => setScanOpen(true)}
         onAdd={role === "admin" ? () => handleOpen() : undefined}
+        isLowStockFilter={isLowStockFilter}
+        onToggleLowStock={toggleLowStockFilter}
       />
-
-      {!isDesktop && (
-        <InventorySearch value={searchQuery} onChange={setSearchQuery} />
-      )}
 
       {!isTablet ? (
         <InventoryTable
@@ -466,6 +493,7 @@ const Inventory: React.FC = () => {
           fetchServerRows={fetchServerRows}
           searchQuery={searchQuery}
           isDesktop={isDesktop}
+          isLowStockFilter={isLowStockFilter}
         />
       ) : (
         <InventoryGrid

@@ -5,11 +5,13 @@ export interface UserContextType {
     avatarUrl: string;
     role: string;
     language: "fr" | "en" | "ar";
+    lowStockThreshold: number;
     setUserProfile: (profile: {
         displayName?: string;
         avatarUrl?: string;
     }) => void;
     setLanguage: (lang: "fr" | "en" | "ar") => void;
+    setLowStockThreshold: (threshold: number) => void;
     loading: boolean;
 }
 

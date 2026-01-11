@@ -33,6 +33,7 @@ interface InventoryTableProps {
   }) => Promise<{ rows: InventoryItem[]; total: number }>;
   searchQuery?: string;
   isDesktop?: boolean;
+  isLowStockFilter?: boolean;
 }
 
 const InventoryTable: React.FC<InventoryTableProps> = ({
@@ -45,6 +46,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
   fetchServerRows,
   searchQuery,
   isDesktop,
+  isLowStockFilter,
 }) => {
   const { compactView } = useThemeContext();
   const { t } = useTranslation();
@@ -189,6 +191,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     sortModel,
     searchQuery,
     showError,
+    isLowStockFilter,
   ]);
 
   // Compute a pageSize based on container height for desktop to mimic autoPageSize

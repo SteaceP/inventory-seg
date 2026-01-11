@@ -18,6 +18,8 @@ import {
   CardMedia,
   InputAdornment,
   Grid,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -29,11 +31,11 @@ import {
   Autorenew as AutoRenewIcon,
   FilterCenterFocus as ScanIcon,
 } from "@mui/icons-material";
-import Barcode from "react-barcode";
 import { supabase } from "../supabaseClient";
 import { useThemeContext } from "../contexts/useThemeContext";
 import { useTranslation } from "../i18n";
 import InventoryScanner from "../components/inventory/InventoryScanner";
+import BarcodePrinter from "../components/BarcodePrinter";
 import { useAlert } from "../contexts/useAlertContext";
 
 interface Appliance {
@@ -63,6 +65,7 @@ const Appliances: React.FC = () => {
   const { t } = useTranslation();
   const [appliances, setAppliances] = useState<Appliance[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [selectedAppliance, setSelectedAppliance] = useState<Appliance | null>(
     null
   );
@@ -74,7 +77,6 @@ const Appliances: React.FC = () => {
   const [openAddAppliance, setOpenAddAppliance] = useState(false);
   const [openAddRepair, setOpenAddRepair] = useState(false);
   const [openRepairsList, setOpenRepairsList] = useState(false);
-  const [printAppliance, setPrintAppliance] = useState<Appliance | null>(null);
   const [scanOpen, setScanOpen] = useState(false);
 
   // Upload state
@@ -214,47 +216,7 @@ const Appliances: React.FC = () => {
   };
 
   const handlePrint = () => {
-    const printContent = document.getElementById("printable-area");
-    if (printContent) {
-      const windowUrl = "about:blank";
-      const uniqueName = new Date().getTime();
-      const windowName = "Print" + uniqueName;
-      const printWindow = window.open(
-        windowUrl,
-        windowName,
-        "left=50000,top=50000,width=0,height=0"
-      );
-
-      if (printWindow) {
-        const htmlContent = `
-          <!DOCTYPE html>
-          <html>
-            <head>
-              <title>Print Label</title>
-              <style>
-                body { font-family: sans-serif; text-align: center; }
-              </style>
-            </head>
-            <body>
-              ${printContent.innerHTML}
-            </body>
-          </html>
-        `;
-
-        printWindow.document.open();
-        printWindow.document.write(htmlContent);
-        printWindow.document.close();
-
-        printWindow.onload = function () {
-          printWindow.print();
-          printWindow.close();
-        };
-
-        printWindow.focus();
-      } else {
-        showError(t("appliances.errorOpeningPrintWindow"));
-      }
-    }
+    window.print();
   };
 
   const handleViewRepairs = (appliance: Appliance) => {
@@ -273,6 +235,24 @@ const Appliances: React.FC = () => {
       setNewAppliance({ sku: decodedText });
       setOpenAddAppliance(true);
     }
+  };
+
+  const toggleAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedItems(new Set(appliances.map((a) => a.id)));
+    } else {
+      setSelectedItems(new Set());
+    }
+  };
+
+  const toggleItem = (id: string, checked: boolean) => {
+    const newSelected = new Set(selectedItems);
+    if (checked) {
+      newSelected.add(id);
+    } else {
+      newSelected.delete(id);
+    }
+    setSelectedItems(newSelected);
   };
 
   return (
@@ -295,6 +275,28 @@ const Appliances: React.FC = () => {
           {t("menu.appliances")}
         </Typography>
         <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+          {selectedItems.size > 0 && (
+            <Button
+              variant="outlined"
+              startIcon={<PrintIcon />}
+              onClick={handlePrint}
+              sx={{
+                color: "text.primary",
+                borderColor: "divider",
+                fontWeight: "bold",
+                flex: { xs: 1, sm: "0 1 auto" },
+                "&:hover": {
+                  borderColor: "primary.main",
+                  bgcolor: (theme) =>
+                    theme.palette.mode === "dark"
+                      ? "rgba(2, 125, 111, 0.1)"
+                      : "rgba(2, 125, 111, 0.05)",
+                },
+              }}
+            >
+              {t("inventory.printLabels")} ({selectedItems.size})
+            </Button>
+          )}
           <Button
             variant="outlined"
             startIcon={<ScanIcon />}
@@ -325,6 +327,24 @@ const Appliances: React.FC = () => {
         </Box>
       </Box>
 
+      <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              indeterminate={
+                selectedItems.size > 0 &&
+                selectedItems.size < appliances.length
+              }
+              checked={
+                appliances.length > 0 && selectedItems.size === appliances.length
+              }
+              onChange={(e) => toggleAll(e.target.checked)}
+            />
+          }
+          label={t("common.selectAll") || "Select All"}
+        />
+      </Box>
+
       {loading ? (
         <CircularProgress />
       ) : (
@@ -336,9 +356,12 @@ const Appliances: React.FC = () => {
                 sx={{
                   borderRadius: compactView ? 2 : 3,
                   border: "1px solid",
-                  borderColor: "divider",
+                  borderColor: selectedItems.has(appliance.id)
+                    ? "primary.main"
+                    : "divider",
                   transition: "transform 0.2s, box-shadow 0.2s",
                   overflow: "hidden",
+                  position: "relative",
                   "&:hover": {
                     transform: compactView
                       ? "translateY(-2px)"
@@ -349,6 +372,26 @@ const Appliances: React.FC = () => {
                   },
                 }}
               >
+                <Checkbox
+                  checked={selectedItems.has(appliance.id)}
+                  onChange={(e) => toggleItem(appliance.id, e.target.checked)}
+                  sx={{
+                    position: "absolute",
+                    top: 8,
+                    right: 8,
+                    zIndex: 1,
+                    backgroundColor: (theme) =>
+                      theme.palette.mode === "dark"
+                        ? "rgba(0,0,0,0.5)"
+                        : "rgba(255,255,255,0.7)",
+                    "&:hover": {
+                      backgroundColor: (theme) =>
+                        theme.palette.mode === "dark"
+                          ? "rgba(0,0,0,0.7)"
+                          : "rgba(255,255,255,0.9)",
+                    },
+                  }}
+                />
                 {appliance.photo_url && (
                   <CardMedia
                     component="img"
@@ -381,6 +424,7 @@ const Appliances: React.FC = () => {
                         color: "primary.main",
                         fontWeight: "bold",
                         height: compactView ? 20 : 24,
+                        mr: 4, // Make room for checkbox
                       }}
                     />
                   </Box>
@@ -437,7 +481,10 @@ const Appliances: React.FC = () => {
                     <IconButton
                       size="small"
                       sx={{ p: compactView ? 0.5 : 1 }}
-                      onClick={() => setPrintAppliance(appliance)}
+                      onClick={() => {
+                        setSelectedItems(new Set([appliance.id]));
+                        setTimeout(() => handlePrint(), 0);
+                      }}
                       title={t("appliances.printLabel")}
                     >
                       <PrintIcon />
@@ -720,59 +767,15 @@ const Appliances: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Print Barcode Dialog */}
-      <Dialog
-        open={!!printAppliance}
-        onClose={() => setPrintAppliance(null)}
-        fullWidth
-        maxWidth="xs"
-      >
-        <DialogTitle>{`${t("appliances.printLabel")} ${
-          printAppliance?.name
-        }`}</DialogTitle>
-        <DialogContent
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            py: 4,
-            px: { xs: 2, sm: 3 },
-          }}
-        >
-          <div id="printable-area" style={{ textAlign: "center" }}>
-            <Typography variant="h6" fontWeight="bold">
-              {printAppliance?.name}
-            </Typography>
-            <Typography variant="body2">
-              {printAppliance?.brand} {printAppliance?.model}
-            </Typography>
-            <Box sx={{ my: 2 }}>
-              {printAppliance?.sku ? (
-                <Barcode
-                  value={printAppliance.sku}
-                  width={2}
-                  height={50}
-                  fontSize={14}
-                />
-              ) : (
-                <Typography color="error">{t("appliances.noSku")}</Typography>
-              )}
-            </Box>
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setPrintAppliance(null)}>
-            {t("appliances.close")}
-          </Button>
-          <Button
-            onClick={handlePrint}
-            variant="contained"
-            startIcon={<PrintIcon />}
-          >
-            {t("appliances.print")}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <BarcodePrinter
+        items={appliances
+          .filter((a) => selectedItems.has(a.id))
+          .map((a) => ({
+            name: a.name,
+            sku: a.sku || "",
+            category: a.type,
+          }))}
+      />
 
       <InventoryScanner
         open={scanOpen}

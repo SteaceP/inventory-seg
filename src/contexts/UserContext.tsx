@@ -11,6 +11,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     const [avatarUrl, setAvatarUrl] = useState("");
     const [role, setRole] = useState("user");
     const [language, setLanguageState] = useState<"fr" | "en" | "ar">("fr");
+    const [lowStockThreshold, setLowStockThresholdState] = useState(5);
     const [userId, setUserId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -18,7 +19,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
         try {
             const { data: settings, error } = await supabase
                 .from("user_settings")
-                .select("display_name, avatar_url, role, language")
+                .select("display_name, avatar_url, role, language, low_stock_threshold")
                 .eq("user_id", uid)
                 .single();
 
@@ -29,6 +30,9 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
                 setAvatarUrl(settings.avatar_url || "");
                 setRole(settings.role || "user");
                 setLanguageState((settings.language as "fr" | "en" | "ar") || "fr");
+                if (settings.low_stock_threshold !== undefined) {
+                    setLowStockThresholdState(settings.low_stock_threshold);
+                }
             }
         } catch (err: unknown) {
             showError("Failed to fetch user settings: " + (err as Error).message);
@@ -91,6 +95,25 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
         }
     };
 
+    const setLowStockThreshold = async (threshold: number) => {
+        setLowStockThresholdState(threshold);
+        if (userId) {
+            try {
+                const { error } = await supabase
+                    .from("user_settings")
+                    .upsert(
+                        { user_id: userId, low_stock_threshold: threshold },
+                        { onConflict: "user_id" }
+                    );
+                if (error) throw error;
+            } catch (err: unknown) {
+                showError(
+                    "Failed to persist low stock threshold: " + (err as Error).message
+                );
+            }
+        }
+    };
+
     const setUserProfile = (profile: {
         displayName?: string;
         avatarUrl?: string;
@@ -106,8 +129,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
                 avatarUrl,
                 role,
                 language,
+                lowStockThreshold,
                 setUserProfile,
                 setLanguage,
+                setLowStockThreshold,
                 loading,
             }}
         >

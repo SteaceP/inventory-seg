@@ -11,6 +11,7 @@ import {
 import {
   People as PeopleIcon,
   Timeline as TimelineIcon,
+  Warning as WarningIcon,
 } from "@mui/icons-material";
 import { supabase } from "../supabaseClient";
 import { useThemeContext } from "../contexts/useThemeContext";
@@ -18,6 +19,7 @@ import { useUserContext } from "../contexts/useUserContext";
 import { useTranslation } from "../i18n";
 import { useInventoryContext } from "../contexts/useInventoryContext";
 import RecentActivity from "../components/dashboard/RecentActivity";
+import LowStockAlert from "../components/dashboard/LowStockAlert";
 import { useAlert } from "../contexts/useAlertContext";
 
 interface StatCardProps {
@@ -83,6 +85,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => {
 
 const Dashboard: React.FC = () => {
   const { items, loading: inventoryLoading } = useInventoryContext();
+  const { lowStockThreshold, displayName } = useUserContext();
   const [dailyStats, setDailyStats] = useState({ in: 0, out: 0 });
   const [activitiesLoading, setActivitiesLoading] = useState(true);
   type ActivityRow = { action?: string; changes?: Record<string, unknown> };
@@ -96,7 +99,6 @@ const Dashboard: React.FC = () => {
   const [recentActivities, setRecentActivities] = useState<
     RecentActivityItem[]
   >([]);
-  const { displayName } = useUserContext();
   const { t } = useTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -109,9 +111,11 @@ const Dashboard: React.FC = () => {
         lowStockItems: 0,
         totalStock: 0,
         topCategory: "",
+        lowStockList: [],
       };
 
-    const lowStock = items.filter((item) => item.stock < 5).length;
+    const lowStockList = items.filter((item) => item.stock <= lowStockThreshold);
+    const lowStock = lowStockList.length;
     const totalStock = items.reduce((acc, item) => acc + item.stock, 0);
     const categories = items.map((item) => item.category);
     const topCategory =
@@ -130,8 +134,9 @@ const Dashboard: React.FC = () => {
       lowStockItems: lowStock,
       totalStock,
       topCategory,
+      lowStockList: lowStockList.slice(0, 5), // Show top 5 in alert
     };
-  }, [items]);
+  }, [items, lowStockThreshold]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -275,7 +280,7 @@ const Dashboard: React.FC = () => {
         spacing={3}
         sx={{ justifyContent: { xs: "flex-start", sm: "center" } }}
       >
-        <Grid size={{ xs: 12, sm: 4 }}>
+        <Grid size={{ xs: 12, sm: 3 }}>
           <StatCard
             title={t("dashboard.totalItems")}
             value={stats.totalItems.toLocaleString()}
@@ -290,23 +295,37 @@ const Dashboard: React.FC = () => {
             color="#027d6f"
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 4 }}>
+        <Grid size={{ xs: 12, sm: 3 }}>
+          <StatCard
+            title={t("dashboard.lowStockItems")}
+            value={stats.lowStockItems}
+            icon={<WarningIcon />}
+            color="#d29922"
+          />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 3 }}>
           <StatCard
             title={t("dashboard.topCategory")}
             value={stats.topCategory}
             icon={<PeopleIcon />}
-            color="#d29922"
+            color="#0969da"
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 4 }}>
+        <Grid size={{ xs: 12, sm: 3 }}>
           <StatCard
             title={t("dashboard.movements")}
             value={`+${dailyStats.in} / -${dailyStats.out}`}
             icon={<TimelineIcon />}
-            color="#0969da"
+            color="#1a748b"
           />
         </Grid>
       </Grid>
+
+      {stats.lowStockList.length > 0 && (
+        <Box sx={{ mt: 4 }}>
+          <LowStockAlert items={stats.lowStockList} />
+        </Box>
+      )}
 
       <Box sx={{ mt: 4 }}>
         <RecentActivity activities={recentActivities} />

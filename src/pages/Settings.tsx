@@ -269,7 +269,16 @@ const Settings: React.FC = () => {
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <SecuritySection onSignOut={handleSignOut} />
+          <SecuritySection
+            onSignOut={handleSignOut}
+            onChangePassword={async (newPassword) => {
+              const { error } = await supabase.auth.updateUser({
+                password: newPassword,
+              });
+              if (error) throw error;
+              setSaveSuccess(true);
+            }}
+          />
         </Grid>
       </Grid>
 
