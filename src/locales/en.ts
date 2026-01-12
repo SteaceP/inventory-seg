@@ -134,8 +134,12 @@ const en = {
   "appliances.purchaseDate": "Purchase date",
   "appliances.notes": "Notes",
   "appliances.repairDescription": "Repair description",
+  "appliances.addPart": "Add a part",
+  "appliances.parts": "Parts",
+  "appliances.partName": "Part name",
+  "appliances.partPrice": "Price ($)",
   "appliances.date": "Date",
-  "appliances.cost": "Cost ($)",
+  "appliances.totalCost": "Total Cost ($)",
   "dashboard.hello": "Hello",
   "dashboard.title": "Dashboard",
   "dashboard.description.withName":

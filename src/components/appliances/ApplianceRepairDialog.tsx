@@ -6,9 +6,14 @@ import {
   DialogActions,
   TextField,
   Button,
+  Box,
+  Typography,
+  IconButton,
+  Divider,
 } from "@mui/material";
+import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { useTranslation } from "../../i18n";
-import type { Appliance, Repair } from "../../types/appliances";
+import type { Appliance, Repair, RepairPart } from "../../types/appliances";
 
 interface ApplianceRepairDialogProps {
   open: boolean;
@@ -26,21 +31,48 @@ const ApplianceRepairDialog: React.FC<ApplianceRepairDialogProps> = ({
   const { t } = useTranslation();
   const [formData, setFormData] = useState<Partial<Repair>>({
     repair_date: new Date().toISOString().split("T")[0],
+    description: "",
+    parts: [],
+    service_provider: "",
   });
 
   const handleChange = (field: keyof Repair) => (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    let value: string | number = event.target.value;
-    if (field === "cost") {
-      value = parseFloat(value) || 0;
-    }
-    setFormData({ ...formData, [field]: value });
+    setFormData({ ...formData, [field]: event.target.value });
+  };
+
+  const handleAddPart = () => {
+    const parts = [...(formData.parts || []), { name: "", price: 0 }];
+    setFormData({ ...formData, parts });
+  };
+
+  const handleRemovePart = (index: number) => {
+    const parts = (formData.parts || []).filter((_, i) => i !== index);
+    setFormData({ ...formData, parts });
+  };
+
+  const handlePartChange = (index: number, field: keyof RepairPart) => (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const parts = [...(formData.parts || [])];
+    const value = field === "price" ? parseFloat(event.target.value) || 0 : event.target.value;
+    parts[index] = { ...parts[index], [field]: value };
+    setFormData({ ...formData, parts });
+  };
+
+  const calculateTotal = () => {
+    return (formData.parts || []).reduce((sum, part) => sum + (part.price || 0), 0);
   };
 
   const handleSave = () => {
     onSave(formData);
-    setFormData({ repair_date: new Date().toISOString().split("T")[0] });
+    setFormData({ 
+      repair_date: new Date().toISOString().split("T")[0],
+      description: "",
+      parts: [],
+      service_provider: "",
+    });
   };
 
   return (
@@ -68,25 +100,66 @@ const ApplianceRepairDialog: React.FC<ApplianceRepairDialogProps> = ({
           value={formData.repair_date || ""}
           onChange={handleChange("repair_date")}
         />
-        <TextField
-          margin="dense"
-          label={t("appliances.cost")}
-          type="number"
-          fullWidth
-          value={formData.cost || ""}
-          onChange={handleChange("cost")}
-        />
+
+        <Box sx={{ mt: 3, mb: 1, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <Typography variant="subtitle1" fontWeight="bold">
+            {t("appliances.parts")}
+          </Typography>
+          <Button 
+            size="small" 
+            startIcon={<AddIcon />} 
+            onClick={handleAddPart}
+            variant="outlined"
+          >
+            {t("appliances.addPart")}
+          </Button>
+        </Box>
+        
+        <Divider sx={{ mb: 2 }} />
+
+        {formData.parts?.map((part, index) => (
+          <Box key={index} sx={{ display: "flex", gap: 1, mb: 2, alignItems: "flex-start" }}>
+            <TextField
+              size="small"
+              label={t("appliances.partName")}
+              sx={{ flex: 3 }}
+              value={part.name}
+              onChange={handlePartChange(index, "name")}
+            />
+            <TextField
+              size="small"
+              label={t("appliances.partPrice")}
+              type="number"
+              sx={{ flex: 1 }}
+              value={part.price || ""}
+              onChange={handlePartChange(index, "price")}
+            />
+            <IconButton color="error" onClick={() => handleRemovePart(index)}>
+              <DeleteIcon />
+            </IconButton>
+          </Box>
+        ))}
+
+        {formData.parts && formData.parts.length > 0 && (
+          <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
+            <Typography variant="h6" color="primary.main">
+              {t("appliances.totalCost")}: {calculateTotal().toFixed(2)} $
+            </Typography>
+          </Box>
+        )}
+
         <TextField
           margin="dense"
           label={t("appliances.serviceProvider")}
           fullWidth
+          sx={{ mt: 3 }}
           value={formData.service_provider || ""}
           onChange={handleChange("service_provider")}
         />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>{t("appliances.cancel")}</Button>
-        <Button onClick={handleSave} variant="contained">
+        <Button onClick={handleSave} variant="contained" disabled={!formData.description}>
           {t("appliances.save")}
         </Button>
       </DialogActions>

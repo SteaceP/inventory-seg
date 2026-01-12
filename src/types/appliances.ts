@@ -12,10 +12,16 @@ export interface Appliance {
   sku?: string;
 }
 
+export interface RepairPart {
+  name: string;
+  price: number;
+}
+
 export interface Repair {
   id: string;
   repair_date: string;
   description: string;
-  cost: number;
+  cost?: number; // Legacy labor cost (optional)
+  parts?: RepairPart[];
   service_provider: string;
 }

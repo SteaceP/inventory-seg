@@ -115,8 +115,12 @@ const fr = {
   "appliances.purchaseDate": "Date d'achat",
   "appliances.notes": "Notes",
   "appliances.repairDescription": "Description de la réparation",
+  "appliances.addPart": "Ajouter une pièce",
+  "appliances.parts": "Pièces",
+  "appliances.partName": "Nom de la pièce",
+  "appliances.partPrice": "Prix ($)",
   "appliances.date": "Date",
-  "appliances.cost": "Coût ($)",
+  "appliances.totalCost": "Coût total ($)",
   "dashboard.hello": "Bonjour",
   "dashboard.title": "Tableau de bord",
   "dashboard.description.withName":
