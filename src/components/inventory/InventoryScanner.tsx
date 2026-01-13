@@ -28,40 +28,42 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
 
   useEffect(() => {
     if (open && !scannerRef.current) {
-      const timeoutId = setTimeout(async () => {
-        try {
-          const html5QrCode = new Html5Qrcode("reader");
-          scannerRef.current = html5QrCode;
+      const timeoutId = setTimeout(() => {
+        void (async () => {
+          try {
+            const html5QrCode = new Html5Qrcode("reader");
+            scannerRef.current = html5QrCode;
 
-          const config = {
-            fps: 20,
-            qrbox: { width: 300, height: 150 },
-            aspectRatio: 1.0,
-          };
+            const config = {
+              fps: 20,
+              qrbox: { width: 300, height: 150 },
+              aspectRatio: 1.0,
+            };
 
-          await html5QrCode.start(
-            { facingMode: "environment" },
-            config,
-            (decodedText) => {
-              html5QrCode
-                .stop()
-                .then(() => {
-                  scannerRef.current = null;
-                  onScanSuccessRef.current(decodedText);
-                })
-                .catch(() => {
-                  scannerRef.current = null;
-                  onScanSuccessRef.current(decodedText);
-                });
-            },
-            () => {}
-          );
-        } catch {
-          onError(
-            "Impossible de démarrer la caméra. Veuillez vérifier les permissions."
-          );
-          onClose();
-        }
+            await html5QrCode.start(
+              { facingMode: "environment" },
+              config,
+              (decodedText) => {
+                html5QrCode
+                  .stop()
+                  .then(() => {
+                    scannerRef.current = null;
+                    onScanSuccessRef.current(decodedText);
+                  })
+                  .catch(() => {
+                    scannerRef.current = null;
+                    onScanSuccessRef.current(decodedText);
+                  });
+              },
+              () => {}
+            );
+          } catch {
+            onError(
+              "Impossible de démarrer la caméra. Veuillez vérifier les permissions."
+            );
+            onClose();
+          }
+        })();
       }, 300);
 
       return () => clearTimeout(timeoutId);

@@ -35,12 +35,24 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
         if (error && error.code !== "PGRST116") throw error;
 
         if (settings) {
-          setDisplayName(settings.display_name || "");
-          setAvatarUrl(settings.avatar_url || "");
-          setRole(settings.role || "user");
-          setLanguageState((settings.language as "fr" | "en" | "ar") || "fr");
-          if (settings.low_stock_threshold !== undefined) {
-            setLowStockThresholdState(settings.low_stock_threshold);
+          const s = settings as {
+            display_name: string | null;
+            avatar_url: string | null;
+            role: string | null;
+            language: string | null;
+            low_stock_threshold: number | null;
+          };
+          setDisplayName(s.display_name || "");
+          setAvatarUrl(s.avatar_url || "");
+          setRole(s.role || "user");
+          setLanguageState((s.language as "fr" | "en" | "ar") || "fr");
+          if (
+            s.low_stock_threshold !== undefined &&
+            s.low_stock_threshold !== null
+          ) {
+            setLowStockThresholdState(s.low_stock_threshold);
+          } else {
+            setLowStockThresholdState(5);
           }
         }
       } catch (err: unknown) {
@@ -68,14 +80,14 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     };
 
-    initUser();
+    void initUser();
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setUserId(session?.user?.id || null);
       if (session?.user) {
-        fetchUserSettings(session.user.id);
+        void fetchUserSettings(session.user.id);
       } else {
         setDisplayName("");
         setAvatarUrl("");
@@ -161,9 +173,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     ]
   );
 
-  return (
-    <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>
-  );
+  return <UserContext value={contextValue}>{children}</UserContext>;
 };
 
 export default UserProvider;

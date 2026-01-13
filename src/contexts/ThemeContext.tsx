@@ -23,8 +23,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
         if (error && error.code !== "PGRST116") throw error;
 
         if (settings) {
-          setDarkMode(settings.dark_mode ?? true);
-          setCompactView(settings.compact_view ?? false);
+          const s = settings as {
+            dark_mode: boolean | null;
+            compact_view: boolean | null;
+          };
+          setDarkMode(s.dark_mode ?? true);
+          setCompactView(s.compact_view ?? false);
         }
       } catch (err: unknown) {
         showError("Failed to fetch theme settings: " + (err as Error).message);
@@ -37,8 +41,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     if (!("serviceWorker" in navigator)) return;
 
     const handleMessage = (event: MessageEvent) => {
-      if (event.data.type === "SETTINGS_FETCH_ERROR") {
-        showError(event.data.message);
+      const data = event.data as { type?: string; message?: string };
+      if (data.type === "SETTINGS_FETCH_ERROR") {
+        showError(data.message || "An error occurred");
       }
     };
     navigator.serviceWorker.addEventListener("message", handleMessage);
@@ -58,14 +63,14 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     };
 
-    initTheme();
+    void initTheme();
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setUserId(session?.user?.id || null);
       if (session?.user) {
-        fetchThemeSettings(session.user.id);
+        void fetchThemeSettings(session.user.id);
       }
     });
 
@@ -109,7 +114,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <ThemeContext.Provider
+    <ThemeContext
       value={{
         darkMode,
         compactView,
@@ -118,7 +123,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
       }}
     >
       {children}
-    </ThemeContext.Provider>
+    </ThemeContext>
   );
 };
 

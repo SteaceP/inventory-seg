@@ -106,7 +106,9 @@ const ApplianceDialog: React.FC<ApplianceDialogProps> = ({
               hidden
               accept="image/*"
               type="file"
-              onChange={handleImageUpload}
+              onChange={(e) => {
+                void handleImageUpload(e);
+              }}
             />
           </Button>
           {formData.photo_url && (

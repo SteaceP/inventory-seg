@@ -34,13 +34,17 @@ const Inventory: React.FC = () => {
     sku: "",
     stock: 0,
     image_url: "",
+    low_stock_threshold: null,
   });
-  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(
+    () => new Set()
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [isLowStockFilter, setIsLowStockFilter] = useState(
     searchParams.get("filter") === "lowStock"
   );
-  const { role, lowStockThreshold } = useUserContext();
+  const { role, lowStockThreshold: globalThreshold } = useUserContext();
+  const { categories } = useInventoryContext();
   const { compactView } = useThemeContext();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -50,9 +54,7 @@ const Inventory: React.FC = () => {
 
   useEffect(() => {
     const filter = searchParams.get("filter");
-    if (filter === "lowStock") {
-      setIsLowStockFilter(true);
-    }
+    setIsLowStockFilter(filter === "lowStock");
   }, [searchParams]);
 
   const toggleLowStockFilter = () => {
@@ -85,6 +87,7 @@ const Inventory: React.FC = () => {
           sku: "",
           stock: 0,
           image_url: "",
+          low_stock_threshold: null,
         });
       }
       setOpen(true);
@@ -111,14 +114,14 @@ const Inventory: React.FC = () => {
       } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: userSettings } = await supabase
-        .from("user_settings")
-        .select("*")
-        .eq("user_id", user.id)
-        .single();
+      const categoryThreshold = categories.find(
+        (c) => c.name === item.category
+      )?.low_stock_threshold;
 
-      const isLowStock =
-        (item.stock || 0) <= (userSettings?.low_stock_threshold ?? 5);
+      const effectiveThreshold =
+        item.low_stock_threshold ?? categoryThreshold ?? globalThreshold;
+
+      const isLowStock = (item.stock || 0) <= effectiveThreshold;
 
       if (isLowStock) {
         // Call the Alerter API (handles both Push and Email)
@@ -128,7 +131,7 @@ const Inventory: React.FC = () => {
           body: JSON.stringify({
             itemName: item.name,
             currentStock: item.stock,
-            threshold: userSettings?.low_stock_threshold ?? 5,
+            threshold: effectiveThreshold,
             userEmail: user.email,
             userId: user.id,
           }),
@@ -198,11 +201,11 @@ const Inventory: React.FC = () => {
 
       const updatedItem = items.find((i) => i.id === itemId);
       if (updatedItem) {
-        checkLowStockAndNotify({ ...updatedItem, stock: newStock });
+        void checkLowStockAndNotify({ ...updatedItem, stock: newStock });
       }
 
       setStockDialogOpen(false);
-      refreshInventory();
+      void refreshInventory();
     } catch (err: unknown) {
       showError(
         t("inventory.updateStockError") + ": " + (err as Error).message
@@ -251,20 +254,24 @@ const Inventory: React.FC = () => {
           });
         }
       } else {
-        const { data: newItem, error } = await supabase
+        const { data, error } = (await supabase
           .from("inventory")
           .insert([sanitizedData])
           .select()
-          .single();
+          .single()) as { data: unknown; error: unknown };
+
+        const newItem = data as InventoryItem | null;
 
         if (error) {
-          showError(t("errors.addItem") + ": " + error.message);
+          showError(
+            t("errors.addItem") + ": " + (error as { message: string }).message
+          );
           return;
         }
 
         // Log the create activity
         if (user && newItem) {
-          await supabase.from("inventory_activity").insert({
+          void supabase.from("inventory_activity").insert({
             inventory_id: newItem.id,
             user_id: user.id,
             action: "created",
@@ -274,9 +281,9 @@ const Inventory: React.FC = () => {
         }
       }
 
-      checkLowStockAndNotify(sanitizedData);
+      void checkLowStockAndNotify(sanitizedData);
       handleClose();
-      refreshInventory();
+      void refreshInventory();
     } catch (err: unknown) {
       showError(t("inventory.saveItemError") + ": " + (err as Error).message);
     }
@@ -299,16 +306,16 @@ const Inventory: React.FC = () => {
           showError(t("errors.deleteItem") + ": " + error.message);
         } else {
           // Log the delete activity
-          if (user && item) {
-            await supabase.from("inventory_activity").insert({
+          if (user) {
+            void supabase.from("inventory_activity").insert({
               inventory_id: id,
               user_id: user.id,
               action: "deleted",
-              item_name: item.name,
-              changes: { stock: item.stock },
+              item_name: item?.name || "Unknown",
+              changes: { id },
             });
           }
-          refreshInventory();
+          void refreshInventory();
         }
       } catch (err: unknown) {
         showError(
@@ -359,7 +366,12 @@ const Inventory: React.FC = () => {
       (item.category && item.category.toLowerCase().includes(query));
 
     if (isLowStockFilter) {
-      return matchesSearch && item.stock <= lowStockThreshold;
+      const categoryThreshold = categories.find(
+        (c) => c.name === item.category
+      )?.low_stock_threshold;
+      const effectiveThreshold =
+        item.low_stock_threshold ?? categoryThreshold ?? globalThreshold;
+      return matchesSearch && (item.stock || 0) <= effectiveThreshold;
     }
     return matchesSearch;
   });
@@ -398,7 +410,7 @@ const Inventory: React.FC = () => {
         selectedItems={selectedItems}
         onToggleItem={toggleItem}
         onEdit={handleOpen}
-        onDelete={role === "admin" ? handleDelete : undefined}
+        onDelete={role === "admin" ? (id) => void handleDelete(id) : undefined}
         compactView={compactView}
       />
 
@@ -408,10 +420,10 @@ const Inventory: React.FC = () => {
         formData={formData}
         isMobile={isMobile}
         onClose={handleClose}
-        onSave={handleSave}
+        onSave={() => void handleSave()}
         onFormDataChange={setFormData}
         onGenerateSKU={generateSKU}
-        onImageUpload={handleImageUpload}
+        onImageUpload={(file) => void handleImageUpload(file)}
         getBarcodeFormat={getBarcodeFormat}
         role={role}
       />
@@ -421,7 +433,7 @@ const Inventory: React.FC = () => {
         item={editingItem}
         isMobile={isMobile}
         onClose={() => setStockDialogOpen(false)}
-        onSave={handleStockSave}
+        onSave={(itemId, newStock) => void handleStockSave(itemId, newStock)}
       />
 
       <InventoryScanner

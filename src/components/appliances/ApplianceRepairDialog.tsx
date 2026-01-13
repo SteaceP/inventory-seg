@@ -130,6 +130,7 @@ const ApplianceRepairDialog: React.FC<ApplianceRepairDialogProps> = ({
 
         {formData.parts?.map((part, index) => (
           <Box
+            // eslint-disable-next-line react-x/no-array-index-key
             key={index}
             sx={{ display: "flex", gap: 1, mb: 2, alignItems: "flex-start" }}
           >

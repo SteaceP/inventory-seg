@@ -28,12 +28,12 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
 
   const handleThemeToggle = (enabled: boolean) => {
     onDarkModeChange(enabled);
-    toggleDarkMode(enabled);
+    void toggleDarkMode(enabled);
   };
 
   const handleCompactToggle = (enabled: boolean) => {
     onCompactViewChange(enabled);
-    toggleCompactView(enabled);
+    void toggleCompactView(enabled);
   };
   return (
     <Paper

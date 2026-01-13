@@ -24,6 +24,7 @@ import {
   subscribeToPush,
   unsubscribeFromPush,
 } from "../utils/push-notifications";
+import type { Language } from "../types/user";
 
 const Settings: React.FC = () => {
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -86,10 +87,14 @@ const Settings: React.FC = () => {
           .single();
 
         if (userSettings) {
+          const settingsObj = userSettings as {
+            email_alerts: boolean | null;
+            low_stock_threshold: number | null;
+          };
           setSettings((prev) => ({
             ...prev,
-            emailAlerts: userSettings.email_alerts ?? false,
-            lowStockThreshold: userSettings.low_stock_threshold ?? 5,
+            emailAlerts: settingsObj.email_alerts ?? false,
+            lowStockThreshold: settingsObj.low_stock_threshold ?? 5,
           }));
         }
 
@@ -97,7 +102,7 @@ const Settings: React.FC = () => {
         setSettings((prev) => ({ ...prev, pushEnabled: isSubscribed }));
       }
     };
-    loadUserData();
+    void loadUserData();
   }, []);
 
   const handleAvatarUpload = async (file: File) => {
@@ -195,7 +200,7 @@ const Settings: React.FC = () => {
             onDisplayNameChange={(name) =>
               setSettings({ ...settings, displayName: name })
             }
-            onAvatarChange={handleAvatarUpload}
+            onAvatarChange={(file) => void handleAvatarUpload(file)}
           />
         </Grid>
 
@@ -211,18 +216,20 @@ const Settings: React.FC = () => {
             onThresholdChange={(val) =>
               setSettings({ ...settings, lowStockThreshold: val })
             }
-            onPushToggle={async (enabled) => {
-              try {
-                if (enabled) {
-                  await subscribeToPush();
-                  setSettings((prev) => ({ ...prev, pushEnabled: true }));
-                } else {
-                  await unsubscribeFromPush();
-                  setSettings((prev) => ({ ...prev, pushEnabled: false }));
+            onPushToggle={(enabled) => {
+              void (async () => {
+                try {
+                  if (enabled) {
+                    await subscribeToPush();
+                    setSettings((prev) => ({ ...prev, pushEnabled: true }));
+                  } else {
+                    await unsubscribeFromPush();
+                    setSettings((prev) => ({ ...prev, pushEnabled: false }));
+                  }
+                } catch (err: unknown) {
+                  setError(err instanceof Error ? err.message : String(err));
                 }
-              } catch (err: unknown) {
-                setError(err instanceof Error ? err.message : String(err));
-              }
+              })();
             }}
           />
         </Grid>
@@ -266,12 +273,12 @@ const Settings: React.FC = () => {
                 value={settings.language}
                 label={t("settings.language")}
                 onChange={(e) => {
-                  const val = e.target.value as "fr" | "en" | "ar";
+                  const val = (e.target as { value: Language }).value;
                   // mark that the language change originated from the UI so the
                   // settings loader won't immediately overwrite it from the DB
                   languageChangeRef.current = true;
                   setSettings({ ...settings, language: val });
-                  setLanguage(val);
+                  void setLanguage(val);
                 }}
               >
                 <MenuItem value={"fr"}>{t("lang.fr")}</MenuItem>
@@ -284,7 +291,7 @@ const Settings: React.FC = () => {
 
         <Grid size={{ xs: 12, md: 6 }}>
           <SecuritySection
-            onSignOut={handleSignOut}
+            onSignOut={() => void handleSignOut()}
             onChangePassword={async (newPassword) => {
               const { error } = await supabase.auth.updateUser({
                 password: newPassword,
@@ -300,7 +307,7 @@ const Settings: React.FC = () => {
         <Button
           variant="contained"
           size="large"
-          onClick={handleSaveSettings}
+          onClick={() => void handleSaveSettings()}
           sx={{ px: 4 }}
         >
           {t("settings.save")}

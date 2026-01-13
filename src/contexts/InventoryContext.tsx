@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../supabaseClient";
 import type { RealtimeChannel } from "@supabase/supabase-js";
-import type { InventoryItem } from "../types/inventory";
+import type { InventoryItem, InventoryCategory } from "../types/inventory";
 import { InventoryContext } from "./inventory-context";
 import { useTranslation } from "../i18n";
 import { useAlert } from "./useAlertContext";
@@ -10,6 +10,7 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [items, setItems] = useState<InventoryItem[]>([]);
+  const [categories, setCategories] = useState<InventoryCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
@@ -30,14 +31,24 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
 
     isFetching.current = true;
     try {
-      const { data, error } = await supabase
+      // Fetch items
+      const { data: itemsData, error: itemsError } = await supabase
         .from("inventory")
         .select("*")
         .order("category")
         .order("name");
 
-      if (error) throw error;
-      setItems(data || []);
+      if (itemsError) throw itemsError;
+
+      // Fetch categories
+      const { data: categoriesData, error: categoriesError } = await supabase
+        .from("inventory_categories")
+        .select("*");
+
+      if (categoriesError) throw categoriesError;
+
+      setItems(itemsData || []);
+      setCategories(categoriesData || []);
       setError(null);
     } catch (err: unknown) {
       const error = err as Error;
@@ -53,12 +64,38 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [t]);
 
+  const updateCategoryThreshold = useCallback(
+    async (name: string, threshold: number | null) => {
+      try {
+        const { error } = await supabase.from("inventory_categories").upsert(
+          {
+            name,
+            low_stock_threshold: threshold,
+          },
+          { onConflict: "name" }
+        );
+
+        if (error) throw error;
+        await fetchInventory();
+      } catch (err: unknown) {
+        showError(
+          "Failed to update category threshold: " + (err as Error).message
+        );
+      }
+    },
+    [fetchInventory, showError]
+  );
+
   const subscriptionRef = React.useRef<RealtimeChannel | null>(null);
+  const catSubscriptionRef = React.useRef<RealtimeChannel | null>(null);
 
   useEffect(() => {
     const subscribe = () => {
       if (subscriptionRef.current) {
-        subscriptionRef.current.unsubscribe();
+        void subscriptionRef.current.unsubscribe();
+      }
+      if (catSubscriptionRef.current) {
+        void catSubscriptionRef.current.unsubscribe();
       }
 
       if (navigator.onLine) {
@@ -68,25 +105,40 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
             "postgres_changes",
             { event: "*", schema: "public", table: "inventory" },
             () => {
-              fetchInventory();
+              void fetchInventory();
+            }
+          )
+          .subscribe();
+
+        catSubscriptionRef.current = supabase
+          .channel("category_changes")
+          .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "inventory_categories" },
+            () => {
+              void fetchInventory();
             }
           )
           .subscribe();
       }
     };
 
-    fetchInventory();
+    void fetchInventory();
     subscribe();
 
     const handleOnline = () => {
-      fetchInventory();
+      void fetchInventory();
       subscribe();
     };
 
     const handleOffline = () => {
       if (subscriptionRef.current) {
-        subscriptionRef.current.unsubscribe();
+        void subscriptionRef.current.unsubscribe();
         subscriptionRef.current = null;
+      }
+      if (catSubscriptionRef.current) {
+        void catSubscriptionRef.current.unsubscribe();
+        catSubscriptionRef.current = null;
       }
       setLoading(false); // Ensure loading is cleared if it was in progress
     };
@@ -98,19 +150,25 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
       if (subscriptionRef.current) {
-        subscriptionRef.current.unsubscribe();
+        void subscriptionRef.current.unsubscribe();
+      }
+      if (catSubscriptionRef.current) {
+        void catSubscriptionRef.current.unsubscribe();
       }
     };
   }, [fetchInventory]);
 
   const contextValue = React.useMemo(
-    () => ({ items, loading, error, refreshInventory: fetchInventory }),
-    [items, loading, error, fetchInventory]
+    () => ({
+      items,
+      categories,
+      loading,
+      error,
+      refreshInventory: fetchInventory,
+      updateCategoryThreshold,
+    }),
+    [items, categories, loading, error, fetchInventory, updateCategoryThreshold]
   );
 
-  return (
-    <InventoryContext.Provider value={contextValue}>
-      {children}
-    </InventoryContext.Provider>
-  );
+  return <InventoryContext value={contextValue}>{children}</InventoryContext>;
 };

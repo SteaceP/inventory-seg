@@ -21,6 +21,9 @@ import Barcode from "react-barcode";
 import type { BarcodeProps } from "react-barcode";
 import type { InventoryItem } from "../../types/inventory";
 
+import { useUserContext } from "../../contexts/useUserContext";
+import { useInventoryContext } from "../../contexts/useInventoryContext";
+
 interface InventoryDialogProps {
   open: boolean;
   editingItem: InventoryItem | null;
@@ -50,6 +53,14 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
 }) => {
   const isAdmin = role === "admin";
   const { t } = useTranslation();
+  const { lowStockThreshold: globalThreshold } = useUserContext();
+  const { categories } = useInventoryContext();
+
+  const categoryThreshold = categories.find(
+    (c) => c.name === formData.category
+  )?.low_stock_threshold;
+
+  const effectiveBaseThreshold = categoryThreshold ?? globalThreshold;
 
   return (
     <Dialog
@@ -208,6 +219,46 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                 },
               }}
               InputLabelProps={{ sx: { color: "text.secondary" } }}
+            />
+          </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: isMobile ? "column" : "row",
+              gap: 2,
+            }}
+          >
+            <TextField
+              label={
+                t("inventory.lowStockThresholdLabel") || "Seuil de stock bas"
+              }
+              type="number"
+              fullWidth
+              value={formData.low_stock_threshold ?? ""}
+              onChange={(e) =>
+                onFormDataChange({
+                  ...formData,
+                  low_stock_threshold:
+                    e.target.value === "" ? null : parseInt(e.target.value),
+                })
+              }
+              placeholder={effectiveBaseThreshold.toString()}
+              helperText={
+                formData.low_stock_threshold === undefined ||
+                formData.low_stock_threshold === null
+                  ? `${t("inventory.usingBaseThreshold") || "Utilise le seuil par défaut"}: ${effectiveBaseThreshold}`
+                  : ""
+              }
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": { borderColor: "divider" },
+                },
+              }}
+              InputLabelProps={{
+                sx: { color: "text.secondary" },
+                shrink: true,
+              }}
             />
           </Box>
 

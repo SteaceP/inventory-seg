@@ -73,6 +73,7 @@ const ApplianceHistoryDialog: React.FC<ApplianceHistoryDialogProps> = ({
                     >
                       {repair.parts.map((part, idx) => (
                         <Box
+                          // eslint-disable-next-line react-x/no-array-index-key
                           key={idx}
                           sx={{
                             display: "flex",

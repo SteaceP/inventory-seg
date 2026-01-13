@@ -66,7 +66,7 @@ export const AlertProvider: React.FC<{ children: ReactNode }> = ({
   );
 
   return (
-    <AlertContext.Provider value={contextValue}>
+    <AlertContext value={contextValue}>
       {children}
       <Snackbar
         open={alert.open}
@@ -83,7 +83,7 @@ export const AlertProvider: React.FC<{ children: ReactNode }> = ({
           {alert.message}
         </Alert>
       </Snackbar>
-    </AlertContext.Provider>
+    </AlertContext>
   );
 };
 

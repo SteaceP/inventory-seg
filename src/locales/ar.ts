@@ -99,6 +99,7 @@ const ar = {
   "dashboard.lowStock.title": "تنبيه المخزون المنخفض",
   "dashboard.lowStock.viewAll": "عرض الكل",
   "inventory.filter.lowStock": "مخزون منخفض",
+  "inventory.lowStock": "مخزون منخفض",
   "appliances.unknown": "مجهول",
   "appliances.noSku": "لا يوجد SKU",
   "appliances.print": "اطبع",

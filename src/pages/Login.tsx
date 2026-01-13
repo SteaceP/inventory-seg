@@ -39,7 +39,7 @@ const Login: React.FC = () => {
       setError(error.message);
       setLoading(false);
     } else {
-      navigate("/");
+      void navigate("/");
     }
   };
 
@@ -105,7 +105,13 @@ const Login: React.FC = () => {
               </Alert>
             )}
 
-            <Box component="form" onSubmit={handleLogin} sx={{ width: "100%" }}>
+            <Box
+              component="form"
+              onSubmit={(e) => {
+                void handleLogin(e);
+              }}
+              sx={{ width: "100%" }}
+            >
               <TextField
                 margin="normal"
                 required

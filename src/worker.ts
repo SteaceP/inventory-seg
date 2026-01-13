@@ -200,13 +200,12 @@ export default {
                   subscriptions.map((sub) =>
                     webpush
                       .sendNotification(sub.subscription, payload)
-                      .catch((error) => {
+                      .catch((error: unknown) => {
                         // If the subscription is no longer valid, we should ideally delete it
-                        if (
-                          error.statusCode === 410 ||
-                          error.statusCode === 404
-                        ) {
-                          fetch(
+                        const status = (error as { statusCode?: number })
+                          ?.statusCode;
+                        if (status === 410 || status === 404) {
+                          void fetch(
                             `${env.SUPABASE_URL}/rest/v1/push_subscriptions?id=eq.${sub.id}`,
                             {
                               method: "DELETE",

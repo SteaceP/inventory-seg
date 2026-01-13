@@ -12,7 +12,7 @@ export interface UserContextType {
   language: Language;
   lowStockThreshold: number;
   setUserProfile: (profile: Partial<UserProfile>) => void;
-  setLanguage: (lang: Language) => void;
-  setLowStockThreshold: (threshold: number) => void;
+  setLanguage: (lang: Language) => void | Promise<void>;
+  setLowStockThreshold: (threshold: number) => void | Promise<void>;
   loading: boolean;
 }

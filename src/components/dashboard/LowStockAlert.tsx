@@ -62,7 +62,7 @@ const LowStockAlert: React.FC<LowStockAlertProps> = ({ items }) => {
         <Button
           size="small"
           endIcon={<ArrowForwardIcon />}
-          onClick={() => navigate("/inventory?filter=lowStock")}
+          onClick={() => void navigate("/inventory?filter=lowStock")}
           sx={{ color: "#d29922" }}
         >
           {t("dashboard.lowStock.viewAll")}

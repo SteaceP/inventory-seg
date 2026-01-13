@@ -165,7 +165,7 @@ const Dashboard: React.FC = () => {
           };
 
           dailyActivities.forEach((activity: ActivityRow) => {
-            const changes = (activity.changes || {}) as Record<string, unknown>;
+            const changes = activity.changes || {};
 
             if (activity.action === "created") {
               stockIn += getNumber(changes, "stock");
@@ -201,7 +201,7 @@ const Dashboard: React.FC = () => {
 
         if (!error && data) {
           const userIds = [
-            ...new Set(data.map((a) => a.user_id).filter(Boolean)),
+            ...new Set(data.map((a) => a.user_id as string).filter(Boolean)),
           ];
           const { data: userSettings } = await supabase
             .from("user_settings")
@@ -215,7 +215,8 @@ const Dashboard: React.FC = () => {
           const activitiesWithNames = data.map((activity) => ({
             ...activity,
             user_display_name:
-              userMap.get(activity.user_id) || t("user.default"),
+              (userMap.get(activity.user_id as string) as string) ||
+              t("user.default"),
           }));
 
           setRecentActivities(activitiesWithNames);
@@ -230,7 +231,7 @@ const Dashboard: React.FC = () => {
       }
     };
 
-    fetchDashboardData();
+    void fetchDashboardData();
   }, [t, showError]);
 
   const loading = inventoryLoading || activitiesLoading;

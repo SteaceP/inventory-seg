@@ -51,6 +51,7 @@ const BarcodePrinter: React.FC<BarcodePrinterProps> = ({ items }) => {
       >
         {items.map((item, index) => (
           <Box
+            // eslint-disable-next-line react-x/no-array-index-key
             key={index}
             sx={{
               width: "4in",

@@ -85,7 +85,7 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
         <Button
           size="small"
           variant="outlined"
-          onClick={handleTestNotification}
+          onClick={() => void handleTestNotification()}
           sx={{
             ml: 4,
             mb: 1,

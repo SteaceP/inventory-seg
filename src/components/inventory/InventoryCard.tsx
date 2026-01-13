@@ -21,6 +21,8 @@ import { motion } from "framer-motion";
 import type { InventoryItem } from "../../types/inventory";
 import { useThemeContext } from "../../contexts/useThemeContext";
 import { useTranslation } from "../../i18n";
+import { useUserContext } from "../../contexts/useUserContext";
+import { useInventoryContext } from "../../contexts/useInventoryContext";
 
 interface InventoryCardProps {
   item: InventoryItem;
@@ -40,6 +42,17 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
   const { compactView } = useThemeContext();
   const theme = useTheme();
   const { t } = useTranslation();
+  const { lowStockThreshold: globalThreshold } = useUserContext();
+  const { categories } = useInventoryContext();
+
+  const categoryThreshold = categories.find(
+    (c) => c.name === item.category
+  )?.low_stock_threshold;
+
+  const effectiveThreshold =
+    item.low_stock_threshold ?? categoryThreshold ?? globalThreshold;
+
+  const isLowStock = (item.stock || 0) <= effectiveThreshold;
 
   return (
     <motion.div
@@ -55,16 +68,22 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
           flexDirection: "column",
           bgcolor: "background.paper",
           backdropFilter: "blur(10px)",
-          border: "1px solid",
-          borderColor: "divider",
+          border: isLowStock ? "2px solid" : "1px solid",
+          borderColor: isLowStock ? "warning.main" : "divider",
           borderRadius: compactView ? "8px" : "12px",
           position: "relative",
           overflow: "hidden",
+          boxShadow: isLowStock
+            ? `0 0 8px ${alpha(theme.palette.warning.main, 0.2)}`
+            : "none",
           transition:
-            "transform 0.2s ease-in-out, border-color 0.2s ease-in-out",
+            "transform 0.2s ease-in-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
           "&:hover": {
-            borderColor: "primary.main",
+            borderColor: isLowStock ? "warning.dark" : "primary.main",
             transform: "translateY(-4px)",
+            boxShadow: isLowStock
+              ? `0 4px 15px ${alpha(theme.palette.warning.main, 0.3)}`
+              : `0 4px 12px ${alpha(theme.palette.primary.main, 0.2)}`,
           },
         }}
       >
@@ -201,11 +220,28 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                 <Typography
                   variant="caption"
                   sx={{
-                    color:
-                      (item.stock || 0) < 5 ? "warning.main" : "text.secondary",
-                    fontWeight: "medium",
+                    color: isLowStock ? "warning.main" : "text.secondary",
+                    fontWeight: isLowStock ? "bold" : "medium",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.5,
                   }}
                 >
+                  {isLowStock && (
+                    <Chip
+                      label={t("inventory.lowStock") || "STOCK BAS"}
+                      size="small"
+                      color="warning"
+                      variant="outlined"
+                      sx={{
+                        height: 18,
+                        fontSize: "0.65rem",
+                        fontWeight: "bold",
+                        borderRadius: "4px",
+                        borderWidth: "1px",
+                      }}
+                    />
+                  )}
                   {item.stock} {t("inventory.stock")}
                 </Typography>
                 <Box sx={{ display: "flex", alignItems: "center" }}>

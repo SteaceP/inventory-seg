@@ -191,7 +191,7 @@ const Layout: React.FC = () => {
             >
               <ListItemButton
                 onClick={() => {
-                  navigate(item.path);
+                  void navigate(item.path);
                   if (isMobile) setMobileOpen(false);
                 }}
                 selected={location.pathname === item.path}
@@ -252,10 +252,12 @@ const Layout: React.FC = () => {
                 py: compactView ? 0.5 : 1,
                 justifyContent: collapsed && !isMobile ? "center" : "initial",
               }}
-              onClick={async () => {
-                await supabase.auth.signOut();
-                navigate("/login");
-                if (isMobile) setMobileOpen(false);
+              onClick={() => {
+                void (async () => {
+                  await supabase.auth.signOut();
+                  void navigate("/login");
+                  if (isMobile) setMobileOpen(false);
+                })();
               }}
             >
               <ListItemIcon

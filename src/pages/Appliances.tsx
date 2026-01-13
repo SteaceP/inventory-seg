@@ -28,7 +28,9 @@ const Appliances: React.FC = () => {
   const { t } = useTranslation();
   const [appliances, setAppliances] = useState<Appliance[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(
+    () => new Set()
+  );
   const [selectedAppliance, setSelectedAppliance] = useState<Appliance | null>(
     null
   );
@@ -58,7 +60,7 @@ const Appliances: React.FC = () => {
   }
 
   useEffect(() => {
-    fetchAppliances();
+    void fetchAppliances();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -95,7 +97,7 @@ const Appliances: React.FC = () => {
       showError(t("appliances.errorCreating") + ": " + error.message);
     } else {
       setOpenAddAppliance(false);
-      fetchAppliances();
+      void fetchAppliances();
     }
   };
 
@@ -113,7 +115,7 @@ const Appliances: React.FC = () => {
       showError(t("appliances.errorCreatingRepair") + ": " + error.message);
     } else {
       setOpenAddRepair(false);
-      fetchRepairs(selectedAppliance.id);
+      void fetchRepairs(selectedAppliance.id);
     }
   };
 
@@ -123,7 +125,7 @@ const Appliances: React.FC = () => {
       if (error) {
         showError(t("appliances.errorDeleting") + ": " + error.message);
       } else {
-        fetchAppliances();
+        void fetchAppliances();
       }
     }
   };
@@ -134,7 +136,7 @@ const Appliances: React.FC = () => {
 
   const handleViewRepairs = (appliance: Appliance) => {
     setSelectedAppliance(appliance);
-    fetchRepairs(appliance.id);
+    void fetchRepairs(appliance.id);
     setOpenRepairsList(true);
   };
 
@@ -213,7 +215,7 @@ const Appliances: React.FC = () => {
                   setSelectedAppliance(app);
                   setOpenAddRepair(true);
                 }}
-                onDelete={handleDeleteAppliance}
+                onDelete={(id) => void handleDeleteAppliance(id)}
                 onPrint={(id) => {
                   setSelectedItems(new Set([id]));
                   setTimeout(() => handlePrint(), 0);
@@ -228,13 +230,13 @@ const Appliances: React.FC = () => {
       <ApplianceDialog
         open={openAddAppliance}
         onClose={() => setOpenAddAppliance(false)}
-        onSave={handleCreateAppliance}
+        onSave={(newApp) => void handleCreateAppliance(newApp)}
       />
 
       <ApplianceRepairDialog
         open={openAddRepair}
         onClose={() => setOpenAddRepair(false)}
-        onSave={handleCreateRepair}
+        onSave={(newRepair) => void handleCreateRepair(newRepair)}
         appliance={selectedAppliance}
       />
 

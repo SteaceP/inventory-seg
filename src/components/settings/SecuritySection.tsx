@@ -123,7 +123,11 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
       </Paper>
 
       <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth>
-        <form onSubmit={handleSubmit}>
+        <form
+          onSubmit={(e) => {
+            void handleSubmit(e);
+          }}
+        >
           <DialogTitle>{t("security.changePassword")}</DialogTitle>
           <DialogContent>
             <Box
