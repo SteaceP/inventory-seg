@@ -78,6 +78,16 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // Handle navigation requests (html)
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        return caches.match("/");
+      })
+    );
+    return;
+  }
+
   // Ignore requests to other origins, unless it's Supabase API/storage
   if (
     !url.origin.startsWith(self.location.origin) &&
@@ -90,16 +100,6 @@ self.addEventListener("fetch", (event) => {
   if (NO_CACHE_API_SIGNATURES.some((sig) => url.pathname.includes(sig))) {
     event.respondWith(
       fetch(event.request).catch(() => {
-        // For settings, fail rather than serve stale data
-        // Send message to client to show error via MUI alert
-        self.clients.matchAll().then((clients) => {
-          clients.forEach((client) => {
-            client.postMessage({
-              type: "SETTINGS_FETCH_ERROR",
-              message: "Unable to load settings. Please check your connection.",
-            });
-          });
-        });
         return new Response(JSON.stringify({ error: "Network error" }), {
           status: 503,
           headers: { "Content-Type": "application/json" },
@@ -121,11 +121,15 @@ self.addEventListener("fetch", (event) => {
   }
   // Strategy: Cache First for App Shell assets
   else if (ASSETS_TO_CACHE.includes(url.pathname) || url.pathname === "/") {
-    event.respondWith(caches.match(event.request));
+    event.respondWith(
+      caches.match(event.request).then((response) => {
+        return response || fetch(event.request);
+      })
+    );
   }
-  // For other requests, just fetch from network
+  // For other requests (JS, CSS, etc.), use SWR to keep them up to date
   else {
-    event.respondWith(fetch(event.request));
+    event.respondWith(staleWhileRevalidate(STATIC_CACHE_NAME, event.request));
   }
 });
 

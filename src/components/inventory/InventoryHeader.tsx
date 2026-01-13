@@ -1,10 +1,19 @@
 import React from "react";
-import { Typography, Box, Button } from "@mui/material";
+import {
+  Typography,
+  Box,
+  Button,
+  TextField,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
 import {
   Add as AddIcon,
   QrCodeScanner as ScanIcon,
   Print as PrintIcon,
   Warning as WarningIcon,
+  Search as SearchIcon,
+  Clear as ClearIcon,
 } from "@mui/icons-material";
 import { useTranslation } from "../../i18n";
 
@@ -16,6 +25,8 @@ interface InventoryHeaderProps {
   onAdd?: () => void;
   isLowStockFilter: boolean;
   onToggleLowStock: () => void;
+  searchQuery: string;
+  onSearchChange: (value: string) => void;
 }
 
 const InventoryHeader: React.FC<InventoryHeaderProps> = ({
@@ -26,6 +37,8 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
   onAdd,
   isLowStockFilter,
   onToggleLowStock,
+  searchQuery,
+  onSearchChange,
 }) => {
   const { t } = useTranslation();
   return (
@@ -42,6 +55,39 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
       <Typography variant={isMobile ? "h5" : "h4"} fontWeight="bold">
         {t("inventory.title") || "Inventaire"}
       </Typography>
+
+      {/* Search Bar */}
+      <TextField
+        placeholder={t("inventory.search") || "Rechercher..."}
+        value={searchQuery}
+        onChange={(e) => onSearchChange(e.target.value)}
+        size="small"
+        sx={{
+          minWidth: { xs: "100%", sm: 250, md: 300 },
+          "& .MuiOutlinedInput-root": {
+            bgcolor: "background.paper",
+          },
+        }}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon sx={{ color: "text.secondary" }} />
+            </InputAdornment>
+          ),
+          endAdornment: searchQuery && (
+            <InputAdornment position="end">
+              <IconButton
+                size="small"
+                onClick={() => onSearchChange("")}
+                edge="end"
+              >
+                <ClearIcon fontSize="small" />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+      />
+
       <Box
         sx={{
           display: "flex",

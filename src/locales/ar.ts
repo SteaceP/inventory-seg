@@ -46,6 +46,7 @@ const ar = {
   "inventory.save": " يحفظ",
   "inventory.searchPlaceholder":
     "البحث في العناصر بالاسم أو SKU أو الفئة ...",
+  "inventory.search": "يبحث...",
   "inventory.current": "حاضِر:",
   "inventory.back": "عودة",
   "inventory.scanner.title": "مسح الرمز الشريطي",
@@ -73,6 +74,9 @@ const ar = {
   "common.save": "حفظ",
   "common.saving": "جاري الحفظ...",
   "common.selectAll": "تحديد الكل",
+  "common.offline": "أنت غير متصل بالإنترنت",
+  "common.offlineMessage": "يرجى التحقق من اتصالك بالإنترنت.",
+  "common.retry": "إعادة المحاولة",
   "appearance.title": "مظهر",
   "appearance.darkMode": "الوضع المظلم",
   "appearance.compactView": "عرض مضغوط",

@@ -50,6 +50,7 @@ const fr = {
   "inventory.save": "Enregistrer",
   "inventory.searchPlaceholder":
     "Rechercher des articles par nom, SKU ou catégorie...",
+  "inventory.search": "Rechercher...",
   "inventory.current": "Actuel:",
   "inventory.back": "Retour",
   "inventory.scanner.title": "Scanner le code-barres",
@@ -78,6 +79,9 @@ const fr = {
   "common.save": "Enregistrer",
   "common.saving": "Enregistrement...",
   "common.selectAll": "Tout sélectionner",
+  "common.offline": "Vous êtes hors ligne",
+  "common.offlineMessage": "Veuillez vérifier votre connexion internet.",
+  "common.retry": "Réessayer",
   "appearance.title": "Apparence",
   "appearance.darkMode": "Mode sombre",
   "appearance.compactView": "Affichage compact",

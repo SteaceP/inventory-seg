@@ -8,7 +8,9 @@ import {
   Chip,
   Divider,
   IconButton,
+  useTheme,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import {
   Edit as EditIcon,
   Delete as DeleteIcon,
@@ -35,6 +37,7 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
   onDelete,
 }) => {
   const { compactView } = useThemeContext();
+  const theme = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -46,6 +49,9 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
     >
       <Card
         sx={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
           bgcolor: "background.paper",
           backdropFilter: "blur(10px)",
           border: "1px solid",
@@ -53,24 +59,60 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
           borderRadius: compactView ? "8px" : "12px",
           position: "relative",
           overflow: "hidden",
-          "&:hover": { borderColor: "primary.main" },
+          transition:
+            "transform 0.2s ease-in-out, border-color 0.2s ease-in-out",
+          "&:hover": {
+            borderColor: "primary.main",
+            transform: "translateY(-4px)",
+          },
         }}
       >
-        {item.image_url && (
+        {item.image_url ? (
           <Box
-            component="img"
-            src={item.image_url}
             sx={{
-              display: "block",
               width: "100%",
-              height: compactView ? 80 : 140,
-              objectFit: "cover",
-              borderBottom: "1px solid",
-              borderColor: "divider",
-              borderTopLeftRadius: compactView ? "8px" : "12px",
-              borderTopRightRadius: compactView ? "8px" : "12px",
+              height: compactView ? 100 : 160,
+              overflow: "hidden",
+              bgcolor: alpha(theme.palette.primary.main, 0.05),
+              flexShrink: 0,
             }}
-          />
+          >
+            <Box
+              component="img"
+              src={item.image_url}
+              sx={{
+                display: "block",
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
+              alt={item.name}
+            />
+          </Box>
+        ) : (
+          <Box
+            sx={{
+              width: "100%",
+              height: compactView ? 60 : 100,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              bgcolor: alpha(theme.palette.primary.main, 0.05),
+              color: "primary.main",
+              opacity: 0.5,
+              flexShrink: 0,
+            }}
+          >
+            <Box
+              component="img"
+              src="/icon.svg"
+              sx={{
+                width: compactView ? 24 : 40,
+                height: compactView ? 24 : 40,
+                filter: "grayscale(1)",
+              }}
+            />
+          </Box>
         )}
         <CardContent
           sx={{
@@ -92,8 +134,14 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                 variant={compactView ? "body1" : "h6"}
                 fontWeight="bold"
                 sx={{
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
                   wordBreak: "break-word",
-                  overflowWrap: "break-word",
+                  lineHeight: 1.2,
+                  minHeight: "2.4em", // Ensure consistent space for titles
                 }}
               >
                 {item.name}
@@ -107,71 +155,84 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
           </Box>
           <Box
             sx={{
+              flex: 1, // Push bottom actions to the bottom
               display: "flex",
-              justifyContent: compactView ? "flex-start" : "center",
-              mb: compactView ? 1 : 2,
-            }}
-          >
-            <Chip
-              label={item.category}
-              size="small"
-              sx={{
-                bgcolor: "rgba(2, 125, 111, 0.1)",
-                color: "primary.main",
-                height: compactView ? 20 : 24,
-                fontSize: compactView ? "0.65rem" : "0.75rem",
-              }}
-            />
-          </Box>
-
-          <Divider sx={{ my: compactView ? 1 : 1.5, borderColor: "divider" }} />
-
-          <Box
-            sx={{
-              display: "flex",
+              flexDirection: "column",
               justifyContent: "space-between",
-              alignItems: "center",
             }}
           >
-            <Typography
-              variant="caption"
+            <Box
               sx={{
-                color:
-                  (item.stock || 0) < 5 ? "warning.main" : "text.secondary",
-                fontWeight: "medium",
+                display: "flex",
+                justifyContent: compactView ? "flex-start" : "center",
+                mb: compactView ? 1 : 2,
               }}
             >
-              {item.stock} {t("inventory.stock")}
-            </Typography>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <IconButton
+              <Chip
+                label={item.category}
                 size="small"
-                onClick={() => onEdit(item)}
                 sx={{
+                  bgcolor: "rgba(2, 125, 111, 0.1)",
                   color: "primary.main",
-                  mr: onDelete ? 0.5 : 0,
-                  p: compactView ? 0.5 : 1,
+                  height: compactView ? 20 : 24,
+                  fontSize: compactView ? "0.65rem" : "0.75rem",
                 }}
-                title={
-                  onDelete ? t("inventory.edit") : t("inventory.manageStock")
-                }
+              />
+            </Box>
+
+            <Divider
+              sx={{ my: compactView ? 1 : 1.5, borderColor: "divider" }}
+            />
+
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{
+                  color:
+                    (item.stock || 0) < 5 ? "warning.main" : "text.secondary",
+                  fontWeight: "medium",
+                }}
               >
-                {onDelete ? (
-                  <EditIcon fontSize={compactView ? "inherit" : "small"} />
-                ) : (
-                  <ExposureIcon sx={{ fontSize: "3.75rem" }} />
-                )}
-              </IconButton>
-              {onDelete && (
+                {item.stock} {t("inventory.stock")}
+              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
                 <IconButton
                   size="small"
-                  onClick={() => onDelete(item.id)}
-                  sx={{ color: "error.main", p: compactView ? 0.5 : 1 }}
-                  title={t("inventory.delete")}
+                  onClick={() => onEdit(item)}
+                  sx={{
+                    color: "primary.main",
+                    mr: onDelete ? 0.5 : 0,
+                    p: compactView ? 0.5 : 1,
+                  }}
+                  title={
+                    onDelete ? t("inventory.edit") : t("inventory.manageStock")
+                  }
                 >
-                  <DeleteIcon fontSize={compactView ? "inherit" : "small"} />
+                  {onDelete ? (
+                    <EditIcon fontSize={compactView ? "inherit" : "small"} />
+                  ) : (
+                    <ExposureIcon
+                      fontSize={compactView ? "inherit" : "small"}
+                    />
+                  )}
                 </IconButton>
-              )}
+                {onDelete && (
+                  <IconButton
+                    size="small"
+                    onClick={() => onDelete(item.id)}
+                    sx={{ color: "error.main", p: compactView ? 0.5 : 1 }}
+                    title={t("inventory.delete")}
+                  >
+                    <DeleteIcon fontSize={compactView ? "inherit" : "small"} />
+                  </IconButton>
+                )}
+              </Box>
             </Box>
           </Box>
         </CardContent>

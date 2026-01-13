@@ -57,6 +57,9 @@ const en = {
   "common.save": "Save",
   "common.saving": "Saving...",
   "common.selectAll": "Select All",
+  "common.offline": "You're Offline",
+  "common.offlineMessage": "Please check your internet connection.",
+  "common.retry": "Retry",
 
   // Appearance
   "appearance.compactView": "Compact View",
@@ -119,6 +122,7 @@ const en = {
   "inventory.cancel": "Cancel",
   "inventory.save": "Save",
   "inventory.searchPlaceholder": "Search items by name, SKU or category...",
+  "inventory.search": "Search...",
   "inventory.current": "Current:",
   "inventory.back": "Back",
   "inventory.scanner.title": "Scan barcode",

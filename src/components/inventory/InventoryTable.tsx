@@ -157,7 +157,13 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
   useEffect(() => {
     let mounted = true;
     const load = async () => {
-      if (!serverSide) return;
+      if (!serverSide || loading) return;
+      
+      if (!navigator.onLine) {
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       try {
         const sortItem =
@@ -173,7 +179,9 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
         setServerRows(res.rows);
         setRowCountState(res.total);
       } catch (err: unknown) {
-        showError(t("table.failedToLoadRows") + ": " + (err as Error).message);
+        if (navigator.onLine) {
+          showError(t("table.failedToLoadRows") + ": " + (err as Error).message);
+        }
       } finally {
         if (mounted) setLoading(false);
       }

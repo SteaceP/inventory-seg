@@ -17,6 +17,7 @@ import {
   Box,
   CircularProgress,
 } from "@mui/material";
+import { WifiOff as WifiOffIcon } from "@mui/icons-material";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "./supabaseClient";
 import Layout from "./components/Layout";
@@ -144,13 +145,33 @@ const getTheme = (mode: "light" | "dark", compact: boolean) =>
     },
   });
 
+import OfflineFallback from "./components/OfflineFallback";
+import { useTranslation } from "./i18n";
+
 const AppContent = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
   const { darkMode, compactView } = useThemeContext();
+  const { t } = useTranslation();
 
   useEffect(() => {
+    console.log("[App] Online status:", navigator.onLine);
+    
+    const handleOnline = () => {
+      console.log("[App] Connection restored");
+      setIsOnline(true);
+    };
+    const handleOffline = () => {
+      console.log("[App] Connection lost");
+      setIsOnline(false);
+    };
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("[App] Session found:", !!session);
       setSession(session);
       setLoading(false);
     });
@@ -158,10 +179,15 @@ const AppContent = () => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log("[App] Auth state changed, session:", !!session);
       setSession(session);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
   }, []);
 
   const theme = getTheme(darkMode ? "dark" : "light", compactView);
@@ -205,9 +231,38 @@ const AppContent = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      {!isOnline && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bgcolor: "error.main",
+            color: "white",
+            py: 0.5,
+            px: 2,
+            zIndex: 9999,
+            textAlign: "center",
+            fontSize: "0.75rem",
+            fontWeight: "bold",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 1,
+          }}
+        >
+          <WifiOffIcon sx={{ fontSize: 16 }} />
+          {t("common.offlineMessage")}
+        </Box>
+      )}
       <Router>
         <Suspense fallback={<PageLoader />}>
           <Routes>
+            <Route
+              path="/offline"
+              element={<OfflineFallback />}
+            />
             <Route
               path="/login"
               element={!session ? <Login /> : <Navigate to="/" />}
@@ -228,6 +283,7 @@ const AppContent = () => {
               <Route path="inventory" element={<Inventory />} />
               <Route path="appliances" element={<Appliances />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="*" element={<Navigate to="/" />} />
             </Route>
           </Routes>
         </Suspense>

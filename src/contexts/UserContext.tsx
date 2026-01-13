@@ -17,6 +17,11 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     const [loading, setLoading] = useState(true);
 
     const fetchUserSettings = useCallback(async (uid: string) => {
+        if (!navigator.onLine) {
+            setLoading(false);
+            return;
+        }
+
         try {
             const { data: settings, error } = await supabase
                 .from("user_settings")
@@ -36,7 +41,9 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
                 }
             }
         } catch (err: unknown) {
-            showError("Failed to fetch user settings: " + (err as Error).message);
+            if (navigator.onLine) {
+                showError("Failed to fetch user settings: " + (err as Error).message);
+            }
         } finally {
             setLoading(false);
         }
@@ -120,20 +127,20 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
         if (profile.avatarUrl !== undefined) setAvatarUrl(profile.avatarUrl);
     };
 
+    const contextValue = React.useMemo(() => ({
+        displayName,
+        avatarUrl,
+        role,
+        language,
+        lowStockThreshold,
+        setUserProfile,
+        setLanguage,
+        setLowStockThreshold,
+        loading,
+    }), [displayName, avatarUrl, role, language, lowStockThreshold, loading]);
+
     return (
-        <UserContext.Provider
-            value={{
-                displayName,
-                avatarUrl,
-                role,
-                language,
-                lowStockThreshold,
-                setUserProfile,
-                setLanguage,
-                setLowStockThreshold,
-                loading,
-            }}
-        >
+        <UserContext.Provider value={contextValue}>
             {children}
         </UserContext.Provider>
     );

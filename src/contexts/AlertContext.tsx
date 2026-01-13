@@ -60,10 +60,13 @@ export const AlertProvider: React.FC<{ children: ReactNode }> = ({
     [showMessage]
   );
 
+  const contextValue = React.useMemo(
+    () => ({ showSuccess, showError, showInfo, showWarning }),
+    [showSuccess, showError, showInfo, showWarning]
+  );
+
   return (
-    <AlertContext.Provider
-      value={{ showSuccess, showError, showInfo, showWarning }}
-    >
+    <AlertContext.Provider value={contextValue}>
       {children}
       <Snackbar
         open={alert.open}
