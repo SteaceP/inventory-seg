@@ -44,8 +44,7 @@ const ar = {
   "inventory.generateSku": "إنشاء SKU عشوائي",
   "inventory.cancel": "يلغي",
   "inventory.save": " يحفظ",
-  "inventory.searchPlaceholder":
-    "البحث في العناصر بالاسم أو SKU أو الفئة ...",
+  "inventory.searchPlaceholder": "البحث في العناصر بالاسم أو SKU أو الفئة ...",
   "inventory.search": "يبحث...",
   "inventory.current": "حاضِر:",
   "inventory.back": "عودة",

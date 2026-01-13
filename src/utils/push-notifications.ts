@@ -21,7 +21,7 @@ export async function subscribeToPush() {
   }
 
   const registration = await navigator.serviceWorker.ready;
-  
+
   // Check if we already have a subscription
   let subscription = await registration.pushManager.getSubscription();
 
@@ -37,13 +37,15 @@ export async function subscribeToPush() {
   }
 
   // Save subscription to Supabase
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (user) {
     const { error } = await supabase.from("push_subscriptions").upsert(
       {
         user_id: user.id,
         subscription: subscription.toJSON(),
-        device_info: `${navigator.platform} - ${navigator.userAgent.split(')')[0].split('(')[1]}`,
+        device_info: `${navigator.platform} - ${navigator.userAgent.split(")")[0].split("(")[1]}`,
       },
       { onConflict: "user_id, subscription" }
     );
@@ -60,9 +62,11 @@ export async function unsubscribeFromPush() {
 
   if (subscription) {
     await subscription.unsubscribe();
-    
+
     // Remove from Supabase
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (user) {
       await supabase
         .from("push_subscriptions")

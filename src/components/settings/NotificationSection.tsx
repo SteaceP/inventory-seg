@@ -34,14 +34,14 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
 
   const handleTestNotification = async () => {
     if (!userId) return;
-    
+
     try {
       const response = await fetch("/api/send-test-push", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId }),
       });
-      
+
       if (!response.ok) {
         throw new Error(await response.text());
       }
@@ -92,7 +92,7 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
             textTransform: "none",
             borderRadius: "12px",
             fontSize: "0.8rem",
-            alignSelf: "flex-start"
+            alignSelf: "flex-start",
           }}
         >
           {t("notifications.testMobile")}

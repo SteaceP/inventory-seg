@@ -156,14 +156,10 @@ const AppContent = () => {
   const { t } = useTranslation();
 
   useEffect(() => {
-    console.log("[App] Online status:", navigator.onLine);
-    
     const handleOnline = () => {
-      console.log("[App] Connection restored");
       setIsOnline(true);
     };
     const handleOffline = () => {
-      console.log("[App] Connection lost");
       setIsOnline(false);
     };
 
@@ -171,7 +167,6 @@ const AppContent = () => {
     window.addEventListener("offline", handleOffline);
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log("[App] Session found:", !!session);
       setSession(session);
       setLoading(false);
     });
@@ -179,7 +174,6 @@ const AppContent = () => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("[App] Auth state changed, session:", !!session);
       setSession(session);
     });
 
@@ -259,10 +253,7 @@ const AppContent = () => {
       <Router>
         <Suspense fallback={<PageLoader />}>
           <Routes>
-            <Route
-              path="/offline"
-              element={<OfflineFallback />}
-            />
+            <Route path="/offline" element={<OfflineFallback />} />
             <Route
               path="/login"
               element={!session ? <Login /> : <Navigate to="/" />}

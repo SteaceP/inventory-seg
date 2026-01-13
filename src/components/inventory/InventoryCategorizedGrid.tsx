@@ -77,10 +77,13 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
     // Sort categories alphabetically
     return Object.keys(groups)
       .sort()
-      .reduce((acc, key) => {
-        acc[key] = groups[key].sort((a, b) => a.name.localeCompare(b.name));
-        return acc;
-      }, {} as Record<string, InventoryItem[]>);
+      .reduce(
+        (acc, key) => {
+          acc[key] = groups[key].sort((a, b) => a.name.localeCompare(b.name));
+          return acc;
+        },
+        {} as Record<string, InventoryItem[]>
+      );
   }, [items, t]);
 
   const categories = Object.keys(groupedItems);
@@ -218,15 +221,17 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    sx={{ display: "flex" }} // Support card stretching
+                    sx={{ display: "flex" }}
                   >
-                    <InventoryCard
-                      item={item}
-                      isSelected={selectedItems.has(item.id)}
-                      onToggle={onToggleItem}
-                      onEdit={onEdit}
-                      onDelete={onDelete}
-                    />
+                    <Box sx={{ width: "100%", height: "100%" }}>
+                      <InventoryCard
+                        item={item}
+                        isSelected={selectedItems.has(item.id)}
+                        onToggle={onToggleItem}
+                        onEdit={onEdit}
+                        onDelete={onDelete}
+                      />
+                    </Box>
                   </Grid>
                 ))}
               </AnimatePresence>

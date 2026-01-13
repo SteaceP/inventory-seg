@@ -36,11 +36,10 @@ const ApplianceRepairDialog: React.FC<ApplianceRepairDialogProps> = ({
     service_provider: "",
   });
 
-  const handleChange = (field: keyof Repair) => (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setFormData({ ...formData, [field]: event.target.value });
-  };
+  const handleChange =
+    (field: keyof Repair) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      setFormData({ ...formData, [field]: event.target.value });
+    };
 
   const handleAddPart = () => {
     const parts = [...(formData.parts || []), { name: "", price: 0 }];
@@ -52,22 +51,28 @@ const ApplianceRepairDialog: React.FC<ApplianceRepairDialogProps> = ({
     setFormData({ ...formData, parts });
   };
 
-  const handlePartChange = (index: number, field: keyof RepairPart) => (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const parts = [...(formData.parts || [])];
-    const value = field === "price" ? parseFloat(event.target.value) || 0 : event.target.value;
-    parts[index] = { ...parts[index], [field]: value };
-    setFormData({ ...formData, parts });
-  };
+  const handlePartChange =
+    (index: number, field: keyof RepairPart) =>
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const parts = [...(formData.parts || [])];
+      const value =
+        field === "price"
+          ? parseFloat(event.target.value) || 0
+          : event.target.value;
+      parts[index] = { ...parts[index], [field]: value };
+      setFormData({ ...formData, parts });
+    };
 
   const calculateTotal = () => {
-    return (formData.parts || []).reduce((sum, part) => sum + (part.price || 0), 0);
+    return (formData.parts || []).reduce(
+      (sum, part) => sum + (part.price || 0),
+      0
+    );
   };
 
   const handleSave = () => {
     onSave(formData);
-    setFormData({ 
+    setFormData({
       repair_date: new Date().toISOString().split("T")[0],
       description: "",
       parts: [],
@@ -77,9 +82,7 @@ const ApplianceRepairDialog: React.FC<ApplianceRepairDialogProps> = ({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>{`${t("appliances.addRepair")} ${
-        appliance?.name || ""
-      }`}</DialogTitle>
+      <DialogTitle>{`${t("appliances.addRepair")} ${appliance?.name || ""}`}</DialogTitle>
       <DialogContent sx={{ px: { xs: 2, sm: 3 } }}>
         <TextField
           autoFocus
@@ -101,24 +104,35 @@ const ApplianceRepairDialog: React.FC<ApplianceRepairDialogProps> = ({
           onChange={handleChange("repair_date")}
         />
 
-        <Box sx={{ mt: 3, mb: 1, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Box
+          sx={{
+            mt: 3,
+            mb: 1,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Typography variant="subtitle1" fontWeight="bold">
             {t("appliances.parts")}
           </Typography>
-          <Button 
-            size="small" 
-            startIcon={<AddIcon />} 
+          <Button
+            size="small"
+            startIcon={<AddIcon />}
             onClick={handleAddPart}
             variant="outlined"
           >
             {t("appliances.addPart")}
           </Button>
         </Box>
-        
+
         <Divider sx={{ mb: 2 }} />
 
         {formData.parts?.map((part, index) => (
-          <Box key={index} sx={{ display: "flex", gap: 1, mb: 2, alignItems: "flex-start" }}>
+          <Box
+            key={index}
+            sx={{ display: "flex", gap: 1, mb: 2, alignItems: "flex-start" }}
+          >
             <TextField
               size="small"
               label={t("appliances.partName")}
@@ -159,7 +173,11 @@ const ApplianceRepairDialog: React.FC<ApplianceRepairDialogProps> = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>{t("appliances.cancel")}</Button>
-        <Button onClick={handleSave} variant="contained" disabled={!formData.description}>
+        <Button
+          onClick={handleSave}
+          variant="contained"
+          disabled={!formData.description}
+        >
           {t("appliances.save")}
         </Button>
       </DialogActions>

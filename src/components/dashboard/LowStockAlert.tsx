@@ -9,7 +9,10 @@ import {
   Button,
   Chip,
 } from "@mui/material";
-import { Warning as WarningIcon, ArrowForward as ArrowForwardIcon } from "@mui/icons-material";
+import {
+  Warning as WarningIcon,
+  ArrowForward as ArrowForwardIcon,
+} from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "../../i18n";
 
@@ -34,7 +37,7 @@ const LowStockAlert: React.FC<LowStockAlertProps> = ({ items }) => {
       sx={{
         p: 3,
         background: (theme) =>
-          theme.palette.mode === "dark" 
+          theme.palette.mode === "dark"
             ? "rgba(210, 153, 34, 0.1)" // subtle yellow in dark mode
             : "#fffbea", // subtle yellow in light mode
         border: "1px solid",
@@ -42,15 +45,22 @@ const LowStockAlert: React.FC<LowStockAlertProps> = ({ items }) => {
         borderRadius: "12px",
       }}
     >
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2,
+        }}
+      >
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <WarningIcon sx={{ color: "#d29922" }} />
           <Typography variant="h6" fontWeight="bold" color="#d29922">
             {t("dashboard.lowStock.title")}
           </Typography>
         </Box>
-        <Button 
-          size="small" 
+        <Button
+          size="small"
           endIcon={<ArrowForwardIcon />}
           onClick={() => navigate("/inventory?filter=lowStock")}
           sx={{ color: "#d29922" }}
@@ -77,13 +87,13 @@ const LowStockAlert: React.FC<LowStockAlertProps> = ({ items }) => {
                 </Typography>
               }
             />
-            <Chip 
-              label={`${item.stock}`} 
+            <Chip
+              label={`${item.stock}`}
               size="small"
-              sx={{ 
-                bgcolor: "#d29922", 
+              sx={{
+                bgcolor: "#d29922",
                 color: "white",
-                fontWeight: "bold"
+                fontWeight: "bold",
               }}
             />
           </ListItem>

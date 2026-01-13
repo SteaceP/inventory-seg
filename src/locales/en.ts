@@ -96,8 +96,7 @@ const en = {
   "appliances.uploading": "Upload...",
   "appliances.photoAdded": "Photo added!",
   "appliances.generateSku": "Generate SKU",
-  "appliances.deleteConfirm":
-    "Are you sure you want to delete this appliance?",
+  "appliances.deleteConfirm": "Are you sure you want to delete this appliance?",
   "appliances.title": "Appliances",
   "appliances.scan": "Scan",
   "appliances.skuLabel": "SKU",

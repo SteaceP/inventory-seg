@@ -11,10 +11,7 @@ import {
   IconButton,
   InputAdornment,
 } from "@mui/material";
-import {
-  PhotoCamera,
-  Autorenew as AutoRenewIcon,
-} from "@mui/icons-material";
+import { PhotoCamera, Autorenew as AutoRenewIcon } from "@mui/icons-material";
 import { useTranslation } from "../../i18n";
 import type { Appliance } from "../../types/appliances";
 import { supabase } from "../../supabaseClient";
@@ -69,18 +66,15 @@ const ApplianceDialog: React.FC<ApplianceDialogProps> = ({
   };
 
   const generateSKU = () => {
-    const sku = `APP-${Math.random()
-      .toString(36)
-      .substring(2, 8)
-      .toUpperCase()}`;
+    const sku = `APP-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
     setFormData({ ...formData, sku });
   };
 
-  const handleChange = (field: keyof Appliance) => (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setFormData({ ...formData, [field]: event.target.value });
-  };
+  const handleChange =
+    (field: keyof Appliance) =>
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setFormData({ ...formData, [field]: event.target.value });
+    };
 
   const handleSave = () => {
     onSave(formData);

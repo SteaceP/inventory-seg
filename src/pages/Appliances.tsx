@@ -184,11 +184,11 @@ const Appliances: React.FC = () => {
           control={
             <Checkbox
               indeterminate={
-                selectedItems.size > 0 &&
-                selectedItems.size < appliances.length
+                selectedItems.size > 0 && selectedItems.size < appliances.length
               }
               checked={
-                appliances.length > 0 && selectedItems.size === appliances.length
+                appliances.length > 0 &&
+                selectedItems.size === appliances.length
               }
               onChange={(e) => toggleAll(e.target.checked)}
             />

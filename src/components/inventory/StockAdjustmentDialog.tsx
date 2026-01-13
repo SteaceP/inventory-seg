@@ -98,8 +98,8 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
           {mode === "menu"
             ? t("inventory.manageStock")
             : mode === "add"
-            ? t("inventory.addStock")
-            : t("inventory.removeStock")}
+              ? t("inventory.addStock")
+              : t("inventory.removeStock")}
         </Typography>
         <IconButton onClick={handleClose} size="small">
           <CloseIcon />

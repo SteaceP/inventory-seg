@@ -21,8 +21,7 @@ const fr = {
   "profile.email": "E-mail",
   "inventory.add": "Ajouter un nouvel article",
   "inventory.edit": "Modifier l'article",
-  "inventory.deleteConfirm":
-    "Êtes-vous sûr de vouloir supprimer cet article ?",
+  "inventory.deleteConfirm": "Êtes-vous sûr de vouloir supprimer cet article ?",
   "inventory.stock": "en stock",
   "inventory.manageStock": "Gérer le stock",
   "inventory.addStock": "Ajouter du stock",
@@ -108,7 +107,8 @@ const fr = {
   "appliances.print": "Imprimer",
   "notifications.testMobile": "Tester la notification",
   "notifications.title": "Notifications",
-  "notifications.pushEnabled": "Activer les notifications Push sur cet appareil",
+  "notifications.pushEnabled":
+    "Activer les notifications Push sur cet appareil",
   "notifications.emailAlerts": "Alertes par e-mail pour faible stock",
   "notifications.lowStockThreshold": "Seuil de stock faible",
   "login.noAccount":

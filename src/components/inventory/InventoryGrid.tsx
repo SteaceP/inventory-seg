@@ -57,14 +57,17 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
           <Grid
             size={{ xs: 12, sm: compactView ? 4 : 6, md: compactView ? 3 : 4 }}
             key={item.id}
+            sx={{ display: "flex" }}
           >
-            <InventoryCard
-              item={item}
-              isSelected={selectedItems.has(item.id)}
-              onToggle={onToggleItem}
-              onEdit={onEdit}
-              onDelete={onDelete}
-            />
+            <Box sx={{ width: "100%", height: "100%" }}>
+              <InventoryCard
+                item={item}
+                isSelected={selectedItems.has(item.id)}
+                onToggle={onToggleItem}
+                onEdit={onEdit}
+                onDelete={onDelete}
+              />
+            </Box>
           </Grid>
         ))}
       </AnimatePresence>

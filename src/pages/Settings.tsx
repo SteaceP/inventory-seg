@@ -28,18 +28,10 @@ import {
 const Settings: React.FC = () => {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const {
-    darkMode,
-    compactView,
-  } = useThemeContext();
+  const { darkMode, compactView } = useThemeContext();
 
-  const {
-    displayName,
-    avatarUrl,
-    language,
-    setLanguage,
-    setUserProfile,
-  } = useUserContext();
+  const { displayName, avatarUrl, language, setLanguage, setUserProfile } =
+    useUserContext();
 
   const { t } = useTranslation();
 
@@ -58,13 +50,13 @@ const Settings: React.FC = () => {
 
   useEffect(() => {
     // Sync local state when context values are loaded/changed
-    setSettings(prev => ({
+    setSettings((prev) => ({
       ...prev,
       displayName: displayName || prev.displayName,
       avatarUrl: avatarUrl || prev.avatarUrl,
       darkMode,
       compactView,
-      language
+      language,
     }));
   }, [displayName, avatarUrl, darkMode, compactView, language]);
 
@@ -81,7 +73,11 @@ const Settings: React.FC = () => {
         data: { user },
       } = await supabase.auth.getUser();
       if (user) {
-        setSettings(prev => ({ ...prev, email: user.email || "", userId: user.id }));
+        setSettings((prev) => ({
+          ...prev,
+          email: user.email || "",
+          userId: user.id,
+        }));
 
         const { data: userSettings } = await supabase
           .from("user_settings")
@@ -90,7 +86,7 @@ const Settings: React.FC = () => {
           .single();
 
         if (userSettings) {
-          setSettings(prev => ({
+          setSettings((prev) => ({
             ...prev,
             emailAlerts: userSettings.email_alerts ?? false,
             lowStockThreshold: userSettings.low_stock_threshold ?? 5,
@@ -98,7 +94,7 @@ const Settings: React.FC = () => {
         }
 
         const isSubscribed = await checkPushSubscription();
-        setSettings(prev => ({ ...prev, pushEnabled: isSubscribed }));
+        setSettings((prev) => ({ ...prev, pushEnabled: isSubscribed }));
       }
     };
     loadUserData();

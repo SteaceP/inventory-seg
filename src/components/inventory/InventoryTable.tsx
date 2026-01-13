@@ -158,7 +158,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     let mounted = true;
     const load = async () => {
       if (!serverSide || loading) return;
-      
+
       if (!navigator.onLine) {
         setLoading(false);
         return;
@@ -180,7 +180,9 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
         setRowCountState(res.total);
       } catch (err: unknown) {
         if (navigator.onLine) {
-          showError(t("table.failedToLoadRows") + ": " + (err as Error).message);
+          showError(
+            t("table.failedToLoadRows") + ": " + (err as Error).message
+          );
         }
       } finally {
         if (mounted) setLoading(false);
@@ -268,8 +270,8 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
               ? 720
               : 820
             : compactView
-            ? 420
-            : 520,
+              ? 420
+              : 520,
           width: "100%",
         }}
       >

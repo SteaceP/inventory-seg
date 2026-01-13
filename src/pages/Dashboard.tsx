@@ -108,19 +108,21 @@ const Dashboard: React.FC = () => {
         lowStockList: [],
       };
 
-    const lowStockList = items.filter((item) => item.stock <= lowStockThreshold);
+    const lowStockList = items.filter(
+      (item) => item.stock <= lowStockThreshold
+    );
     const lowStock = lowStockList.length;
     const totalStock = items.reduce((acc, item) => acc + item.stock, 0);
     const categories = items.map((item) => item.category);
     const topCategory =
       categories.length > 0
         ? categories
-          .sort(
-            (a, b) =>
-              categories.filter((v) => v === a).length -
-              categories.filter((v) => v === b).length
-          )
-          .pop() || ""
+            .sort(
+              (a, b) =>
+                categories.filter((v) => v === a).length -
+                categories.filter((v) => v === b).length
+            )
+            .pop() || ""
         : "";
 
     return {

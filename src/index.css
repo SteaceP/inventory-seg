@@ -37,12 +37,11 @@ body {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
   background-color: var(--bg-primary);
-  background-image: radial-gradient(
+  background-image:
+    radial-gradient(
       circle at top right,
       rgba(2, 125, 111, 0.05),
       transparent 400px
@@ -75,7 +74,9 @@ button {
   font-family: inherit;
   background-color: var(--bg-secondary);
   cursor: pointer;
-  transition: border-color 0.25s, transform 0.1s;
+  transition:
+    border-color 0.25s,
+    transform 0.1s;
 }
 
 button:hover {

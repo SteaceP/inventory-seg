@@ -59,9 +59,14 @@ export default {
           );
 
           if (subResponse.ok) {
-            const subscriptions = (await subResponse.json()) as PushSubscriptionRow[];
+            const subscriptions =
+              (await subResponse.json()) as PushSubscriptionRow[];
 
-            if (subscriptions.length > 0 && env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY) {
+            if (
+              subscriptions.length > 0 &&
+              env.VAPID_PUBLIC_KEY &&
+              env.VAPID_PRIVATE_KEY
+            ) {
               webpush.setVapidDetails(
                 "mailto:admin@coderage.pro",
                 env.VAPID_PUBLIC_KEY,
@@ -79,7 +84,9 @@ export default {
 
               await Promise.allSettled(
                 subscriptions.map((sub) =>
-                  webpush.sendNotification(sub.subscription, payload).catch(() => {})
+                  webpush
+                    .sendNotification(sub.subscription, payload)
+                    .catch(() => {})
                 )
               );
               return new Response(JSON.stringify({ success: true }), {
@@ -88,10 +95,13 @@ export default {
             }
           }
         }
-        return new Response(JSON.stringify({ error: "No subscriptions found" }), {
-          status: 404,
-          headers: { "Content-Type": "application/json" },
-        });
+        return new Response(
+          JSON.stringify({ error: "No subscriptions found" }),
+          {
+            status: 404,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
       } catch (err) {
         return new Response(JSON.stringify({ error: (err as Error).message }), {
           status: 500,
@@ -165,8 +175,9 @@ export default {
           );
 
           if (subResponse.ok) {
-            const subscriptions = await subResponse.json() as PushSubscriptionRow[];
-            
+            const subscriptions =
+              (await subResponse.json()) as PushSubscriptionRow[];
+
             if (subscriptions.length > 0) {
               if (env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY) {
                 webpush.setVapidDetails(
@@ -181,16 +192,20 @@ export default {
                   icon: "/icon.svg",
                   data: { url: "/inventory?filter=lowStock" },
                   tag: `low-stock-${itemName}`,
-                  requireInteraction: true
+                  requireInteraction: true,
                 });
 
                 // Send to all devices
                 await Promise.allSettled(
-                  subscriptions.map(sub => 
-                    webpush.sendNotification(sub.subscription, payload)
-                      .catch(error => {
+                  subscriptions.map((sub) =>
+                    webpush
+                      .sendNotification(sub.subscription, payload)
+                      .catch((error) => {
                         // If the subscription is no longer valid, we should ideally delete it
-                        if (error.statusCode === 410 || error.statusCode === 404) {
+                        if (
+                          error.statusCode === 410 ||
+                          error.statusCode === 404
+                        ) {
                           fetch(
                             `${env.SUPABASE_URL}/rest/v1/push_subscriptions?id=eq.${sub.id}`,
                             {

@@ -1,6 +1,9 @@
 import React from "react";
 import { Box, Typography, Button, Paper } from "@mui/material";
-import { WifiOff as WifiOffIcon, Refresh as RefreshIcon } from "@mui/icons-material";
+import {
+  WifiOff as WifiOffIcon,
+  Refresh as RefreshIcon,
+} from "@mui/icons-material";
 import { useTranslation } from "../i18n";
 
 const OfflineFallback: React.FC = () => {

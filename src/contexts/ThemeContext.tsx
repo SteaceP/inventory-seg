@@ -11,24 +11,27 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   const [compactView, setCompactView] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
-  const fetchThemeSettings = useCallback(async (uid: string) => {
-    try {
-      const { data: settings, error } = await supabase
-        .from("user_settings")
-        .select("dark_mode, compact_view")
-        .eq("user_id", uid)
-        .single();
+  const fetchThemeSettings = useCallback(
+    async (uid: string) => {
+      try {
+        const { data: settings, error } = await supabase
+          .from("user_settings")
+          .select("dark_mode, compact_view")
+          .eq("user_id", uid)
+          .single();
 
-      if (error && error.code !== "PGRST116") throw error;
+        if (error && error.code !== "PGRST116") throw error;
 
-      if (settings) {
-        setDarkMode(settings.dark_mode ?? true);
-        setCompactView(settings.compact_view ?? false);
+        if (settings) {
+          setDarkMode(settings.dark_mode ?? true);
+          setCompactView(settings.compact_view ?? false);
+        }
+      } catch (err: unknown) {
+        showError("Failed to fetch theme settings: " + (err as Error).message);
       }
-    } catch (err: unknown) {
-      showError("Failed to fetch theme settings: " + (err as Error).message);
-    }
-  }, [showError]);
+    },
+    [showError]
+  );
 
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
@@ -39,7 +42,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     };
     navigator.serviceWorker.addEventListener("message", handleMessage);
-    return () => navigator.serviceWorker.removeEventListener("message", handleMessage);
+    return () =>
+      navigator.serviceWorker.removeEventListener("message", handleMessage);
   }, [showError]);
 
   useEffect(() => {
