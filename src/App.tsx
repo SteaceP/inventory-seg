@@ -183,8 +183,6 @@ const AppContent = () => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession);
-      // Ensure loading is false if auth state changes before getSession returns
-      setLoading(false);
     });
 
     return () => {

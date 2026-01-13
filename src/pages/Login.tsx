@@ -14,7 +14,13 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import { useTranslation } from "../i18n";
 import { supabase } from "../supabaseClient";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+
+interface LocationState {
+  from?: {
+    pathname: string;
+  };
+}
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -23,6 +29,7 @@ const Login: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -39,7 +46,8 @@ const Login: React.FC = () => {
       setError(error.message);
       setLoading(false);
     } else {
-      void navigate("/");
+      const from = (location.state as LocationState)?.from?.pathname || "/";
+      void navigate(from, { replace: true });
     }
   };
 
