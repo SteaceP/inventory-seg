@@ -22,6 +22,13 @@ import type { Session } from "@supabase/supabase-js";
 import { supabase } from "./supabaseClient";
 import Layout from "./components/Layout";
 import "./App.css";
+import { useLocation } from "react-router-dom";
+
+interface LocationState {
+  from?: {
+    pathname: string;
+  };
+}
 
 // Lazy load pages for better bundle size
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -154,27 +161,30 @@ const AppContent = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const { darkMode, compactView } = useThemeContext();
   const { t } = useTranslation();
+  const location = useLocation();
 
   useEffect(() => {
-    const handleOnline = () => {
-      setIsOnline(true);
-    };
-    const handleOffline = () => {
-      setIsOnline(false);
-    };
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
 
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
 
-    void supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-    });
+    // Get initial session
+    void supabase.auth
+      .getSession()
+      .then(({ data: { session: initialSession } }) => {
+        setSession(initialSession);
+        setLoading(false);
+      });
 
+    // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+    } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      setSession(newSession);
+      // Ensure loading is false if auth state changes before getSession returns
+      setLoading(false);
     });
 
     return () => {
@@ -250,35 +260,42 @@ const AppContent = () => {
           {t("common.offlineMessage")}
         </Box>
       )}
-      <Router>
-        <Suspense fallback={<PageLoader />}>
-          <Routes>
-            <Route path="/offline" element={<OfflineFallback />} />
-            <Route
-              path="/login"
-              element={!session ? <Login /> : <Navigate to="/" />}
-            />
-            <Route
-              path="/"
-              element={
-                session ? (
-                  <InventoryProvider>
-                    <Layout />
-                  </InventoryProvider>
-                ) : (
-                  <Navigate to="/login" />
-                )
-              }
-            >
-              <Route index element={<Dashboard />} />
-              <Route path="inventory" element={<Inventory />} />
-              <Route path="appliances" element={<Appliances />} />
-              <Route path="settings" element={<Settings />} />
-              <Route path="*" element={<Navigate to="/" />} />
-            </Route>
-          </Routes>
-        </Suspense>
-      </Router>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/offline" element={<OfflineFallback />} />
+          <Route
+            path="/login"
+            element={
+              !session ? (
+                <Login />
+              ) : (
+                <Navigate
+                  to={(location.state as LocationState)?.from?.pathname || "/"}
+                  replace
+                />
+              )
+            }
+          />
+          <Route
+            path="/"
+            element={
+              session ? (
+                <InventoryProvider>
+                  <Layout />
+                </InventoryProvider>
+              ) : (
+                <Navigate to="/login" state={{ from: location }} replace />
+              )
+            }
+          >
+            <Route index element={<Dashboard />} />
+            <Route path="inventory" element={<Inventory />} />
+            <Route path="appliances" element={<Appliances />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
+        </Routes>
+      </Suspense>
     </ThemeProvider>
   );
 };
@@ -288,7 +305,9 @@ function App() {
     <AlertProvider>
       <UserProvider>
         <CustomThemeProvider>
-          <AppContent />
+          <Router>
+            <AppContent />
+          </Router>
         </CustomThemeProvider>
       </UserProvider>
     </AlertProvider>
