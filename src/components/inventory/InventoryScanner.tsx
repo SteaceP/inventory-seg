@@ -74,7 +74,7 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
         scanner.stop().catch(() => {});
       }
     }
-  }, [open, onClose, onError]);
+  }, [open, onClose, onError, t]);
 
   return (
     <Dialog
