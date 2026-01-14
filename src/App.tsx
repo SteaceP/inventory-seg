@@ -155,6 +155,7 @@ const getTheme = (mode: "light" | "dark", compact: boolean) =>
 import OfflineFallback from "./components/OfflineFallback";
 import { useTranslation } from "./i18n";
 import ErrorBoundary from "./components/ErrorBoundary";
+import RealtimeNotifications from "./components/RealtimeNotifications";
 
 const AppContent = () => {
   const [session, setSession] = useState<Session | null>(null);
@@ -300,6 +301,7 @@ const AppContent = () => {
           )}
         </Routes>
       </Suspense>
+      <RealtimeNotifications />
     </ThemeProvider>
   );
 };

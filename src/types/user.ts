@@ -11,6 +11,7 @@ export interface UserContextType {
   role: string;
   language: Language;
   lowStockThreshold: number;
+  userId: string | null;
   setUserProfile: (profile: Partial<UserProfile>) => void;
   setLanguage: (lang: Language) => void | Promise<void>;
   setLowStockThreshold: (threshold: number) => void | Promise<void>;

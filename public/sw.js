@@ -17,6 +17,23 @@ const SUPABASE_API_URL_SIGNATURES = [
 ];
 const NO_CACHE_API_SIGNATURES = ["/rest/v1/user_settings"];
 
+// Helper function for network-first strategy
+function networkFirst(cacheName, request) {
+  return fetch(request)
+    .then((networkResponse) => {
+      if (networkResponse.ok) {
+        const responseClone = networkResponse.clone();
+        caches.open(cacheName).then((cache) => {
+          cache.put(request, responseClone);
+        });
+      }
+      return networkResponse;
+    })
+    .catch(() => {
+      return caches.match(request);
+    });
+}
+
 // Helper function for stale-while-revalidate strategy
 function staleWhileRevalidate(cacheName, request) {
   return caches.open(cacheName).then((cache) => {
@@ -113,11 +130,12 @@ self.addEventListener("fetch", (event) => {
   if (url.pathname.startsWith(SUPABASE_IMAGE_URL_SIGNATURE)) {
     event.respondWith(staleWhileRevalidate(DYNAMIC_CACHE_NAME, event.request));
   }
-  // Strategy: Stale-While-Revalidate for API calls
+  // Strategy: Network First for API calls (ensures Realtime updates are fresh)
   else if (
-    SUPABASE_API_URL_SIGNATURES.some((sig) => url.pathname.startsWith(sig))
+    SUPABASE_API_URL_SIGNATURES.some((sig) => url.pathname.startsWith(sig)) ||
+    url.pathname.includes("/rest/v1/inventory_activity")
   ) {
-    event.respondWith(staleWhileRevalidate(API_CACHE_NAME, event.request));
+    event.respondWith(networkFirst(API_CACHE_NAME, event.request));
   }
   // Strategy: Cache First for App Shell assets
   else if (ASSETS_TO_CACHE.includes(url.pathname) || url.pathname === "/") {
