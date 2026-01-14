@@ -41,6 +41,9 @@ const en = {
   "errors.addItem": "Failed to add item. Please try again.",
   "errors.saveItem": "An error occurred. Please try again.",
   "errors.deleteItem": "Failed to delete item. Please try again.",
+  "errors.addCategory": "Failed to add category.",
+  "errors.updateCategory": "Failed to update category threshold.",
+  "errors.deleteCategory": "Failed to delete category.",
 
   // Login
   "login.title": "Sign in",
@@ -67,6 +70,8 @@ const en = {
   "common.save": "Save",
   "common.saving": "Saving...",
   "common.selectAll": "Select All",
+  "common.add": "Add",
+  "common.close": "Close",
   "common.offline": "You're Offline",
   "common.offlineMessage": "Please check your internet connection.",
   "common.retry": "Retry",
@@ -130,6 +135,8 @@ const en = {
   "inventory.generateSku": "Generate random SKU",
   "inventory.cancel": "Cancel",
   "inventory.save": "Save",
+  "inventory.categories.manage": "Manage Categories",
+  "inventory.categories.newName": "New category name",
   "inventory.searchPlaceholder": "Search items by name, SKU or category...",
   "inventory.search": "Search...",
   "inventory.current": "Current:",

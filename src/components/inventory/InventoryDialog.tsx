@@ -12,6 +12,7 @@ import {
   Tooltip,
   Typography,
   CircularProgress,
+  Autocomplete,
 } from "@mui/material";
 import {
   Refresh as RefreshIcon,
@@ -209,20 +210,33 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
               gap: 2,
             }}
           >
-            <TextField
-              label={t("inventory.category")}
-              fullWidth
+            <Autocomplete
+              freeSolo
+              options={categories.map((c) => c.name)}
               value={formData.category || ""}
-              onChange={(e) =>
-                onFormDataChange({ ...formData, category: e.target.value })
-              }
-              disabled={!isAdmin}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "divider" },
-                },
+              onChange={(_, newValue) => {
+                onFormDataChange({ ...formData, category: newValue || "" });
               }}
-              InputLabelProps={{ sx: { color: "text.secondary" } }}
+              onInputChange={(_, newInputValue) => {
+                onFormDataChange({
+                  ...formData,
+                  category: newInputValue || "",
+                });
+              }}
+              disabled={!isAdmin}
+              fullWidth
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label={t("inventory.category")}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": { borderColor: "divider" },
+                    },
+                  }}
+                  InputLabelProps={{ sx: { color: "text.secondary" } }}
+                />
+              )}
             />
             <TextField
               label={t("inventory.stockLabel")}

@@ -14,6 +14,7 @@ import {
   Warning as WarningIcon,
   Search as SearchIcon,
   Clear as ClearIcon,
+  Category as CategoryIcon,
 } from "@mui/icons-material";
 import { useTranslation } from "../../i18n";
 
@@ -27,6 +28,7 @@ interface InventoryHeaderProps {
   onToggleLowStock: () => void;
   searchQuery: string;
   onSearchChange: (value: string) => void;
+  onManageCategories?: () => void;
 }
 
 const InventoryHeader: React.FC<InventoryHeaderProps> = ({
@@ -39,6 +41,7 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
   onToggleLowStock,
   searchQuery,
   onSearchChange,
+  onManageCategories,
 }) => {
   const { t } = useTranslation();
   return (
@@ -151,6 +154,21 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
         >
           {t("inventory.scan")}
         </Button>
+        {onManageCategories && (
+          <Button
+            variant="outlined"
+            startIcon={<CategoryIcon />}
+            fullWidth={isMobile}
+            onClick={onManageCategories}
+            sx={{
+              border: "1px solid",
+              borderColor: "divider",
+              color: "text.primary",
+            }}
+          >
+            {isMobile ? "" : t("inventory.categories.manage") || "Categories"}
+          </Button>
+        )}
         {onAdd && (
           <Button
             variant="contained"

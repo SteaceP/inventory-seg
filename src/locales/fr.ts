@@ -46,6 +46,9 @@ const fr = {
   "errors.saveItem": "Une erreur est survenue. Veuillez réessayer.",
   "errors.deleteItem":
     "La suppression de l'article a échoué. Veuillez réessayer.",
+  "errors.addCategory": "L'ajout de la catégorie a échoué.",
+  "errors.updateCategory": "La mise à jour du seuil a échoué.",
+  "errors.deleteCategory": "La suppression de la catégorie a échoué.",
   "inventory.image.clickOrDrop": "Cliquez ou glissez une image ici",
   "inventory.image.noImage": "Pas d'image",
   "inventory.nameLabel": "Nom de l'article",
@@ -55,6 +58,8 @@ const fr = {
   "inventory.generateSku": "Générer un SKU aléatoire",
   "inventory.cancel": "Annuler",
   "inventory.save": "Enregistrer",
+  "inventory.categories.manage": "Gérer les catégories",
+  "inventory.categories.newName": "Nouvelle catégorie",
   "inventory.searchPlaceholder":
     "Rechercher des articles par nom, SKU ou catégorie...",
   "inventory.search": "Rechercher...",
@@ -89,6 +94,8 @@ const fr = {
   "common.save": "Enregistrer",
   "common.saving": "Enregistrement...",
   "common.selectAll": "Tout sélectionner",
+  "common.add": "Ajouter",
+  "common.close": "Fermer",
   "common.offline": "Vous êtes hors ligne",
   "common.offlineMessage": "Veuillez vérifier votre connexion internet.",
   "common.retry": "Réessayer",

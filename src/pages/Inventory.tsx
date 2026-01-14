@@ -22,6 +22,7 @@ import InventoryDialog from "../components/inventory/InventoryDialog";
 import InventoryScanner from "../components/inventory/InventoryScanner";
 import StockAdjustmentDialog from "../components/inventory/StockAdjustmentDialog";
 import ConfirmDialog from "../components/ConfirmDialog";
+import CategoryManagementDialog from "../components/inventory/CategoryManagementDialog";
 
 const Inventory: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -29,10 +30,12 @@ const Inventory: React.FC = () => {
     items,
     loading: inventoryLoading,
     refreshInventory,
+    updateCategoryThreshold,
   } = useInventoryContext();
   const [actionLoading, setActionLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [stockDialogOpen, setStockDialogOpen] = useState(false);
+  const [categoriesDialogOpen, setCategoriesDialogOpen] = useState(false);
   const [scanOpen, setScanOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
   const [formData, setFormData] = useState<Partial<InventoryItem>>({
@@ -300,6 +303,18 @@ const Inventory: React.FC = () => {
       }
 
       void checkLowStockAndNotify(sanitizedData);
+
+      // Ensure category exists in inventory_categories if it's new
+      if (role === "admin" && sanitizedData.category) {
+        const categoryExists = categories.some(
+          (c) => c.name === sanitizedData.category
+        );
+        if (!categoryExists) {
+          // This will upsert with null threshold, just registering the name
+          void updateCategoryThreshold(sanitizedData.category, null);
+        }
+      }
+
       handleClose();
       void refreshInventory();
     } catch (err: unknown) {
@@ -429,6 +444,9 @@ const Inventory: React.FC = () => {
         onToggleLowStock={toggleLowStockFilter}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        onManageCategories={
+          role === "admin" ? () => setCategoriesDialogOpen(true) : undefined
+        }
       />
 
       <InventoryCategorizedGrid
@@ -480,6 +498,11 @@ const Inventory: React.FC = () => {
       />
 
       <BarcodePrinter items={items.filter((i) => selectedItems.has(i.id))} />
+
+      <CategoryManagementDialog
+        open={categoriesDialogOpen}
+        onClose={() => setCategoriesDialogOpen(false)}
+      />
     </Box>
   );
 };
