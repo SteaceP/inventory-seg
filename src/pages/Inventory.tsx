@@ -190,6 +190,7 @@ const Inventory: React.FC = () => {
 
   const handleStockSave = async (itemId: string, newStock: number) => {
     try {
+      setActionLoading(true);
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -224,6 +225,8 @@ const Inventory: React.FC = () => {
       showError(
         t("inventory.updateStockError") + ": " + (err as Error).message
       );
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -242,6 +245,7 @@ const Inventory: React.FC = () => {
     }
 
     try {
+      setActionLoading(true);
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -300,6 +304,8 @@ const Inventory: React.FC = () => {
       void refreshInventory();
     } catch (err: unknown) {
       showError(t("inventory.saveItemError") + ": " + (err as Error).message);
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -315,6 +321,7 @@ const Inventory: React.FC = () => {
     setItemToDelete(null);
 
     try {
+      setActionLoading(true);
       // Get item name before deleting
       const item = items.find((i) => i.id === id);
       const {
@@ -339,6 +346,8 @@ const Inventory: React.FC = () => {
       }
     } catch (err: unknown) {
       showError(t("inventory.deleteItemError") + ": " + (err as Error).message);
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -393,7 +402,7 @@ const Inventory: React.FC = () => {
     return matchesSearch;
   });
 
-  if (inventoryLoading || actionLoading) {
+  if (inventoryLoading) {
     return (
       <Box
         sx={{
@@ -451,6 +460,7 @@ const Inventory: React.FC = () => {
         onImageUpload={(file) => void handleImageUpload(file)}
         getBarcodeFormat={getBarcodeFormat}
         role={role}
+        loading={actionLoading}
       />
 
       <StockAdjustmentDialog
@@ -459,6 +469,7 @@ const Inventory: React.FC = () => {
         isMobile={isMobile}
         onClose={() => setStockDialogOpen(false)}
         onSave={(itemId, newStock) => void handleStockSave(itemId, newStock)}
+        loading={actionLoading}
       />
 
       <InventoryScanner

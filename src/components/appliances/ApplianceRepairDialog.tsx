@@ -10,6 +10,7 @@ import {
   Typography,
   IconButton,
   Divider,
+  CircularProgress,
 } from "@mui/material";
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { useTranslation } from "../../i18n";
@@ -20,6 +21,7 @@ interface ApplianceRepairDialogProps {
   onClose: () => void;
   onSave: (repair: Partial<Repair>) => void;
   appliance: Appliance | null;
+  loading?: boolean;
 }
 
 const ApplianceRepairDialog: React.FC<ApplianceRepairDialogProps> = ({
@@ -27,6 +29,7 @@ const ApplianceRepairDialog: React.FC<ApplianceRepairDialogProps> = ({
   onClose,
   onSave,
   appliance,
+  loading = false,
 }) => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState<Partial<Repair>>({
@@ -173,11 +176,16 @@ const ApplianceRepairDialog: React.FC<ApplianceRepairDialogProps> = ({
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>{t("appliances.cancel")}</Button>
+        <Button onClick={onClose} disabled={loading}>
+          {t("appliances.cancel")}
+        </Button>
         <Button
           onClick={handleSave}
           variant="contained"
-          disabled={!formData.description}
+          disabled={!formData.description || loading}
+          startIcon={
+            loading ? <CircularProgress size={20} color="inherit" /> : null
+          }
         >
           {t("appliances.save")}
         </Button>

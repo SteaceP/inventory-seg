@@ -10,6 +10,7 @@ import {
   Typography,
   IconButton,
   InputAdornment,
+  CircularProgress,
 } from "@mui/material";
 import { PhotoCamera, Autorenew as AutoRenewIcon } from "@mui/icons-material";
 import { useTranslation } from "../../i18n";
@@ -28,6 +29,7 @@ interface ApplianceDialogProps {
   onClose: () => void;
   onSave: (appliance: Partial<Appliance>) => void;
   initialData?: Partial<Appliance>;
+  loading?: boolean;
 }
 
 const ApplianceDialog: React.FC<ApplianceDialogProps> = ({
@@ -35,6 +37,7 @@ const ApplianceDialog: React.FC<ApplianceDialogProps> = ({
   onClose,
   onSave,
   initialData = {},
+  loading = false,
 }) => {
   const { t } = useTranslation();
   const { showError } = useAlert();
@@ -193,8 +196,17 @@ const ApplianceDialog: React.FC<ApplianceDialogProps> = ({
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>{t("appliances.cancel")}</Button>
-        <Button onClick={handleSave} variant="contained">
+        <Button onClick={onClose} disabled={loading}>
+          {t("appliances.cancel")}
+        </Button>
+        <Button
+          onClick={handleSave}
+          variant="contained"
+          disabled={loading || uploading}
+          startIcon={
+            loading ? <CircularProgress size={20} color="inherit" /> : null
+          }
+        >
           {t("appliances.add")}
         </Button>
       </DialogActions>

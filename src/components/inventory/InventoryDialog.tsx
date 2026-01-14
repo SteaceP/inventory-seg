@@ -11,6 +11,7 @@ import {
   IconButton,
   Tooltip,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import {
   Refresh as RefreshIcon,
@@ -36,6 +37,7 @@ interface InventoryDialogProps {
   onImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
   getBarcodeFormat: (sku: string) => BarcodeProps["format"];
   role?: string;
+  loading?: boolean;
 }
 
 const InventoryDialog: React.FC<InventoryDialogProps> = ({
@@ -50,6 +52,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
   onImageUpload,
   getBarcodeFormat,
   role = "user",
+  loading = false,
 }) => {
   const isAdmin = role === "admin";
   const { t } = useTranslation();
@@ -116,10 +119,11 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                     height: "100%",
                     objectFit: "cover",
                     borderRadius: "12px",
+                    opacity: loading ? 0.5 : 1,
                   }}
                 />
 
-                {isAdmin && (
+                {isAdmin && !loading && (
                   <IconButton
                     sx={{
                       position: "absolute",
@@ -144,6 +148,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                     fontSize: 40,
                     mb: 1,
                     color: isAdmin ? "primary.main" : "text.disabled",
+                    opacity: loading ? 0.5 : 1,
                   }}
                 />
                 <Typography variant="body2">
@@ -153,13 +158,30 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                 </Typography>
               </Box>
             )}
+
+            {loading && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  inset: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  bgcolor: "rgba(0,0,0,0.1)",
+                  zIndex: 1,
+                }}
+              >
+                <CircularProgress size={40} />
+              </Box>
+            )}
+
             <input
               type="file"
               id="image-upload"
               hidden
               accept="image/*"
               onChange={onImageUpload}
-              disabled={!isAdmin}
+              disabled={!isAdmin || loading}
             />
           </Box>
 
@@ -323,7 +345,13 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
         <Button onClick={onClose} sx={{ color: "text.secondary" }}>
           {t("inventory.cancel")}
         </Button>
-        <Button onClick={onSave} variant="contained" color="primary">
+        <Button
+          onClick={onSave}
+          variant="contained"
+          color="primary"
+          disabled={loading}
+          startIcon={loading ? <CircularProgress size={20} /> : null}
+        >
           {t("inventory.save")}
         </Button>
       </DialogActions>

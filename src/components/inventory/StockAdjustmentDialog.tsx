@@ -8,6 +8,7 @@ import {
   Grid,
   Typography,
   IconButton,
+  CircularProgress,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -24,6 +25,7 @@ interface StockAdjustmentDialogProps {
   isMobile: boolean;
   onClose: () => void;
   onSave: (itemId: string, newStock: number) => void;
+  loading?: boolean;
 }
 
 type Mode = "menu" | "add" | "remove";
@@ -34,6 +36,7 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
   isMobile,
   onClose,
   onSave,
+  loading = false,
 }) => {
   const [mode, setMode] = useState<Mode>("menu");
   const [inputValue, setInputValue] = useState("");
@@ -229,7 +232,12 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
                   fullWidth
                   onClick={handleConfirm}
                   color={mode === "add" ? "success" : "error"}
-                  disabled={!inputValue}
+                  disabled={!inputValue || loading}
+                  startIcon={
+                    loading ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : null
+                  }
                   sx={{
                     height: 60,
                     fontSize: "1.2rem",

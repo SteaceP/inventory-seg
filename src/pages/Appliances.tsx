@@ -37,6 +37,7 @@ const Appliances: React.FC = () => {
   );
   const [repairs, setRepairs] = useState<Repair[]>([]);
   const [loadingRepairs, setLoadingRepairs] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
   const { showError } = useAlert();
 
   // Modal states
@@ -86,23 +87,30 @@ const Appliances: React.FC = () => {
   };
 
   const handleCreateAppliance = async (newAppliance: Partial<Appliance>) => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      showError(t("appliances.userNotLoggedIn"));
-      return;
-    }
+    try {
+      setActionLoading(true);
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        showError(t("appliances.userNotLoggedIn"));
+        return;
+      }
 
-    const { error } = await supabase
-      .from("appliances")
-      .insert([{ ...newAppliance, user_id: user.id }]);
+      const { error } = await supabase
+        .from("appliances")
+        .insert([{ ...newAppliance, user_id: user.id }]);
 
-    if (error) {
-      showError(t("appliances.errorCreating") + ": " + error.message);
-    } else {
-      setOpenAddAppliance(false);
-      void fetchAppliances();
+      if (error) {
+        showError(t("appliances.errorCreating") + ": " + error.message);
+      } else {
+        setOpenAddAppliance(false);
+        void fetchAppliances();
+      }
+    } catch (err: unknown) {
+      showError(t("appliances.errorCreating") + ": " + (err as Error).message);
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -112,15 +120,25 @@ const Appliances: React.FC = () => {
       return;
     }
 
-    const { error } = await supabase
-      .from("repairs")
-      .insert([{ ...newRepair, appliance_id: selectedAppliance.id }]);
+    try {
+      setActionLoading(true);
 
-    if (error) {
-      showError(t("appliances.errorCreatingRepair") + ": " + error.message);
-    } else {
-      setOpenAddRepair(false);
-      void fetchRepairs(selectedAppliance.id);
+      const { error } = await supabase
+        .from("repairs")
+        .insert([{ ...newRepair, appliance_id: selectedAppliance.id }]);
+
+      if (error) {
+        showError(t("appliances.errorCreatingRepair") + ": " + error.message);
+      } else {
+        setOpenAddRepair(false);
+        void fetchRepairs(selectedAppliance.id);
+      }
+    } catch (err: unknown) {
+      showError(
+        t("appliances.errorCreatingRepair") + ": " + (err as Error).message
+      );
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -135,11 +153,18 @@ const Appliances: React.FC = () => {
     setDeleteConfirmOpen(false);
     setApplianceToDelete(null);
 
-    const { error } = await supabase.from("appliances").delete().eq("id", id);
-    if (error) {
-      showError(t("appliances.errorDeleting") + ": " + error.message);
-    } else {
-      void fetchAppliances();
+    try {
+      setActionLoading(true);
+      const { error } = await supabase.from("appliances").delete().eq("id", id);
+      if (error) {
+        showError(t("appliances.errorDeleting") + ": " + error.message);
+      } else {
+        void fetchAppliances();
+      }
+    } catch (err: unknown) {
+      showError(t("appliances.errorDeleting") + ": " + (err as Error).message);
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -252,6 +277,7 @@ const Appliances: React.FC = () => {
         open={openAddAppliance}
         onClose={() => setOpenAddAppliance(false)}
         onSave={(newApp) => void handleCreateAppliance(newApp)}
+        loading={actionLoading}
       />
 
       <ApplianceRepairDialog
@@ -259,6 +285,7 @@ const Appliances: React.FC = () => {
         onClose={() => setOpenAddRepair(false)}
         onSave={(newRepair) => void handleCreateRepair(newRepair)}
         appliance={selectedAppliance}
+        loading={actionLoading}
       />
 
       <ApplianceHistoryDialog
