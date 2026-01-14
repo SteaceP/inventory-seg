@@ -10,6 +10,12 @@ import { useInventoryContext } from "../contexts/useInventoryContext";
 import { useAlert } from "../contexts/useAlertContext";
 import BarcodePrinter from "../components/BarcodePrinter";
 import type { InventoryItem } from "../types/inventory";
+import {
+  validateImageFile,
+  generateSecureFileName,
+  generateSecureId,
+  getExtensionFromMimeType,
+} from "../utils/crypto";
 import InventoryHeader from "../components/inventory/InventoryHeader";
 import InventoryCategorizedGrid from "../components/inventory/InventoryCategorizedGrid";
 import InventoryDialog from "../components/inventory/InventoryDialog";
@@ -155,8 +161,13 @@ const Inventory: React.FC = () => {
 
     try {
       setActionLoading(true);
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${Math.random()}.${fileExt}`;
+
+      // Validate file type and size
+      validateImageFile(file);
+
+      // Get proper extension from MIME type
+      const ext = getExtensionFromMimeType(file.type);
+      const fileName = generateSecureFileName(ext);
       const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage
@@ -332,8 +343,8 @@ const Inventory: React.FC = () => {
   };
 
   const generateSKU = () => {
-    const random = Math.floor(10000000 + Math.random() * 90000000);
-    setFormData({ ...formData, sku: random.toString() });
+    const sku = generateSecureId();
+    setFormData({ ...formData, sku });
   };
 
   const handleScanSuccess = (decodedText: string) => {

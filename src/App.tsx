@@ -154,6 +154,7 @@ const getTheme = (mode: "light" | "dark", compact: boolean) =>
 
 import OfflineFallback from "./components/OfflineFallback";
 import { useTranslation } from "./i18n";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 const AppContent = () => {
   const [session, setSession] = useState<Session | null>(null);
@@ -305,15 +306,17 @@ const AppContent = () => {
 
 function App() {
   return (
-    <AlertProvider>
-      <UserProvider>
-        <CustomThemeProvider>
-          <Router>
-            <AppContent />
-          </Router>
-        </CustomThemeProvider>
-      </UserProvider>
-    </AlertProvider>
+    <ErrorBoundary>
+      <AlertProvider>
+        <UserProvider>
+          <CustomThemeProvider>
+            <Router>
+              <AppContent />
+            </Router>
+          </CustomThemeProvider>
+        </UserProvider>
+      </AlertProvider>
+    </ErrorBoundary>
   );
 }
 

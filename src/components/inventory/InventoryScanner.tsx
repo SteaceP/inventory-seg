@@ -58,9 +58,7 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
               () => {}
             );
           } catch {
-            onError(
-              "Impossible de démarrer la caméra. Veuillez vérifier les permissions."
-            );
+            onError(t("inventory.scanner.cameraError"));
             onClose();
           }
         })();

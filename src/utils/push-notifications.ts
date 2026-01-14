@@ -1,4 +1,5 @@
 import { supabase } from "../supabaseClient";
+import { getDeviceInfo } from "./crypto";
 
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY as string;
 
@@ -45,7 +46,7 @@ export async function subscribeToPush() {
       {
         user_id: user.id,
         subscription: subscription.toJSON(),
-        device_info: `${navigator.platform} - ${navigator.userAgent.split(")")[0].split("(")[1]}`,
+        device_info: getDeviceInfo(),
       },
       { onConflict: "user_id, subscription" }
     );

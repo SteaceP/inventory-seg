@@ -25,6 +25,11 @@ import {
   unsubscribeFromPush,
 } from "../utils/push-notifications";
 import type { Language } from "../types/user";
+import {
+  validateImageFile,
+  generateSecureFileName,
+  getExtensionFromMimeType,
+} from "../utils/crypto";
 
 const Settings: React.FC = () => {
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -112,8 +117,12 @@ const Settings: React.FC = () => {
       } = await supabase.auth.getUser();
       if (!user) throw new Error("No user found");
 
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      // Validate file type and size
+      validateImageFile(file);
+
+      // Get proper extension from MIME type
+      const ext = getExtensionFromMimeType(file.type);
+      const fileName = generateSecureFileName(ext);
       const filePath = `avatars/${fileName}`;
 
       const { error: uploadError } = await supabase.storage

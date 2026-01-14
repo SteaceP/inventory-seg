@@ -48,8 +48,10 @@ const ar = {
   "inventory.search": "يبحث...",
   "inventory.current": "حاضِر:",
   "inventory.back": "عودة",
-  "inventory.scanner.title": "مسح الرمز الشريطي",
-  "inventory.scanner.instructions": "محاذاة الباركود داخل الإطار",
+  "inventory.scanner.title": "مسح الباركود",
+  "inventory.scanner.instructions": "ضع الباركود داخل الإطار",
+  "inventory.scanner.cameraError":
+    "تعذر تشغيل الكاميرا. يرجى التحقق من أذونات الكاميرا.",
   "table.image": "صورة",
   "table.name": "اسم",
   "table.category": "فئة",

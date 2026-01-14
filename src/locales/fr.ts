@@ -61,7 +61,9 @@ const fr = {
   "inventory.current": "Actuel:",
   "inventory.back": "Retour",
   "inventory.scanner.title": "Scanner le code-barres",
-  "inventory.scanner.instructions": "Alignez le code-barres dans le cadre",
+  "inventory.scanner.instructions": "Positionnez le code-barres dans le cadre",
+  "inventory.scanner.cameraError":
+    "Impossible de démarrer la caméra. Veuillez vérifier les permissions.",
   "table.image": "Image",
   "table.name": "Nom",
   "table.category": "Catégorie",

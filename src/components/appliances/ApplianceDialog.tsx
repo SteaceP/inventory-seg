@@ -16,6 +16,12 @@ import { useTranslation } from "../../i18n";
 import type { Appliance } from "../../types/appliances";
 import { supabase } from "../../supabaseClient";
 import { useAlert } from "../../contexts/useAlertContext";
+import {
+  validateImageFile,
+  generateSecureFileName,
+  generateSecureId,
+  getExtensionFromMimeType,
+} from "../../utils/crypto";
 
 interface ApplianceDialogProps {
   open: boolean;
@@ -40,33 +46,40 @@ const ApplianceDialog: React.FC<ApplianceDialogProps> = ({
   ) => {
     if (!event.target.files || event.target.files.length === 0) return;
     const file = event.target.files[0];
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = `${fileName}`;
 
-    setUploading(true);
-    const { error: uploadError } = await supabase.storage
-      .from("appliance-images")
-      .upload(filePath, file);
+    try {
+      setUploading(true);
 
-    if (uploadError) {
+      // Validate file type and size
+      validateImageFile(file);
+
+      // Get proper extension from MIME type
+      const ext = getExtensionFromMimeType(file.type);
+      const fileName = generateSecureFileName(ext);
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("appliance-images")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("appliance-images").getPublicUrl(filePath);
+
+      setFormData({ ...formData, photo_url: publicUrl });
+    } catch (err: unknown) {
       showError(
-        t("appliances.errorUploadingImage") + ": " + uploadError.message
+        t("appliances.errorUploadingImage") + ": " + (err as Error).message
       );
+    } finally {
       setUploading(false);
-      return;
     }
-
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from("appliance-images").getPublicUrl(filePath);
-
-    setFormData({ ...formData, photo_url: publicUrl });
-    setUploading(false);
   };
 
   const generateSKU = () => {
-    const sku = `APP-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    const sku = generateSecureId("APP");
     setFormData({ ...formData, sku });
   };
 

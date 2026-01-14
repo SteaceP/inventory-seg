@@ -134,8 +134,10 @@ const en = {
   "inventory.search": "Search...",
   "inventory.current": "Current:",
   "inventory.back": "Back",
-  "inventory.scanner.title": "Scan barcode",
-  "inventory.scanner.instructions": "Align the barcode inside the frame",
+  "inventory.scanner.title": "Scan Barcode",
+  "inventory.scanner.instructions": "Position the barcode within the frame",
+  "inventory.scanner.cameraError":
+    "Unable to start camera. Please check camera permissions.",
   "table.image": "Image",
   "table.name": "Name",
   "table.category": "Category",
