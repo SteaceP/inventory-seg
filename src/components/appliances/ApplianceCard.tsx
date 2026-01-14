@@ -87,10 +87,17 @@ const ApplianceCard: React.FC<ApplianceCardProps> = ({
       {appliance.photo_url && (
         <CardMedia
           component="img"
-          height={compactView ? 100 : 140}
           image={appliance.photo_url}
           alt={appliance.name}
-          sx={{ objectFit: "cover", display: "block", width: "100%" }}
+          sx={{
+            objectFit: "cover",
+            display: "block",
+            width: "100%",
+            height: {
+              xs: compactView ? 140 : 200,
+              sm: compactView ? 100 : 140,
+            },
+          }}
         />
       )}
       <CardContent sx={{ p: compactView ? 1.5 : 2, flexGrow: 1 }}>

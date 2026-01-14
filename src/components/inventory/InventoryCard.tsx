@@ -91,7 +91,10 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
           <Box
             sx={{
               width: "100%",
-              height: compactView ? 100 : 160,
+              height: {
+                xs: compactView ? 140 : 240,
+                sm: compactView ? 100 : 160,
+              },
               overflow: "hidden",
               bgcolor: alpha(theme.palette.primary.main, 0.05),
               flexShrink: 0,
@@ -113,7 +116,10 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
           <Box
             sx={{
               width: "100%",
-              height: compactView ? 60 : 100,
+              height: {
+                xs: compactView ? 80 : 160,
+                sm: compactView ? 60 : 100,
+              },
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
