@@ -70,6 +70,7 @@ const ar = {
   "security.passwordTooShort": "يجب أن تكون كلمة المرور 6 أحرف على الأقل.",
   "security.passwordsDoNotMatch": "كلمات المرور غير متطابقة.",
   "common.cancel": "إلغاء",
+  "common.confirm": "تأكيد",
   "common.save": "حفظ",
   "common.saving": "جاري الحفظ...",
   "common.selectAll": "تحديد الكل",

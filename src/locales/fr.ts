@@ -83,6 +83,7 @@ const fr = {
     "Le mot de passe doit faire au moins 6 caractères.",
   "security.passwordsDoNotMatch": "Les mots de passe ne correspondent pas.",
   "common.cancel": "Annuler",
+  "common.confirm": "Confirmer",
   "common.save": "Enregistrer",
   "common.saving": "Enregistrement...",
   "common.selectAll": "Tout sélectionner",

@@ -12,6 +12,7 @@ import { useTranslation } from "../i18n";
 import InventoryScanner from "../components/inventory/InventoryScanner";
 import BarcodePrinter from "../components/BarcodePrinter";
 import { useAlert } from "../contexts/useAlertContext";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 // Components
 import AppliancesHeader from "../components/appliances/AppliancesHeader";
@@ -43,6 +44,10 @@ const Appliances: React.FC = () => {
   const [openAddRepair, setOpenAddRepair] = useState(false);
   const [openRepairsList, setOpenRepairsList] = useState(false);
   const [scanOpen, setScanOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [applianceToDelete, setApplianceToDelete] = useState<string | null>(
+    null
+  );
 
   async function fetchAppliances() {
     setLoading(true);
@@ -119,14 +124,22 @@ const Appliances: React.FC = () => {
     }
   };
 
-  const handleDeleteAppliance = async (id: string) => {
-    if (confirm(t("appliances.deleteConfirm"))) {
-      const { error } = await supabase.from("appliances").delete().eq("id", id);
-      if (error) {
-        showError(t("appliances.errorDeleting") + ": " + error.message);
-      } else {
-        void fetchAppliances();
-      }
+  const handleDeleteClick = (id: string) => {
+    setApplianceToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!applianceToDelete) return;
+    const id = applianceToDelete;
+    setDeleteConfirmOpen(false);
+    setApplianceToDelete(null);
+
+    const { error } = await supabase.from("appliances").delete().eq("id", id);
+    if (error) {
+      showError(t("appliances.errorDeleting") + ": " + error.message);
+    } else {
+      void fetchAppliances();
     }
   };
 
@@ -215,7 +228,7 @@ const Appliances: React.FC = () => {
                   setSelectedAppliance(app);
                   setOpenAddRepair(true);
                 }}
-                onDelete={(id) => void handleDeleteAppliance(id)}
+                onDelete={(id) => handleDeleteClick(id)}
                 onPrint={(id) => {
                   setSelectedItems(new Set([id]));
                   setTimeout(() => handlePrint(), 0);
@@ -227,6 +240,14 @@ const Appliances: React.FC = () => {
       )}
 
       {/* Dialogs */}
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        title={t("appliances.delete") || "Delete Appliance"}
+        content={t("appliances.deleteConfirm")}
+        onConfirm={() => void handleDeleteConfirm()}
+        onCancel={() => setDeleteConfirmOpen(false)}
+      />
+
       <ApplianceDialog
         open={openAddAppliance}
         onClose={() => setOpenAddAppliance(false)}

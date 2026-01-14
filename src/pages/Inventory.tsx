@@ -15,6 +15,7 @@ import InventoryCategorizedGrid from "../components/inventory/InventoryCategoriz
 import InventoryDialog from "../components/inventory/InventoryDialog";
 import InventoryScanner from "../components/inventory/InventoryScanner";
 import StockAdjustmentDialog from "../components/inventory/StockAdjustmentDialog";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 const Inventory: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -43,6 +44,8 @@ const Inventory: React.FC = () => {
   const [isLowStockFilter, setIsLowStockFilter] = useState(
     searchParams.get("filter") === "lowStock"
   );
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const { role, lowStockThreshold: globalThreshold } = useUserContext();
   const { categories } = useInventoryContext();
   const { compactView } = useThemeContext();
@@ -289,39 +292,42 @@ const Inventory: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm(t("inventory.deleteConfirm"))) {
-      try {
-        // Get item name before deleting
-        const item = items.find((i) => i.id === id);
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+  const handleDeleteClick = (id: string) => {
+    setItemToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
 
-        const { error } = await supabase
-          .from("inventory")
-          .delete()
-          .eq("id", id);
-        if (error) {
-          showError(t("errors.deleteItem") + ": " + error.message);
-        } else {
-          // Log the delete activity
-          if (user) {
-            void supabase.from("inventory_activity").insert({
-              inventory_id: id,
-              user_id: user.id,
-              action: "deleted",
-              item_name: item?.name || "Unknown",
-              changes: { id },
-            });
-          }
-          void refreshInventory();
+  const handleDeleteConfirm = async () => {
+    if (!itemToDelete) return;
+    const id = itemToDelete;
+    setDeleteConfirmOpen(false);
+    setItemToDelete(null);
+
+    try {
+      // Get item name before deleting
+      const item = items.find((i) => i.id === id);
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      const { error } = await supabase.from("inventory").delete().eq("id", id);
+      if (error) {
+        showError(t("errors.deleteItem") + ": " + error.message);
+      } else {
+        // Log the delete activity
+        if (user) {
+          void supabase.from("inventory_activity").insert({
+            inventory_id: id,
+            user_id: user.id,
+            action: "deleted",
+            item_name: item?.name || "Unknown",
+            changes: { id },
+          });
         }
-      } catch (err: unknown) {
-        showError(
-          t("inventory.deleteItemError") + ": " + (err as Error).message
-        );
+        void refreshInventory();
       }
+    } catch (err: unknown) {
+      showError(t("inventory.deleteItemError") + ": " + (err as Error).message);
     }
   };
 
@@ -410,8 +416,16 @@ const Inventory: React.FC = () => {
         selectedItems={selectedItems}
         onToggleItem={toggleItem}
         onEdit={handleOpen}
-        onDelete={role === "admin" ? (id) => void handleDelete(id) : undefined}
+        onDelete={role === "admin" ? (id) => handleDeleteClick(id) : undefined}
         compactView={compactView}
+      />
+
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        title={t("inventory.delete") || "Delete Item"}
+        content={t("inventory.deleteConfirm")}
+        onConfirm={() => void handleDeleteConfirm()}
+        onCancel={() => setDeleteConfirmOpen(false)}
       />
 
       <InventoryDialog

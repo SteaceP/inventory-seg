@@ -63,6 +63,7 @@ const en = {
 
   // Common
   "common.cancel": "Cancel",
+  "common.confirm": "Confirm",
   "common.save": "Save",
   "common.saving": "Saving...",
   "common.selectAll": "Select All",
