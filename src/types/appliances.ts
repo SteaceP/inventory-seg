@@ -10,6 +10,7 @@ export interface Appliance {
   notes: string;
   photo_url?: string;
   sku?: string;
+  location?: string;
 }
 
 export interface RepairPart {

@@ -194,6 +194,14 @@ const ApplianceDialog: React.FC<ApplianceDialogProps> = ({
           value={formData.notes || ""}
           onChange={handleChange("notes")}
         />
+        <TextField
+          margin="dense"
+          label={t("appliances.locationLabel")}
+          fullWidth
+          value={formData.location || ""}
+          onChange={handleChange("location")}
+          placeholder={t("appliances.locationPlaceholder")}
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} disabled={loading}>

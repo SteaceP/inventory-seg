@@ -209,6 +209,49 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                   fontSize: compactView ? "0.65rem" : "0.75rem",
                 }}
               />
+              {item.stock_locations && item.stock_locations.length > 0 ? (
+                <Tooltip
+                  title={
+                    <Box>
+                      {item.stock_locations.map((loc) => (
+                        <div key={loc.id || `${loc.location}-${loc.quantity}`}>
+                          {loc.location}: {loc.quantity}
+                        </div>
+                      ))}
+                    </Box>
+                  }
+                  arrow
+                >
+                  <Chip
+                    label={`${item.stock_locations.length} ${t("inventory.locationLabel")}s`}
+                    size="small"
+                    variant="outlined"
+                    sx={{
+                      ml: 1,
+                      borderColor: "divider",
+                      color: "text.secondary",
+                      height: compactView ? 20 : 24,
+                      fontSize: compactView ? "0.65rem" : "0.75rem",
+                      maxWidth: "50%",
+                      cursor: "help",
+                    }}
+                  />
+                </Tooltip>
+              ) : item.location ? (
+                <Chip
+                  label={item.location}
+                  size="small"
+                  variant="outlined"
+                  sx={{
+                    ml: 1,
+                    borderColor: "divider",
+                    color: "text.secondary",
+                    height: compactView ? 20 : 24,
+                    fontSize: compactView ? "0.65rem" : "0.75rem",
+                    maxWidth: "50%",
+                  }}
+                />
+              ) : null}
             </Box>
 
             <Box sx={{ mt: "auto" }}>

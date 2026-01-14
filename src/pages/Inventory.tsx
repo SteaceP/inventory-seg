@@ -239,8 +239,11 @@ const Inventory: React.FC = () => {
       name: formData.name?.trim(),
       category: formData.category?.trim(),
       sku: formData.sku?.trim(),
-      stock: Math.max(0, formData.stock || 0),
     };
+
+    // Extract stock_locations to handle separately
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { stock_locations: _, ...inventoryData } = sanitizedData;
 
     if (!sanitizedData.name) {
       showError(t("inventory.nameRequired"));
@@ -256,7 +259,7 @@ const Inventory: React.FC = () => {
       if (editingItem) {
         const { error } = await supabase
           .from("inventory")
-          .update(sanitizedData)
+          .update(inventoryData)
           .eq("id", editingItem.id);
 
         if (error) {
@@ -264,6 +267,7 @@ const Inventory: React.FC = () => {
           return;
         }
 
+        // Log the update activity
         // Log the update activity
         if (user) {
           await supabase.from("inventory_activity").insert({
@@ -274,10 +278,34 @@ const Inventory: React.FC = () => {
             changes: { ...sanitizedData, old_stock: editingItem.stock },
           });
         }
+
+        // Handle stock locations update
+        if (sanitizedData.stock_locations) {
+          // First delete existing locations (simplest strategy to handle removals)
+          await supabase
+            .from("inventory_stock_locations")
+            .delete()
+            .eq("inventory_id", editingItem.id);
+
+          // Then insert new ones
+          const locationsToInsert = sanitizedData.stock_locations
+            .filter((l) => l.location && l.location.trim() !== "")
+            .map((l) => ({
+              inventory_id: editingItem.id,
+              location: l.location,
+              quantity: l.quantity || 0,
+            }));
+
+          if (locationsToInsert.length > 0) {
+            await supabase
+              .from("inventory_stock_locations")
+              .insert(locationsToInsert);
+          }
+        }
       } else {
         const { data, error } = (await supabase
           .from("inventory")
-          .insert([sanitizedData])
+          .insert([inventoryData])
           .select()
           .single()) as { data: unknown; error: unknown };
 
@@ -291,6 +319,7 @@ const Inventory: React.FC = () => {
         }
 
         // Log the create activity
+        // Log the create activity
         if (user && newItem) {
           void supabase.from("inventory_activity").insert({
             inventory_id: newItem.id,
@@ -299,6 +328,23 @@ const Inventory: React.FC = () => {
             item_name: sanitizedData.name,
             changes: sanitizedData,
           });
+
+          // Handle stock locations insert
+          if (sanitizedData.stock_locations) {
+            const locationsToInsert = sanitizedData.stock_locations
+              .filter((l) => l.location && l.location.trim() !== "")
+              .map((l) => ({
+                inventory_id: newItem.id,
+                location: l.location,
+                quantity: l.quantity || 0,
+              }));
+
+            if (locationsToInsert.length > 0) {
+              await supabase
+                .from("inventory_stock_locations")
+                .insert(locationsToInsert);
+            }
+          }
         }
       }
 

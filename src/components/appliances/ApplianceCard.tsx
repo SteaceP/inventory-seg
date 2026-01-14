@@ -129,6 +129,11 @@ const ApplianceCard: React.FC<ApplianceCardProps> = ({
         </Box>
         <Typography variant="body2" color="text.secondary" gutterBottom>
           {appliance.type} {appliance.model && `- ${appliance.model}`}
+          {appliance.location && (
+            <Box component="span" sx={{ color: "text.primary", ml: 1 }}>
+              • {appliance.location}
+            </Box>
+          )}
         </Typography>
         {appliance.sku && (
           <Typography variant="body2" color="primary" fontWeight="bold">

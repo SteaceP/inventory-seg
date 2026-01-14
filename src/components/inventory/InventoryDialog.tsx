@@ -18,6 +18,8 @@ import {
   Refresh as RefreshIcon,
   Delete as DeleteIcon,
   AddPhotoAlternate as AddPhotoIcon,
+  RemoveCircleOutline as RemoveCircleIcon,
+  AddCircleOutline as AddCircleIcon,
 } from "@mui/icons-material";
 import Barcode from "react-barcode";
 import type { BarcodeProps } from "react-barcode";
@@ -238,24 +240,128 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                 />
               )}
             />
-            <TextField
-              label={t("inventory.stockLabel")}
-              type="number"
-              fullWidth
-              value={formData.stock || ""}
-              onChange={(e) =>
-                onFormDataChange({
-                  ...formData,
-                  stock: parseInt(e.target.value) || 0,
-                })
-              }
+          </Box>
+
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+            <Box
               sx={{
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "divider" },
-                },
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}
-              InputLabelProps={{ sx: { color: "text.secondary" } }}
-            />
+            >
+              <Typography variant="subtitle2" color="text.secondary">
+                {t("inventory.stockLocations") || "Stock Locations"}
+              </Typography>
+              <Button
+                startIcon={<AddCircleIcon />}
+                size="small"
+                onClick={() => {
+                  const currentLocations = formData.stock_locations || [];
+                  onFormDataChange({
+                    ...formData,
+                    stock_locations: [
+                      ...currentLocations,
+                      { id: `temp-${Date.now()}`, location: "", quantity: 0 },
+                    ],
+                  });
+                }}
+                disabled={!isAdmin}
+              >
+                {t("common.add") || "Add"}
+              </Button>
+            </Box>
+
+            {(formData.stock_locations || []).map((loc, index) => (
+              <Box
+                key={loc.id || `loc-${index}`}
+                sx={{
+                  display: "flex",
+                  gap: 1,
+                  alignItems: "flex-start",
+                }}
+              >
+                <TextField
+                  label={t("inventory.locationLabel")}
+                  value={loc.location}
+                  onChange={(e) => {
+                    const newLocations = [...(formData.stock_locations || [])];
+                    newLocations[index] = {
+                      ...newLocations[index],
+                      location: e.target.value,
+                    };
+                    onFormDataChange({
+                      ...formData,
+                      stock_locations: newLocations,
+                    });
+                  }}
+                  disabled={!isAdmin}
+                  fullWidth
+                  size="small"
+                  placeholder={t("inventory.locationPlaceholder")}
+                />
+                <TextField
+                  label={t("inventory.stockLabel")}
+                  type="number"
+                  value={loc.quantity}
+                  onChange={(e) => {
+                    const newLocations = [...(formData.stock_locations || [])];
+                    newLocations[index] = {
+                      ...newLocations[index],
+                      quantity: parseInt(e.target.value) || 0,
+                    };
+                    // Update total stock
+                    const totalStock = newLocations.reduce(
+                      (sum, l) => sum + (l.quantity || 0),
+                      0
+                    );
+                    onFormDataChange({
+                      ...formData,
+                      stock_locations: newLocations,
+                      stock: totalStock,
+                    });
+                  }}
+                  disabled={!isAdmin}
+                  style={{ width: "120px" }}
+                  size="small"
+                />
+                {isAdmin && (
+                  <IconButton
+                    color="error"
+                    onClick={() => {
+                      const newLocations = [
+                        ...(formData.stock_locations || []),
+                      ];
+                      newLocations.splice(index, 1);
+                      // Update total stock
+                      const totalStock = newLocations.reduce(
+                        (sum, l) => sum + (l.quantity || 0),
+                        0
+                      );
+                      onFormDataChange({
+                        ...formData,
+                        stock_locations: newLocations,
+                        stock: totalStock,
+                      });
+                    }}
+                    sx={{ mt: 0.5 }}
+                  >
+                    <RemoveCircleIcon />
+                  </IconButton>
+                )}
+              </Box>
+            ))}
+
+            {(!formData.stock_locations ||
+              formData.stock_locations.length === 0) && (
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ fontStyle: "italic" }}
+              >
+                No locations defined. Total stock: {formData.stock || 0}
+              </Typography>
+            )}
           </Box>
 
           <Box

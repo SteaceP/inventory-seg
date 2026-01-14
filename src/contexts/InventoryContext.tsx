@@ -34,7 +34,7 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
       // Fetch items
       const { data: itemsData, error: itemsError } = await supabase
         .from("inventory")
-        .select("*")
+        .select("*, stock_locations:inventory_stock_locations(*)")
         .order("category")
         .order("name");
 
