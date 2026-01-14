@@ -274,24 +274,29 @@ const AppContent = () => {
               )
             }
           />
-          <Route
-            path="/"
-            element={
-              session ? (
+          {session ? (
+            <Route
+              path="/"
+              element={
                 <InventoryProvider>
                   <Layout />
                 </InventoryProvider>
-              ) : (
+              }
+            >
+              <Route index element={<Dashboard />} />
+              <Route path="inventory" element={<Inventory />} />
+              <Route path="appliances" element={<Appliances />} />
+              <Route path="settings" element={<Settings />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Route>
+          ) : (
+            <Route
+              path="*"
+              element={
                 <Navigate to="/login" state={{ from: location }} replace />
-              )
-            }
-          >
-            <Route index element={<Dashboard />} />
-            <Route path="inventory" element={<Inventory />} />
-            <Route path="appliances" element={<Appliances />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Route>
+              }
+            />
+          )}
         </Routes>
       </Suspense>
     </ThemeProvider>

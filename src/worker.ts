@@ -4,7 +4,7 @@ interface Env {
   BREVO_API_KEY: string;
   BREVO_SENDER_EMAIL: string;
   SUPABASE_URL: string;
-  SUPABASE_SERVICE_ROLE_KEY: string;
+  SUPABASE_SECRET_KEY: string;
   VAPID_PUBLIC_KEY: string;
   VAPID_PRIVATE_KEY: string;
   ASSETS: { fetch: typeof fetch };
@@ -34,6 +34,37 @@ interface PushSubscriptionRow {
   created_at: string;
 }
 
+// Input validation helper functions
+function sanitizeHtml(text: string): string {
+  return text.replace(/[<>&'"]/g, (c) => {
+    const entities: Record<string, string> = {
+      "<": "&lt;",
+      ">": "&gt;",
+      "&": "&amp;",
+      "'": "&#39;",
+      '"': "&quot;",
+    };
+    return entities[c] || c;
+  });
+}
+
+function validateEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email) && email.length <= 254;
+}
+
+function validateItemName(name: string): boolean {
+  return typeof name === "string" && name.length > 0 && name.length <= 255;
+}
+
+function validateStock(stock: number): boolean {
+  return typeof stock === "number" && stock >= 0 && stock < 1000000;
+}
+
+function validateThreshold(threshold: number): boolean {
+  return typeof threshold === "number" && threshold >= 0 && threshold < 10000;
+}
+
 interface TestPushBody {
   userId: string;
 }
@@ -47,13 +78,13 @@ export default {
       try {
         const { userId } = (await request.json()) as TestPushBody;
 
-        if (userId && env.SUPABASE_URL && env.SUPABASE_SERVICE_ROLE_KEY) {
+        if (userId && env.SUPABASE_URL && env.SUPABASE_SECRET_KEY) {
           const subResponse = await fetch(
             `${env.SUPABASE_URL}/rest/v1/push_subscriptions?user_id=eq.${userId}`,
             {
               headers: {
-                apikey: env.SUPABASE_SERVICE_ROLE_KEY,
-                Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+                apikey: env.SUPABASE_SECRET_KEY,
+                Authorization: `Bearer ${env.SUPABASE_SECRET_KEY}`,
               },
             }
           );
@@ -131,6 +162,47 @@ export default {
 
         const { itemName, currentStock, threshold, userEmail, userId } = body;
 
+        // Validate all inputs
+        if (!validateItemName(itemName)) {
+          return new Response(JSON.stringify({ error: "Invalid item name" }), {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+
+        if (!validateStock(currentStock)) {
+          return new Response(
+            JSON.stringify({ error: "Invalid stock value" }),
+            { status: 400, headers: { "Content-Type": "application/json" } }
+          );
+        }
+
+        if (!validateThreshold(threshold)) {
+          return new Response(
+            JSON.stringify({ error: "Invalid threshold value" }),
+            { status: 400, headers: { "Content-Type": "application/json" } }
+          );
+        }
+
+        if (userEmail && !validateEmail(userEmail)) {
+          return new Response(
+            JSON.stringify({ error: "Invalid email address" }),
+            { status: 400, headers: { "Content-Type": "application/json" } }
+          );
+        }
+
+        if (!userId || typeof userId !== "string" || userId.length === 0) {
+          return new Response(JSON.stringify({ error: "Invalid user ID" }), {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+
+        // Sanitize for HTML email
+        const sanitizedItemName = sanitizeHtml(itemName);
+        const sanitizedThreshold = sanitizeHtml(threshold.toString());
+        const sanitizedStock = sanitizeHtml(currentStock.toString());
+
         // --- 1. SEND EMAIL (BREVO) ---
         if (env.BREVO_API_KEY && userEmail) {
           await fetch("https://api.brevo.com/v3/smtp/email", {
@@ -145,14 +217,14 @@ export default {
                 email: env.BREVO_SENDER_EMAIL || "noreply@coderage.pro",
               },
               to: [{ email: userEmail }],
-              subject: `Alerte Stock Faible: ${itemName}`,
+              subject: `Alerte Stock Faible: ${sanitizedItemName}`,
               htmlContent: `
                 <div style="font-family: sans-serif; padding: 20px; color: #333;">
                   <h2 style="color: #d32f2f;">Alerte Stock Faible</h2>
-                  <p>L'article suivant est tombé en dessous de votre seuil de <strong>${threshold}</strong> :</p>
+                  <p>L'article suivant est tombé en dessous de votre seuil de <strong>${sanitizedThreshold}</strong> :</p>
                   <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                    <p style="margin: 5px 0;"><strong>Article :</strong> ${itemName}</p>
-                    <p style="margin: 5px 0;"><strong>Stock Actuel :</strong> ${currentStock}</p>
+                    <p style="margin: 5px 0;"><strong>Article :</strong> ${sanitizedItemName}</p>
+                    <p style="margin: 5px 0;"><strong>Stock Actuel :</strong> ${sanitizedStock}</p>
                   </div>
                   <p>Veuillez vous connecter à votre tableau de bord d'inventaire pour vous réapprovisionner.</p>
                 </div>
@@ -162,14 +234,14 @@ export default {
         }
 
         // --- 2. BROADCAST PUSH NOTIFICATIONS ---
-        if (userId && env.SUPABASE_URL && env.SUPABASE_SERVICE_ROLE_KEY) {
+        if (userId && env.SUPABASE_URL && env.SUPABASE_SECRET_KEY) {
           // Fetch subscriptions for this user from Supabase
           const subResponse = await fetch(
             `${env.SUPABASE_URL}/rest/v1/push_subscriptions?user_id=eq.${userId}`,
             {
               headers: {
-                apikey: env.SUPABASE_SERVICE_ROLE_KEY,
-                Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+                apikey: env.SUPABASE_SECRET_KEY,
+                Authorization: `Bearer ${env.SUPABASE_SECRET_KEY}`,
               },
             }
           );
@@ -188,7 +260,7 @@ export default {
 
                 const payload = JSON.stringify({
                   title: "Alerte Stock Faible",
-                  body: `L'article "${itemName}" est à ${currentStock} unités.`,
+                  body: `L'article "${sanitizedItemName}" est à ${sanitizedStock} unités.`,
                   icon: "/icon.svg",
                   data: { url: "/inventory?filter=lowStock" },
                   tag: `low-stock-${itemName}`,
@@ -210,8 +282,8 @@ export default {
                             {
                               method: "DELETE",
                               headers: {
-                                apikey: env.SUPABASE_SERVICE_ROLE_KEY,
-                                Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+                                apikey: env.SUPABASE_SECRET_KEY,
+                                Authorization: `Bearer ${env.SUPABASE_SECRET_KEY}`,
                               },
                             }
                           ).catch(() => {});
