@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Divider } from "@mui/material";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "../supabaseClient";
@@ -24,6 +24,9 @@ import StockAdjustmentDialog from "../components/inventory/StockAdjustmentDialog
 import StockHistoryDialog from "../components/inventory/StockHistoryDialog";
 import ConfirmDialog from "../components/ConfirmDialog";
 import CategoryManagementDialog from "../components/inventory/CategoryManagementDialog";
+import InventoryDrawer from "../components/inventory/InventoryDrawer";
+import InventoryStats from "../components/inventory/InventoryStats";
+import { Tabs, Tab } from "@mui/material";
 
 const Inventory: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -46,6 +49,7 @@ const Inventory: React.FC = () => {
     stock: 0,
     image_url: "",
     low_stock_threshold: null,
+    notes: "",
   });
   const [selectedItems, setSelectedItems] = useState<Set<string>>(
     () => new Set()
@@ -61,6 +65,9 @@ const Inventory: React.FC = () => {
     id: string;
     name: string;
   } | null>(null);
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const [currentTab, setCurrentTab] = useState(0);
   const { role, lowStockThreshold: globalThreshold } = useUserContext();
   const { categories } = useInventoryContext();
   const { compactView } = useThemeContext();
@@ -86,36 +93,36 @@ const Inventory: React.FC = () => {
     }
   };
 
-  const handleOpen = React.useCallback(
-    (item?: InventoryItem) => {
-      if (item) {
-        setEditingItem(item);
-        if (role === "admin") {
-          setFormData(item);
-          setOpen(true);
-        } else {
-          setStockDialogOpen(true);
-        }
-      } else {
-        setEditingItem(null);
-        setFormData({
-          name: "",
-          category: "",
-          sku: "",
-          stock: 0,
-          image_url: "",
-          low_stock_threshold: null,
-        });
-        setOpen(true);
-      }
-    },
-    [role]
-  );
+  const handleOpen = React.useCallback((item?: InventoryItem) => {
+    if (item) {
+      setSelectedItem(item);
+      setOpenDrawer(true);
+    } else {
+      setEditingItem(null);
+      setFormData({
+        name: "",
+        category: "",
+        sku: "",
+        stock: 0,
+        image_url: "",
+        low_stock_threshold: null,
+        notes: "",
+      });
+      setOpen(true);
+    }
+  }, []);
 
   const handleAdjust = React.useCallback((item: InventoryItem) => {
-    setEditingItem(item);
+    setSelectedItem(item);
     setStockDialogOpen(true);
   }, []);
+
+  const handleEdit = (item: InventoryItem) => {
+    setEditingItem(item);
+    setFormData(item);
+    setOpenDrawer(false);
+    setOpen(true);
+  };
 
   const handleClose = () => {
     setOpen(false);
@@ -507,28 +514,28 @@ const Inventory: React.FC = () => {
       )?.low_stock_threshold;
       const effectiveThreshold =
         item.low_stock_threshold ?? categoryThreshold ?? globalThreshold;
-      return matchesSearch && (item.stock || 0) <= effectiveThreshold;
+      return (
+        matchesSearch &&
+        (item.stock || 0) <= effectiveThreshold &&
+        (item.stock || 0) > 0
+      );
     }
+
+    if (searchParams.get("filter") === "outOfStock") {
+      return matchesSearch && (item.stock || 0) === 0;
+    }
+
     return matchesSearch;
   });
 
-  if (inventoryLoading) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "50vh",
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
-
   return (
-    <Box sx={{ p: 0, maxWidth: { lg: "2200px", xl: "3200px" }, mx: "auto" }}>
+    <Box
+      sx={{
+        p: compactView ? 2 : 3,
+        maxWidth: { lg: "2200px", xl: "3200px" },
+        mx: "auto",
+      }}
+    >
       <InventoryHeader
         isMobile={isMobile}
         selectedCount={selectedItems.size}
@@ -544,19 +551,77 @@ const Inventory: React.FC = () => {
         }
       />
 
-      <InventoryCategorizedGrid
-        items={filteredItems}
-        selectedItems={selectedItems}
-        onToggleItem={toggleItem}
-        onEdit={handleOpen}
-        onAdjust={handleAdjust}
-        onDelete={role === "admin" ? (id) => handleDeleteClick(id) : undefined}
-        onViewHistory={(itemId, itemName) => {
-          setSelectedItemForHistory({ id: itemId, name: itemName });
-          setHistoryDialogOpen(true);
-        }}
-        compactView={compactView}
-      />
+      {inventoryLoading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <>
+          <InventoryStats
+            items={items}
+            globalThreshold={globalThreshold}
+            categories={categories}
+          />
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              justifyContent: "space-between",
+              alignItems: { xs: "stretch", sm: "center" },
+              gap: 2,
+              mb: 3,
+            }}
+          >
+            <Tabs
+              value={currentTab}
+              onChange={(_, newValue: number) => {
+                setCurrentTab(newValue);
+                if (newValue === 1) {
+                  setSearchParams({ filter: "lowStock" });
+                } else if (newValue === 2) {
+                  setSearchParams({ filter: "outOfStock" });
+                } else {
+                  searchParams.delete("filter");
+                  setSearchParams(searchParams);
+                }
+              }}
+              variant="scrollable"
+              scrollButtons="auto"
+              sx={{
+                mb: { xs: 1, sm: 0 },
+                "& .MuiTab-root": {
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  minWidth: 100,
+                },
+              }}
+            >
+              <Tab label={t("common.all")} />
+              <Tab label={t("inventory.stats.lowStock")} />
+              <Tab label={t("inventory.stats.outOfStock")} />
+            </Tabs>
+          </Box>
+
+          <Divider sx={{ mb: 4 }} />
+
+          <InventoryCategorizedGrid
+            items={filteredItems}
+            selectedItems={selectedItems}
+            onToggleItem={toggleItem}
+            onEdit={handleOpen}
+            onAdjust={handleAdjust}
+            onDelete={
+              role === "admin" ? (id) => handleDeleteClick(id) : undefined
+            }
+            onViewHistory={(itemId, itemName) => {
+              setSelectedItemForHistory({ id: itemId, name: itemName });
+              setHistoryDialogOpen(true);
+            }}
+            compactView={compactView}
+          />
+        </>
+      )}
 
       <ConfirmDialog
         open={deleteConfirmOpen}
@@ -583,7 +648,7 @@ const Inventory: React.FC = () => {
 
       <StockAdjustmentDialog
         open={stockDialogOpen}
-        item={editingItem}
+        item={selectedItem}
         isMobile={isMobile}
         onClose={() => setStockDialogOpen(false)}
         onSave={(
@@ -630,6 +695,17 @@ const Inventory: React.FC = () => {
           setHistoryDialogOpen(false);
           setSelectedItemForHistory(null);
         }}
+      />
+
+      <InventoryDrawer
+        open={openDrawer}
+        onClose={() => setOpenDrawer(false)}
+        item={selectedItem}
+        onEdit={handleEdit}
+        onDelete={handleDeleteClick}
+        onAdjustStock={handleAdjust}
+        globalThreshold={globalThreshold}
+        categories={categories}
       />
     </Box>
   );

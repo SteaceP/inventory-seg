@@ -7,8 +7,16 @@ import {
   Paper,
   useTheme,
   useMediaQuery,
+  alpha,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
-import { alpha } from "@mui/material/styles";
 import {
   Category as CategoryIcon,
   ChevronRight as ChevronRightIcon,
@@ -20,16 +28,6 @@ import InventoryCard from "./InventoryCard";
 import { useTranslation } from "../../i18n";
 import { useInventoryContext } from "../../contexts/useInventoryContext";
 import { useUserContext } from "../../contexts/useUserContext";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  IconButton,
-  Tooltip,
-} from "@mui/material";
 
 interface InventoryCategorizedGridProps {
   items: InventoryItem[];
@@ -57,27 +55,27 @@ const CategoryThresholdDialog: React.FC<{
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>
-        {t("inventory.categoryThresholdTitle") || "Seuil de catégorie"}:{" "}
+        {t("inventory.categoryThresholdTitle") || "Category Threshold"}:{" "}
         {categoryName}
       </DialogTitle>
       <DialogContent>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           {t("inventory.categoryThresholdInfo") ||
-            "Définissez un seuil de stock bas pour tous les articles de cette catégorie. L'article individuel a priorité s'il est défini."}
+            "Define a low stock threshold for all items in this category. Individual item settings take priority."}
         </Typography>
         <TextField
           autoFocus
-          label={t("inventory.threshold") || "Seuil"}
+          label={t("inventory.threshold") || "Threshold"}
           type="number"
           fullWidth
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          placeholder={t("inventory.inherited") || "Hérité"}
+          placeholder={t("inventory.inherited") || "Inherited"}
           variant="outlined"
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>{t("inventory.cancel") || "Annuler"}</Button>
+        <Button onClick={onClose}>{t("inventory.cancel") || "Cancel"}</Button>
         <Button
           onClick={() => {
             onSave(value === "" ? null : parseInt(value));
@@ -85,7 +83,7 @@ const CategoryThresholdDialog: React.FC<{
           }}
           variant="contained"
         >
-          {t("inventory.save") || "Enregistrer"}
+          {t("inventory.save") || "Save"}
         </Button>
       </DialogActions>
     </Dialog>
@@ -113,7 +111,6 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
   const [selectedCategoryForThreshold, setSelectedCategoryForThreshold] =
     useState<string | null>(null);
 
-  // Start with all categories collapsed (showing only 4 items)
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(
     () => {
       const allCategories = new Set<string>();
@@ -138,7 +135,6 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
     });
   };
 
-  // Group items by category
   const groupedItems = useMemo(() => {
     const groups: Record<string, InventoryItem[]> = {};
     items.forEach((item) => {
@@ -148,7 +144,6 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
       groups[cat].push(item);
     });
 
-    // Sort categories alphabetically
     return Object.keys(groups)
       .sort()
       .reduce(
@@ -189,7 +184,6 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
           key={category}
           sx={{ mb: index === sortedCategories.length - 1 ? 0 : 4 }}
         >
-          {/* Category Header */}
           <Box
             sx={{
               display: "flex",
@@ -200,7 +194,7 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
               zIndex: 10,
               py: 1.5,
               bgcolor: alpha(theme.palette.background.default, 0.8),
-              backdropFilter: "blur(8px)",
+              backdropFilter: "blur(12px)",
               mx: -2,
               px: 2,
               transition: "background-color 0.2s",
@@ -229,22 +223,24 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
               <Paper
                 elevation={0}
                 sx={{
-                  p: 1,
-                  borderRadius: 1.5,
+                  p: 1.25,
+                  borderRadius: 2,
                   bgcolor: alpha(theme.palette.primary.main, 0.1),
                   color: "primary.main",
                   display: "flex",
-                  mr: 2,
+                  mr: 2.5,
+                  boxShadow: `0 4px 12px ${alpha(theme.palette.primary.main, 0.1)}`,
                 }}
               >
                 <CategoryIcon fontSize="small" />
               </Paper>
               <Typography
                 variant="h6"
-                fontWeight="800"
+                fontWeight="900"
                 sx={{
-                  fontSize: isMobile ? "1.1rem" : "1.25rem",
-                  letterSpacing: "-0.01em",
+                  fontSize: isMobile ? "1.1rem" : "1.35rem",
+                  letterSpacing: "-0.02em",
+                  color: "text.primary",
                 }}
               >
                 {category}
@@ -252,12 +248,14 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
                   component="span"
                   sx={{
                     ml: 1.5,
-                    opacity: 0.4,
-                    fontWeight: "400",
-                    fontSize: "0.8em",
+                    opacity: 0.3,
+                    fontWeight: "600",
+                    fontSize: "0.7em",
+                    fontVariantNumeric: "tabular-nums",
                   }}
                 >
-                  ({groupedItems[category].length})
+                  {groupedItems[category].length}{" "}
+                  {t("inventory.items") || "Items"}
                 </Box>
               </Typography>
               <ChevronRightIcon
@@ -274,9 +272,7 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
 
             {isAdmin && (
               <Tooltip
-                title={
-                  t("inventory.editCategoryThreshold") || "Modifier le seuil"
-                }
+                title={t("inventory.editCategoryThreshold") || "Edit Threshold"}
               >
                 <IconButton
                   size="small"
@@ -297,18 +293,14 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
             sx={{
               px: { xs: 1, sm: 2 },
               width: "100%",
-              overflow: "visible", // Changed from hidden to prevent clipping
+              overflow: "visible",
             }}
           >
-            {/* Items Grid */}
             <Grid
               container
-              spacing={compactView ? 1.5 : 2.5}
+              spacing={compactView ? 2 : 3}
               sx={{
-                mt: 2, // Add top margin to prevent clipping
-                "& > .MuiGrid-item": {
-                  padding: compactView ? 0.75 : 1.25,
-                },
+                mt: 1,
               }}
             >
               <AnimatePresence>
@@ -349,7 +341,6 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
         </Box>
       ))}
 
-      {/* Threshold Dialog */}
       {selectedCategoryForThreshold && (
         <CategoryThresholdDialog
           open={thresholdDialogOpen}

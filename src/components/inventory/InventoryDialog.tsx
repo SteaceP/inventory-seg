@@ -441,6 +441,24 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
             />
           </Box>
 
+          <TextField
+            label={t("inventory.notes")}
+            multiline
+            rows={3}
+            fullWidth
+            value={formData.notes || ""}
+            onChange={(e) =>
+              onFormDataChange({ ...formData, notes: e.target.value })
+            }
+            disabled={!isAdmin}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": { borderColor: "divider" },
+              },
+            }}
+            InputLabelProps={{ sx: { color: "text.secondary" } }}
+          />
+
           <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
             <TextField
               label={t("inventory.skuLabel")}

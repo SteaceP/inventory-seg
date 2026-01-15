@@ -6,17 +6,21 @@ import {
   Typography,
   Checkbox,
   Chip,
-  Divider,
+  LinearProgress,
   IconButton,
-  Tooltip,
+  Stack,
+  alpha,
   useTheme,
+  Button,
+  CardActions,
+  Divider,
 } from "@mui/material";
-import { alpha } from "@mui/material/styles";
 import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Exposure as ExposureIcon,
   History as HistoryIcon,
+  Inventory as InventoryIcon,
 } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import type { InventoryItem } from "../../types/inventory";
@@ -44,9 +48,9 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
   onDelete,
   onViewHistory,
 }) => {
-  const { compactView } = useThemeContext();
-  const theme = useTheme();
   const { t } = useTranslation();
+  const theme = useTheme();
+  const { compactView } = useThemeContext();
   const { lowStockThreshold: globalThreshold } = useUserContext();
   const { categories } = useInventoryContext();
   const { role } = useUserContext();
@@ -60,325 +64,380 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
     item.low_stock_threshold ?? categoryThreshold ?? globalThreshold;
 
   const isLowStock = (item.stock || 0) <= effectiveThreshold;
+  const isOutOfStock = (item.stock || 0) === 0;
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
+      initial={{ opacity: 0, translateY: 10 }}
+      animate={{ opacity: 1, translateY: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
       style={{ height: "100%" }}
     >
       <Card
+        elevation={0}
+        onClick={() => onViewHistory?.(item.id, item.name)}
         sx={{
+          borderRadius: 4,
+          border: "1px solid",
+          borderColor: isSelected ? "primary.main" : "divider",
+          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+          overflow: "hidden",
+          position: "relative",
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          bgcolor: "background.paper",
+          background:
+            theme.palette.mode === "dark"
+              ? alpha(theme.palette.background.paper, 0.6)
+              : theme.palette.background.paper,
           backdropFilter: "blur(10px)",
-          border: isLowStock ? "2px solid" : "1px solid",
-          borderColor: isLowStock ? "warning.main" : "divider",
-          borderRadius: compactView ? "8px" : "12px",
-          position: "relative",
-          overflow: "hidden",
-          boxShadow: isLowStock
-            ? `0 4px 12px ${alpha(theme.palette.warning.main, 0.2)}, 0 0 10px ${alpha(theme.palette.warning.main, 0.1)}`
-            : `0 4px 12px ${alpha(theme.palette.common.black, 0.08)}`,
-          transition:
-            "transform 0.2s ease-in-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
+          cursor: "pointer",
           "&:hover": {
-            borderColor: isLowStock ? "warning.dark" : "primary.main",
             transform: "translateY(-4px)",
-            boxShadow: isLowStock
-              ? `0 12px 24px ${alpha(theme.palette.warning.main, 0.3)}, 0 0 15px ${alpha(theme.palette.warning.main, 0.2)}`
-              : `0 12px 24px ${alpha(theme.palette.primary.main, 0.15)}`,
+            boxShadow: `0 12px 24px -10px ${alpha(theme.palette.common.black, 0.3)}`,
+            borderColor: "primary.main",
+            "& .card-image": {
+              transform: "scale(1.05)",
+            },
           },
         }}
       >
-        {item.image_url ? (
-          <Box
+        <Box sx={{ position: "relative" }}>
+          <Checkbox
+            checked={isSelected}
+            onChange={(e) => onToggle(item.id, e.target.checked)}
+            onClick={(e) => e.stopPropagation()}
             sx={{
-              width: "100%",
-              height: {
-                xs: compactView ? 160 : 320,
-                sm: compactView ? 120 : 240,
-              },
-              overflow: "hidden",
-              bgcolor: alpha(theme.palette.primary.main, 0.05),
-              flexShrink: 0,
+              position: "absolute",
+              top: 12,
+              right: 12,
+              zIndex: 2,
+              bgcolor: alpha(theme.palette.background.paper, 0.8),
+              backdropFilter: "blur(4px)",
+              "&:hover": { bgcolor: theme.palette.background.paper },
+              borderRadius: 1,
+              p: 0.5,
             }}
-          >
-            <Box
-              component="img"
-              src={item.image_url}
-              sx={{
-                display: "block",
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-              }}
-              alt={item.name}
-            />
-          </Box>
-        ) : (
+          />
+
           <Box
             sx={{
-              width: "100%",
-              height: {
-                xs: compactView ? 80 : 160,
-                sm: compactView ? 60 : 100,
-              },
+              position: "absolute",
+              top: 12,
+              left: 12,
+              zIndex: 2,
               display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              bgcolor: alpha(theme.palette.primary.main, 0.05),
-              color: "primary.main",
-              opacity: 0.5,
-              flexShrink: 0,
-            }}
-          >
-            <Box
-              component="img"
-              src="/icon.svg"
-              sx={{
-                width: compactView ? 24 : 40,
-                height: compactView ? 24 : 40,
-                filter: "grayscale(1)",
-              }}
-            />
-          </Box>
-        )}
-        <CardContent
-          sx={{
-            flexGrow: 1,
-            display: "flex",
-            flexDirection: "column",
-            p: compactView ? 2 : 3,
-            "&:last-child": { pb: compactView ? 2 : 3 },
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-              mb: compactView ? 1 : 2,
               gap: 1,
             }}
           >
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Tooltip title={item.name} enterDelay={500} arrow>
-                <Typography
-                  variant={compactView ? "body1" : "h5"}
-                  fontWeight="800"
-                  sx={{
-                    wordBreak: "break-word",
-                    overflowWrap: "break-word",
-                    display: "-webkit-box",
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                    lineHeight: compactView ? 1.2 : 1.4,
-                    height: compactView ? "2.4em" : "2.8em", // Force consistent height for 2 lines
-                  }}
-                >
-                  {item.name}
-                </Typography>
-              </Tooltip>
-            </Box>
-            <Checkbox
-              checked={isSelected}
-              onChange={(e) => onToggle(item.id, e.target.checked)}
-              sx={{ color: "text.secondary", p: 0, flexShrink: 0 }}
+            <Chip
+              label={item.category}
+              size="small"
+              sx={{
+                bgcolor: alpha(theme.palette.primary.main, 0.9),
+                color: "white",
+                fontWeight: "bold",
+                backdropFilter: "blur(4px)",
+                border: "1px solid",
+                borderColor: alpha(theme.palette.primary.main, 0.2),
+              }}
             />
           </Box>
+
           <Box
             sx={{
-              flexGrow: 1, // Push bottom actions to the bottom
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
+              position: "relative",
+              overflow: "hidden",
+              height: compactView ? 140 : 180,
+              bgcolor: "background.paper",
             }}
           >
+            {item.image_url ? (
+              <>
+                {/* Background Layer: Blurred and low-opacity */}
+                <Box
+                  component="img"
+                  src={item.image_url}
+                  sx={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    filter: "blur(20px) opacity(0.3)",
+                    transform: "scale(1.1)", // Prevent white edges from blur
+                  }}
+                />
+                {/* Foreground Layer: The actual product image */}
+                <Box
+                  component="img"
+                  src={item.image_url}
+                  className="card-image"
+                  sx={{
+                    position: "relative",
+                    zIndex: 1,
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                    transition: "transform 0.5s ease",
+                    p: 1, // Slight padding to breathe
+                  }}
+                />
+              </>
+            ) : (
+              <Box
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "text.disabled",
+                  bgcolor: "action.hover",
+                }}
+              >
+                <InventoryIcon sx={{ fontSize: 48, opacity: 0.2 }} />
+              </Box>
+            )}
+          </Box>
+        </Box>
+
+        <CardContent sx={{ p: compactView ? 2 : 3, flexGrow: 1 }}>
+          <Typography
+            variant={compactView ? "subtitle1" : "h6"}
+            fontWeight="bold"
+            gutterBottom
+            noWrap
+          >
+            {item.name}
+          </Typography>
+
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+            <Typography
+              variant="caption"
+              color="text.primary"
+              sx={{
+                fontWeight: "700",
+                textTransform: "uppercase",
+                letterSpacing: 0.5,
+              }}
+            >
+              {item.sku || "NO SKU"}
+            </Typography>
+            <Typography variant="caption" color="text.disabled">
+              •
+            </Typography>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ fontWeight: "medium" }}
+            >
+              {item.category}
+            </Typography>
+          </Box>
+
+          {(isLowStock || isOutOfStock) && (
+            <Chip
+              label={
+                isOutOfStock
+                  ? t("inventory.stats.outOfStock")
+                  : t("inventory.stats.lowStock")
+              }
+              size="small"
+              color={isOutOfStock ? "error" : "warning"}
+              sx={{
+                bgcolor: (theme) =>
+                  alpha(
+                    isOutOfStock
+                      ? theme.palette.error.main
+                      : theme.palette.warning.main,
+                    0.1
+                  ),
+                color: isOutOfStock ? "error.main" : "warning.main",
+                fontWeight: "bold",
+                borderRadius: 1,
+                mb: 1.5,
+              }}
+            />
+          )}
+
+          {item.location && (
+            <Typography
+              variant="body2"
+              sx={{
+                mt: 1,
+                display: "flex",
+                alignItems: "center",
+                gap: 0.5,
+                color: "text.primary",
+                fontWeight: "medium",
+              }}
+            >
+              <Box
+                component="span"
+                sx={{
+                  color: "primary.main",
+                  fontWeight: "bold",
+                  fontSize: "1.1rem",
+                }}
+              >
+                @
+              </Box>{" "}
+              {item.location}
+            </Typography>
+          )}
+
+          <Box sx={{ mt: 2 }}>
             <Box
               sx={{
                 display: "flex",
-                justifyContent: compactView ? "flex-start" : "center",
-                mb: compactView ? 1 : 2,
+                justifyContent: "space-between",
+                alignItems: "baseline",
+                mb: 1,
               }}
             >
-              <Chip
-                label={item.category}
-                size="small"
-                sx={{
-                  bgcolor: "rgba(2, 125, 111, 0.1)",
-                  color: "primary.main",
-                  height: compactView ? 20 : 24,
-                  fontSize: compactView ? "0.65rem" : "0.75rem",
-                }}
-              />
-              {item.stock_locations && item.stock_locations.length > 0 ? (
-                <Tooltip
-                  title={
-                    <Box>
-                      {item.stock_locations.map((loc) => (
-                        <div key={loc.id || `${loc.location}-${loc.quantity}`}>
-                          {loc.location}: {loc.quantity}
-                        </div>
-                      ))}
-                    </Box>
-                  }
-                  arrow
-                >
-                  <Chip
-                    label={`${item.stock_locations.length} ${t("inventory.locationLabel")}s`}
-                    size="small"
-                    variant="outlined"
-                    sx={{
-                      ml: 1,
-                      borderColor: "divider",
-                      color: "text.secondary",
-                      height: compactView ? 20 : 24,
-                      fontSize: compactView ? "0.65rem" : "0.75rem",
-                      maxWidth: "50%",
-                      cursor: "help",
-                    }}
-                  />
-                </Tooltip>
-              ) : item.location ? (
-                <Chip
-                  label={item.location}
-                  size="small"
-                  variant="outlined"
+              <Box>
+                <Typography
+                  variant="h4"
+                  fontWeight="900"
                   sx={{
-                    ml: 1,
-                    borderColor: "divider",
-                    color: "text.secondary",
-                    height: compactView ? 20 : 24,
-                    fontSize: compactView ? "0.65rem" : "0.75rem",
-                    maxWidth: "50%",
+                    color: isOutOfStock
+                      ? "error.main"
+                      : isLowStock
+                        ? "warning.main"
+                        : "text.primary",
+                    lineHeight: 1,
+                    display: "inline-block",
                   }}
-                />
-              ) : null}
-            </Box>
-
-            <Box sx={{ mt: "auto" }}>
-              <Divider
-                sx={{ my: compactView ? 1 : 1.5, borderColor: "divider" }}
-              />
-
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
+                >
+                  {item.stock}
+                </Typography>
                 <Typography
                   variant="caption"
-                  sx={{
-                    color: isLowStock ? "warning.main" : "text.secondary",
-                    fontWeight: isLowStock ? "bold" : "medium",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 0.5,
-                  }}
+                  color="text.secondary"
+                  fontWeight="900"
+                  sx={{ ml: 1, textTransform: "uppercase", letterSpacing: 1 }}
                 >
-                  {isLowStock && (
-                    <Chip
-                      label={t("inventory.lowStock") || "STOCK BAS"}
-                      size="small"
-                      color="warning"
-                      variant="outlined"
-                      sx={{
-                        height: 18,
-                        fontSize: "0.65rem",
-                        fontWeight: "bold",
-                        borderRadius: "4px",
-                        borderWidth: "1px",
-                      }}
-                    />
-                  )}
-                  {item.stock} {t("inventory.stock")}
+                  {t("inventory.stockUnits")}
                 </Typography>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <Tooltip title={t("inventory.viewHistory")}>
-                    <IconButton
-                      size="small"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onViewHistory?.(item.id, item.name);
-                      }}
-                      sx={{
-                        color: "text.secondary",
-                        mr: 0.5,
-                        p: compactView ? 0.5 : 1,
-                      }}
-                    >
-                      <HistoryIcon
-                        fontSize={compactView ? "inherit" : "small"}
-                      />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title={t("inventory.manageStock")}>
-                    <IconButton
-                      size="small"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (onAdjust) onAdjust(item);
-                        else onEdit(item);
-                      }}
-                      sx={{
-                        color: "success.main",
-                        mr: 0.5,
-                        p: compactView ? 0.5 : 1,
-                      }}
-                    >
-                      <ExposureIcon
-                        fontSize={compactView ? "inherit" : "small"}
-                      />
-                    </IconButton>
-                  </Tooltip>
-                  {isAdmin && (
-                    <Tooltip title={t("inventory.edit")}>
-                      <IconButton
-                        size="small"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onEdit(item);
-                        }}
-                        sx={{
-                          color: "primary.main",
-                          mr: onDelete ? 0.5 : 0,
-                          p: compactView ? 0.5 : 1,
-                        }}
-                      >
-                        <EditIcon
-                          fontSize={compactView ? "inherit" : "small"}
-                        />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                  {isAdmin && onDelete && (
-                    <Tooltip title={t("inventory.delete")}>
-                      <IconButton
-                        size="small"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDelete(item.id);
-                        }}
-                        sx={{ color: "error.main", p: compactView ? 0.5 : 1 }}
-                      >
-                        <DeleteIcon
-                          fontSize={compactView ? "inherit" : "small"}
-                        />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                </Box>
               </Box>
+              <Typography
+                variant="caption"
+                fontWeight="900"
+                color="text.secondary"
+                sx={{
+                  opacity: 0.8,
+                  bgcolor: alpha(theme.palette.divider, 0.05),
+                  px: 1.25,
+                  py: 0.5,
+                  borderRadius: 1.5,
+                  border: "1px solid",
+                  borderColor: alpha(theme.palette.divider, 0.1),
+                  letterSpacing: 0.5,
+                }}
+              >
+                {t("inventory.minThreshold", { threshold: effectiveThreshold })}
+              </Typography>
             </Box>
+            <LinearProgress
+              variant="determinate"
+              value={Math.min(
+                100,
+                ((item.stock || 0) / effectiveThreshold) * 100
+              )}
+              sx={{
+                height: 6,
+                borderRadius: 3,
+                bgcolor: alpha(theme.palette.divider, 0.1),
+                "& .MuiLinearProgress-bar": {
+                  bgcolor: isOutOfStock
+                    ? "error.main"
+                    : isLowStock
+                      ? "warning.main"
+                      : "success.main",
+                  borderRadius: 3,
+                },
+              }}
+            />
           </Box>
         </CardContent>
+
+        <Divider sx={{ opacity: 0.1 }} />
+
+        <CardActions
+          sx={{
+            p: 1.5,
+            bgcolor:
+              theme.palette.mode === "dark"
+                ? alpha(theme.palette.background.default, 0.8)
+                : alpha(theme.palette.action.hover, 0.9),
+            borderTop: "1px solid",
+            borderColor: "divider",
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Button
+            size="small"
+            startIcon={<HistoryIcon />}
+            onClick={() => onViewHistory?.(item.id, item.name)}
+            sx={{
+              fontWeight: "bold",
+              color: theme.palette.text.primary,
+              "&:hover": {
+                bgcolor: alpha(theme.palette.primary.main, 0.08),
+              },
+            }}
+          >
+            {t("inventory.history") || "History"}
+          </Button>
+
+          <Box sx={{ flexGrow: 1 }} />
+
+          <Stack direction="row" spacing={0.5}>
+            <IconButton
+              size="small"
+              onClick={() => onAdjust?.(item)}
+              sx={{
+                bgcolor: alpha(theme.palette.success.main, 0.1),
+                color: "success.main",
+                "&:hover": { bgcolor: alpha(theme.palette.success.main, 0.2) },
+              }}
+            >
+              <ExposureIcon fontSize="small" />
+            </IconButton>
+
+            {isAdmin && (
+              <>
+                <IconButton
+                  size="small"
+                  color="primary"
+                  onClick={() => onEdit(item)}
+                  sx={{
+                    bgcolor: alpha(theme.palette.primary.main, 0.1),
+                    "&:hover": {
+                      bgcolor: alpha(theme.palette.primary.main, 0.2),
+                    },
+                  }}
+                >
+                  <EditIcon fontSize="small" />
+                </IconButton>
+                <IconButton
+                  size="small"
+                  color="error"
+                  onClick={() => onDelete?.(item.id)}
+                  sx={{
+                    bgcolor: alpha(theme.palette.error.main, 0.05),
+                    "&:hover": {
+                      bgcolor: alpha(theme.palette.error.main, 0.15),
+                    },
+                  }}
+                >
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              </>
+            )}
+          </Stack>
+        </CardActions>
       </Card>
     </motion.div>
   );

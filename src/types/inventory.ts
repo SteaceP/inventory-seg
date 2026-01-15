@@ -7,6 +7,7 @@ export interface InventoryItem {
   image_url?: string;
   low_stock_threshold?: number | null;
   location?: string;
+  notes?: string;
   stock_locations?: {
     id?: string;
     location: string;

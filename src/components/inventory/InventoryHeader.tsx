@@ -79,6 +79,7 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
                 borderColor: "divider",
                 color: "text.primary",
                 whiteSpace: "nowrap",
+                fontWeight: "bold",
               }}
             >
               {isMobile ? "" : t("inventory.categories.manage") || "Categories"}
@@ -93,6 +94,7 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
               border: "1px solid",
               borderColor: "divider",
               color: "text.primary",
+              fontWeight: "bold",
             }}
           >
             {t("inventory.scan")}
@@ -103,6 +105,12 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
               startIcon={<AddIcon />}
               fullWidth={isMobile}
               onClick={onAdd}
+              sx={{
+                background: "linear-gradient(45deg, #027d6f 30%, #1a748b 90%)",
+                color: "white",
+                fontWeight: "bold",
+                boxShadow: "0 3px 5px 2px rgba(2, 125, 111, .3)",
+              }}
             >
               {t("inventory.addButton")}
             </Button>
