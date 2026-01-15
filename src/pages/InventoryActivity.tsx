@@ -51,70 +51,120 @@ const InventoryActivityPage: React.FC = () => {
   const theme = useTheme();
   const { showError } = useAlert();
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [activities, setActivities] = useState<InventoryActivity[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [actionFilter, setActionFilter] = useState<string>("all");
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const PAGE_SIZE = 10;
 
-  const fetchHistory = useCallback(async () => {
-    try {
-      setLoading(true);
-      const { data: activityData, error: activityError } = await supabase
-        .from("inventory_activity")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(200);
-
-      if (activityError) throw activityError;
-
-      const userIds = [
-        ...new Set(
-          (activityData || [])
-            .map((a: { user_id: string | null }) => a.user_id)
-            .filter((id): id is string => !!id)
-        ),
-      ];
-
-      let userNames: Record<string, string> = {};
-      if (userIds.length > 0) {
-        const { data: userData, error: userError } = await supabase
-          .from("user_settings")
-          .select("user_id, display_name")
-          .in("user_id", userIds);
-
-        if (!userError && userData) {
-          userNames = (
-            userData as { user_id: string; display_name: string | null }[]
-          ).reduce(
-            (acc, user) => {
-              acc[user.user_id] = user.display_name || "Unknown User";
-              return acc;
-            },
-            {} as Record<string, string>
-          );
+  const fetchHistory = useCallback(
+    async (pageNum: number, isInitial = false) => {
+      try {
+        if (isInitial) {
+          setLoading(true);
+        } else {
+          setLoadingMore(true);
         }
+
+        const from = pageNum * PAGE_SIZE;
+        const to = from + PAGE_SIZE - 1;
+
+        const { data: activityData, error: activityError } = await supabase
+          .from("inventory_activity")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .range(from, to);
+
+        if (activityError) throw activityError;
+
+        if (!activityData || activityData.length < PAGE_SIZE) {
+          setHasMore(false);
+        } else {
+          setHasMore(true);
+        }
+
+        const userIds = [
+          ...new Set(
+            (activityData || [])
+              .map((a: { user_id: string | null }) => a.user_id)
+              .filter((id): id is string => !!id)
+          ),
+        ];
+
+        let userNames: Record<string, string> = {};
+        if (userIds.length > 0) {
+          const { data: userData, error: userError } = await supabase
+            .from("user_settings")
+            .select("user_id, display_name")
+            .in("user_id", userIds);
+
+          if (!userError && userData) {
+            userNames = (
+              userData as { user_id: string; display_name: string | null }[]
+            ).reduce(
+              (acc, user) => {
+                acc[user.user_id] = user.display_name || "Unknown User";
+                return acc;
+              },
+              {} as Record<string, string>
+            );
+          }
+        }
+
+        const formattedData = (
+          (activityData as unknown as ActivityQueryResult[]) || []
+        ).map((item: ActivityQueryResult) => ({
+          ...item,
+          user_display_name: item.user_id
+            ? userNames[item.user_id] || "Unknown User"
+            : "System",
+        })) as InventoryActivity[];
+
+        if (isInitial) {
+          setActivities(formattedData);
+        } else {
+          setActivities((prev) => [...prev, ...formattedData]);
+        }
+      } catch (err) {
+        console.error("Error fetching global history:", err);
+        showError(t("inventory.locations.error.save"));
+      } finally {
+        setLoading(false);
+        setLoadingMore(false);
       }
-
-      const formattedData = (
-        (activityData as unknown as ActivityQueryResult[]) || []
-      ).map((item: ActivityQueryResult) => ({
-        ...item,
-        user_display_name: item.user_id
-          ? userNames[item.user_id] || "Unknown User"
-          : "System",
-      })) as InventoryActivity[];
-
-      setActivities(formattedData);
-    } catch (err) {
-      console.error("Error fetching global history:", err);
-      showError(t("inventory.locations.error.save")); // Reusing generic save error
-    } finally {
-      setLoading(false);
-    }
-  }, [showError, t]);
+    },
+    [showError, t]
+  );
 
   useEffect(() => {
-    void fetchHistory();
-  }, [fetchHistory]);
+    setPage(0);
+    setHasMore(true);
+    void fetchHistory(0, true);
+  }, [fetchHistory, searchTerm, actionFilter]);
+
+  const loadMore = useCallback(() => {
+    if (!loadingMore && hasMore) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      void fetchHistory(nextPage);
+    }
+  }, [fetchHistory, hasMore, loadingMore, page]);
+
+  // Infinite scroll observer
+  const observerRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (loading || loadingMore) return;
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          loadMore();
+        }
+      });
+      if (node) observer.observe(node);
+    },
+    [hasMore, loadMore, loading, loadingMore]
+  );
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -196,7 +246,14 @@ const InventoryActivityPage: React.FC = () => {
         <Typography variant="h4" fontWeight="bold">
           {t("inventory.activity.globalTitle")}
         </Typography>
-        <IconButton onClick={() => void fetchHistory()} disabled={loading}>
+        <IconButton
+          onClick={() => {
+            setPage(0);
+            setHasMore(true);
+            void fetchHistory(0, true);
+          }}
+          disabled={loading}
+        >
           <RefreshIcon />
         </IconButton>
       </Box>
@@ -245,100 +302,116 @@ const InventoryActivityPage: React.FC = () => {
         <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
           <CircularProgress />
         </Box>
-      ) : filteredActivities.length === 0 ? (
-        <Box sx={{ textAlign: "center", py: 8 }}>
-          <Typography color="text.secondary">
-            {t("inventory.noHistory")}
-          </Typography>
-        </Box>
       ) : (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          {filteredActivities.map((activity) => {
-            const stockChange = getStockChange(activity.changes);
-            const location = activity.changes?.location;
+          {filteredActivities.length === 0 ? (
+            <Box sx={{ textAlign: "center", py: 8 }}>
+              <Typography color="text.secondary">
+                {t("inventory.noHistory")}
+              </Typography>
+            </Box>
+          ) : (
+            filteredActivities.map((activity) => {
+              const stockChange = getStockChange(activity.changes);
+              const location = activity.changes?.location;
 
-            return (
-              <Paper
-                key={activity.id}
-                elevation={0}
-                sx={{
-                  p: 3,
-                  border: "1px solid",
-                  borderColor: "divider",
-                  borderRadius: "12px",
-                  transition: "all 0.2s",
-                  "&:hover": {
-                    borderColor: "primary.main",
-                    bgcolor: alpha(theme.palette.primary.main, 0.02),
-                  },
-                }}
-              >
-                <Box
+              return (
+                <Paper
+                  key={activity.id}
+                  elevation={0}
                   sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
+                    p: 3,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    borderRadius: "12px",
+                    transition: "all 0.2s",
+                    "&:hover": {
+                      borderColor: "primary.main",
+                      bgcolor: alpha(theme.palette.primary.main, 0.02),
+                    },
                   }}
                 >
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Box
-                      sx={{
-                        p: 1,
-                        borderRadius: "8px",
-                        bgcolor: alpha(
-                          actionFilter === "deleted"
-                            ? theme.palette.error.main
-                            : theme.palette.primary.main,
-                          0.1
-                        ),
-                        display: "flex",
-                      }}
-                    >
-                      {getActionIcon(activity.action, activity.changes)}
-                    </Box>
-                    <Box>
-                      <Typography variant="subtitle1" fontWeight="bold">
-                        {activity.item_name}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {getActionLabel(activity)} •{" "}
-                        {activity.user_display_name}
-                      </Typography>
-                    </Box>
-                  </Box>
-                  <Typography variant="caption" color="text.secondary">
-                    {formatDate(activity.created_at)}
-                  </Typography>
-                </Box>
-
-                <Box sx={{ mt: 2, ml: 7 }}>
-                  <Box sx={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
-                    {stockChange && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                       <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        sx={{
+                          p: 1,
+                          borderRadius: "8px",
+                          bgcolor: alpha(
+                            actionFilter === "deleted"
+                              ? theme.palette.error.main
+                              : theme.palette.primary.main,
+                            0.1
+                          ),
+                          display: "flex",
+                        }}
                       >
-                        <Typography variant="body2">
-                          Stock: {stockChange.oldStock} → {stockChange.newStock}
-                        </Typography>
-                        <Chip
-                          label={`${stockChange.diff > 0 ? "+" : ""}${stockChange.diff}`}
-                          size="small"
-                          color={stockChange.color as "success" | "error"}
-                          sx={{ height: 20, fontSize: "0.75rem" }}
-                        />
+                        {getActionIcon(activity.action, activity.changes)}
                       </Box>
-                    )}
-                    {location && (
-                      <Typography variant="body2" color="text.secondary">
-                        {t("inventory.activity.atLocation")}:{" "}
-                        <strong>{location}</strong>
-                      </Typography>
-                    )}
+                      <Box>
+                        <Typography variant="subtitle1" fontWeight="bold">
+                          {activity.item_name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {getActionLabel(activity)} •{" "}
+                          {activity.user_display_name}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Typography variant="caption" color="text.secondary">
+                      {formatDate(activity.created_at)}
+                    </Typography>
                   </Box>
-                </Box>
-              </Paper>
-            );
-          })}
+
+                  <Box sx={{ mt: 2, ml: 7 }}>
+                    <Box sx={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
+                      {stockChange && (
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                          <Typography variant="body2">
+                            Stock: {stockChange.oldStock} →{" "}
+                            {stockChange.newStock}
+                          </Typography>
+                          <Chip
+                            label={`${stockChange.diff > 0 ? "+" : ""}${stockChange.diff}`}
+                            size="small"
+                            color={stockChange.color as "success" | "error"}
+                            sx={{ height: 20, fontSize: "0.75rem" }}
+                          />
+                        </Box>
+                      )}
+                      {location && (
+                        <Typography variant="body2" color="text.secondary">
+                          {t("inventory.activity.atLocation")}:{" "}
+                          <strong>{location}</strong>
+                        </Typography>
+                      )}
+                    </Box>
+                  </Box>
+                </Paper>
+              );
+            })
+          )}
+          {(hasMore || loadingMore) && (
+            <Box
+              ref={observerRef}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                py: 4,
+                width: "100%",
+              }}
+            >
+              {loadingMore && <CircularProgress size={24} />}
+            </Box>
+          )}
         </Box>
       )}
     </Container>
