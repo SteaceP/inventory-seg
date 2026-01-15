@@ -16,7 +16,18 @@ const translations: Record<Lang, Record<string, string>> = {
 export function useTranslation() {
   const { language } = useUserContext();
   const t = useCallback(
-    (key: string) => translations[language || "fr"][key] || key,
+    (
+      key: string,
+      params?: Record<string, string | number | boolean | null | undefined>
+    ) => {
+      let translation = translations[language || "fr"][key] || key;
+      if (params) {
+        Object.entries(params).forEach(([k, v]) => {
+          translation = translation.replace(`{{${k}}}`, String(v));
+        });
+      }
+      return translation;
+    },
     [language]
   );
   return { t, lang: language };

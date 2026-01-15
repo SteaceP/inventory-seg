@@ -36,6 +36,7 @@ interface InventoryCategorizedGridProps {
   selectedItems: Set<string>;
   onToggleItem: (id: string, checked: boolean) => void;
   onEdit: (item: InventoryItem) => void;
+  onAdjust?: (item: InventoryItem) => void;
   onDelete?: (id: string) => void;
   onViewHistory?: (itemId: string, itemName: string) => void;
   compactView?: boolean;
@@ -96,6 +97,7 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
   selectedItems,
   onToggleItem,
   onEdit,
+  onAdjust,
   onDelete,
   onViewHistory,
   compactView = false,
@@ -330,6 +332,7 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
                         isSelected={selectedItems.has(item.id)}
                         onToggle={onToggleItem}
                         onEdit={onEdit}
+                        onAdjust={onAdjust}
                         onDelete={onDelete}
                         onViewHistory={onViewHistory}
                       />

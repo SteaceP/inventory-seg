@@ -60,7 +60,17 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
   const isAdmin = role === "admin";
   const { t } = useTranslation();
   const { lowStockThreshold: globalThreshold } = useUserContext();
-  const { categories } = useInventoryContext();
+  const { categories, locations } = useInventoryContext();
+
+  // Helper to find parent_id for a location and then its name
+  const findParentName = (locationName: string) => {
+    const loc = locations.find((l) => l.name === locationName);
+    if (loc && loc.parent_id) {
+      const parent = locations.find((p) => p.id === loc.parent_id);
+      return parent ? parent.name : undefined;
+    }
+    return undefined;
+  };
 
   const categoryThreshold = categories.find(
     (c) => c.name === formData.category
@@ -281,14 +291,34 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                   alignItems: "flex-start",
                 }}
               >
-                <TextField
-                  label={t("inventory.locationLabel")}
-                  value={loc.location}
-                  onChange={(e) => {
+                <Autocomplete
+                  freeSolo
+                  options={locations.map((l) => l.name)}
+                  value={loc.location || ""}
+                  onChange={(_, newValue) => {
                     const newLocations = [...(formData.stock_locations || [])];
+                    const parentName = newValue
+                      ? findParentName(newValue)
+                      : undefined;
                     newLocations[index] = {
                       ...newLocations[index],
-                      location: e.target.value,
+                      location: newValue || "",
+                      parent_location: parentName,
+                    };
+                    onFormDataChange({
+                      ...formData,
+                      stock_locations: newLocations,
+                    });
+                  }}
+                  onInputChange={(_, newInputValue) => {
+                    const newLocations = [...(formData.stock_locations || [])];
+                    const parentName = newInputValue
+                      ? findParentName(newInputValue)
+                      : undefined;
+                    newLocations[index] = {
+                      ...newLocations[index],
+                      location: newInputValue || "",
+                      parent_location: parentName,
                     };
                     onFormDataChange({
                       ...formData,
@@ -298,8 +328,15 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                   disabled={!isAdmin}
                   fullWidth
                   size="small"
-                  placeholder={t("inventory.locationPlaceholder")}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label={t("inventory.locationLabel")}
+                      placeholder={t("inventory.locationPlaceholder")}
+                    />
+                  )}
                 />
+
                 <TextField
                   label={t("inventory.stockLabel")}
                   type="number"

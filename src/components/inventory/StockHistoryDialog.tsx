@@ -25,6 +25,10 @@ import {
 import { useTranslation } from "../../i18n";
 import { supabase } from "../../supabaseClient";
 import type { InventoryActivity, ActivityAction } from "../../types/activity";
+import {
+  getActivityNarrative,
+  getStockChange,
+} from "../../utils/activityUtils";
 
 interface StockHistoryDialogProps {
   open: boolean;
@@ -158,34 +162,6 @@ const StockHistoryDialog: React.FC<StockHistoryDialogProps> = ({
     return <EditIcon fontSize="small" color="primary" />;
   };
 
-  const getActionLabel = (activity: InventoryActivity) => {
-    const { action, changes } = activity;
-
-    if (action === "created") return t("inventory.activity.itemCreated");
-    if (action === "deleted") return t("inventory.activity.itemDeleted");
-
-    const actionType = changes?.action_type;
-    if (actionType === "add") return t("inventory.activity.stockAdded");
-    if (actionType === "remove") return t("inventory.activity.stockRemoved");
-
-    return t("inventory.activity.itemUpdated");
-  };
-
-  const getStockChange = (changes: InventoryActivity["changes"]) => {
-    const oldStock = changes?.old_stock ?? 0;
-    const newStock = changes?.stock ?? 0;
-    const diff = newStock - oldStock;
-
-    if (diff === 0) return null;
-
-    return {
-      diff,
-      oldStock,
-      newStock,
-      color: diff > 0 ? "success" : "error",
-    };
-  };
-
   return (
     <Dialog
       open={open}
@@ -263,7 +239,6 @@ const StockHistoryDialog: React.FC<StockHistoryDialogProps> = ({
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             {activities.map((activity) => {
               const stockChange = getStockChange(activity.changes);
-              const location = activity.changes?.location;
 
               return (
                 <Paper
@@ -292,8 +267,8 @@ const StockHistoryDialog: React.FC<StockHistoryDialogProps> = ({
                   >
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                       {getActionIcon(activity.action, activity.changes)}
-                      <Typography variant="subtitle2" fontWeight="bold">
-                        {getActionLabel(activity)}
+                      <Typography variant="subtitle2" color="text.primary">
+                        {getActivityNarrative(activity, t)}
                       </Typography>
                     </Box>
                     <Typography variant="caption" color="text.secondary">
@@ -309,10 +284,6 @@ const StockHistoryDialog: React.FC<StockHistoryDialogProps> = ({
                       ml: 4,
                     }}
                   >
-                    <Typography variant="body2" color="text.secondary">
-                      {t("inventory.activity.by")}: {activity.user_display_name}
-                    </Typography>
-
                     {stockChange && (
                       <Box
                         sx={{ display: "flex", alignItems: "center", gap: 1 }}
@@ -327,13 +298,6 @@ const StockHistoryDialog: React.FC<StockHistoryDialogProps> = ({
                           sx={{ height: 20, fontSize: "0.75rem" }}
                         />
                       </Box>
-                    )}
-
-                    {location && (
-                      <Typography variant="body2" color="text.secondary">
-                        {t("inventory.activity.atLocation")}:{" "}
-                        <strong>{location}</strong>
-                      </Typography>
                     )}
                   </Box>
                 </Paper>

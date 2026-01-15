@@ -31,6 +31,7 @@ export interface InventoryCategory {
 export interface InventoryContextType {
   items: InventoryItem[];
   categories: InventoryCategory[];
+  locations: MasterLocation[];
   loading: boolean;
   error: string | null;
   refreshInventory: () => Promise<void>;

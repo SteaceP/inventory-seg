@@ -13,6 +13,8 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
+  TextField,
+  Autocomplete,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -23,6 +25,7 @@ import {
 } from "@mui/icons-material";
 import type { InventoryItem } from "../../types/inventory";
 import { useTranslation } from "../../i18n";
+import { useInventoryContext } from "../../contexts/useInventoryContext";
 
 interface StockAdjustmentDialogProps {
   open: boolean;
@@ -33,7 +36,10 @@ interface StockAdjustmentDialogProps {
     itemId: string,
     newStock: number,
     location?: string,
-    actionType?: "add" | "remove"
+    actionType?: "add" | "remove",
+    parentLocation?: string,
+    recipient?: string,
+    destination_location?: string
   ) => void;
   loading?: boolean;
 }
@@ -53,13 +59,19 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
   const [selectedLocation, setSelectedLocation] = useState<{
     location: string;
     quantity: number;
+    parent_location?: string;
   } | null>(null);
+  const [recipient, setRecipient] = useState("");
+  const [destinationLocation, setDestinationLocation] = useState("");
   const { t } = useTranslation();
+  const { locations } = useInventoryContext();
 
   const handleClose = () => {
     setMode("menu");
     setInputValue("");
     setSelectedLocation(null);
+    setRecipient("");
+    setDestinationLocation("");
     onClose();
   };
 
@@ -78,8 +90,16 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
       actionType = "remove";
     }
 
-    // Pass location and action type to parent
-    onSave(item.id, newStock, selectedLocation?.location, actionType);
+    // Pass location, action type, and parent location to parent
+    onSave(
+      item.id,
+      newStock,
+      selectedLocation?.location,
+      actionType,
+      selectedLocation?.parent_location,
+      recipient.trim() || undefined,
+      destinationLocation.trim() || undefined
+    );
     handleClose();
   };
 
@@ -107,6 +127,7 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
   const handleLocationSelect = (location: {
     location: string;
     quantity: number;
+    parent_location?: string;
   }) => {
     setSelectedLocation(location);
     setMode("remove");
@@ -238,6 +259,7 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
                       handleLocationSelect({
                         location: loc.location,
                         quantity: loc.quantity,
+                        parent_location: loc.parent_location,
                       })
                     }
                     sx={{
@@ -280,6 +302,49 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
                 {inputValue || "0"}
               </Typography>
             </Box>
+
+            {mode === "remove" && (
+              <Box
+                sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 2 }}
+              >
+                <TextField
+                  label={t("inventory.recipientName") || "Destinataire (Nom)"}
+                  fullWidth
+                  size="small"
+                  value={recipient}
+                  onChange={(e) => setRecipient(e.target.value)}
+                  placeholder={
+                    t("inventory.recipientPlaceholder") ||
+                    "Qui prend l'article ?"
+                  }
+                />
+                <Autocomplete
+                  freeSolo
+                  size="small"
+                  options={locations.map((l) => l.name)}
+                  value={destinationLocation}
+                  onChange={(_, newValue) =>
+                    setDestinationLocation(newValue || "")
+                  }
+                  onInputChange={(_, newValue) =>
+                    setDestinationLocation(newValue || "")
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label={
+                        t("inventory.destinationLocation") ||
+                        "Lieu de destination"
+                      }
+                      placeholder={
+                        t("inventory.destinationPlaceholder") ||
+                        "Où sera-t-il utilisé ?"
+                      }
+                    />
+                  )}
+                />
+              </Box>
+            )}
 
             <Grid container spacing={1}>
               {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((digit) => (

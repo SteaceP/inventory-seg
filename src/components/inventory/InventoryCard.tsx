@@ -30,6 +30,7 @@ interface InventoryCardProps {
   isSelected: boolean;
   onToggle: (id: string, checked: boolean) => void;
   onEdit: (item: InventoryItem) => void;
+  onAdjust?: (item: InventoryItem) => void;
   onDelete?: (id: string) => void;
   onViewHistory?: (itemId: string, itemName: string) => void;
 }
@@ -39,6 +40,7 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
   isSelected,
   onToggle,
   onEdit,
+  onAdjust,
   onDelete,
   onViewHistory,
 }) => {
@@ -47,6 +49,8 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
   const { t } = useTranslation();
   const { lowStockThreshold: globalThreshold } = useUserContext();
   const { categories } = useInventoryContext();
+  const { role } = useUserContext();
+  const isAdmin = role === "admin";
 
   const categoryThreshold = categories.find(
     (c) => c.name === item.category
@@ -315,39 +319,60 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                       />
                     </IconButton>
                   </Tooltip>
-                  <IconButton
-                    size="small"
-                    onClick={() => onEdit(item)}
-                    sx={{
-                      color: "primary.main",
-                      mr: onDelete ? 0.5 : 0,
-                      p: compactView ? 0.5 : 1,
-                    }}
-                    title={
-                      onDelete
-                        ? t("inventory.edit")
-                        : t("inventory.manageStock")
-                    }
-                  >
-                    {onDelete ? (
-                      <EditIcon fontSize={compactView ? "inherit" : "small"} />
-                    ) : (
+                  <Tooltip title={t("inventory.manageStock")}>
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (onAdjust) onAdjust(item);
+                        else onEdit(item);
+                      }}
+                      sx={{
+                        color: "success.main",
+                        mr: 0.5,
+                        p: compactView ? 0.5 : 1,
+                      }}
+                    >
                       <ExposureIcon
                         fontSize={compactView ? "inherit" : "small"}
                       />
-                    )}
-                  </IconButton>
-                  {onDelete && (
-                    <IconButton
-                      size="small"
-                      onClick={() => onDelete(item.id)}
-                      sx={{ color: "error.main", p: compactView ? 0.5 : 1 }}
-                      title={t("inventory.delete")}
-                    >
-                      <DeleteIcon
-                        fontSize={compactView ? "inherit" : "small"}
-                      />
                     </IconButton>
+                  </Tooltip>
+                  {isAdmin && (
+                    <Tooltip title={t("inventory.edit")}>
+                      <IconButton
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEdit(item);
+                        }}
+                        sx={{
+                          color: "primary.main",
+                          mr: onDelete ? 0.5 : 0,
+                          p: compactView ? 0.5 : 1,
+                        }}
+                      >
+                        <EditIcon
+                          fontSize={compactView ? "inherit" : "small"}
+                        />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                  {isAdmin && onDelete && (
+                    <Tooltip title={t("inventory.delete")}>
+                      <IconButton
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDelete(item.id);
+                        }}
+                        sx={{ color: "error.main", p: compactView ? 0.5 : 1 }}
+                      >
+                        <DeleteIcon
+                          fontSize={compactView ? "inherit" : "small"}
+                        />
+                      </IconButton>
+                    </Tooltip>
                   )}
                 </Box>
               </Box>

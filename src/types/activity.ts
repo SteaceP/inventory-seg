@@ -23,6 +23,7 @@ export interface InventoryActivity {
     stock?: number;
     old_stock?: number;
     location?: string;
+    parent_location?: string;
     action_type?: "add" | "remove" | "adjust";
     [key: string]: unknown;
   };

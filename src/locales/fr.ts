@@ -79,13 +79,31 @@ const fr = {
   "inventory.parentLocation": "Emplacement parent (optionnel)",
   "inventory.noHistory": "Aucun historique d'activité pour cet article",
   "inventory.printHistory": "Imprimer l'historique",
+  "inventory.activity.globalTitle": "Journal d'activité mondial",
+  "inventory.activity.itemCreated": "Article créé",
+  "inventory.activity.itemUpdated": "Article mis à jour",
+  "inventory.activity.itemDeleted": "Article supprimé",
   "inventory.activity.stockAdded": "Stock ajouté",
   "inventory.activity.stockRemoved": "Stock retiré",
-  "inventory.activity.atLocation": "à",
-  "inventory.activity.by": "par",
-  "inventory.activity.itemCreated": "Article créé",
-  "inventory.activity.itemUpdated": "Article modifié",
-  "inventory.activity.itemDeleted": "Article supprimé",
+  "inventory.activity.by": "Par",
+  "inventory.activity.atLocation": "À",
+  "inventory.activity.narrative.created":
+    "{{user}} a ajouté {{item}} à l'inventaire",
+  "inventory.activity.narrative.deleted":
+    "{{user}} a supprimé {{item}} de l'inventaire",
+  "inventory.activity.narrative.stockAdded":
+    "{{user}} a ajouté {{count}} {{item}} pour {{location}}",
+  "inventory.activity.narrative.stockRemoved":
+    "{{user}} a pris {{count}} {{item}} de {{location}}",
+  "inventory.activity.narrative.stockRemovedFull":
+    "{{user}} a donné {{count}} {{item}} à {{recipient}} pour {{destination}}",
+  "inventory.activity.narrative.stockRemovedRecipient":
+    "{{user}} a donné {{count}} {{item}} à {{recipient}}",
+  "inventory.activity.narrative.updated": "{{user}} a mis à jour {{item}}",
+  "inventory.recipientName": "Nom du destinataire",
+  "inventory.recipientPlaceholder": "Qui prend l'article ?",
+  "inventory.destinationLocation": "Destination",
+  "inventory.destinationPlaceholder": "Où sera-t-il utilisé ?",
   "inventory.scanner.title": "Scanner le code-barres",
   "inventory.scanner.instructions": "Positionnez le code-barres dans le cadre",
   "inventory.scanner.cameraError":

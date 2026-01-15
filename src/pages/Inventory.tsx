@@ -88,15 +88,14 @@ const Inventory: React.FC = () => {
 
   const handleOpen = React.useCallback(
     (item?: InventoryItem) => {
-      if (role === "user" && item) {
-        setEditingItem(item);
-        setStockDialogOpen(true);
-        return;
-      }
-
       if (item) {
         setEditingItem(item);
-        setFormData(item);
+        if (role === "admin") {
+          setFormData(item);
+          setOpen(true);
+        } else {
+          setStockDialogOpen(true);
+        }
       } else {
         setEditingItem(null);
         setFormData({
@@ -107,11 +106,16 @@ const Inventory: React.FC = () => {
           image_url: "",
           low_stock_threshold: null,
         });
+        setOpen(true);
       }
-      setOpen(true);
     },
     [role]
   );
+
+  const handleAdjust = React.useCallback((item: InventoryItem) => {
+    setEditingItem(item);
+    setStockDialogOpen(true);
+  }, []);
 
   const handleClose = () => {
     setOpen(false);
@@ -201,7 +205,10 @@ const Inventory: React.FC = () => {
     itemId: string,
     newStock: number,
     location?: string,
-    actionType?: "add" | "remove"
+    actionType?: "add" | "remove",
+    parentLocation?: string,
+    recipient?: string,
+    destination_location?: string
   ) => {
     try {
       setActionLoading(true);
@@ -229,6 +236,15 @@ const Inventory: React.FC = () => {
         }
         if (location) {
           activityChanges.location = location;
+        }
+        if (parentLocation) {
+          activityChanges.parent_location = parentLocation;
+        }
+        if (recipient) {
+          activityChanges.recipient = recipient;
+        }
+        if (destination_location) {
+          activityChanges.destination_location = destination_location;
         }
 
         await supabase.from("inventory_activity").insert({
@@ -322,6 +338,7 @@ const Inventory: React.FC = () => {
               inventory_id: editingItem.id,
               location: l.location,
               quantity: l.quantity || 0,
+              parent_location: l.parent_location,
             }));
 
           if (locationsToInsert.length > 0) {
@@ -368,6 +385,7 @@ const Inventory: React.FC = () => {
                 inventory_id: newItem.id,
                 location: l.location,
                 quantity: l.quantity || 0,
+                parent_location: l.parent_location,
               }));
 
             if (locationsToInsert.length > 0) {
@@ -531,6 +549,7 @@ const Inventory: React.FC = () => {
         selectedItems={selectedItems}
         onToggleItem={toggleItem}
         onEdit={handleOpen}
+        onAdjust={handleAdjust}
         onDelete={role === "admin" ? (id) => handleDeleteClick(id) : undefined}
         onViewHistory={(itemId, itemName) => {
           setSelectedItemForHistory({ id: itemId, name: itemName });
@@ -567,7 +586,25 @@ const Inventory: React.FC = () => {
         item={editingItem}
         isMobile={isMobile}
         onClose={() => setStockDialogOpen(false)}
-        onSave={(itemId, newStock) => void handleStockSave(itemId, newStock)}
+        onSave={(
+          itemId,
+          newStock,
+          location,
+          actionType,
+          parentLocation,
+          recipient,
+          destination
+        ) =>
+          void handleStockSave(
+            itemId,
+            newStock,
+            location,
+            actionType,
+            parentLocation,
+            recipient,
+            destination
+          )
+        }
         loading={actionLoading}
       />
 

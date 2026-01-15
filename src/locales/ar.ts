@@ -75,6 +75,23 @@ const ar = {
   "inventory.activity.itemUpdated": "تم تحديث العنصر",
   "inventory.activity.itemDeleted": "تم حذف العنصر",
   "inventory.activity.globalTitle": "سجل النشاط العالمي",
+  "inventory.activity.narrative.created":
+    "قام {{user}} بإضافة {{item}} إلى المخزون",
+  "inventory.activity.narrative.deleted":
+    "قام {{user}} بحذف {{item}} من المخزون",
+  "inventory.activity.narrative.stockAdded":
+    "قام {{user}} بإضافة {{count}} من {{item}} في {{location}}",
+  "inventory.activity.narrative.stockRemoved":
+    "قام {{user}} بأخذ {{count}} من {{item}} من {{location}}",
+  "inventory.activity.narrative.stockRemovedFull":
+    "قام {{user}} بإعطاء {{count}} من {{item}} إلى {{recipient}} لاستخدامها في {{destination}}",
+  "inventory.activity.narrative.stockRemovedRecipient":
+    "قام {{user}} بإعطاء {{count}} من {{item}} إلى {{recipient}}",
+  "inventory.activity.narrative.updated": "قام {{user}} بتحديث {{item}}",
+  "inventory.recipientName": "اسم المستلم",
+  "inventory.recipientPlaceholder": "من يأخذ العنصر؟",
+  "inventory.destinationLocation": "الوجهة",
+  "inventory.destinationPlaceholder": "أين سيتم استخدامه؟",
   "inventory.locations.management": "إدارة المواقع",
   "inventory.locations.add": "إضافة موقع",
   "inventory.locations.edit": "تعديل الموقع",

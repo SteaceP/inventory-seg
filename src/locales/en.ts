@@ -157,14 +157,31 @@ const en = {
   "inventory.parentLocation": "Parent Location (optional)",
   "inventory.noHistory": "No activity history for this item",
   "inventory.printHistory": "Print History",
-  "inventory.activity.stockAdded": "Stock added",
-  "inventory.activity.stockRemoved": "Stock removed",
-  "inventory.activity.atLocation": "at",
-  "inventory.activity.by": "by",
-  "inventory.activity.itemCreated": "Item created",
-  "inventory.activity.itemUpdated": "Item updated",
-  "inventory.activity.itemDeleted": "Item deleted",
   "inventory.activity.globalTitle": "Global Activity Log",
+  "inventory.activity.itemCreated": "Item Created",
+  "inventory.activity.itemUpdated": "Item Updated",
+  "inventory.activity.itemDeleted": "Item Deleted",
+  "inventory.activity.stockAdded": "Stock Added",
+  "inventory.activity.stockRemoved": "Stock Removed",
+  "inventory.activity.by": "By",
+  "inventory.activity.atLocation": "At",
+  "inventory.activity.narrative.created":
+    "{{user}} added {{item}} to inventory",
+  "inventory.activity.narrative.deleted":
+    "{{user}} deleted {{item}} from inventory",
+  "inventory.activity.narrative.stockAdded":
+    "{{user}} added {{count}} {{item}} for {{location}}",
+  "inventory.activity.narrative.stockRemoved":
+    "{{user}} took {{count}} {{item}} from {{location}}",
+  "inventory.activity.narrative.stockRemovedFull":
+    "{{user}} gave {{count}} {{item}} to {{recipient}} for {{destination}}",
+  "inventory.activity.narrative.stockRemovedRecipient":
+    "{{user}} gave {{count}} {{item}} to {{recipient}}",
+  "inventory.activity.narrative.updated": "{{user}} updated {{item}}",
+  "inventory.recipientName": "Recipient Name",
+  "inventory.recipientPlaceholder": "Who is taking the item?",
+  "inventory.destinationLocation": "Destination",
+  "inventory.destinationPlaceholder": "Where will it be used?",
   "inventory.locations.management": "Manage Locations",
   "inventory.locations.add": "Add location",
   "inventory.locations.edit": "Edit location",

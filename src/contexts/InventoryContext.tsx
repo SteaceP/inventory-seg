@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../supabaseClient";
 import type { RealtimeChannel } from "@supabase/supabase-js";
-import type { InventoryItem, InventoryCategory } from "../types/inventory";
+import type {
+  InventoryItem,
+  InventoryCategory,
+  MasterLocation,
+} from "../types/inventory";
 import { InventoryContext } from "./inventory-context";
 import { useTranslation } from "../i18n";
 import { useAlert } from "./useAlertContext";
@@ -11,6 +15,7 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [categories, setCategories] = useState<InventoryCategory[]>([]);
+  const [locations, setLocations] = useState<MasterLocation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
@@ -47,8 +52,17 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
 
       if (categoriesError) throw categoriesError;
 
+      // Fetch locations
+      const { data: locationsData, error: locationsError } = await supabase
+        .from("inventory_locations")
+        .select("*")
+        .order("name");
+
+      if (locationsError) throw locationsError;
+
       setItems(itemsData || []);
       setCategories(categoriesData || []);
+      setLocations(locationsData || []);
       setError(null);
     } catch (err: unknown) {
       const error = err as Error;
@@ -88,6 +102,7 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const subscriptionRef = React.useRef<RealtimeChannel | null>(null);
   const catSubscriptionRef = React.useRef<RealtimeChannel | null>(null);
+  const locSubscriptionRef = React.useRef<RealtimeChannel | null>(null);
 
   useEffect(() => {
     const subscribe = () => {
@@ -96,6 +111,9 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
       }
       if (catSubscriptionRef.current) {
         void catSubscriptionRef.current.unsubscribe();
+      }
+      if (locSubscriptionRef.current) {
+        void locSubscriptionRef.current.unsubscribe();
       }
 
       if (navigator.onLine) {
@@ -115,6 +133,17 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
           .on(
             "postgres_changes",
             { event: "*", schema: "public", table: "inventory_categories" },
+            () => {
+              void fetchInventory();
+            }
+          )
+          .subscribe();
+
+        locSubscriptionRef.current = supabase
+          .channel("location_changes")
+          .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "inventory_locations" },
             () => {
               void fetchInventory();
             }
@@ -140,6 +169,10 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
         void catSubscriptionRef.current.unsubscribe();
         catSubscriptionRef.current = null;
       }
+      if (locSubscriptionRef.current) {
+        void locSubscriptionRef.current.unsubscribe();
+        locSubscriptionRef.current = null;
+      }
       setLoading(false); // Ensure loading is cleared if it was in progress
     };
 
@@ -155,6 +188,9 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
       if (catSubscriptionRef.current) {
         void catSubscriptionRef.current.unsubscribe();
       }
+      if (locSubscriptionRef.current) {
+        void locSubscriptionRef.current.unsubscribe();
+      }
     };
   }, [fetchInventory]);
 
@@ -162,12 +198,21 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
     () => ({
       items,
       categories,
+      locations,
       loading,
       error,
       refreshInventory: fetchInventory,
       updateCategoryThreshold,
     }),
-    [items, categories, loading, error, fetchInventory, updateCategoryThreshold]
+    [
+      items,
+      categories,
+      locations,
+      loading,
+      error,
+      fetchInventory,
+      updateCategoryThreshold,
+    ]
   );
 
   return <InventoryContext value={contextValue}>{children}</InventoryContext>;

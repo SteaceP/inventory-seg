@@ -27,24 +27,9 @@ import {
 import { useTranslation } from "../i18n";
 import { supabase } from "../supabaseClient";
 import { useAlert } from "../contexts/useAlertContext";
-import type { InventoryActivity, ActivityAction } from "../types/activity";
+import type { InventoryActivity } from "../types/activity";
 import { alpha } from "@mui/material/styles";
-
-interface ActivityQueryResult {
-  id: string;
-  inventory_id: string;
-  user_id: string | null;
-  action: ActivityAction;
-  item_name: string;
-  changes: {
-    stock?: number;
-    old_stock?: number;
-    location?: string;
-    action_type?: "add" | "remove" | "adjust";
-    [key: string]: unknown;
-  };
-  created_at: string;
-}
+import { getActivityNarrative, getStockChange } from "../utils/activityUtils";
 
 const InventoryActivityPage: React.FC = () => {
   const { t } = useTranslation();
@@ -114,8 +99,10 @@ const InventoryActivityPage: React.FC = () => {
         }
 
         const formattedData = (
-          (activityData as unknown as ActivityQueryResult[]) || []
-        ).map((item: ActivityQueryResult) => ({
+          (activityData as (Omit<InventoryActivity, "user_display_name"> & {
+            user_display_name?: string;
+          })[]) || []
+        ).map((item) => ({
           ...item,
           user_display_name: item.user_id
             ? userNames[item.user_id] || "Unknown User"
@@ -193,31 +180,6 @@ const InventoryActivityPage: React.FC = () => {
       return <TrendingDownIcon fontSize="small" color="error" />;
 
     return <EditIcon fontSize="small" color="primary" />;
-  };
-
-  const getActionLabel = (activity: InventoryActivity) => {
-    const { action, changes } = activity;
-    if (action === "created") return t("inventory.activity.itemCreated");
-    if (action === "deleted") return t("inventory.activity.itemDeleted");
-
-    const actionType = changes?.action_type;
-    if (actionType === "add") return t("inventory.activity.stockAdded");
-    if (actionType === "remove") return t("inventory.activity.stockRemoved");
-
-    return t("inventory.activity.itemUpdated");
-  };
-
-  const getStockChange = (changes: InventoryActivity["changes"]) => {
-    const oldStock = (changes?.old_stock as number) ?? 0;
-    const newStock = (changes?.stock as number) ?? 0;
-    const diff = newStock - oldStock;
-    if (diff === 0) return null;
-    return {
-      diff,
-      oldStock,
-      newStock,
-      color: diff > 0 ? "success" : "error",
-    };
   };
 
   const filteredActivities = activities.filter((a) => {
@@ -313,7 +275,6 @@ const InventoryActivityPage: React.FC = () => {
           ) : (
             filteredActivities.map((activity) => {
               const stockChange = getStockChange(activity.changes);
-              const location = activity.changes?.location;
 
               return (
                 <Paper
@@ -359,8 +320,7 @@ const InventoryActivityPage: React.FC = () => {
                           {activity.item_name}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          {getActionLabel(activity)} •{" "}
-                          {activity.user_display_name}
+                          {getActivityNarrative(activity, t)}
                         </Typography>
                       </Box>
                     </Box>
@@ -386,12 +346,6 @@ const InventoryActivityPage: React.FC = () => {
                             sx={{ height: 20, fontSize: "0.75rem" }}
                           />
                         </Box>
-                      )}
-                      {location && (
-                        <Typography variant="body2" color="text.secondary">
-                          {t("inventory.activity.atLocation")}:{" "}
-                          <strong>{location}</strong>
-                        </Typography>
                       )}
                     </Box>
                   </Box>
