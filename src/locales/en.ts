@@ -100,6 +100,7 @@ const en = {
   "menu.inventory": "Inventory",
   "menu.activity": "Stock Activity",
   "menu.locations": "Locations",
+  "menu.reports": "Reports",
   "menu.settings": "Settings",
   "menu.appliances": "Appliances",
   "app.title": "Inventory",
@@ -228,6 +229,19 @@ const en = {
   "dashboard.lowStock.title": "Low Stock Alert",
   "dashboard.lowStock.viewAll": "View all",
   "errors.loadDashboard": "Error loading dashboard.",
+  "reports.title": "Inventory Reports",
+  "reports.month": "Select Month",
+  "reports.location": "Destination Location",
+  "reports.noData": "No movements found for this location and month.",
+  "reports.totalQuantity": "Total Quantity",
+  "reports.itemName": "Item Name",
+  "reports.print": "Print Report",
+  "reports.generatedOn": "Generated on {{date}}",
+  "reports.summary": "Monthly movement to {{location}}",
+  "reports.monthly": "Monthly",
+  "reports.annual": "Annual",
+  "reports.year": "Select Year",
+  "reports.allLocations": "All Locations",
 };
 
 export default en;

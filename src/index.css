@@ -100,29 +100,50 @@ button:active {
   body {
     background-color: white !important;
     color: black !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
+  /* Force black and white text */
+  * {
+    color: black !important;
+    background-color: transparent !important;
+    border-color: #333 !important;
+    box-shadow: none !important;
+  }
+
+  /* Keep table structure visible */
+  table,
+  th,
+  td {
+    border: 1px solid #333 !important;
+    background-color: white !important;
+  }
+
+  th {
+    background-color: #f0f0f0 !important;
+  }
+
+  /* Show #root but hide navigation elements */
   #root {
-    display: none !important;
-  }
-
-  .print-only-area {
     display: block !important;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
   }
 
-  /* Hide common browser elements if they persist */
+  /* Hide navigation and sidebar */
+  nav,
+  aside,
   header,
   footer,
-  nav,
-  aside {
+  .MuiDrawer-root,
+  .MuiAppBar-root {
     display: none !important;
   }
-}
 
-.print-only-area {
-  display: none;
+  /* Make main content full width */
+  main,
+  [role="main"] {
+    margin-left: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
 }

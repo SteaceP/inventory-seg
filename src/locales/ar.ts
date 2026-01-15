@@ -197,9 +197,23 @@ const ar = {
   "login.password": "كلمة المرور",
   "login.signIn": "تسجيل الدخول",
   "login.signingIn": "تسجيل الدخول...",
+  "menu.reports": "التقارير",
   "layout.settings": "إعدادات",
   "appliances.addRepair": "إضافة إصلاح",
   "appliances.delete": "حذف",
+  "reports.title": "تقارير المخزون",
+  "reports.month": "اختر الشهر",
+  "reports.location": "موقع الوجهة",
+  "reports.noData": "لم يتم العثور على حركات لهذا الموقع والشهر.",
+  "reports.totalQuantity": "الكمية الإجمالية",
+  "reports.itemName": "اسم العنصر",
+  "reports.print": "طباعة التقرير",
+  "reports.generatedOn": "تم إنشاؤه في {{date}}",
+  "reports.summary": "الحركة الشهرية إلى {{location}}",
+  "reports.monthly": "شهري",
+  "reports.annual": "سنوي",
+  "reports.year": "اختر السنة",
+  "reports.allLocations": "جميع المواقع",
 };
 
 export default ar;

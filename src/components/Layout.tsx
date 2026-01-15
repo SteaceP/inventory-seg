@@ -26,6 +26,7 @@ import {
   Kitchen as AppliancesIcon,
   History as ActivityIcon,
   LocationOn as LocationIcon,
+  Assessment as AssessmentIcon,
 } from "@mui/icons-material";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { supabase } from "../supabaseClient";
@@ -81,6 +82,11 @@ const Layout: React.FC = () => {
       text: t("menu.locations"),
       icon: <LocationIcon />,
       path: "/inventory/locations",
+    },
+    {
+      text: t("menu.reports"),
+      icon: <AssessmentIcon />,
+      path: "/inventory/reports",
     },
     {
       text: t("menu.appliances"),
