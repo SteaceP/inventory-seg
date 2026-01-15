@@ -78,7 +78,8 @@ const ar = {
   "inventory.locations.management": "إدارة المواقع",
   "inventory.locations.add": "إضافة موقع",
   "inventory.locations.edit": "تعديل الموقع",
-  "inventory.locations.deleteConfirm": "هل أنت متأكد أنك تريد حذف هذا الموقع؟ ستفقد العناصر المرتبطة بهذا الموقع ارتباطها.",
+  "inventory.locations.deleteConfirm":
+    "هل أنت متأكد أنك تريد حذف هذا الموقع؟ ستفقد العناصر المرتبطة بهذا الموقع ارتباطها.",
   "inventory.locations.name": "اسم الموقع",
   "inventory.locations.parent": "الموقع الرئيسي (اختياري)",
   "inventory.locations.noLocations": "لم يتم إنشاء أي مواقع بعد.",

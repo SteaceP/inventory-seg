@@ -231,8 +231,8 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
               {t("inventory.locationRequired")}
             </Typography>
             <List sx={{ bgcolor: "background.paper", borderRadius: "8px" }}>
-              {(item.stock_locations || []).map((loc, idx) => (
-                <ListItem key={idx} disablePadding>
+              {(item.stock_locations || []).map((loc) => (
+                <ListItem key={loc.location} disablePadding>
                   <ListItemButton
                     onClick={() =>
                       handleLocationSelect({

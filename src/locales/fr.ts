@@ -149,11 +149,13 @@ const fr = {
   "inventory.locations.management": "Gérer les emplacements",
   "inventory.locations.add": "Ajouter un emplacement",
   "inventory.locations.edit": "Modifier l'emplacement",
-  "inventory.locations.deleteConfirm": "Êtes-vous sûr de vouloir supprimer cet emplacement ? Les articles assignés à cet emplacement perdront leur association.",
+  "inventory.locations.deleteConfirm":
+    "Êtes-vous sûr de vouloir supprimer cet emplacement ? Les articles assignés à cet emplacement perdront leur association.",
   "inventory.locations.name": "Nom de l'emplacement",
   "inventory.locations.parent": "Emplacement parent (optionnel)",
   "inventory.locations.noLocations": "Aucun emplacement créé pour le moment.",
-  "inventory.locations.error.duplicate": "Un emplacement avec ce nom existe déjà.",
+  "inventory.locations.error.duplicate":
+    "Un emplacement avec ce nom existe déjà.",
   "inventory.locations.error.save":
     "L'enregistrement de l'emplacement a échoué. Veuillez réessayer.",
   "inventory.locations.error.delete":

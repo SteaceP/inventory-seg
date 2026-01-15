@@ -168,11 +168,13 @@ const en = {
   "inventory.locations.management": "Manage Locations",
   "inventory.locations.add": "Add location",
   "inventory.locations.edit": "Edit location",
-  "inventory.locations.deleteConfirm": "Are you sure you want to delete this location? Items assigned to this location will lose their association.",
+  "inventory.locations.deleteConfirm":
+    "Are you sure you want to delete this location? Items assigned to this location will lose their association.",
   "inventory.locations.name": "Location name",
   "inventory.locations.parent": "Parent location (optional)",
   "inventory.locations.noLocations": "No locations created yet.",
-  "inventory.locations.error.duplicate": "A location with this name already exists.",
+  "inventory.locations.error.duplicate":
+    "A location with this name already exists.",
   "inventory.locations.error.save":
     "Failed to save the location. Please try again.",
   "inventory.locations.error.delete": "Failed to delete the location.",
