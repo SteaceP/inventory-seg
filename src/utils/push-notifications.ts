@@ -42,13 +42,15 @@ export async function subscribeToPush() {
     data: { user },
   } = await supabase.auth.getUser();
   if (user) {
+    const subscriptionObj = subscription.toJSON();
     const { error } = await supabase.from("push_subscriptions").upsert(
       {
         user_id: user.id,
-        subscription: subscription.toJSON(),
+        subscription: subscriptionObj,
+        endpoint: subscription.endpoint,
         device_info: getDeviceInfo(),
       },
-      { onConflict: "user_id, subscription" }
+      { onConflict: "user_id, endpoint" }
     );
 
     if (error) throw error;
@@ -72,7 +74,7 @@ export async function unsubscribeFromPush() {
       await supabase
         .from("push_subscriptions")
         .delete()
-        .match({ user_id: user.id, subscription: subscription.toJSON() });
+        .match({ user_id: user.id, endpoint: subscription.endpoint });
     }
   }
 }
