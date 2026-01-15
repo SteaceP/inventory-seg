@@ -1,0 +1,348 @@
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  Box,
+  Container,
+  Typography,
+  Paper,
+  Chip,
+  IconButton,
+  CircularProgress,
+  TextField,
+  InputAdornment,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  useTheme,
+} from "@mui/material";
+import {
+  Search as SearchIcon,
+  TrendingUp as TrendingUpIcon,
+  TrendingDown as TrendingDownIcon,
+  Edit as EditIcon,
+  Add as AddIcon,
+  Delete as DeleteIcon,
+  Refresh as RefreshIcon,
+} from "@mui/icons-material";
+import { useTranslation } from "../i18n";
+import { supabase } from "../supabaseClient";
+import { useAlert } from "../contexts/useAlertContext";
+import type { InventoryActivity, ActivityAction } from "../types/activity";
+import { alpha } from "@mui/material/styles";
+
+interface ActivityQueryResult {
+  id: string;
+  inventory_id: string;
+  user_id: string | null;
+  action: ActivityAction;
+  item_name: string;
+  changes: {
+    stock?: number;
+    old_stock?: number;
+    location?: string;
+    action_type?: "add" | "remove" | "adjust";
+    [key: string]: unknown;
+  };
+  created_at: string;
+}
+
+const InventoryActivityPage: React.FC = () => {
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const { showError } = useAlert();
+  const [loading, setLoading] = useState(false);
+  const [activities, setActivities] = useState<InventoryActivity[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [actionFilter, setActionFilter] = useState<string>("all");
+
+  const fetchHistory = useCallback(async () => {
+    try {
+      setLoading(true);
+      const { data: activityData, error: activityError } = await supabase
+        .from("inventory_activity")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(200);
+
+      if (activityError) throw activityError;
+
+      const userIds = [
+        ...new Set(
+          (activityData || [])
+            .map((a: { user_id: string | null }) => a.user_id)
+            .filter((id): id is string => !!id)
+        ),
+      ];
+
+      let userNames: Record<string, string> = {};
+      if (userIds.length > 0) {
+        const { data: userData, error: userError } = await supabase
+          .from("user_settings")
+          .select("user_id, display_name")
+          .in("user_id", userIds);
+
+        if (!userError && userData) {
+          userNames = (
+            userData as { user_id: string; display_name: string | null }[]
+          ).reduce(
+            (acc, user) => {
+              acc[user.user_id] = user.display_name || "Unknown User";
+              return acc;
+            },
+            {} as Record<string, string>
+          );
+        }
+      }
+
+      const formattedData = (
+        (activityData as unknown as ActivityQueryResult[]) || []
+      ).map((item: ActivityQueryResult) => ({
+        ...item,
+        user_display_name: item.user_id
+          ? userNames[item.user_id] || "Unknown User"
+          : "System",
+      })) as InventoryActivity[];
+
+      setActivities(formattedData);
+    } catch (err) {
+      console.error("Error fetching global history:", err);
+      showError(t("inventory.locations.error.save")); // Reusing generic save error
+    } finally {
+      setLoading(false);
+    }
+  }, [showError, t]);
+
+  useEffect(() => {
+    void fetchHistory();
+  }, [fetchHistory]);
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const getActionIcon = (
+    action: string,
+    changes: InventoryActivity["changes"]
+  ) => {
+    if (action === "created")
+      return <AddIcon fontSize="small" color="success" />;
+    if (action === "deleted")
+      return <DeleteIcon fontSize="small" color="error" />;
+
+    const actionType = changes?.action_type;
+    if (actionType === "add")
+      return <TrendingUpIcon fontSize="small" color="success" />;
+    if (actionType === "remove")
+      return <TrendingDownIcon fontSize="small" color="error" />;
+
+    return <EditIcon fontSize="small" color="primary" />;
+  };
+
+  const getActionLabel = (activity: InventoryActivity) => {
+    const { action, changes } = activity;
+    if (action === "created") return t("inventory.activity.itemCreated");
+    if (action === "deleted") return t("inventory.activity.itemDeleted");
+
+    const actionType = changes?.action_type;
+    if (actionType === "add") return t("inventory.activity.stockAdded");
+    if (actionType === "remove") return t("inventory.activity.stockRemoved");
+
+    return t("inventory.activity.itemUpdated");
+  };
+
+  const getStockChange = (changes: InventoryActivity["changes"]) => {
+    const oldStock = (changes?.old_stock as number) ?? 0;
+    const newStock = (changes?.stock as number) ?? 0;
+    const diff = newStock - oldStock;
+    if (diff === 0) return null;
+    return {
+      diff,
+      oldStock,
+      newStock,
+      color: diff > 0 ? "success" : "error",
+    };
+  };
+
+  const filteredActivities = activities.filter((a) => {
+    const matchesSearch =
+      a.item_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      a.user_display_name?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesAction =
+      actionFilter === "all" ||
+      a.action === actionFilter ||
+      (actionFilter === "stock" &&
+        (a.changes?.action_type === "add" ||
+          a.changes?.action_type === "remove"));
+    return matchesSearch && matchesAction;
+  });
+
+  return (
+    <Container maxWidth={false} sx={{ py: 4, maxWidth: "1600px" }}>
+      <Box
+        sx={{
+          mb: 4,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Typography variant="h4" fontWeight="bold">
+          {t("inventory.activity.globalTitle")}
+        </Typography>
+        <IconButton onClick={() => void fetchHistory()} disabled={loading}>
+          <RefreshIcon />
+        </IconButton>
+      </Box>
+
+      <Paper
+        sx={{
+          p: 2,
+          mb: 4,
+          display: "flex",
+          gap: 2,
+          flexWrap: "wrap",
+          alignItems: "center",
+        }}
+      >
+        <TextField
+          size="small"
+          placeholder={t("inventory.searchPlaceholder")}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          sx={{ flexGrow: 1, minWidth: "200px" }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon color="action" />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <FormControl size="small" sx={{ minWidth: "150px" }}>
+          <InputLabel>{t("inventory.category")}</InputLabel>
+          <Select
+            value={actionFilter}
+            label={t("inventory.category")}
+            onChange={(e) => setActionFilter(e.target.value)}
+          >
+            <MenuItem value="all">All Actions</MenuItem>
+            <MenuItem value="created">Created</MenuItem>
+            <MenuItem value="updated">Updated</MenuItem>
+            <MenuItem value="deleted">Deleted</MenuItem>
+            <MenuItem value="stock">Stock Only</MenuItem>
+          </Select>
+        </FormControl>
+      </Paper>
+
+      {loading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
+          <CircularProgress />
+        </Box>
+      ) : filteredActivities.length === 0 ? (
+        <Box sx={{ textAlign: "center", py: 8 }}>
+          <Typography color="text.secondary">
+            {t("inventory.noHistory")}
+          </Typography>
+        </Box>
+      ) : (
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {filteredActivities.map((activity) => {
+            const stockChange = getStockChange(activity.changes);
+            const location = activity.changes?.location;
+
+            return (
+              <Paper
+                key={activity.id}
+                elevation={0}
+                sx={{
+                  p: 3,
+                  border: "1px solid",
+                  borderColor: "divider",
+                  borderRadius: "12px",
+                  transition: "all 0.2s",
+                  "&:hover": {
+                    borderColor: "primary.main",
+                    bgcolor: alpha(theme.palette.primary.main, 0.02),
+                  },
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <Box
+                      sx={{
+                        p: 1,
+                        borderRadius: "8px",
+                        bgcolor: alpha(
+                          actionFilter === "deleted"
+                            ? theme.palette.error.main
+                            : theme.palette.primary.main,
+                          0.1
+                        ),
+                        display: "flex",
+                      }}
+                    >
+                      {getActionIcon(activity.action, activity.changes)}
+                    </Box>
+                    <Box>
+                      <Typography variant="subtitle1" fontWeight="bold">
+                        {activity.item_name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {getActionLabel(activity)} •{" "}
+                        {activity.user_display_name}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <Typography variant="caption" color="text.secondary">
+                    {formatDate(activity.created_at)}
+                  </Typography>
+                </Box>
+
+                <Box sx={{ mt: 2, ml: 7 }}>
+                  <Box sx={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
+                    {stockChange && (
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
+                        <Typography variant="body2">
+                          Stock: {stockChange.oldStock} → {stockChange.newStock}
+                        </Typography>
+                        <Chip
+                          label={`${stockChange.diff > 0 ? "+" : ""}${stockChange.diff}`}
+                          size="small"
+                          color={stockChange.color as "success" | "error"}
+                          sx={{ height: 20, fontSize: "0.75rem" }}
+                        />
+                      </Box>
+                    )}
+                    {location && (
+                      <Typography variant="body2" color="text.secondary">
+                        {t("inventory.activity.atLocation")}:{" "}
+                        <strong>{location}</strong>
+                      </Typography>
+                    )}
+                  </Box>
+                </Box>
+              </Paper>
+            );
+          })}
+        </Box>
+      )}
+    </Container>
+  );
+};
+
+export default InventoryActivityPage;

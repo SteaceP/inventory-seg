@@ -16,6 +16,7 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Exposure as ExposureIcon,
+  History as HistoryIcon,
 } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import type { InventoryItem } from "../../types/inventory";
@@ -30,6 +31,7 @@ interface InventoryCardProps {
   onToggle: (id: string, checked: boolean) => void;
   onEdit: (item: InventoryItem) => void;
   onDelete?: (id: string) => void;
+  onViewHistory?: (itemId: string, itemName: string) => void;
 }
 
 const InventoryCard: React.FC<InventoryCardProps> = ({
@@ -38,6 +40,7 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
   onToggle,
   onEdit,
   onDelete,
+  onViewHistory,
 }) => {
   const { compactView } = useThemeContext();
   const theme = useTheme();
@@ -74,16 +77,16 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
           position: "relative",
           overflow: "hidden",
           boxShadow: isLowStock
-            ? `0 0 8px ${alpha(theme.palette.warning.main, 0.2)}`
-            : "none",
+            ? `0 4px 12px ${alpha(theme.palette.warning.main, 0.2)}, 0 0 10px ${alpha(theme.palette.warning.main, 0.1)}`
+            : `0 4px 12px ${alpha(theme.palette.common.black, 0.08)}`,
           transition:
             "transform 0.2s ease-in-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
           "&:hover": {
             borderColor: isLowStock ? "warning.dark" : "primary.main",
             transform: "translateY(-4px)",
             boxShadow: isLowStock
-              ? `0 4px 15px ${alpha(theme.palette.warning.main, 0.3)}`
-              : `0 4px 12px ${alpha(theme.palette.primary.main, 0.2)}`,
+              ? `0 12px 24px ${alpha(theme.palette.warning.main, 0.3)}, 0 0 15px ${alpha(theme.palette.warning.main, 0.2)}`
+              : `0 12px 24px ${alpha(theme.palette.primary.main, 0.15)}`,
           },
         }}
       >
@@ -92,8 +95,8 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
             sx={{
               width: "100%",
               height: {
-                xs: compactView ? 140 : 240,
-                sm: compactView ? 100 : 160,
+                xs: compactView ? 160 : 320,
+                sm: compactView ? 120 : 240,
               },
               overflow: "hidden",
               bgcolor: alpha(theme.palette.primary.main, 0.05),
@@ -145,8 +148,8 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
             flexGrow: 1,
             display: "flex",
             flexDirection: "column",
-            p: compactView ? 1.5 : 2,
-            "&:last-child": { pb: compactView ? 1.5 : 2 },
+            p: compactView ? 2 : 3,
+            "&:last-child": { pb: compactView ? 2 : 3 },
           }}
         >
           <Box
@@ -161,8 +164,8 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
             <Box sx={{ flex: 1, minWidth: 0 }}>
               <Tooltip title={item.name} enterDelay={500} arrow>
                 <Typography
-                  variant={compactView ? "body1" : "h6"}
-                  fontWeight="bold"
+                  variant={compactView ? "body1" : "h5"}
+                  fontWeight="800"
                   sx={{
                     wordBreak: "break-word",
                     overflowWrap: "break-word",
@@ -294,6 +297,24 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                   {item.stock} {t("inventory.stock")}
                 </Typography>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <Tooltip title={t("inventory.viewHistory")}>
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onViewHistory?.(item.id, item.name);
+                      }}
+                      sx={{
+                        color: "text.secondary",
+                        mr: 0.5,
+                        p: compactView ? 0.5 : 1,
+                      }}
+                    >
+                      <HistoryIcon
+                        fontSize={compactView ? "inherit" : "small"}
+                      />
+                    </IconButton>
+                  </Tooltip>
                   <IconButton
                     size="small"
                     onClick={() => onEdit(item)}

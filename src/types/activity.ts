@@ -12,3 +12,20 @@ export interface RecentActivityItem {
   created_at: string;
   user_display_name?: string;
 }
+
+export interface InventoryActivity {
+  id: string;
+  inventory_id: string;
+  user_id: string | null;
+  action: ActivityAction;
+  item_name: string;
+  changes: {
+    stock?: number;
+    old_stock?: number;
+    location?: string;
+    action_type?: "add" | "remove" | "adjust";
+    [key: string]: unknown;
+  };
+  created_at: string;
+  user_display_name?: string;
+}

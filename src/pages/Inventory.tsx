@@ -21,6 +21,7 @@ import InventoryCategorizedGrid from "../components/inventory/InventoryCategoriz
 import InventoryDialog from "../components/inventory/InventoryDialog";
 import InventoryScanner from "../components/inventory/InventoryScanner";
 import StockAdjustmentDialog from "../components/inventory/StockAdjustmentDialog";
+import StockHistoryDialog from "../components/inventory/StockHistoryDialog";
 import ConfirmDialog from "../components/ConfirmDialog";
 import CategoryManagementDialog from "../components/inventory/CategoryManagementDialog";
 
@@ -55,6 +56,11 @@ const Inventory: React.FC = () => {
   );
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+  const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
+  const [selectedItemForHistory, setSelectedItemForHistory] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const { role, lowStockThreshold: globalThreshold } = useUserContext();
   const { categories } = useInventoryContext();
   const { compactView } = useThemeContext();
@@ -191,7 +197,12 @@ const Inventory: React.FC = () => {
     }
   };
 
-  const handleStockSave = async (itemId: string, newStock: number) => {
+  const handleStockSave = async (
+    itemId: string,
+    newStock: number,
+    location?: string,
+    actionType?: "add" | "remove"
+  ) => {
     try {
       setActionLoading(true);
       const {
@@ -205,15 +216,27 @@ const Inventory: React.FC = () => {
 
       if (error) throw error;
 
-      // Log the stock update activity
+      // Log the stock update activity with location details
       if (user) {
         const item = items.find((i) => i.id === itemId);
+        const activityChanges: Record<string, unknown> = {
+          stock: newStock,
+          old_stock: item?.stock,
+        };
+
+        if (actionType) {
+          activityChanges.action_type = actionType;
+        }
+        if (location) {
+          activityChanges.location = location;
+        }
+
         await supabase.from("inventory_activity").insert({
           inventory_id: itemId,
           user_id: user.id,
           action: "updated",
           item_name: item?.name || "Unknown Item",
-          changes: { stock: newStock, old_stock: item?.stock },
+          changes: activityChanges,
         });
       }
 
@@ -263,7 +286,12 @@ const Inventory: React.FC = () => {
           .eq("id", editingItem.id);
 
         if (error) {
-          showError(t("errors.updateItem") + ": " + error.message);
+          const pgError = error as { code?: string; message: string };
+          if (pgError.code === "23505") {
+            showError(t("errors.duplicateSku"));
+          } else {
+            showError(t("errors.updateItem") + ": " + pgError.message);
+          }
           return;
         }
 
@@ -312,9 +340,12 @@ const Inventory: React.FC = () => {
         const newItem = data as InventoryItem | null;
 
         if (error) {
-          showError(
-            t("errors.addItem") + ": " + (error as { message: string }).message
-          );
+          const pgError = error as { code?: string; message: string };
+          if (pgError.code === "23505") {
+            showError(t("errors.duplicateSku"));
+          } else {
+            showError(t("errors.addItem") + ": " + pgError.message);
+          }
           return;
         }
 
@@ -479,7 +510,7 @@ const Inventory: React.FC = () => {
   }
 
   return (
-    <Box sx={{ p: 0 }}>
+    <Box sx={{ p: 0, maxWidth: { lg: "2200px", xl: "3200px" }, mx: "auto" }}>
       <InventoryHeader
         isMobile={isMobile}
         selectedCount={selectedItems.size}
@@ -501,6 +532,10 @@ const Inventory: React.FC = () => {
         onToggleItem={toggleItem}
         onEdit={handleOpen}
         onDelete={role === "admin" ? (id) => handleDeleteClick(id) : undefined}
+        onViewHistory={(itemId, itemName) => {
+          setSelectedItemForHistory({ id: itemId, name: itemName });
+          setHistoryDialogOpen(true);
+        }}
         compactView={compactView}
       />
 
@@ -548,6 +583,16 @@ const Inventory: React.FC = () => {
       <CategoryManagementDialog
         open={categoriesDialogOpen}
         onClose={() => setCategoriesDialogOpen(false)}
+      />
+
+      <StockHistoryDialog
+        open={historyDialogOpen}
+        itemId={selectedItemForHistory?.id || null}
+        itemName={selectedItemForHistory?.name || ""}
+        onClose={() => {
+          setHistoryDialogOpen(false);
+          setSelectedItemForHistory(null);
+        }}
       />
     </Box>
   );

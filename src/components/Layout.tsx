@@ -24,6 +24,8 @@ import {
   ChevronLeft as ChevronLeftIcon,
   Menu as MenuIcon,
   Kitchen as AppliancesIcon,
+  History as ActivityIcon,
+  LocationOn as LocationIcon,
 } from "@mui/icons-material";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { supabase } from "../supabaseClient";
@@ -69,6 +71,16 @@ const Layout: React.FC = () => {
         />
       ),
       path: "/inventory",
+    },
+    {
+      text: t("menu.activity"),
+      icon: <ActivityIcon />,
+      path: "/inventory/activity",
+    },
+    {
+      text: t("menu.locations"),
+      icon: <LocationIcon />,
+      path: "/inventory/locations",
     },
     {
       text: t("menu.appliances"),

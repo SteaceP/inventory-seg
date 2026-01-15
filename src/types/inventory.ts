@@ -11,7 +11,16 @@ export interface InventoryItem {
     id?: string;
     location: string;
     quantity: number;
+    parent_location?: string;
   }[];
+}
+
+export interface MasterLocation {
+  id: string;
+  name: string;
+  parent_id: string | null;
+  description?: string;
+  created_at: string;
 }
 
 export interface InventoryCategory {

@@ -36,6 +36,8 @@ const Inventory = lazy(() => import("./pages/Inventory"));
 const Appliances = lazy(() => import("./pages/Appliances"));
 const Login = lazy(() => import("./pages/Login"));
 const Settings = lazy(() => import("./pages/Settings"));
+const InventoryActivity = lazy(() => import("./pages/InventoryActivity"));
+const StockLocations = lazy(() => import("./pages/StockLocations"));
 
 // Loading component for Suspense
 const PageLoader = () => (
@@ -287,6 +289,11 @@ const AppContent = () => {
             >
               <Route index element={<Dashboard />} />
               <Route path="inventory" element={<Inventory />} />
+              <Route
+                path="inventory/activity"
+                element={<InventoryActivity />}
+              />
+              <Route path="inventory/locations" element={<StockLocations />} />
               <Route path="appliances" element={<Appliances />} />
               <Route path="settings" element={<Settings />} />
               <Route path="*" element={<Navigate to="/" replace />} />

@@ -37,6 +37,7 @@ interface InventoryCategorizedGridProps {
   onToggleItem: (id: string, checked: boolean) => void;
   onEdit: (item: InventoryItem) => void;
   onDelete?: (id: string) => void;
+  onViewHistory?: (itemId: string, itemName: string) => void;
   compactView?: boolean;
 }
 
@@ -96,6 +97,7 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
   onToggleItem,
   onEdit,
   onDelete,
+  onViewHistory,
   compactView = false,
 }) => {
   const theme = useTheme();
@@ -313,7 +315,7 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
                   : groupedItems[category]
                 ).map((item) => (
                   <Grid
-                    size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
+                    size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 3 }}
                     key={item.id}
                     component={motion.div}
                     initial={{ opacity: 0, scale: 0.95 }}
@@ -329,6 +331,7 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
                         onToggle={onToggleItem}
                         onEdit={onEdit}
                         onDelete={onDelete}
+                        onViewHistory={onViewHistory}
                       />
                     </Box>
                   </Grid>
