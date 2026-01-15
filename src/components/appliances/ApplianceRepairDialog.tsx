@@ -15,6 +15,7 @@ import {
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { useTranslation } from "../../i18n";
 import type { Appliance, Repair, RepairPart } from "../../types/appliances";
+import { generateSecureId } from "../../utils/crypto";
 
 interface ApplianceRepairDialogProps {
   open: boolean;
@@ -45,7 +46,10 @@ const ApplianceRepairDialog: React.FC<ApplianceRepairDialogProps> = ({
     };
 
   const handleAddPart = () => {
-    const parts = [...(formData.parts || []), { name: "", price: 0 }];
+    const parts = [
+      ...(formData.parts || []),
+      { id: generateSecureId("PRT"), name: "", price: 0 },
+    ];
     setFormData({ ...formData, parts });
   };
 

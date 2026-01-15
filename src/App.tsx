@@ -38,7 +38,7 @@ const Login = lazy(() => import("./pages/Login"));
 const Settings = lazy(() => import("./pages/Settings"));
 const InventoryActivity = lazy(() => import("./pages/InventoryActivity"));
 const StockLocations = lazy(() => import("./pages/StockLocations"));
-const Reports = lazy(() => import("./pages/Reports"));
+const Reports = lazy(() => import("./pages/ReportsPage"));
 
 // Loading component for Suspense
 const PageLoader = () => (

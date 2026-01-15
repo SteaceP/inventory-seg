@@ -5,6 +5,10 @@ import {
   Grid,
   Checkbox,
   FormControlLabel,
+  Typography,
+  Tabs,
+  Tab,
+  Divider,
 } from "@mui/material";
 import { supabase } from "../supabaseClient";
 import { useThemeContext } from "../contexts/useThemeContext";
@@ -19,10 +23,11 @@ import AppliancesHeader from "../components/appliances/AppliancesHeader";
 import ApplianceCard from "../components/appliances/ApplianceCard";
 import ApplianceDialog from "../components/appliances/ApplianceDialog";
 import ApplianceRepairDialog from "../components/appliances/ApplianceRepairDialog";
-import ApplianceHistoryDialog from "../components/appliances/ApplianceHistoryDialog";
+import ApplianceDrawer from "../components/appliances/ApplianceDrawer";
+import AppliancesStats from "../components/appliances/AppliancesStats";
 
 // Types
-import type { Appliance, Repair } from "../types/appliances";
+import type { Appliance, Repair, ApplianceStatus } from "../types/appliances";
 
 const Appliances: React.FC = () => {
   const { compactView } = useThemeContext();
@@ -36,14 +41,14 @@ const Appliances: React.FC = () => {
     null
   );
   const [repairs, setRepairs] = useState<Repair[]>([]);
-  const [loadingRepairs, setLoadingRepairs] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const [filter, setFilter] = useState<ApplianceStatus | "all">("all");
   const { showError } = useAlert();
 
-  // Modal states
   const [openAddAppliance, setOpenAddAppliance] = useState(false);
+  const [openEditAppliance, setOpenEditAppliance] = useState(false);
   const [openAddRepair, setOpenAddRepair] = useState(false);
-  const [openRepairsList, setOpenRepairsList] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState(false);
   const [scanOpen, setScanOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [applianceToDelete, setApplianceToDelete] = useState<string | null>(
@@ -70,21 +75,10 @@ const Appliances: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchRepairs = async (applianceId: string) => {
-    setLoadingRepairs(true);
-    const { data, error } = await supabase
-      .from("repairs")
-      .select("*")
-      .eq("appliance_id", applianceId)
-      .order("repair_date", { ascending: false });
-
-    if (error) {
-      showError(t("appliances.errorFetchingRepairs") + ": " + error.message);
-    } else if (data) {
-      setRepairs(data);
-    }
-    setLoadingRepairs(false);
-  };
+  const filteredAppliances = appliances.filter((a) => {
+    if (filter === "all") return true;
+    return a.status === filter;
+  });
 
   const handleCreateAppliance = async (newAppliance: Partial<Appliance>) => {
     try {
@@ -109,6 +103,29 @@ const Appliances: React.FC = () => {
       }
     } catch (err: unknown) {
       showError(t("appliances.errorCreating") + ": " + (err as Error).message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleUpdateAppliance = async (updatedData: Partial<Appliance>) => {
+    if (!selectedAppliance?.id) return;
+    try {
+      setActionLoading(true);
+      const { error } = await supabase
+        .from("appliances")
+        .update(updatedData)
+        .eq("id", selectedAppliance.id);
+
+      if (error) {
+        showError(t("appliances.errorUpdating") + ": " + error.message);
+      } else {
+        setOpenEditAppliance(false);
+        setOpenDrawer(false);
+        void fetchAppliances();
+      }
+    } catch (err: unknown) {
+      showError(t("appliances.errorUpdating") + ": " + (err as Error).message);
     } finally {
       setActionLoading(false);
     }
@@ -142,6 +159,20 @@ const Appliances: React.FC = () => {
     }
   };
 
+  const fetchRepairs = async (applianceId: string) => {
+    const { data, error } = await supabase
+      .from("repairs")
+      .select("*")
+      .eq("appliance_id", applianceId)
+      .order("repair_date", { ascending: false });
+
+    if (error) {
+      showError(t("appliances.errorFetchingRepairs") + ": " + error.message);
+    } else if (data) {
+      setRepairs(data);
+    }
+  };
+
   const handleDeleteClick = (id: string) => {
     setApplianceToDelete(id);
     setDeleteConfirmOpen(true);
@@ -159,6 +190,7 @@ const Appliances: React.FC = () => {
       if (error) {
         showError(t("appliances.errorDeleting") + ": " + error.message);
       } else {
+        setOpenDrawer(false);
         void fetchAppliances();
       }
     } catch (err: unknown) {
@@ -172,10 +204,10 @@ const Appliances: React.FC = () => {
     window.print();
   };
 
-  const handleViewRepairs = (appliance: Appliance) => {
+  const handleViewDetails = (appliance: Appliance) => {
     setSelectedAppliance(appliance);
     void fetchRepairs(appliance.id);
-    setOpenRepairsList(true);
+    setOpenDrawer(true);
   };
 
   const handleScanSuccess = (decodedText: string) => {
@@ -183,17 +215,15 @@ const Appliances: React.FC = () => {
     const appliance = appliances.find((a) => a.sku === decodedText);
 
     if (appliance) {
-      handleViewRepairs(appliance);
+      handleViewDetails(appliance);
     } else {
-      // Logic for adding might need more than just SKU
-      // For now, just open the dialog (it could be pre-filled if we had simpler state)
       setOpenAddAppliance(true);
     }
   };
 
   const toggleAll = (checked: boolean) => {
     if (checked) {
-      setSelectedItems(new Set(appliances.map((a) => a.id)));
+      setSelectedItems(new Set(filteredAppliances.map((a) => a.id)));
     } else {
       setSelectedItems(new Set());
     }
@@ -219,55 +249,113 @@ const Appliances: React.FC = () => {
         onAddAppliance={() => setOpenAddAppliance(true)}
       />
 
-      <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
-        <FormControlLabel
-          control={
-            <Checkbox
-              indeterminate={
-                selectedItems.size > 0 && selectedItems.size < appliances.length
-              }
-              checked={
-                appliances.length > 0 &&
-                selectedItems.size === appliances.length
-              }
-              onChange={(e) => toggleAll(e.target.checked)}
-            />
-          }
-          label={t("common.selectAll") || "Select All"}
-        />
-      </Box>
-
       {loading ? (
-        <CircularProgress />
+        <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
+          <CircularProgress />
+        </Box>
       ) : (
-        <Grid container spacing={compactView ? 2 : 3}>
-          {appliances.map((appliance) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={appliance.id}>
-              <ApplianceCard
-                appliance={appliance}
-                compactView={compactView}
-                selected={selectedItems.has(appliance.id)}
-                onToggle={toggleItem}
-                onViewRepairs={handleViewRepairs}
-                onAddRepair={(app) => {
-                  setSelectedAppliance(app);
-                  setOpenAddRepair(true);
-                }}
-                onDelete={(id) => handleDeleteClick(id)}
-                onPrint={(id) => {
-                  setSelectedItems(new Set([id]));
-                  setTimeout(() => handlePrint(), 0);
-                }}
+        <>
+          <AppliancesStats appliances={appliances} compactView={compactView} />
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              justifyContent: "space-between",
+              alignItems: { xs: "stretch", sm: "center" },
+              gap: 2,
+              mb: 3,
+            }}
+          >
+            <Tabs
+              value={filter}
+              onChange={(_, val: ApplianceStatus | "all") => setFilter(val)}
+              variant="scrollable"
+              scrollButtons="auto"
+              sx={{
+                mb: { xs: 1, sm: 0 },
+                "& .MuiTab-root": {
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  minWidth: 100,
+                },
+              }}
+            >
+              <Tab
+                label={t("appliances.filter.all") || "All Units"}
+                value="all"
               />
-            </Grid>
-          ))}
-        </Grid>
+              <Tab
+                label={t("appliances.filter.operational") || "Operational"}
+                value="functional"
+              />
+              <Tab
+                label={t("appliances.filter.serviceNeeded") || "Service Needed"}
+                value="needs_service"
+              />
+              <Tab
+                label={t("appliances.filter.broken") || "Broken"}
+                value="broken"
+              />
+            </Tabs>
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  indeterminate={
+                    selectedItems.size > 0 &&
+                    selectedItems.size < filteredAppliances.length
+                  }
+                  checked={
+                    filteredAppliances.length > 0 &&
+                    selectedItems.size === filteredAppliances.length
+                  }
+                  onChange={(e) => toggleAll(e.target.checked)}
+                />
+              }
+              label={t("common.selectAll") || "Select All"}
+            />
+          </Box>
+
+          <Divider sx={{ mb: 4 }} />
+
+          <Grid container spacing={compactView ? 2 : 3}>
+            {filteredAppliances.map((appliance) => (
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={appliance.id}>
+                <ApplianceCard
+                  appliance={appliance}
+                  compactView={compactView}
+                  selected={selectedItems.has(appliance.id)}
+                  onToggle={toggleItem}
+                  onViewRepairs={handleViewDetails}
+                  onAddRepair={(app) => {
+                    setSelectedAppliance(app);
+                    setOpenAddRepair(true);
+                  }}
+                  onDelete={(id) => handleDeleteClick(id)}
+                  onPrint={(id) => {
+                    setSelectedItems(new Set([id]));
+                    setTimeout(() => handlePrint(), 0);
+                  }}
+                />
+              </Grid>
+            ))}
+          </Grid>
+
+          {filteredAppliances.length === 0 && (
+            <Box sx={{ textAlign: "center", py: 8 }}>
+              <Typography color="text.secondary">
+                {t("appliances.noAppliancesFound")}
+              </Typography>
+            </Box>
+          )}
+        </>
       )}
 
       {/* Dialogs */}
       <ConfirmDialog
         open={deleteConfirmOpen}
-        title={t("appliances.delete") || "Delete Appliance"}
+        title={t("appliances.delete")}
         content={t("appliances.deleteConfirm")}
         onConfirm={() => void handleDeleteConfirm()}
         onCancel={() => setDeleteConfirmOpen(false)}
@@ -280,6 +368,14 @@ const Appliances: React.FC = () => {
         loading={actionLoading}
       />
 
+      <ApplianceDialog
+        open={openEditAppliance}
+        onClose={() => setOpenEditAppliance(false)}
+        initialData={selectedAppliance || {}}
+        onSave={(updated) => void handleUpdateAppliance(updated)}
+        loading={actionLoading}
+      />
+
       <ApplianceRepairDialog
         open={openAddRepair}
         onClose={() => setOpenAddRepair(false)}
@@ -288,12 +384,20 @@ const Appliances: React.FC = () => {
         loading={actionLoading}
       />
 
-      <ApplianceHistoryDialog
-        open={openRepairsList}
-        onClose={() => setOpenRepairsList(false)}
+      <ApplianceDrawer
+        open={openDrawer}
+        onClose={() => setOpenDrawer(false)}
         appliance={selectedAppliance}
         repairs={repairs}
-        loading={loadingRepairs}
+        onEdit={(app) => {
+          setSelectedAppliance(app);
+          setOpenEditAppliance(true);
+        }}
+        onDelete={(id) => handleDeleteClick(id)}
+        onAddRepair={(app) => {
+          setSelectedAppliance(app);
+          setOpenAddRepair(true);
+        }}
       />
 
       {/* Utilities */}

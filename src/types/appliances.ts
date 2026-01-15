@@ -1,3 +1,5 @@
+export type ApplianceStatus = "functional" | "needs_service" | "broken";
+
 export interface Appliance {
   id: string;
   name: string;
@@ -11,9 +13,13 @@ export interface Appliance {
   photo_url?: string;
   sku?: string;
   location?: string;
+  status: ApplianceStatus;
+  expected_life: number;
+  created_at?: string;
 }
 
 export interface RepairPart {
+  id?: string;
   name: string;
   price: number;
 }
