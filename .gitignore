@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 node
+.wrangler
 .env
 .env.local
 .env.example
