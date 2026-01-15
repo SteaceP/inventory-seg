@@ -9,3 +9,4 @@ public/
 *.ico
 *.md
 package-lock.json
+wrangler.jsonc

@@ -5,19 +5,12 @@
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "directory": "./dist",
-    "binding": "ASSETS",
+    "binding": "ASSETS"
   },
   "observability": {
-    "enabled": true,
+    "enabled": true
   },
   "smart_placement": {
-    "enabled": true,
-  },
-  "vars": {
-    "SUPABASE_URL": "https://nidebcwouohczncxrgfv.supabase.co",
-    "VAPID_PUBLIC_KEY": "BPb01P8jNEFvyMS6hQW4i-wgqK3DDK9dWkJBuyinBxUGDhvSpGMHCMAmfU1LE3p6qTs0XkeP_pGupYhDMQ6F8pI",
-    "BREVO_SENDER_EMAIL": "steacypaquette@gmail.com",
-  },
-  // NOTE: Sensitive secrets (SUPABASE_SECRET_KEY, VAPID_PRIVATE_KEY, BREVO_API_KEY)
-  // should be set using: npx wrangler secret put SECRET_NAME
+    "enabled": true
+  }
 }
