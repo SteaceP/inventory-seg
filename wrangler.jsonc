@@ -12,5 +12,10 @@
   },
   "smart_placement": {
     "enabled": true
+  },
+  "vars": {
+    "SUPABASE_URL": "https://nidebcwouohczncxrgfv.supabase.co",
+    "VAPID_PUBLIC_KEY": "BPb01P8jNEFvyMS6hQW4i-wgqK3DDK9dWkJBuyinBxUGDhvSpGMHCMAmfU1LE3p6qTs0XkeP_pGupYhDMQ6F8pI",
+    "BREVO_SENDER_EMAIL": "steacypaquette@gmail.com"
   }
 }

@@ -89,15 +89,9 @@ export default {
             }
           );
 
-          console.log("Supabase response status:", subResponse.status);
-          const responseText = await subResponse.text();
-          console.log("Supabase response body:", responseText);
-
           if (subResponse.ok) {
-            const subscriptions = JSON.parse(
-              responseText
-            ) as PushSubscriptionRow[];
-            console.log("Found subscriptions:", subscriptions.length);
+            const subscriptions =
+              (await subResponse.json()) as PushSubscriptionRow[];
 
             if (
               subscriptions.length > 0 &&
@@ -129,14 +123,8 @@ export default {
               return new Response(JSON.stringify({ success: true }), {
                 headers: { "Content-Type": "application/json" },
               });
-            } else {
-              console.log("No VAPID keys or no subscriptions");
             }
-          } else {
-            console.log("Supabase error response");
           }
-        } else {
-          console.log("Missing userId or env vars");
         }
         return new Response(
           JSON.stringify({ error: "No subscriptions found" }),
