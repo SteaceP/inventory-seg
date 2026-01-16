@@ -1,6 +1,6 @@
-const STATIC_CACHE_NAME = "inventory-seg-static-v4";
-const DYNAMIC_CACHE_NAME = "inventory-seg-dynamic-v4";
-const API_CACHE_NAME = "inventory-seg-api-v4";
+const STATIC_CACHE_NAME = "inventory-seg-static-v5";
+const DYNAMIC_CACHE_NAME = "inventory-seg-dynamic-v5";
+const API_CACHE_NAME = "inventory-seg-api-v5";
 
 const ASSETS_TO_CACHE = [
   "/",
@@ -15,7 +15,7 @@ const SUPABASE_API_URL_SIGNATURES = [
   "/rest/v1/inventory",
   "/rest/v1/appliances",
 ];
-const NO_CACHE_API_SIGNATURES = ["/rest/v1/user_settings"];
+const NO_CACHE_API_SIGNATURES = ["/rest/v1/user_settings", "/auth/v1/"];
 
 // Helper function for network-first strategy
 function networkFirst(cacheName, request) {
