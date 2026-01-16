@@ -1,99 +1,103 @@
-# Inventory Management System
+# SEG Inventaire
 
-An inventory management application for La Société Emmanuel-Grégoire, completely out of the main intranet/extranet, built with a modern tech stack, designed for efficiency, clarity, and real-time synchronization.
+Une application de gestion d'inventaire pour La Société Emmanuel-Grégoire, entièrement indépendante de l'intranet/extranet principal, construite avec une pile technologique moderne, conçue pour l'efficacité, la clarté et la synchronisation en temps réel.
 
-## ✨ Features
+## ✨ Caractéristiques
 
-- **📊 Dashboard**: High-level overview of total items, top categories, and low stock alerts.
-- **📦 Inventory Tracking**:
-  - Categorized grid view with collapsible sections.
-  - Item-level, Category-level, and Global low stock thresholds (**Hierarchical Logic: Item > Category > Global**).
-  - SKU/Barcode generation and scanning support.
-  - Image support for visual tracking.
-- **🔧 Appliance Tracker**:
-  - Manage household appliances (Brand, Model, Serial Number).
-  - Repair history tracking with cost and service provider information.
-- **⚡ Real-time Updates**: Instant synchronization across devices using Supabase Realtime.
-- **🌍 Multi-language Support**: Full support for English, French amd Arabic.
-- **🎨 Personalization**:
-  - Dark Mode and Light Mode.
-  - Compact View for high-density information display.
-  - User profile customization (Display Name, Avatar).
+- **📊 Tableau de bord** : Aperçu général des articles totaux, des catégories principales et des alertes de stock faible.
+- **📦 Suivi d'inventaire** :
+  - Vue en grille catégorisée avec sections repliables.
+  - Seuils de stock faible au niveau de l'article, de la catégorie et global (**Logique hiérarchique : Article > Catégorie > Global**).
+  - Génération de SKU/codes-barres et prise en charge de la numérisation.
+  - Prise en charge des images pour un suivi visuel.
+  - **Gestion des emplacements** : Organisation hiérarchique des stocks par entrepôts, étagères, etc.
+- **🔧 Suivi des appareils** :
+  - Gérer les appareils ménagers (Marque, Modèle, Numéro de série).
+  - Suivi de l'historique des réparations avec les coûts et les informations sur les prestataires de services.
+- **📊 Rapports et analyses** :
+  - Rapports mensuels et annuels sur l'utilisation des stocks.
+  - Exportation au format PDF/Impression pour les inventaires physiques.
+- **⚡ Mises à jour en temps réel** : Synchronisation instantanée entre les appareils via Supabase Realtime.
+- **🌍 Support multilingue** : Support complet pour l'anglais, le français et l'arabe.
+- **🎨 Personnalisation** :
+  - Modes sombre et clair.
+  - Vue compacte pour l'affichage d'informations à haute densité.
+  - Personnalisation du profil utilisateur (Nom d'affichage, Avatar).
 
-## 🛠️ Tech Stack
+## 🛠️ Pile technologique
 
-- **Frontend**: [React 19](https://react.dev/), [Vite](https://vitejs.dev/), [TypeScript](https://www.typescriptlang.org/)
-- **UI & Component Library**: [Material UI (MUI)](https://mui.com/), [Framer Motion](https://www.framer.com/motion/)
-- **Backend & Database**: [Supabase](https://supabase.com/) (PostgreSQL, Auth, Storage, Realtime)
-- **State Management**: React Context API
-- **Internationalization**: Custom i18n implementation
+- **Frontend** : [React 19](https://react.dev/), [Vite](https://vitejs.dev/), [TypeScript](https://www.typescriptlang.org/)
+- **UI & Bibliothèque de composants** : [Material UI (MUI)](https://mui.com/), [Framer Motion](https://www.framer.com/motion/)
+- **Backend & Base de données** : [Supabase](https://supabase.com/) (PostgreSQL, Auth, Storage, Realtime)
+- **Gestion d'état** : React Context API
+- **Internationalisation** : Implémentation i18n personnalisée
 
-## 🚀 Getting Started
+## 🚀 Pour commencer
 
-### Prerequisites
+### Prérequis
 
-- [Node.js](https://nodejs.org/) (v18 or later recommended)
-- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
-- A [Supabase](https://supabase.com/) account and project.
+- [Node.js](https://nodejs.org/) (v18 ou ultérieur recommandé)
+- [npm](https://www.npmjs.com/) ou [yarn](https://yarnpkg.com/)
+- Un compte et un projet [Supabase](https://supabase.com/).
 
-### Setup Instructions
+### Instructions d'installation
 
-1. Clone the repository:
+1. Cloner le dépôt :
 
    ```bash
    git clone https://github.com/steace/inventory-seg.git
    cd inventory-seg
    ```
 
-2. Install dependencies:
+2. Installer les dépendances :
 
    ```bash
    npm install
    ```
 
-3. Configure Environment Variables:
+3. Configurer les variables d'environnement :
 
-   **Important**: Never commit real secrets to version control!
+   **Important** : Ne jamais commettre de secrets réels dans le contrôle de version !
 
-   Create a `.env.local` file in the root directory (this file is gitignored):
+   Créer un fichier `.env.local` dans le répertoire racine (ce fichier est ignoré par git) :
 
    ```bash
    cp .env.example .env.local
    ```
 
-   Then edit `.env.local` with your actual Supabase credentials:
+   Ensuite, éditez `.env.local` avec vos propres identifiants Supabase :
 
    ```env
-   VITE_SUPABASE_URL=https://your-project.supabase.co
-   VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key_here
-   VITE_VAPID_PUBLIC_KEY=your_vapid_public_key_here
-   VITE_VAPID_PRIVATE_KEY=your_vapid_private_key_here
+   VITE_SUPABASE_URL=https://votre-projet.supabase.co
+   VITE_SUPABASE_PUBLISHABLE_KEY=votre_cle_publique_supabase_ici
+   VITE_VAPID_PUBLIC_KEY=votre_cle_publique_vapid_ici
+   VITE_VAPID_PRIVATE_KEY=votre_cle_privee_vapid_ici
    ```
 
-   **NEVER** use `VITE_SUPABASE_SECRET_KEY` in client-side code!
+   **NE JAMAIS** utiliser `VITE_SUPABASE_SECRET_KEY` dans le code côté client !
 
-4. Database Migrations:
-   Apply the migrations in the `supabase/migrations` folder to your Supabase project.
+4. Migrations de la base de données :
+   Appliquez les migrations situées dans le dossier `supabase/migrations` à votre projet Supabase.
 
-5. Run Locally:
+5. Exécuter localement :
 
    ```bash
    npm run dev
    ```
 
-## 🚀 Deployment
+## 🚀 Déploiement
 
 ### Cloudflare Pages + Workers
 
-This app is designed to be deployed on Cloudflare Pages with a Cloudflare Worker for backend API.
+Cette application est conçue pour être déployée sur Cloudflare Pages avec un Cloudflare Worker pour l'API backend.
 
-1. **Build the application:**
+1. **Construire l'application :**
 
    ```bash
    npm run build
    ```
 
-2. **Set Cloudflare Worker secrets** (NEVER commit these to version control):
+2. **Définir les secrets du Cloudflare Worker** (NE JAMAIS les commettre dans le contrôle de version) :
 
    ```bash
    npx wrangler secret put SUPABASE_SECRET_KEY
@@ -101,58 +105,58 @@ This app is designed to be deployed on Cloudflare Pages with a Cloudflare Worker
    npx wrangler secret put BREVO_API_KEY
    ```
 
-3. **Deploy the Worker:**
+3. **Déployer le Worker :**
 
    ```bash
    npx wrangler deploy
    ```
 
-4. **Deploy to Cloudflare Pages:**
-   - Connect your GitHub repository to Cloudflare Pages
-   - Set build command: `npm run build`
-   - Set output directory: `dist`
-   - Add environment variables (VITE_* variables only)
+4. **Déployer sur Cloudflare Pages :**
+   - Connectez votre dépôt GitHub à Cloudflare Pages
+   - Définissez la commande de construction : `npm run build`
+   - Définissez le répertoire de sortie : `dist`
+   - Ajoutez les variables d'environnement (variables VITE_* uniquement)
 
-### Security Checklist Before Deployment
+### Liste de contrôle de sécurité avant le déploiement
 
-- ✅ All secrets are in `.env.local` (never `.env`)
-- ✅ `.env.local` is in `.gitignore`
-- ✅ Using `VITE_SUPABASE_PUBLISHABLE_KEY` in client (not secret key)
-- ✅ Cloudflare Worker secrets set via CLI
-- ✅ CSP headers configured
-- ✅ Supabase RLS policies enabled on all tables
-- ✅ Test authentication flows
-- ✅ Verify push notifications work
-- ✅ Check PWA offline functionality
+- ✅ Tous les secrets sont dans `.env.local` (jamais `.env`)
+- ✅ `.env.local` est dans `.gitignore`
+- ✅ Utilisation de `VITE_SUPABASE_PUBLISHABLE_KEY` dans le client (pas la clé secrète)
+- ✅ Secrets du Cloudflare Worker définis via CLI
+- ✅ En-têtes CSP configurés
+- ✅ Politiques RLS de Supabase activées sur toutes les tables
+- ✅ Tester les flux d'authentification
+- ✅ Vérifier que les notifications push fonctionnent
+- ✅ Vérifier la fonctionnalité hors ligne de la PWA
 
-## 🔒 Security
+## 🔒 Sécurité
 
-This application follows security best practices:
+Cette application suit les meilleures pratiques de sécurité :
 
-- **Row Level Security (RLS)**: All database tables have RLS policies enabled
-- **Authentication**: Supabase Auth with secure session management
-- **Input Validation**: Server-side validation on all API endpoints
-- **CSP Headers**: Content Security Policy to prevent XSS attacks
-- **Secrets Management**: Environment variables are never committed to version control
-- **SQL Injection Prevention**: Parameterized queries via Supabase client
-- **HTTPS Only**: PWA requires HTTPS for service workers
+- **Sécurité au niveau des lignes (RLS)** : Toutes les tables de la base de données ont des politiques RLS activées
+- **Authentification** : Supabase Auth avec gestion sécurisée des sessions
+- **Validation des entrées** : Validation côté serveur sur tous les points de terminaison de l'API
+- **En-têtes CSP** : Content Security Policy pour prévenir les attaques XSS
+- **Gestion des secrets** : Les variables d'environnement ne sont jamais commises dans le contrôle de version
+- **Prévention de l'injection SQL** : Requêtes paramétrées via le client Supabase
+- **HTTPS uniquement** : La PWA nécessite HTTPS pour les service workers
 
-For security issues, see [`SECURITY.md`](file:///home/steace/dev/inventory-seg/SECURITY.md).
+Pour les problèmes de sécurité, voir [`SECURITY.md`](./SECURITY.md).
 
-## 📜 Database Schema
+## 📜 Schéma de la base de données
 
-The core tables include:
+Les tables principales incluent :
 
-- `inventory`: Tracks stock items and their thresholds.
-- `inventory_categories`: Manages category-specific thresholds.
-- `inventory_activity`: Audit log for all changes.
-- `appliances` & `repairs`: Manages household hardware and maintenance history.
-- `user_settings`: User preferences and profile data.
+- `inventory` : Suit les articles en stock et leurs seuils.
+- `inventory_categories` : Gère les seuils spécifiques aux catégories.
+- `inventory_activity` : Journal d'audit pour tous les changements.
+- `appliances` & `repairs` : Gère le matériel domestique et l'historique de maintenance.
+- `user_settings` : Préférences utilisateur et données de profil.
 
-## 🤝 Contributing
+## 🤝 Contribution
 
-This is a personal project, but suggestions and improvements are welcome! Feel free to open an issue or submit a pull request.
+Il s'agit d'un projet personnel, mais les suggestions et améliorations sont les bienvenues ! N'hésitez pas à ouvrir une issue ou à soumettre une pull request.
 
-## 📄 License
+## 📄 Licence
 
-This project is private and intended for personal use.
+Ce projet est privé et destiné à un usage personnel. Voir le fichier [`LICENSE`](./LICENSE) pour plus de détails.

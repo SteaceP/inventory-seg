@@ -1,31 +1,31 @@
-# Security Policy
+# Politique de sécurité
 
-## Supported Versions
+## Versions prises en charge
 
-Currently, only the latest version of the Inventory Management System is supported for security updates.
+Actuellement, seule la dernière version du système de gestion d'inventaire bénéficie de mises à jour de sécurité.
 
-| Version | Supported |
+| Version | Prise en charge |
 | --- | --- |
-| Latest | :white_check_mark: |
+| Dernière | :white_check_mark: |
 | < 1.0.0 | :x: |
 
-## Reporting a Vulnerability
+## Signalement d'une vulnérabilité
 
-We take the security of this project seriously. If you believe you have found a security vulnerability, please report it to us responsibly.
+Nous prenons la sécurité de ce projet au sérieux. Si vous pensez avoir trouvé une vulnérabilité de sécurité, veuillez nous la signaler de manière responsable.
 
-**Please do not report security vulnerabilities through public GitHub issues.**
+**Veuillez ne pas signaler de vulnérabilités de sécurité via les issues publiques de GitHub.**
 
-Instead, please follow these steps:
+Veuillez plutôt suivre ces étapes :
 
-1. Reach out to the maintainer via the contact information provided in their GitHub profile.
-2. Provide a detailed description of the vulnerability and steps to reproduce it.
+1. Contactez le mainteneur via les informations de contact fournies dans son profil GitHub.
+2. Fournissez une description détaillée de la vulnérabilité et les étapes pour la reproduire.
 
-We will acknowledge your report within 48 hours and work with you to resolve the issue promptly.
+Nous accuserons réception de votre rapport dans les 48 heures et travaillerons avec vous pour résoudre le problème rapidement.
 
-## Disclosure Policy
+## Politique de divulgation
 
-- We will not take legal action against individuals who discover and report vulnerabilities responsibly.
-- We ask that you give us a reasonable amount of time to fix the issue before disclosing it publicly.
-- We will notify users of critical security fixes through release notes.
+- Nous n'engagerons pas de poursuites judiciaires contre les personnes qui découvrent et signalent des vulnérabilités de manière responsable.
+- Nous vous demandons de nous accorder un délai raisonnable pour corriger le problème avant de le divulguer publiquement.
+- Nous informerons les utilisateurs des correctifs de sécurité critiques via les notes de version.
 
-Thank you for helping keep this project secure!
+Merci d'aider à maintenir la sécurité de ce projet !
