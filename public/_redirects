@@ -1,9 +1,0 @@
-# Single Page Application routes
-/inventory/* /index.html 200
-/appliances/* /index.html 200
-/settings/* /index.html 200
-/login/* /index.html 200
-/offline/* /index.html 200
-
-# Catch-all for all other routes (must be last)
-/* /index.html 200

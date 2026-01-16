@@ -319,6 +319,18 @@ export default {
     }
 
     // Default: fall back to static assets
-    return env.ASSETS.fetch(request);
+    const response = await env.ASSETS.fetch(request);
+
+    // If the asset is not found (404) and it's a navigation request, serve index.html
+    if (
+      response.status === 404 &&
+      request.method === "GET" &&
+      request.headers.get("accept")?.includes("text/html")
+    ) {
+      const indexRequest = new Request(url.origin + "/index.html", request);
+      return env.ASSETS.fetch(indexRequest);
+    }
+
+    return response;
   },
 };
