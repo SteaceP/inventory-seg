@@ -154,18 +154,20 @@ const ApplianceDialog: React.FC<ApplianceDialogProps> = ({
               fullWidth
               value={formData.sku || ""}
               onChange={handleChange("sku")}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={generateSKU}
-                      edge="end"
-                      title={t("appliances.generateSku")}
-                    >
-                      <AutoRenewIcon />
-                    </IconButton>
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={generateSKU}
+                        edge="end"
+                        title={t("appliances.generateSku")}
+                      >
+                        <AutoRenewIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
           </Grid>
@@ -213,7 +215,7 @@ const ApplianceDialog: React.FC<ApplianceDialogProps> = ({
               label={t("appliances.purchaseDate")}
               type="date"
               fullWidth
-              InputLabelProps={{ shrink: true }}
+              slotProps={{ inputLabel: { shrink: true } }}
               value={formData.purchase_date || ""}
               onChange={handleChange("purchase_date")}
             />
@@ -224,7 +226,7 @@ const ApplianceDialog: React.FC<ApplianceDialogProps> = ({
               label={t("appliances.warrantyExpiry") || "Warranty Expiry"}
               type="date"
               fullWidth
-              InputLabelProps={{ shrink: true }}
+              slotProps={{ inputLabel: { shrink: true } }}
               value={formData.warranty_expiry || ""}
               onChange={handleChange("warranty_expiry")}
             />

@@ -138,23 +138,25 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
               bgcolor: "background.paper",
             },
           }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon sx={{ color: "text.secondary" }} />
-              </InputAdornment>
-            ),
-            endAdornment: searchQuery && (
-              <InputAdornment position="end">
-                <IconButton
-                  size="small"
-                  onClick={() => onSearchChange("")}
-                  edge="end"
-                >
-                  <ClearIcon fontSize="small" />
-                </IconButton>
-              </InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: "text.secondary" }} />
+                </InputAdornment>
+              ),
+              endAdornment: searchQuery && (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    onClick={() => onSearchChange("")}
+                    edge="end"
+                  >
+                    <ClearIcon fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
           }}
         />
 

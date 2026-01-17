@@ -84,14 +84,16 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
       fullWidth
       disableEnforceFocus
       disableRestoreFocus
-      PaperProps={{
-        sx: {
-          bgcolor: "background.paper",
-          color: "text.primary",
-          border: "1px solid",
-          borderColor: "divider",
-          borderRadius: "20px",
-          overflow: "hidden",
+      slotProps={{
+        paper: {
+          sx: {
+            bgcolor: "background.paper",
+            color: "text.primary",
+            border: "1px solid",
+            borderColor: "divider",
+            borderRadius: "20px",
+            overflow: "hidden",
+          },
         },
       }}
     >

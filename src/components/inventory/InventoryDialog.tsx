@@ -67,14 +67,16 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
       open={open}
       onClose={onClose}
       fullScreen={isMobile}
-      PaperProps={{
-        sx: {
-          bgcolor: "background.paper",
-          color: "text.primary",
-          border: isMobile ? "none" : "1px solid",
-          borderColor: "divider",
-          borderRadius: isMobile ? 0 : "12px",
-          minWidth: isMobile ? "100%" : "450px",
+      slotProps={{
+        paper: {
+          sx: {
+            bgcolor: "background.paper",
+            color: "text.primary",
+            border: isMobile ? "none" : "1px solid",
+            borderColor: "divider",
+            borderRadius: isMobile ? 0 : "12px",
+            minWidth: isMobile ? "100%" : "450px",
+          },
         },
       }}
     >
@@ -157,8 +159,10 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                 ? `${t("inventory.usingBaseThreshold") || "Utilise le seuil par défaut"}: ${effectiveBaseThreshold}`
                 : ""
             }
-            InputLabelProps={{
-              shrink: true,
+            slotProps={{
+              inputLabel: {
+                shrink: true,
+              },
             }}
           />
 

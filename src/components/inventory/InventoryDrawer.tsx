@@ -111,8 +111,10 @@ const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
       anchor="right"
       open={open}
       onClose={onClose}
-      PaperProps={{
-        sx: { width: { xs: "100%", sm: 500 }, bgcolor: "background.default" },
+      slotProps={{
+        paper: {
+          sx: { width: { xs: "100%", sm: 500 }, bgcolor: "background.default" },
+        },
       }}
     >
       <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>

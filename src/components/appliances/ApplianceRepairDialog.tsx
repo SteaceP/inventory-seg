@@ -106,7 +106,7 @@ const ApplianceRepairDialog: React.FC<ApplianceRepairDialogProps> = ({
           label={t("appliances.date")}
           type="date"
           fullWidth
-          InputLabelProps={{ shrink: true }}
+          slotProps={{ inputLabel: { shrink: true } }}
           value={formData.repair_date || ""}
           onChange={handleChange("repair_date")}
         />

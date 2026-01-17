@@ -50,12 +50,14 @@ const InventorySearch: React.FC<InventorySearchProps> = ({
             "&:hover fieldset": { borderColor: "primary.main" },
           },
         }}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon sx={{ color: "text.secondary" }} />
-            </InputAdornment>
-          ),
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon sx={{ color: "text.secondary" }} />
+              </InputAdornment>
+            ),
+          },
         }}
       />
     </Box>

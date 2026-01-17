@@ -236,12 +236,14 @@ const InventoryActivityPage: React.FC = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           sx={{ flexGrow: 1, minWidth: "200px" }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon color="action" />
-              </InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon color="action" />
+                </InputAdornment>
+              ),
+            },
           }}
         />
         <FormControl size="small" sx={{ minWidth: "150px" }}>

@@ -123,7 +123,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
               "& fieldset": { borderColor: "divider" },
             },
           }}
-          InputLabelProps={{ sx: { color: "text.secondary" } }}
+          slotProps={{ inputLabel: { sx: { color: "text.secondary" } } }}
         />
 
         <TextField
@@ -136,7 +136,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
               "& fieldset": { borderColor: "divider" },
             },
           }}
-          InputLabelProps={{ sx: { color: "text.secondary" } }}
+          slotProps={{ inputLabel: { sx: { color: "text.secondary" } } }}
         />
       </Box>
     </Paper>

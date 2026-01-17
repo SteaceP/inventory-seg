@@ -92,7 +92,7 @@ export const AlertProvider: React.FC<{ children: ReactNode }> = ({
         autoHideDuration={6000}
         onClose={handleClose}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        TransitionComponent={SlideTransition}
+        slots={{ transition: SlideTransition }}
       >
         <Alert
           onClose={handleClose}

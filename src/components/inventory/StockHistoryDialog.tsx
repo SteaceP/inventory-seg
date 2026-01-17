@@ -168,10 +168,12 @@ const StockHistoryDialog: React.FC<StockHistoryDialogProps> = ({
       onClose={onClose}
       maxWidth="md"
       fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: "12px",
-          maxHeight: "80vh",
+      slotProps={{
+        paper: {
+          sx: {
+            borderRadius: "12px",
+            maxHeight: "80vh",
+          },
         },
       }}
     >

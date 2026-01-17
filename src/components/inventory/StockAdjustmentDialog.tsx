@@ -167,11 +167,13 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
       open={open}
       onClose={handleClose}
       fullScreen={isMobile}
-      PaperProps={{
-        sx: {
-          borderRadius: isMobile ? 0 : "16px",
-          width: isMobile ? "100%" : "400px",
-          maxWidth: "100%",
+      slotProps={{
+        paper: {
+          sx: {
+            borderRadius: isMobile ? 0 : "16px",
+            width: isMobile ? "100%" : "400px",
+            maxWidth: "100%",
+          },
         },
       }}
     >

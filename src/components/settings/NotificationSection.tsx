@@ -121,7 +121,7 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
                 "& fieldset": { borderColor: "divider" },
               },
             }}
-            InputLabelProps={{ sx: { color: "text.secondary" } }}
+            slotProps={{ inputLabel: { sx: { color: "text.secondary" } } }}
           />
         )}
       </Box>
