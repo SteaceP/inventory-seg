@@ -30,7 +30,7 @@ import {
 } from "@mui/icons-material";
 import { useTranslation } from "../i18n";
 import { supabase } from "../supabaseClient";
-import { useAlert } from "../contexts/useAlertContext";
+import { useAlert } from "../contexts/AlertContext";
 import type { MasterLocation } from "../types/inventory";
 
 const StockLocationsPage: React.FC = () => {
@@ -61,13 +61,12 @@ const StockLocationsPage: React.FC = () => {
 
       if (error) throw error;
       setLocations(data || []);
-    } catch (err) {
-      console.error("Error fetching locations:", err);
-      showError(t("inventory.locations.error.save"));
+    } catch (err: unknown) {
+      showError("Failed to fetch locations: " + (err as Error).message);
     } finally {
       setLoading(false);
     }
-  }, [showError, t]);
+  }, [showError]);
 
   useEffect(() => {
     void fetchLocations();

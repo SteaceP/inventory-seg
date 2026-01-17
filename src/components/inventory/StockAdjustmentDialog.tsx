@@ -25,7 +25,7 @@ import {
 } from "@mui/icons-material";
 import type { InventoryItem } from "../../types/inventory";
 import { useTranslation } from "../../i18n";
-import { useInventoryContext } from "../../contexts/useInventoryContext";
+import { useInventoryContext } from "../../contexts/InventoryContext";
 
 interface StockAdjustmentDialogProps {
   open: boolean;

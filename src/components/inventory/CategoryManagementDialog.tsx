@@ -15,8 +15,8 @@ import {
 } from "@mui/material";
 import { Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
 import { useTranslation } from "../../i18n";
-import { useInventoryContext } from "../../contexts/useInventoryContext";
-import { useAlert } from "../../contexts/useAlertContext";
+import { useInventoryContext } from "../../contexts/InventoryContext";
+import { useAlert } from "../../contexts/AlertContext";
 import { supabase } from "../../supabaseClient";
 
 interface CategoryManagementDialogProps {

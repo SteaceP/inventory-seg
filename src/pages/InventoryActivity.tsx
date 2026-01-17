@@ -26,7 +26,7 @@ import {
 } from "@mui/icons-material";
 import { useTranslation } from "../i18n";
 import { supabase } from "../supabaseClient";
-import { useAlert } from "../contexts/useAlertContext";
+import { useAlert } from "../contexts/AlertContext";
 import type { InventoryActivity } from "../types/activity";
 import { alpha } from "@mui/material/styles";
 import { getActivityNarrative, getStockChange } from "../utils/activityUtils";

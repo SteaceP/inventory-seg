@@ -11,11 +11,11 @@ import {
   Divider,
 } from "@mui/material";
 import { supabase } from "../supabaseClient";
-import { useThemeContext } from "../contexts/useThemeContext";
+import { useAlert } from "../contexts/AlertContext";
+import { useThemeContext } from "../contexts/ThemeContext";
 import { useTranslation } from "../i18n";
 import InventoryScanner from "../components/inventory/InventoryScanner";
 import BarcodePrinter from "../components/BarcodePrinter";
-import { useAlert } from "../contexts/useAlertContext";
 import ConfirmDialog from "../components/ConfirmDialog";
 
 // Components

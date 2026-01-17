@@ -1,7 +1,9 @@
 import { AlertProvider } from "./contexts/AlertContext";
 import { UserProvider } from "./contexts/UserContext";
-import { ThemeProvider as CustomThemeProvider } from "./contexts/ThemeContext";
-import { useThemeContext } from "./contexts/useThemeContext";
+import {
+  ThemeProvider as CustomThemeProvider,
+  useThemeContext,
+} from "./contexts/ThemeContext";
 import { InventoryProvider } from "./contexts/InventoryContext";
 import { useState, useEffect, lazy, Suspense } from "react";
 import {

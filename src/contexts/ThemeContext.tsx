@@ -1,7 +1,33 @@
-import React, { useState, useEffect, useCallback } from "react";
+/* eslint-disable react-refresh/only-export-components */
+import React, {
+  createContext,
+  use,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import { supabase } from "../supabaseClient";
-import { ThemeContext } from "./theme-context";
-import { useAlert } from "./useAlertContext";
+import { useAlert } from "./AlertContext";
+
+interface ThemeContextType {
+  darkMode: boolean;
+  compactView: boolean;
+  toggleDarkMode: (enabled: boolean) => void;
+  toggleCompactView: (enabled: boolean) => void;
+}
+
+export const ThemeContext = createContext<ThemeContextType | undefined>(
+  undefined
+);
+
+export const useThemeContext = () => {
+  const context = use(ThemeContext);
+  if (context === undefined) {
+    throw new Error("useThemeContext must be used within a ThemeProvider");
+  }
+  return context;
+};
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -79,52 +105,49 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, [fetchThemeSettings]);
 
-  const toggleDarkMode = async (enabled: boolean) => {
-    setDarkMode(enabled);
-    if (userId) {
+  const toggleDarkMode = useCallback(
+    async (enabled: boolean) => {
       try {
-        const { error } = await supabase
-          .from("user_settings")
-          .upsert(
-            { user_id: userId, dark_mode: enabled },
-            { onConflict: "user_id" }
-          );
-        if (error) throw error;
-      } catch (err: unknown) {
-        showError("Failed to persist dark mode: " + (err as Error).message);
+        setDarkMode(enabled);
+        if (userId) {
+          await supabase
+            .from("user_settings")
+            .update({ dark_mode: enabled })
+            .eq("user_id", userId);
+        }
+      } catch {
+        showError("Failed to save theme setting");
       }
-    }
-  };
-
-  const toggleCompactView = async (enabled: boolean) => {
-    setCompactView(enabled);
-    if (userId) {
-      try {
-        const { error } = await supabase
-          .from("user_settings")
-          .upsert(
-            { user_id: userId, compact_view: enabled },
-            { onConflict: "user_id" }
-          );
-        if (error) throw error;
-      } catch (err: unknown) {
-        showError("Failed to persist compact view: " + (err as Error).message);
-      }
-    }
-  };
-
-  return (
-    <ThemeContext
-      value={{
-        darkMode,
-        compactView,
-        toggleDarkMode,
-        toggleCompactView,
-      }}
-    >
-      {children}
-    </ThemeContext>
+    },
+    [userId, showError]
   );
-};
 
-export default ThemeProvider;
+  const toggleCompactView = useCallback(
+    async (enabled: boolean) => {
+      try {
+        setCompactView(enabled);
+        if (userId) {
+          await supabase
+            .from("user_settings")
+            .update({ compact_view: enabled })
+            .eq("user_id", userId);
+        }
+      } catch {
+        showError("Failed to save view setting");
+      }
+    },
+    [userId, showError]
+  );
+
+  const value = useMemo(
+    () => ({
+      darkMode,
+      compactView,
+      toggleDarkMode,
+      toggleCompactView,
+    }),
+    [darkMode, compactView, toggleDarkMode, toggleCompactView]
+  );
+
+  return <ThemeContext value={value}>{children}</ThemeContext>;
+};

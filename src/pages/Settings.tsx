@@ -13,8 +13,8 @@ import {
 } from "@mui/material";
 import { useTranslation } from "../i18n";
 import { supabase } from "../supabaseClient";
-import { useThemeContext } from "../contexts/useThemeContext";
-import { useUserContext } from "../contexts/useUserContext";
+import { useUserContext } from "../contexts/UserContext";
+import { useThemeContext } from "../contexts/ThemeContext";
 import ProfileSection from "../components/settings/ProfileSection";
 import NotificationSection from "../components/settings/NotificationSection";
 import AppearanceSection from "../components/settings/AppearanceSection";

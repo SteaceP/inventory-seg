@@ -1,7 +1,34 @@
-import React, { useState, useCallback, type ReactNode } from "react";
+/* eslint-disable react-refresh/only-export-components */
+import React, {
+  createContext,
+  use,
+  useState,
+  useCallback,
+  useMemo,
+  type ReactNode,
+} from "react";
 import { Snackbar, Alert, Slide, type AlertProps } from "@mui/material";
 import type { SlideProps } from "@mui/material/Slide";
-import { AlertContext } from "./alert-context";
+
+interface AlertContextType {
+  showSuccess: (message: string) => void;
+  showError: (message: string) => void;
+  showInfo: (message: string) => void;
+  showWarning: (message: string) => void;
+}
+
+export const AlertContext = createContext<AlertContextType | undefined>(
+  undefined
+);
+
+export const useAlert = () => {
+  const context = use(AlertContext);
+  if (context === undefined) {
+    throw new Error("useAlert must be used within an AlertProvider");
+  }
+  return context;
+};
+
 interface AlertState {
   open: boolean;
   message: string;
@@ -33,34 +60,26 @@ export const AlertProvider: React.FC<{ children: ReactNode }> = ({
   );
 
   const showSuccess = useCallback(
-    (message: string) => {
-      showMessage(message, "success");
-    },
+    (message: string) => showMessage(message, "success"),
     [showMessage]
   );
 
   const showError = useCallback(
-    (message: string) => {
-      showMessage(message, "error");
-    },
+    (message: string) => showMessage(message, "error"),
     [showMessage]
   );
 
   const showInfo = useCallback(
-    (message: string) => {
-      showMessage(message, "info");
-    },
+    (message: string) => showMessage(message, "info"),
     [showMessage]
   );
 
   const showWarning = useCallback(
-    (message: string) => {
-      showMessage(message, "warning");
-    },
+    (message: string) => showMessage(message, "warning"),
     [showMessage]
   );
 
-  const contextValue = React.useMemo(
+  const contextValue = useMemo(
     () => ({ showSuccess, showError, showInfo, showWarning }),
     [showSuccess, showError, showInfo, showWarning]
   );
@@ -86,5 +105,3 @@ export const AlertProvider: React.FC<{ children: ReactNode }> = ({
     </AlertContext>
   );
 };
-
-export default AlertProvider;

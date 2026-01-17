@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { supabase } from "../supabaseClient";
-import { useUserContext } from "../contexts/useUserContext";
-import { useAlert } from "../contexts/useAlertContext";
+import { useUserContext } from "../contexts/UserContext";
+import { useAlert } from "../contexts/AlertContext";
 import { useTranslation } from "../i18n";
+import { supabase } from "../supabaseClient";
 
 interface Activity {
   id: string;

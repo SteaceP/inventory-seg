@@ -22,8 +22,8 @@ import {
 import { Print as PrintIcon } from "@mui/icons-material";
 import { useTranslation } from "../i18n";
 import { supabase } from "../supabaseClient";
-import { useInventoryContext } from "../contexts/useInventoryContext";
-import { useAlert } from "../contexts/useAlertContext";
+import { useInventoryContext } from "../contexts/InventoryContext";
+import { useAlert } from "../contexts/AlertContext";
 import type { InventoryActivity } from "../types/activity";
 
 const Reports: React.FC = () => {

@@ -1,8 +1,27 @@
-import React, { useState, useEffect, useCallback } from "react";
+/* eslint-disable react-refresh/only-export-components */
+import React, {
+  createContext,
+  use,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import { supabase } from "../supabaseClient";
-import { UserContext } from "./user-context";
-import { useAlert } from "./useAlertContext";
-import type { Language, UserProfile } from "../types/user";
+import { useAlert } from "./AlertContext";
+import type { Language, UserProfile, UserContextType } from "../types/user";
+
+export const UserContext = createContext<UserContextType | undefined>(
+  undefined
+);
+
+export const useUserContext = () => {
+  const context = use(UserContext);
+  if (context === undefined) {
+    throw new Error("useUserContext must be used within a UserProvider");
+  }
+  return context;
+};
 
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -45,7 +64,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
           setDisplayName(s.display_name || "");
           setAvatarUrl(s.avatar_url || "");
           setRole(s.role || "user");
-          setLanguageState((s.language as "fr" | "en" | "ar") || "fr");
+          setLanguageState((s.language as Language) || "fr");
           if (
             s.low_stock_threshold !== undefined &&
             s.low_stock_threshold !== null
@@ -102,7 +121,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [fetchUserSettings]);
 
   const setLanguage = useCallback(
-    async (lang: "fr" | "en" | "ar") => {
+    async (lang: Language) => {
       setLanguageState(lang);
       if (userId) {
         try {
@@ -148,7 +167,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     if (profile.avatarUrl !== undefined) setAvatarUrl(profile.avatarUrl);
   }, []);
 
-  const contextValue = React.useMemo(
+  const contextValue = useMemo(
     () => ({
       displayName,
       avatarUrl,
@@ -177,5 +196,3 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return <UserContext value={contextValue}>{children}</UserContext>;
 };
-
-export default UserProvider;

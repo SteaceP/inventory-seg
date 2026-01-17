@@ -3,7 +3,7 @@ import { Grid, Box } from "@mui/material";
 import { AnimatePresence } from "framer-motion";
 import type { InventoryItem } from "../../types/inventory";
 import InventoryCard from "./InventoryCard";
-import { useThemeContext } from "../../contexts/useThemeContext";
+import { useThemeContext } from "../../contexts/ThemeContext";
 
 interface InventoryGridProps {
   items: InventoryItem[];

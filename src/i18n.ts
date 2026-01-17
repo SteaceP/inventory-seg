@@ -1,4 +1,4 @@
-import { useUserContext } from "./contexts/useUserContext";
+import { useUserContext } from "./contexts/UserContext";
 import { useCallback } from "react";
 
 import ar from "./locales/ar";

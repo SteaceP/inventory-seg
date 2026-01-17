@@ -7,7 +7,7 @@ import {
   Switch,
 } from "@mui/material";
 import { Palette as PaletteIcon } from "@mui/icons-material";
-import { useThemeContext } from "../../contexts/useThemeContext";
+import { useThemeContext } from "../../contexts/ThemeContext";
 import { useTranslation } from "../../i18n";
 
 interface AppearanceSectionProps {

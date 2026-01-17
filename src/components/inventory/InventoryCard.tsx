@@ -24,10 +24,10 @@ import {
 } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import type { InventoryItem } from "../../types/inventory";
-import { useThemeContext } from "../../contexts/useThemeContext";
 import { useTranslation } from "../../i18n";
-import { useUserContext } from "../../contexts/useUserContext";
-import { useInventoryContext } from "../../contexts/useInventoryContext";
+import { useUserContext } from "../../contexts/UserContext";
+import { useThemeContext } from "../../contexts/ThemeContext";
+import { useInventoryContext } from "../../contexts/InventoryContext";
 
 interface InventoryCardProps {
   item: InventoryItem;

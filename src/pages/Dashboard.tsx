@@ -14,13 +14,13 @@ import {
   Warning as WarningIcon,
 } from "@mui/icons-material";
 import { supabase } from "../supabaseClient";
-import { useThemeContext } from "../contexts/useThemeContext";
-import { useUserContext } from "../contexts/useUserContext";
+import { useThemeContext } from "../contexts/ThemeContext";
+import { useUserContext } from "../contexts/UserContext";
 import { useTranslation } from "../i18n";
-import { useInventoryContext } from "../contexts/useInventoryContext";
+import { useInventoryContext } from "../contexts/InventoryContext";
 import RecentActivity from "../components/dashboard/RecentActivity";
 import LowStockAlert from "../components/dashboard/LowStockAlert";
-import { useAlert } from "../contexts/useAlertContext";
+import { useAlert } from "../contexts/AlertContext";
 
 import type { ActivityRow, RecentActivityItem } from "../types/activity";
 

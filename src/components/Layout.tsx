@@ -30,8 +30,8 @@ import {
 } from "@mui/icons-material";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { supabase } from "../supabaseClient";
-import { useThemeContext } from "../contexts/useThemeContext";
-import { useUserContext } from "../contexts/useUserContext";
+import { useThemeContext } from "../contexts/ThemeContext";
+import { useUserContext } from "../contexts/UserContext";
 import { useTranslation } from "../i18n";
 
 const Layout: React.FC = () => {

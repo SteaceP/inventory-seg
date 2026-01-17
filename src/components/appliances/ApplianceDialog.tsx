@@ -17,8 +17,8 @@ import {
 import { PhotoCamera, Autorenew as AutoRenewIcon } from "@mui/icons-material";
 import { useTranslation } from "../../i18n";
 import type { Appliance } from "../../types/appliances";
+import { useAlert } from "../../contexts/AlertContext";
 import { supabase } from "../../supabaseClient";
-import { useAlert } from "../../contexts/useAlertContext";
 import {
   validateImageFile,
   generateSecureFileName,

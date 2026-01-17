@@ -26,8 +26,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { InventoryItem } from "../../types/inventory";
 import InventoryCard from "./InventoryCard";
 import { useTranslation } from "../../i18n";
-import { useInventoryContext } from "../../contexts/useInventoryContext";
-import { useUserContext } from "../../contexts/useUserContext";
+import { useUserContext } from "../../contexts/UserContext";
+import { useInventoryContext } from "../../contexts/InventoryContext";
 
 interface InventoryCategorizedGridProps {
   items: InventoryItem[];
