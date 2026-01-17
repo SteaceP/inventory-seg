@@ -1,6 +1,6 @@
 # SEG Inventaire
 
-Une application de gestion d'inventaire pour La Société Emmanuel-Grégoire, entièrement indépendante de l'intranet/extranet principal, construite avec une pile technologique moderne, conçue pour l'efficacité, la clarté et la synchronisation en temps réel.
+Une application de gestion d'inventaire pour La Société Emmanuel-Grégoire, entièrement indépendante de l'intranet/extranet principal, construite avec un stack technologique moderne, conçue pour l'efficacité, la clarté et la synchronisation en temps réel.
 
 ## ✨ Caractéristiques
 
@@ -24,7 +24,7 @@ Une application de gestion d'inventaire pour La Société Emmanuel-Grégoire, en
   - Vue compacte pour l'affichage d'informations à haute densité.
   - Personnalisation du profil utilisateur (Nom d'affichage, Avatar).
 
-## 🛠️ Pile technologique
+## 🛠️ Stack technologique
 
 - **Frontend** : [React 19](https://react.dev/), [Vite](https://vitejs.dev/), [TypeScript](https://www.typescriptlang.org/)
 - **UI & Bibliothèque de composants** : [Material UI (MUI)](https://mui.com/), [Framer Motion](https://www.framer.com/motion/)
@@ -42,7 +42,7 @@ Une application de gestion d'inventaire pour La Société Emmanuel-Grégoire, en
 
 ### Instructions d'installation
 
-1. Cloner le dépôt :
+1. Cloner le repo :
 
    ```bash
    git clone https://github.com/steace/inventory-seg.git
@@ -112,7 +112,7 @@ Cette application est conçue pour être déployée sur Cloudflare Pages avec un
    ```
 
 4. **Déployer sur Cloudflare Pages :**
-   - Connectez votre dépôt GitHub à Cloudflare Pages
+   - Connectez votre repo GitHub à Cloudflare Pages
    - Définissez la commande de construction : `npm run build`
    - Définissez le répertoire de sortie : `dist`
    - Ajoutez les variables d'environnement (variables VITE_* uniquement)
