@@ -55,6 +55,9 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
   loading = false,
 }) => {
   const [mode, setMode] = useState<Mode>("menu");
+  const [pendingAction, setPendingAction] = useState<"add" | "remove" | null>(
+    null
+  );
   const [inputValue, setInputValue] = useState("");
   const [selectedLocation, setSelectedLocation] = useState<{
     location: string;
@@ -68,6 +71,7 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
 
   const handleClose = () => {
     setMode("menu");
+    setPendingAction(null);
     setInputValue("");
     setSelectedLocation(null);
     setRecipient("");
@@ -114,7 +118,19 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
     setInputValue((prev) => prev.slice(0, -1));
   };
 
+  const handleAddClick = () => {
+    setPendingAction("add");
+    // If item has multiple stock locations, show location selector
+    if (item?.stock_locations && item.stock_locations.length > 0) {
+      setMode("selectLocation");
+    } else {
+      // No locations defined, proceed directly to add
+      setMode("add");
+    }
+  };
+
   const handleRemoveClick = () => {
+    setPendingAction("remove");
     // If item has multiple stock locations, show location selector
     if (item?.stock_locations && item.stock_locations.length > 0) {
       setMode("selectLocation");
@@ -130,7 +146,11 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
     parent_location?: string;
   }) => {
     setSelectedLocation(location);
-    setMode("remove");
+    if (pendingAction === "add") {
+      setMode("add");
+    } else {
+      setMode("remove");
+    }
   };
 
   if (!item) return null;
@@ -214,7 +234,7 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
             <Button
               variant="contained"
               color="success"
-              onClick={() => setMode("add")}
+              onClick={handleAddClick}
               sx={{
                 width: 120,
                 height: 120,
