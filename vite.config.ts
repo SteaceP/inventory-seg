@@ -15,7 +15,11 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          "mui-vendor": ["@mui/material", "@mui/icons-material"],
+          "react-vendor": ["react", "react-dom", "react-router-dom"],
+          "mui-core": ["@mui/material"],
+          "mui-icons": ["@mui/icons-material"],
+          "supabase-vendor": ["@supabase/supabase-js"],
+          "sentry-vendor": ["@sentry/react"],
           "scanner-vendor": ["html5-qrcode"],
           "framer-vendor": ["framer-motion"],
         },
