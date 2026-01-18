@@ -46,6 +46,7 @@ const Signup: React.FC = () => {
       options: {
         data: {
           display_name: displayName,
+          lang: localStorage.getItem("language") || "en",
         },
       },
     });
