@@ -7,7 +7,7 @@
     "node": ">=24.0.0"
   },
   "overrides": {
-    "node-domexception": "1.0.0"
+    "node-domexception": "file:./.local-overrides/node-domexception"
   },
   "scripts": {
     "dev": "vite",
