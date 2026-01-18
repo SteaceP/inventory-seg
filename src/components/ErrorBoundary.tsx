@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { ErrorOutline as ErrorIcon } from "@mui/icons-material";
+import * as Sentry from "@sentry/react";
 
 interface Props {
   children: React.ReactNode;
@@ -26,7 +27,10 @@ class ErrorBoundary extends React.Component<Props, State> {
     if (import.meta.env.DEV) {
       console.error("ErrorBoundary caught:", error, errorInfo);
     }
-    // In production, you could send to error tracking service here
+    // In production, send to Sentry
+    Sentry.captureException(error, {
+      extra: { componentStack: errorInfo.componentStack },
+    });
   }
 
   render() {

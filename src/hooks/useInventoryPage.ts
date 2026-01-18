@@ -161,9 +161,16 @@ export const useInventoryPage = () => {
       const isLowStock = (item.stock || 0) <= effectiveThreshold;
 
       if (isLowStock) {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
         await fetch("/api/send-low-stock-alert", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.access_token}`,
+          },
           body: JSON.stringify({
             itemName: item.name,
             currentStock: item.stock,

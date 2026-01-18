@@ -22,6 +22,7 @@
   "vars": {
     "SUPABASE_URL": "https://nidebcwouohczncxrgfv.supabase.co",
     "VAPID_PUBLIC_KEY": "BPb01P8jNEFvyMS6hQW4i-wgqK3DDK9dWkJBuyinBxUGDhvSpGMHCMAmfU1LE3p6qTs0XkeP_pGupYhDMQ6F8pI",
-    "BREVO_SENDER_EMAIL": "steacypaquette@gmail.com"
+    "BREVO_SENDER_EMAIL": "steacypaquette@gmail.com",
+    "SENTRY_DSN": "https://603dd7abbe40a2fc6b2532d136ff845e@o1383731.ingest.us.sentry.io/4510731917066240"
   }
 }

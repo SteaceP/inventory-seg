@@ -28,4 +28,12 @@ Nous accuserons réception de votre rapport dans les 48 heures et travaillerons 
 - Nous vous demandons de nous accorder un délai raisonnable pour corriger le problème avant de le divulguer publiquement.
 - Nous informerons les utilisateurs des correctifs de sécurité critiques via les notes de version.
 
+## Bonnes pratiques de sécurité
+
+En plus des mesures intégrées, nous recommandons aux administrateurs de :
+
+1. **Raccourcir l'expiration des JWT** : Dans le tableau de bord Supabase, réglez l'expiration des jetons à une valeur courte (ex: 1 heure) pour limiter les risques en cas de vol de session.
+2. **Utiliser le 2FA** : Activez l'authentification à deux facteurs pour tous les comptes administratifs.
+3. **Réviser les politiques RLS** : Assurez-vous que les politiques Row Level Security (RLS) sont toujours activées et restrictives.
+
 Merci d'aider à maintenir la sécurité de ce projet !

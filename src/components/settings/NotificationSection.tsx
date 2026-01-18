@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { Notifications as NotificationsIcon } from "@mui/icons-material";
 import { useTranslation } from "../../i18n";
+import { supabase } from "../../supabaseClient";
 
 interface NotificationSectionProps {
   userId: string | null;
@@ -36,9 +37,16 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
     if (!userId) return;
 
     try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       const response = await fetch("/api/send-test-push", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token}`,
+        },
         body: JSON.stringify({ userId }),
       });
 
