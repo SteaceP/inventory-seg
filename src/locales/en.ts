@@ -260,9 +260,21 @@ const en = {
   "dashboard.description.withName":
     "Here's an overview of your inventory today.",
   "dashboard.description.default": "Global stock management and statistics.",
+  "dashboard.welcome": "Welcome back!",
+  "dashboard.quickActions": "Quick Actions",
+  "dashboard.actions.inventoryDesc": "Add a new item",
+  "dashboard.actions.scanDesc": "Scan a barcode",
+  "dashboard.actions.applianceDesc": "Register new unit",
+  "dashboard.actions.reportDesc": "View analytics",
+  "dashboard.health.title": "HEALTH",
+  "dashboard.health.excellent": "Excellent",
+  "dashboard.health.good": "Good",
+  "dashboard.health.critical": "Critical",
+  "dashboard.health.descGood": "Your inventory is well balanced. Keep it up!",
+  "dashboard.health.descLow": "Several items are near exhaustion. Check your stocks.",
   "dashboard.totalItems": "Total items",
   "dashboard.topCategory": "Top category",
-  "dashboard.movements": "Movements (Stock)",
+  "dashboard.movements": "Movements",
   "dashboard.lowStockItems": "Low Stock Items",
   "dashboard.lowStock.title": "Low Stock Alert",
   "dashboard.lowStock.viewAll": "View all",
@@ -280,6 +292,8 @@ const en = {
   "reports.annual": "Annual",
   "reports.year": "Select Year",
   "reports.allLocations": "All Locations",
+  "inventory.reports": "Reports",
+  "appliances.addAppliance": "Add Appliance",
 };
 
 export default en;

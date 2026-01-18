@@ -62,7 +62,33 @@ export const useInventoryPage = () => {
   useEffect(() => {
     const filter = searchParams.get("filter");
     setIsLowStockFilter(filter === "lowStock");
-  }, [searchParams]);
+
+    // Handle deep-linked actions
+    const action = searchParams.get("action");
+    if (action === "add") {
+      setEditingItem(null);
+      setFormData({
+        name: "",
+        category: "",
+        sku: "",
+        stock: 0,
+        image_url: "",
+        low_stock_threshold: null,
+        notes: "",
+      });
+      setOpen(true);
+      // Clear action from URL
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete("action");
+      setSearchParams(newParams, { replace: true });
+    } else if (action === "scan") {
+      setScanOpen(true);
+      // Clear action from URL
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete("action");
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const toggleLowStockFilter = () => {
     const newValue = !isLowStockFilter;

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Box,
   CircularProgress,
@@ -70,10 +71,20 @@ const Appliances: React.FC = () => {
     setLoading(false);
   }
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
   useEffect(() => {
     void fetchAppliances();
+
+    const action = searchParams.get("action");
+    if (action === "add") {
+      setOpenAddAppliance(true);
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete("action");
+      setSearchParams(newParams, { replace: true });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [searchParams, setSearchParams]);
 
   const filteredAppliances = appliances.filter((a) => {
     if (filter === "all") return true;

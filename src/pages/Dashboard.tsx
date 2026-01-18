@@ -1,28 +1,19 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { Box, Typography, useTheme, alpha, Paper, Grid } from "@mui/material";
 import {
-  Typography,
-  Paper,
-  Box,
-  CircularProgress,
-  useTheme,
-  useMediaQuery,
-  Grid,
-} from "@mui/material";
-import {
-  People as PeopleIcon,
-  Timeline as TimelineIcon,
+  Inventory as InventoryIcon,
   Warning as WarningIcon,
+  Category as CategoryIcon,
+  History as HistoryIcon,
 } from "@mui/icons-material";
-import { supabase } from "../supabaseClient";
-import { useThemeContext } from "../contexts/ThemeContext";
 import { useUserContext } from "../contexts/UserContext";
 import { useTranslation } from "../i18n";
 import { useInventoryContext } from "../contexts/InventoryContext";
-import RecentActivity from "../components/dashboard/RecentActivity";
-import LowStockAlert from "../components/dashboard/LowStockAlert";
+import { useThemeContext } from "../contexts/ThemeContext";
+import QuickActions from "../components/dashboard/QuickActions";
+import StockHealth from "../components/dashboard/StockHealth";
 import { useAlert } from "../contexts/AlertContext";
-
-import type { ActivityRow, RecentActivityItem } from "../types/activity";
+import { supabase } from "../supabaseClient";
 
 interface StatCardProps {
   title: string;
@@ -33,51 +24,103 @@ interface StatCardProps {
 
 const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => {
   const { compactView } = useThemeContext();
+  const theme = useTheme();
 
   return (
     <Paper
+      elevation={0}
       sx={{
-        p: compactView ? 2 : 3,
-        background: (theme) =>
-          theme.palette.mode === "dark" ? "rgba(22, 27, 34, 0.7)" : "#ffffff",
-        backdropFilter: "blur(10px)",
+        p: { xs: 1.5, sm: 2.5 },
+        borderRadius: 4,
         border: "1px solid",
-        borderColor: "divider",
-        borderRadius: "12px",
+        borderColor: alpha(color, 0.2),
+        bgcolor:
+          theme.palette.mode === "dark"
+            ? alpha(color, 0.05)
+            : alpha(color, 0.02),
+        width: "100%",
+        height: "100%",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
+        position: "relative",
+        overflow: "hidden",
+        backdropFilter: "blur(10px)",
+        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        "&:hover": {
+          transform: "translateY(-4px)",
+          boxShadow: `0 8px 24px -10px ${alpha(color, 0.3)}`,
+          borderColor: alpha(color, 0.4),
+        },
       }}
     >
       <Box
         sx={{
+          position: "absolute",
+          top: -10,
+          right: -10,
+          opacity: 0.05,
+          transform: "scale(2.5)",
+          color: color,
+        }}
+      >
+        {icon}
+      </Box>
+
+      <Box
+        sx={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          mb: compactView ? 1 : 2,
+          gap: { xs: 1, sm: 1.5 },
+          mb: 1,
+          position: "relative",
+          zIndex: 1,
         }}
       >
         <Box
           sx={{
-            p: compactView ? 0.5 : 1,
-            borderRadius: "8px",
-            bgcolor: `${color}20`,
-            color: color,
-            mr: 2,
             display: "flex",
             alignItems: "center",
+            justifyContent: "center",
+            p: { xs: 0.5, sm: 0.75 },
+            borderRadius: "8px",
+            bgcolor: alpha(color, 0.1),
+            color: color,
+            minWidth: "fit-content",
+            "& svg": { fontSize: { xs: 16, sm: 20 } },
+            "& img": { width: { xs: 16, sm: 20 }, height: { xs: 16, sm: 20 } },
           }}
         >
           {icon}
         </Box>
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          fontWeight="700"
+          noWrap
+          sx={{
+            textTransform: "uppercase",
+            letterSpacing: { xs: 0.5, sm: 1 },
+            fontSize: { xs: "0.625rem", sm: "0.7rem" },
+          }}
+        >
           {title}
         </Typography>
       </Box>
+
       <Typography
-        variant={compactView ? "h5" : "h4"}
-        fontWeight="bold"
-        align="center"
+        variant={compactView ? "h6" : "h4"}
+        fontWeight="900"
+        sx={{
+          color: color,
+          letterSpacing: "-0.02em",
+          position: "relative",
+          zIndex: 1,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          ml: 0.5,
+          fontSize: { xs: "1rem", sm: "1.35rem", md: "1.85rem" },
+        }}
       >
         {value}
       </Typography>
@@ -86,246 +129,137 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => {
 };
 
 const Dashboard: React.FC = () => {
-  const { items, loading: inventoryLoading } = useInventoryContext();
-  const { lowStockThreshold, displayName } = useUserContext();
-  const [dailyStats, setDailyStats] = useState({ in: 0, out: 0 });
-  const [activitiesLoading, setActivitiesLoading] = useState(true);
-  const [recentActivities, setRecentActivities] = useState<
-    RecentActivityItem[]
-  >([]);
-  const { t } = useTranslation();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const { showError } = useAlert();
+  const { lowStockThreshold } = useUserContext();
+  const [dailyStats, setDailyStats] = useState({ in: 0, out: 0 });
+  const { t } = useTranslation();
+  const { items, categories: contextCategories } = useInventoryContext();
 
   const stats = useMemo(() => {
-    if (!items)
-      return {
-        totalItems: 0,
-        lowStockItems: 0,
-        totalStock: 0,
-        topCategory: "",
-        lowStockList: [],
-      };
+    const totalItems = items.length;
+    const lowStockItems = items
+      .filter((item) => {
+        const categoryThreshold = contextCategories.find(
+          (c) => c.name === item.category
+        )?.low_stock_threshold;
+        const effectiveThreshold =
+          item.low_stock_threshold ?? categoryThreshold ?? lowStockThreshold;
+        return (item.stock || 0) <= (effectiveThreshold || 0);
+      })
+      .map((item) => ({
+        id: item.id,
+        name: item.name,
+        stock: item.stock || 0,
+      }));
 
-    const lowStockList = items.filter(
-      (item) => item.stock <= lowStockThreshold
-    );
-    const lowStock = lowStockList.length;
-    const totalStock = items.reduce((acc, item) => acc + item.stock, 0);
-    const categories = items.map((item) => item.category);
+    const categoryCounts: Record<string, number> = {};
+    items.forEach((item) => {
+      if (item.category) {
+        categoryCounts[item.category] =
+          (categoryCounts[item.category] || 0) + 1;
+      }
+    });
+
     const topCategory =
-      categories.length > 0
-        ? categories
-            .sort(
-              (a, b) =>
-                categories.filter((v) => v === a).length -
-                categories.filter((v) => v === b).length
-            )
-            .pop() || ""
-        : "";
-
-    return {
-      totalItems: items.length,
-      lowStockItems: lowStock,
-      totalStock,
-      topCategory,
-      lowStockList: lowStockList.slice(0, 5), // Show top 5 in alert
-    };
-  }, [items, lowStockThreshold]);
+      Object.entries(categoryCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ||
+      "N/A";
+    return { totalItems, lowStockItems, topCategory };
+  }, [items, lowStockThreshold, contextCategories]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
-      setActivitiesLoading(true);
       try {
-        // Fetch daily activity stats
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const { data: dailyActivities } = await supabase
+        const { data: activityData, error: activityError } = await supabase
           .from("inventory_activity")
           .select("action, changes")
-          .gte("created_at", today.toISOString())
-          .in("action", ["created", "deleted", "updated"]);
+          .gte(
+            "created_at",
+            new Date(new Date().setHours(0, 0, 0, 0)).toISOString()
+          );
 
-        if (dailyActivities) {
+        if (activityError) throw activityError;
+
+        if (activityData) {
           let stockIn = 0;
           let stockOut = 0;
-
           const getNumber = (obj: Record<string, unknown>, key: string) => {
-            const v = obj[key];
-            if (typeof v === "number") return v;
-            if (
-              typeof v === "string" &&
-              v.trim() !== "" &&
-              !Number.isNaN(Number(v))
-            )
-              return Number(v);
-            return 0;
+            const val = obj[key];
+            return typeof val === "number" ? val : 0;
           };
 
-          dailyActivities.forEach((activity: ActivityRow) => {
-            const changes = activity.changes || {};
-
+          activityData.forEach((activity) => {
+            const changes = (activity.changes as Record<string, unknown>) || {};
             if (activity.action === "created") {
               stockIn += getNumber(changes, "stock");
             } else if (activity.action === "deleted") {
               stockOut += getNumber(changes, "stock");
             } else if (activity.action === "updated") {
-              const newStock = getNumber(changes, "stock");
-              const oldStock = getNumber(changes, "old_stock");
-
-              const diff = newStock - oldStock;
+              const diff =
+                getNumber(changes, "stock") - getNumber(changes, "old_stock");
               if (diff > 0) stockIn += diff;
               else if (diff < 0) stockOut += Math.abs(diff);
             }
           });
-
           setDailyStats({ in: stockIn, out: stockOut });
-        }
-
-        // Fetch Recent Activities
-        const { data, error } = await supabase
-          .from("inventory_activity")
-          .select(
-            `
-            id,
-            action,
-            item_name,
-            created_at,
-            user_id
-          `
-          )
-          .order("created_at", { ascending: false })
-          .limit(5);
-
-        if (!error && data) {
-          const userIds = [
-            ...new Set(data.map((a) => a.user_id as string).filter(Boolean)),
-          ];
-          const { data: userSettings } = await supabase
-            .from("user_settings")
-            .select("user_id, display_name")
-            .in("user_id", userIds);
-
-          const userMap = new Map(
-            userSettings?.map((u) => [u.user_id, u.display_name]) || []
-          );
-
-          const activitiesWithNames = data.map((activity) => ({
-            ...activity,
-            user_display_name:
-              (userMap.get(activity.user_id as string) as string) ||
-              t("user.default"),
-          }));
-
-          setRecentActivities(activitiesWithNames);
-        } else if (error) {
-          // Handle error for fetching recent activities
-          throw error;
         }
       } catch (err) {
         showError(t("errors.loadDashboard") + ": " + (err as Error).message);
-      } finally {
-        setActivitiesLoading(false);
       }
     };
-
     void fetchDashboardData();
   }, [t, showError]);
 
-  const loading = inventoryLoading || activitiesLoading;
-
-  if (loading) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "50vh",
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
-
   return (
-    <Box sx={{ p: isMobile ? 0 : 0 }}>
-      <Box sx={{ mb: 2 }}>
-        <Box
-          component="img"
-          src="/logo-secondary.svg"
-          sx={{ width: 180, height: "auto", mb: 2 }}
-          alt="Logo"
-        />
-        <Typography variant={isMobile ? "h5" : "h4"} fontWeight="bold">
-          {displayName
-            ? `${t("dashboard.hello")}, ${displayName} !`
-            : t("dashboard.title")}
+    <Box sx={{ p: 3, maxWidth: "1600px", mx: "auto" }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" fontWeight="900" gutterBottom>
+          {t("dashboard.title")}
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          {t("dashboard.welcome")}
         </Typography>
       </Box>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        {displayName
-          ? t("dashboard.description.withName")
-          : t("dashboard.description.default")}
-      </Typography>
 
-      <Grid
-        container
-        spacing={3}
-        sx={{ justifyContent: { xs: "flex-start", sm: "center" } }}
-      >
-        <Grid size={{ xs: 12, sm: 3 }}>
+      <Grid container spacing={{ xs: 1.5, sm: 3 }} sx={{ mt: 2 }}>
+        <Grid size={{ xs: 6, sm: 6, md: 3 }}>
           <StatCard
             title={t("dashboard.totalItems")}
             value={stats.totalItems.toLocaleString()}
-            icon={
-              <Box
-                component="img"
-                src="/icon.svg"
-                sx={{ width: 24, height: 24 }}
-                alt="Logo"
-              />
-            }
+            icon={<InventoryIcon />}
             color="#027d6f"
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 3 }}>
+        <Grid size={{ xs: 6, sm: 6, md: 3 }}>
           <StatCard
             title={t("dashboard.lowStockItems")}
-            value={stats.lowStockItems}
+            value={stats.lowStockItems.length}
             icon={<WarningIcon />}
             color="#d29922"
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 3 }}>
+        <Grid size={{ xs: 6, sm: 6, md: 3 }}>
           <StatCard
             title={t("dashboard.topCategory")}
             value={stats.topCategory}
-            icon={<PeopleIcon />}
+            icon={<CategoryIcon />}
             color="#0969da"
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 3 }}>
+        <Grid size={{ xs: 6, sm: 6, md: 3 }}>
           <StatCard
             title={t("dashboard.movements")}
             value={`+${dailyStats.in} / -${dailyStats.out}`}
-            icon={<TimelineIcon />}
+            icon={<HistoryIcon />}
             color="#1a748b"
           />
         </Grid>
       </Grid>
 
-      {stats.lowStockList.length > 0 && (
-        <Box sx={{ mt: 4 }}>
-          <LowStockAlert items={stats.lowStockList} />
-        </Box>
-      )}
-
       <Box sx={{ mt: 4 }}>
-        <RecentActivity activities={recentActivities} />
+        <StockHealth />
+      </Box>
+      <Box sx={{ mt: 4 }}>
+        <QuickActions />
       </Box>
     </Box>
   );

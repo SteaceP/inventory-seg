@@ -246,9 +246,21 @@ const fr = {
     "Voici un aperçu de votre inventaire aujourd'hui.",
   "dashboard.description.default":
     "Gestion globale de votre stock et statistiques.",
+  "dashboard.welcome": "Bon retour !",
+  "dashboard.quickActions": "Actions Rapides",
+  "dashboard.actions.inventoryDesc": "Ajouter un article",
+  "dashboard.actions.scanDesc": "Scanner un code",
+  "dashboard.actions.applianceDesc": "Enregistrer unité",
+  "dashboard.actions.reportDesc": "Voir les analyses",
+  "dashboard.health.title": "SANTÉ",
+  "dashboard.health.excellent": "Excellent",
+  "dashboard.health.good": "Attention",
+  "dashboard.health.critical": "Critique",
+  "dashboard.health.descGood": "Votre inventaire est bien équilibré. Continuez comme ça !",
+  "dashboard.health.descLow": "Plusieurs articles sont proches de l'épuisement. Vérifiez vos stocks.",
   "dashboard.totalItems": "Total des articles",
   "dashboard.topCategory": "Catégorie Principale",
-  "dashboard.movements": "Mouvements (Stock)",
+  "dashboard.movements": "Mouvements",
   "dashboard.lowStockItems": "Articles en stock faible",
   "dashboard.lowStock.title": "Alerte Stock Faible",
   "dashboard.lowStock.viewAll": "Voir tout",
@@ -276,6 +288,8 @@ const fr = {
   "login.password": "Mot de passe",
   "login.signIn": "Se connecter",
   "login.signingIn": "Connexion en cours...",
+  "inventory.reports": "Rapports",
+  "appliances.addAppliance": "Ajouter un appareil",
 };
 
 export default fr;
