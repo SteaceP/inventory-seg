@@ -34,8 +34,8 @@ const InventoryStats: React.FC<InventoryStatsProps> = ({
       const effectiveThreshold =
         item.low_stock_threshold ?? categoryThreshold ?? globalThreshold;
 
-      if (item.stock === 0) outOfStock++;
-      else if (item.stock <= effectiveThreshold) lowStock++;
+      if ((item.stock || 0) === 0) outOfStock++;
+      else if ((item.stock || 0) <= effectiveThreshold) lowStock++;
     });
 
     return {

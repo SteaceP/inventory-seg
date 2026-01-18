@@ -46,7 +46,7 @@ export async function subscribeToPush() {
     const { error } = await supabase.from("push_subscriptions").upsert(
       {
         user_id: user.id,
-        subscription: subscriptionObj,
+        subscription: subscriptionObj as import("../types/database.types").Json,
         endpoint: subscription.endpoint,
         device_info: getDeviceInfo(),
       },

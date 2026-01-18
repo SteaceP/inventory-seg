@@ -232,7 +232,15 @@ const Inventory: React.FC = () => {
         onError={(msg) => console.error(msg)}
       />
 
-      <BarcodePrinter items={items.filter((i) => selectedItems.has(i.id))} />
+      <BarcodePrinter
+        items={items
+          .filter((i) => selectedItems.has(i.id))
+          .map((i) => ({
+            name: i.name,
+            sku: i.sku || "",
+            category: i.category,
+          }))}
+      />
 
       <CategoryManagementDialog
         open={categoriesDialogOpen}

@@ -250,9 +250,11 @@ export const useInventoryPage = () => {
 
       if (user) {
         const item = items.find((i) => i.id === itemId);
-        const activityChanges: Record<string, unknown> = {
+        const activityChanges: {
+          [key: string]: import("../types/database.types").Json;
+        } = {
           stock: newStock,
-          old_stock: item?.stock,
+          old_stock: item?.stock ?? null,
         };
 
         if (actionType) activityChanges.action_type = actionType;
@@ -347,7 +349,7 @@ export const useInventoryPage = () => {
             .filter((l) => l.location && l.location.trim() !== "")
             .map((l) => ({
               inventory_id: editingItem.id,
-              location: l.location,
+              location: l.location!,
               quantity: l.quantity || 0,
               parent_location: l.parent_location,
             }));
@@ -361,7 +363,9 @@ export const useInventoryPage = () => {
       } else {
         const { data, error } = (await supabase
           .from("inventory")
-          .insert([inventoryData])
+          .insert([
+            inventoryData as import("../types/database.types").Database["public"]["Tables"]["inventory"]["Insert"],
+          ])
           .select()
           .single()) as { data: unknown; error: unknown };
 
@@ -391,7 +395,7 @@ export const useInventoryPage = () => {
               .filter((l) => l.location && l.location.trim() !== "")
               .map((l) => ({
                 inventory_id: newItem.id,
-                location: l.location,
+                location: l.location!,
                 quantity: l.quantity || 0,
                 parent_location: l.parent_location,
               }));

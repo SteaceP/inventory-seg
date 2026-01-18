@@ -102,9 +102,12 @@ const Appliances: React.FC = () => {
         return;
       }
 
-      const { error } = await supabase
-        .from("appliances")
-        .insert([{ ...newAppliance, user_id: user.id }]);
+      const { error } = await supabase.from("appliances").insert([
+        {
+          ...newAppliance,
+          user_id: user.id,
+        } as import("../types/database.types").Database["public"]["Tables"]["appliances"]["Insert"],
+      ]);
 
       if (error) {
         showError(t("appliances.errorCreating") + ": " + error.message);
@@ -151,9 +154,12 @@ const Appliances: React.FC = () => {
     try {
       setActionLoading(true);
 
-      const { error } = await supabase
-        .from("repairs")
-        .insert([{ ...newRepair, appliance_id: selectedAppliance.id }]);
+      const { error } = await supabase.from("repairs").insert([
+        {
+          ...newRepair,
+          appliance_id: selectedAppliance.id,
+        } as import("../types/database.types").Database["public"]["Tables"]["repairs"]["Insert"],
+      ]);
 
       if (error) {
         showError(t("appliances.errorCreatingRepair") + ": " + error.message);
@@ -180,7 +186,7 @@ const Appliances: React.FC = () => {
     if (error) {
       showError(t("appliances.errorFetchingRepairs") + ": " + error.message);
     } else if (data) {
-      setRepairs(data);
+      setRepairs(data as Repair[]);
     }
   };
 
@@ -414,7 +420,7 @@ const Appliances: React.FC = () => {
           .map((a) => ({
             name: a.name,
             sku: a.sku || "",
-            category: a.type,
+            category: a.type || "",
           }))}
       />
 

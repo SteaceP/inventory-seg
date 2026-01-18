@@ -86,7 +86,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
       <DialogContent>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 1 }}>
           <ImageUploadField
-            imageUrl={formData.image_url}
+            imageUrl={formData.image_url ?? undefined}
             loading={loading}
             isAdmin={isAdmin}
             onUpload={onImageUpload}

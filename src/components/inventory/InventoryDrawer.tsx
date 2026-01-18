@@ -41,7 +41,7 @@ interface InventoryDrawerProps {
 
 interface StockActivity {
   id: string;
-  created_at: string;
+  created_at: string | null;
   action: string;
   changes?: {
     action_type?: string;
@@ -76,7 +76,7 @@ const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
         .limit(10);
 
       if (error) throw error;
-      setActivities(data || []);
+      setActivities((data as StockActivity[]) || []);
     } catch (err) {
       console.error("Error fetching activity:", err);
     }
@@ -273,14 +273,14 @@ const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                         {loc.location}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        {loc.quantity}
+                        {loc.quantity ?? 0}
                       </Typography>
                     </Box>
                     <LinearProgress
                       variant="determinate"
                       value={Math.min(
                         100,
-                        (loc.quantity / (item.stock || 1)) * 100
+                        ((loc.quantity || 0) / (item.stock || 1)) * 100
                       )}
                       sx={{ height: 6, borderRadius: 3 }}
                     />
@@ -354,7 +354,9 @@ const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                       {activity.action}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      {new Date(activity.created_at).toLocaleString()}
+                      {activity.created_at
+                        ? new Date(activity.created_at).toLocaleString()
+                        : ""}
                     </Typography>
                   </Box>
                   {activity.changes?.action_type && (

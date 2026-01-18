@@ -160,7 +160,7 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
     ? selectedLocation.quantity
     : item.stock;
   const inputNum = parseInt(inputValue, 10) || 0;
-  const isOverLimit = mode === "remove" && inputNum > maxRemovable;
+  const isOverLimit = mode === "remove" && inputNum > (maxRemovable || 0);
 
   return (
     <Dialog
@@ -279,9 +279,9 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
                   <ListItemButton
                     onClick={() =>
                       handleLocationSelect({
-                        location: loc.location,
-                        quantity: loc.quantity,
-                        parent_location: loc.parent_location,
+                        location: loc.location || "",
+                        quantity: loc.quantity || 0,
+                        parent_location: loc.parent_location ?? undefined,
                       })
                     }
                     sx={{
