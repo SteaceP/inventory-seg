@@ -107,8 +107,8 @@ export default {
               };
 
               const payload = JSON.stringify({
-                title: "Test de Notification",
-                body: "Ceci est une notification de test envoyée depuis le serveur !",
+                title: "Push Notification Test",
+                body: "This is a test notification sent from the server!",
                 icon: "/icon.svg",
                 data: { url: "/settings" },
                 tag: "test-notification",
@@ -200,10 +200,70 @@ export default {
           });
         }
 
+        // --- 0. FETCH USER SETTINGS (LANGUAGE) ---
+        let language = "en";
+        if (env.SUPABASE_URL && env.SUPABASE_SECRET_KEY && userId) {
+          const userSettingsResponse = await fetch(
+            `${env.SUPABASE_URL}/rest/v1/user_settings?user_id=eq.${userId}&select=language`,
+            {
+              headers: {
+                apikey: env.SUPABASE_SECRET_KEY,
+                Authorization: `Bearer ${env.SUPABASE_SECRET_KEY}`,
+              },
+            }
+          );
+          if (userSettingsResponse.ok) {
+            const settings = (await userSettingsResponse.json()) as {
+              language: string;
+            }[];
+            if (settings && settings[0]) {
+              language = settings[0].language || "en";
+            }
+          }
+        }
+
         // Sanitize for HTML email
         const sanitizedItemName = sanitizeHtml(itemName);
         const sanitizedThreshold = sanitizeHtml(threshold.toString());
         const sanitizedStock = sanitizeHtml(currentStock.toString());
+
+        // Translation dictionary
+        const translations: Record<string, Record<string, string>> = {
+          en: {
+            subject: `Low Stock Alert: ${sanitizedItemName}`,
+            title: "Low Stock Alert",
+            body: `The item "${sanitizedItemName}" is at ${sanitizedStock} units.`,
+            emailTitle: "Low Stock Alert",
+            emailIntro: `The following item has fallen below your threshold of <strong>${sanitizedThreshold}</strong>:`,
+            emailItem: "Item:",
+            emailStock: "Current Stock:",
+            emailFooter:
+              "Please log in to your inventory dashboard to restock.",
+          },
+          fr: {
+            subject: `Alerte Stock Faible: ${sanitizedItemName}`,
+            title: "Alerte Stock Faible",
+            body: `L'article "${sanitizedItemName}" est à ${sanitizedStock} unités.`,
+            emailTitle: "Alerte Stock Faible",
+            emailIntro: `L'article suivant est tombé en dessous de votre seuil de <strong>${sanitizedThreshold}</strong> :`,
+            emailItem: "Article :",
+            emailStock: "Stock Actuel :",
+            emailFooter:
+              "Veuillez vous connecter à votre tableau de bord d'inventaire pour vous réapprovisionner.",
+          },
+          ar: {
+            subject: `تنبيه انخفاض المخزون: ${sanitizedItemName}`,
+            title: "تنبيه انخفاض المخزون",
+            body: `المنتج "${sanitizedItemName}" وصل إلى ${sanitizedStock} وحدة.`,
+            emailTitle: "تنبيه انخفاض المخزون",
+            emailIntro: `المنتج التالي انخفض عن الحد المسموح به <strong>${sanitizedThreshold}</strong>:`,
+            emailItem: "المنتج:",
+            emailStock: "المخزون الحالي:",
+            emailFooter: "يرجى تسجيل الدخول إلى لوحة التحكم لإعادة التعبئة.",
+          },
+        };
+
+        const t = translations[language] || translations.en;
 
         // --- 1. SEND EMAIL (BREVO) ---
         if (env.BREVO_API_KEY && userEmail) {
@@ -219,16 +279,16 @@ export default {
                 email: env.BREVO_SENDER_EMAIL || "noreply@coderage.pro",
               },
               to: [{ email: userEmail }],
-              subject: `Alerte Stock Faible: ${sanitizedItemName}`,
+              subject: t.subject,
               htmlContent: `
-                <div style="font-family: sans-serif; padding: 20px; color: #333;">
-                  <h2 style="color: #d32f2f;">Alerte Stock Faible</h2>
-                  <p>L'article suivant est tombé en dessous de votre seuil de <strong>${sanitizedThreshold}</strong> :</p>
+                <div style="font-family: sans-serif; padding: 20px; color: #333; direction: ${language === "ar" ? "rtl" : "ltr"};">
+                  <h2 style="color: #d32f2f;">${t.emailTitle}</h2>
+                  <p>${t.emailIntro}</p>
                   <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                    <p style="margin: 5px 0;"><strong>Article :</strong> ${sanitizedItemName}</p>
-                    <p style="margin: 5px 0;"><strong>Stock Actuel :</strong> ${sanitizedStock}</p>
+                    <p style="margin: 5px 0;"><strong>${t.emailItem}</strong> ${sanitizedItemName}</p>
+                    <p style="margin: 5px 0;"><strong>${t.emailStock}</strong> ${sanitizedStock}</p>
                   </div>
-                  <p>Veuillez vous connecter à votre tableau de bord d'inventaire pour vous réapprovisionner.</p>
+                  <p>${t.emailFooter}</p>
                 </div>
               `,
             }),
@@ -263,8 +323,8 @@ export default {
                 };
 
                 const payload = JSON.stringify({
-                  title: "Alerte Stock Faible",
-                  body: `L'article "${sanitizedItemName}" est à ${sanitizedStock} unités.`,
+                  title: t.title,
+                  body: t.body,
                   icon: "/icon.svg",
                   data: { url: "/inventory?filter=lowStock" },
                   tag: `low-stock-${itemName}`,
