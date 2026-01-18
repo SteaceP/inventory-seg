@@ -99,7 +99,7 @@ self.addEventListener("fetch", (event) => {
   if (event.request.mode === "navigate") {
     event.respondWith(
       fetch(event.request).catch(() => {
-        return caches.match("/");
+        return caches.match("/index.html") || caches.match("/");
       })
     );
     return;
@@ -138,7 +138,11 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(networkFirst(API_CACHE_NAME, event.request));
   }
   // Strategy: Cache First for App Shell assets
-  else if (ASSETS_TO_CACHE.includes(url.pathname) || url.pathname === "/") {
+  else if (
+    ASSETS_TO_CACHE.includes(url.pathname) ||
+    url.pathname === "/" ||
+    url.pathname === "/index.html"
+  ) {
     event.respondWith(
       caches.match(event.request).then((response) => {
         return response || fetch(event.request);

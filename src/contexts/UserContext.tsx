@@ -10,10 +10,11 @@ import React, {
 import { supabase } from "../supabaseClient";
 import { useAlert } from "./AlertContext";
 import type { Language, UserProfile, UserContextType } from "../types/user";
+import type { Session } from "@supabase/supabase-js";
 
-export const UserContext = createContext<UserContextType | undefined>(
-  undefined
-);
+export const UserContext = createContext<
+  (UserContextType & { session: Session | null }) | undefined
+>(undefined);
 
 export const useUserContext = () => {
   const context = use(UserContext);
@@ -33,6 +34,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const [language, setLanguageState] = useState<Language>("fr");
   const [lowStockThreshold, setLowStockThresholdState] = useState(5);
   const [userId, setUserId] = useState<string | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchUserSettings = useCallback(
@@ -88,12 +90,13 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const initUser = async () => {
       const {
-        data: { session },
+        data: { session: initialSession },
       } = await supabase.auth.getSession();
 
-      if (session?.user) {
-        setUserId(session.user.id);
-        await fetchUserSettings(session.user.id);
+      setSession(initialSession);
+      if (initialSession?.user) {
+        setUserId(initialSession.user.id);
+        await fetchUserSettings(initialSession.user.id);
       } else {
         setLoading(false);
       }
@@ -103,15 +106,17 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUserId(session?.user?.id || null);
-      if (session?.user) {
-        void fetchUserSettings(session.user.id);
+    } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      setSession(newSession);
+      setUserId(newSession?.user?.id || null);
+      if (newSession?.user) {
+        void fetchUserSettings(newSession.user.id);
       } else {
         setDisplayName("");
         setAvatarUrl("");
         setRole("user");
         setLanguageState("fr");
+        setLoading(false); // Make sure to stop loading if no session
       }
     });
 
@@ -175,6 +180,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       language,
       lowStockThreshold,
       userId,
+      session,
       setUserProfile,
       setLanguage,
       setLowStockThreshold,
@@ -187,6 +193,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       language,
       lowStockThreshold,
       userId,
+      session,
       setUserProfile,
       setLanguage,
       setLowStockThreshold,

@@ -12,6 +12,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import { useUserContext } from "./contexts/UserContext";
 import {
   ThemeProvider,
   createTheme,
@@ -20,8 +21,6 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { WifiOff as WifiOffIcon } from "@mui/icons-material";
-import type { Session } from "@supabase/supabase-js";
-import { supabase } from "./supabaseClient";
 import Layout from "./components/Layout";
 import "./App.css";
 import { useLocation } from "react-router-dom";
@@ -163,8 +162,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import RealtimeNotifications from "./components/RealtimeNotifications";
 
 const AppContent = () => {
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { session, loading } = useUserContext();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const { darkMode, compactView } = useThemeContext();
   const { t } = useTranslation();
@@ -177,23 +175,7 @@ const AppContent = () => {
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
 
-    // Get initial session
-    void supabase.auth
-      .getSession()
-      .then(({ data: { session: initialSession } }) => {
-        setSession(initialSession);
-        setLoading(false);
-      });
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      setSession(newSession);
-    });
-
     return () => {
-      subscription.unsubscribe();
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
     };

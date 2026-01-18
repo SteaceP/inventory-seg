@@ -323,7 +323,7 @@ export default {
 
     // If the asset is not found (404) and it's a navigation request, serve index.html
     if (
-      response.status === 404 &&
+      (response.status === 404 || response.status === 403) &&
       request.method === "GET" &&
       request.headers.get("accept")?.includes("text/html")
     ) {
