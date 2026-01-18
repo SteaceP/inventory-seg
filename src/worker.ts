@@ -98,11 +98,13 @@ export default {
               env.VAPID_PUBLIC_KEY &&
               env.VAPID_PRIVATE_KEY
             ) {
-              webpush.setVapidDetails(
-                "mailto:admin@coderage.pro",
-                env.VAPID_PUBLIC_KEY,
-                env.VAPID_PRIVATE_KEY
-              );
+              const options = {
+                vapidDetails: {
+                  subject: "mailto:admin@coderage.pro",
+                  publicKey: env.VAPID_PUBLIC_KEY,
+                  privateKey: env.VAPID_PRIVATE_KEY,
+                },
+              };
 
               const payload = JSON.stringify({
                 title: "Test de Notification",
@@ -116,7 +118,7 @@ export default {
               await Promise.allSettled(
                 subscriptions.map((sub) =>
                   webpush
-                    .sendNotification(sub.subscription, payload)
+                    .sendNotification(sub.subscription, payload, options)
                     .catch(() => {})
                 )
               );
@@ -252,11 +254,13 @@ export default {
 
             if (subscriptions.length > 0) {
               if (env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY) {
-                webpush.setVapidDetails(
-                  "mailto:admin@coderage.pro",
-                  env.VAPID_PUBLIC_KEY,
-                  env.VAPID_PRIVATE_KEY
-                );
+                const options = {
+                  vapidDetails: {
+                    subject: "mailto:admin@coderage.pro",
+                    publicKey: env.VAPID_PUBLIC_KEY,
+                    privateKey: env.VAPID_PRIVATE_KEY,
+                  },
+                };
 
                 const payload = JSON.stringify({
                   title: "Alerte Stock Faible",
@@ -271,7 +275,7 @@ export default {
                 await Promise.allSettled(
                   subscriptions.map((sub) =>
                     webpush
-                      .sendNotification(sub.subscription, payload)
+                      .sendNotification(sub.subscription, payload, options)
                       .catch((error: unknown) => {
                         // If the subscription is no longer valid, we should ideally delete it
                         const status = (error as { statusCode?: number })
