@@ -1,34 +1,7 @@
-export type ApplianceStatus = "functional" | "needs_service" | "broken";
+import type { Database } from "./database.types";
 
-export interface Appliance {
-  id: string;
-  name: string;
-  type: string;
-  brand: string;
-  model: string;
-  serial_number: string;
-  purchase_date: string;
-  warranty_expiry: string;
-  notes: string;
-  photo_url?: string;
-  sku?: string;
-  location?: string;
-  status: ApplianceStatus;
-  expected_life: number;
-  created_at?: string;
-}
+export type ApplianceStatus = Database["public"]["Enums"]["appliance_status"];
 
-export interface RepairPart {
-  id?: string;
-  name: string;
-  price: number;
-}
+export type Appliance = Database["public"]["Tables"]["appliances"]["Row"];
 
-export interface Repair {
-  id: string;
-  repair_date: string;
-  description: string;
-  cost?: number; // Legacy labor cost (optional)
-  parts?: RepairPart[];
-  service_provider: string;
-}
+export type Repair = Database["public"]["Tables"]["repairs"]["Row"];

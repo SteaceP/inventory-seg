@@ -87,7 +87,7 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
 
       if (locationsError) throw locationsError;
 
-      setItems(itemsData || []);
+      setItems((itemsData as unknown as InventoryItem[]) || []);
       setCategories(categoriesData || []);
       setLocations(locationsData || []);
       setError(null);
@@ -126,43 +126,33 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 
   const subscriptionRef = useRef<RealtimeChannel | null>(null);
-  const catSubscriptionRef = useRef<RealtimeChannel | null>(null);
-  const locSubscriptionRef = useRef<RealtimeChannel | null>(null);
 
   useEffect(() => {
     const subscribe = () => {
       if (subscriptionRef.current) void subscriptionRef.current.unsubscribe();
-      if (catSubscriptionRef.current)
-        void catSubscriptionRef.current.unsubscribe();
-      if (locSubscriptionRef.current)
-        void locSubscriptionRef.current.unsubscribe();
 
       if (navigator.onLine) {
+        // Use the centralized 'app-activity' broadcast channel instead of postgres_changes
+        // This is significantly more performant and eliminates slow subscription-time queries
         subscriptionRef.current = supabase
-          .channel("inventory_changes")
-          .on(
-            "postgres_changes",
-            { event: "*", schema: "public", table: "inventory" },
-            () => void fetchInventory()
-          )
-          .subscribe();
+          .channel("app-activity", { config: { private: true } })
+          .on("broadcast", { event: "*" }, (envelope) => {
+            const data = (envelope as unknown as { payload: { table: string } })
+              .payload;
+            if (!data) return;
 
-        catSubscriptionRef.current = supabase
-          .channel("category_changes")
-          .on(
-            "postgres_changes",
-            { event: "*", schema: "public", table: "inventory_categories" },
-            () => void fetchInventory()
-          )
-          .subscribe();
+            const { table } = data;
+            const targetTables = [
+              "inventory",
+              "inventory_categories",
+              "inventory_locations",
+              "inventory_stock_locations",
+            ];
 
-        locSubscriptionRef.current = supabase
-          .channel("location_changes")
-          .on(
-            "postgres_changes",
-            { event: "*", schema: "public", table: "inventory_locations" },
-            () => void fetchInventory()
-          )
+            if (targetTables.includes(table)) {
+              void fetchInventory();
+            }
+          })
           .subscribe();
       }
     };
@@ -180,14 +170,6 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
         void subscriptionRef.current.unsubscribe();
         subscriptionRef.current = null;
       }
-      if (catSubscriptionRef.current) {
-        void catSubscriptionRef.current.unsubscribe();
-        catSubscriptionRef.current = null;
-      }
-      if (locSubscriptionRef.current) {
-        void locSubscriptionRef.current.unsubscribe();
-        locSubscriptionRef.current = null;
-      }
       setLoading(false);
     };
 
@@ -198,10 +180,6 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
       if (subscriptionRef.current) void subscriptionRef.current.unsubscribe();
-      if (catSubscriptionRef.current)
-        void catSubscriptionRef.current.unsubscribe();
-      if (locSubscriptionRef.current)
-        void locSubscriptionRef.current.unsubscribe();
     };
   }, [fetchInventory]);
 

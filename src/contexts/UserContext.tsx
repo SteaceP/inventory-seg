@@ -9,7 +9,12 @@ import React, {
 } from "react";
 import { supabase } from "../supabaseClient";
 import { useAlert } from "./AlertContext";
-import type { Language, UserProfile, UserContextType } from "../types/user";
+import type {
+  Language,
+  UserProfile,
+  UserContextType,
+  UserSettingsRow,
+} from "../types/user";
 import type { Session } from "@supabase/supabase-js";
 
 export const UserContext = createContext<
@@ -56,13 +61,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
         if (error && error.code !== "PGRST116") throw error;
 
         if (settings) {
-          const s = settings as {
-            display_name: string | null;
-            avatar_url: string | null;
-            role: string | null;
-            language: string | null;
-            low_stock_threshold: number | null;
-          };
+          const s = settings as UserSettingsRow;
           setDisplayName(s.display_name || "");
           setAvatarUrl(s.avatar_url || "");
           setRole(s.role || "user");

@@ -11,10 +11,12 @@ on conflict (id) do nothing;
 
 -- 2. Storage Policies
 -- Primary viewing access
+drop policy if exists "Public image viewing" on storage.objects;
 create policy "Public image viewing" on storage.objects for select 
    using ( bucket_id in ('inventory-images', 'avatars', 'appliance-images') );
 
 -- Restricted management access
+drop policy if exists "Authenticated image management" on storage.objects;
 create policy "Authenticated image management" on storage.objects for all 
   to authenticated 
   using ( bucket_id in ('inventory-images', 'avatars', 'appliance-images') )

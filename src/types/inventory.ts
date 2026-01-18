@@ -1,33 +1,20 @@
-export interface InventoryItem {
-  id: string;
-  name: string;
-  category: string;
-  sku: string;
-  stock: number;
-  image_url?: string;
-  low_stock_threshold?: number | null;
-  location?: string;
-  notes?: string;
-  stock_locations?: {
-    id?: string;
-    location: string;
-    quantity: number;
-    parent_location?: string;
-  }[];
+import type { Database } from "./database.types";
+
+export type InventoryItemRow = Database["public"]["Tables"]["inventory"]["Row"];
+export type InventoryStockLocationRow =
+  Database["public"]["Tables"]["inventory_stock_locations"]["Row"];
+
+export interface InventoryItem extends Omit<InventoryItemRow, "sku" | "stock"> {
+  sku: string | null;
+  stock: number | null;
+  stock_locations?: Partial<InventoryStockLocationRow>[];
 }
 
-export interface MasterLocation {
-  id: string;
-  name: string;
-  parent_id: string | null;
-  description?: string;
-  created_at: string;
-}
+export type MasterLocation =
+  Database["public"]["Tables"]["inventory_locations"]["Row"];
 
-export interface InventoryCategory {
-  name: string;
-  low_stock_threshold: number | null;
-}
+export type InventoryCategory =
+  Database["public"]["Tables"]["inventory_categories"]["Row"];
 
 export interface InventoryContextType {
   items: InventoryItem[];

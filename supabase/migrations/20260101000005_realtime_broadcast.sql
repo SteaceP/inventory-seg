@@ -21,6 +21,7 @@ create or replace function public.handle_broadcast_activity()
 returns trigger
 security definer
 language plpgsql
+set search_path = ''
 as $$
 declare
   payload_record jsonb;
@@ -29,10 +30,10 @@ begin
   -- For delete, we only have OLD
   if TG_OP = 'DELETE' then
     payload_record := null;
-    payload_old_record := to_jsonb(OLD);
+    payload_old_record := pg_catalog.to_jsonb(OLD);
   else
-    payload_record := to_jsonb(NEW);
-    payload_old_record := case when TG_OP = 'UPDATE' then to_jsonb(OLD) else null end;
+    payload_record := pg_catalog.to_jsonb(NEW);
+    payload_old_record := case when TG_OP = 'UPDATE' then pg_catalog.to_jsonb(OLD) else null end;
   end if;
 
   perform realtime.broadcast_changes(
@@ -64,12 +65,4 @@ for each row execute function public.handle_broadcast_activity();
 
 -- 4. Clean up: Remove tables from the old publication to save resources
 -- This disables the "postgres_changes" WAL-based method for these tables
-do $$
-begin
-  if exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'inventory_activity') then
-    alter publication supabase_realtime drop table public.inventory_activity;
-  end if;
-  if exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'appliances') then
-    alter publication supabase_realtime drop table public.appliances;
-  end if;
-end $$;
+-- End of broadcast setup

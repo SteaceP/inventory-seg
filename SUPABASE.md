@@ -34,3 +34,14 @@ After making changes to your database schema (e.g., via migrations), you should 
 1. Ensure Supabase is running: `npm run supabase:start`
 2. Run type generation: `npm run supabase:gen-types`
 3. The types will be updated in `src/types/database.types.ts`.
+
+## Realtime Architecture
+
+This project uses a **Broadcast-only** architecture for real-time synchronization.
+
+- **Legacy `supabase_realtime` publication**: Removed entirely to eliminate WAL decoding overhead and metadata polling.
+- **Method**: All components use `supabase.channel().send()` and `.on('broadcast')` for real-time updates.
+- **Database Functions**: The `public.handle_broadcast_activity` function is used by database triggers to manually broadcast changes through `realtime.broadcast_changes`.
+
+> [!IMPORTANT]
+> When adding new tables that require real-time updates, do NOT add them to a publication. Instead, add a trigger to call `handle_broadcast_activity` on change.

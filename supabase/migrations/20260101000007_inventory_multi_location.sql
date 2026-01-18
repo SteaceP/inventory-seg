@@ -17,16 +17,17 @@ create or replace function public.sync_inventory_stock_total()
 returns trigger
 language plpgsql
 security definer
+set search_path = ''
 as $$
 begin
   if (tg_op = 'DELETE') then
     update public.inventory
-    set stock = (select coalesce(sum(quantity), 0) from public.inventory_stock_locations where inventory_id = old.inventory_id)
+    set stock = (select pg_catalog.coalesce(pg_catalog.sum(quantity), 0) from public.inventory_stock_locations where inventory_id = old.inventory_id)
     where id = old.inventory_id;
     return old;
   else
     update public.inventory
-    set stock = (select coalesce(sum(quantity), 0) from public.inventory_stock_locations where inventory_id = new.inventory_id)
+    set stock = (select pg_catalog.coalesce(pg_catalog.sum(quantity), 0) from public.inventory_stock_locations where inventory_id = new.inventory_id)
     where id = new.inventory_id;
     return new;
   end if;
@@ -42,13 +43,22 @@ for each row execute function public.sync_inventory_stock_total();
 -- 4. Enable RLS on the new table
 alter table public.inventory_stock_locations enable row level security;
 
+drop policy if exists "Users can view stock locations" on public.inventory_stock_locations;
 create policy "Users can view stock locations"
   on public.inventory_stock_locations for select to authenticated using (true);
 
-create policy "Admins can manage stock locations"
-  on public.inventory_stock_locations for all to authenticated
-  using (exists (select 1 from public.user_settings where user_id = auth.uid() and role = 'admin'))
-  with check (exists (select 1 from public.user_settings where user_id = auth.uid() and role = 'admin'));
+drop policy if exists "Admins can manage stock locations" on public.inventory_stock_locations;
+create policy "Admins can insert stock locations"
+  on public.inventory_stock_locations for insert to authenticated
+  with check (exists (select 1 from public.user_settings where user_id = (select auth.uid()) and role = 'admin'));
+
+create policy "Admins can update stock locations"
+  on public.inventory_stock_locations for update to authenticated
+  using (exists (select 1 from public.user_settings where user_id = (select auth.uid()) and role = 'admin'));
+
+create policy "Admins can delete stock locations"
+  on public.inventory_stock_locations for delete to authenticated
+  using (exists (select 1 from public.user_settings where user_id = (select auth.uid()) and role = 'admin'));
 
 -- 5. Migrate existing data
 -- If an inventory item has a location and stock, create an initial entry in the new table

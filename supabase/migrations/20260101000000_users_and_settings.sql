@@ -2,7 +2,7 @@
 -- USER SETTINGS & PROFILES
 -- ==========================================
 
-create table public.user_settings (
+create table if not exists public.user_settings (
   user_id uuid references auth.users on delete cascade primary key,
   display_name text,
   notifications boolean default true,
@@ -18,18 +18,23 @@ create table public.user_settings (
 
 alter table public.user_settings enable row level security;
 
+drop policy if exists "Users can modify own settings" on public.user_settings;
 create policy "Users can modify own settings" on public.user_settings
-  for insert to authenticated with check (user_id = auth.uid());
+  for insert to authenticated with check (user_id = (select auth.uid()));
 
+drop policy if exists "Users can update own settings" on public.user_settings;
 create policy "Users can update own settings" on public.user_settings
-  for update to authenticated using (user_id = auth.uid());
+  for update to authenticated using (user_id = (select auth.uid()));
 
+drop policy if exists "Users can delete own settings" on public.user_settings;
 create policy "Users can delete own settings" on public.user_settings
-  for delete to authenticated using (user_id = auth.uid());
+  for delete to authenticated using (user_id = (select auth.uid()));
 
+drop policy if exists "Authenticated can view all profiles" on public.user_settings;
 create policy "Authenticated can view all profiles" on public.user_settings
   for select to authenticated using (true);
 
+drop trigger if exists update_user_settings_updated_at on public.user_settings;
 create trigger update_user_settings_updated_at
   before update on public.user_settings
   for each row execute function public.update_updated_at_column();
@@ -38,7 +43,7 @@ create trigger update_user_settings_updated_at
 -- PUSH NOTIFICATIONS
 -- ==========================================
 
-create table public.push_subscriptions (
+create table if not exists public.push_subscriptions (
     id uuid primary key default gen_random_uuid(),
     user_id uuid not null references auth.users(id) on delete cascade,
     subscription jsonb not null,
@@ -49,10 +54,10 @@ create table public.push_subscriptions (
 
 alter table public.push_subscriptions enable row level security;
 
+drop policy if exists "Users can manage their own subscriptions" on public.push_subscriptions;
 create policy "Users can manage their own subscriptions"
   on public.push_subscriptions for all to authenticated
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
 
--- Add to Realtime
-alter publication supabase_realtime add table public.user_settings;
+-- End of users and settings

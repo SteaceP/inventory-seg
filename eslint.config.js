@@ -9,7 +9,7 @@ import reactX from "eslint-plugin-react-x";
 import reactDom from "eslint-plugin-react-dom";
 
 export default defineConfig([
-  globalIgnores(["dist"]),
+  globalIgnores(["dist", "src/types/database.types.ts"]),
   {
     files: ["**/*.{ts,tsx}"],
     extends: [

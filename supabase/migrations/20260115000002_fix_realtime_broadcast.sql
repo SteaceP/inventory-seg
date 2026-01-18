@@ -23,13 +23,14 @@ create or replace function realtime.broadcast_changes(
 returns void
 security definer
 language plpgsql
+set search_path = ''
 as $$
 begin
   insert into realtime.messages (topic, event, payload)
   values (
     topic,
     event,
-    jsonb_build_object(
+    pg_catalog.jsonb_build_object(
       'op', operation,
       'table', table_name,
       'schema', table_schema,

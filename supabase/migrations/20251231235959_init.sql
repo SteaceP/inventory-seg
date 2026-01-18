@@ -22,7 +22,3 @@ begin
   return new;
 end;
 $$;
-
--- Refine Realtime Publication
-drop publication if exists supabase_realtime;
-create publication supabase_realtime;

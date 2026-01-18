@@ -10,3 +10,4 @@ public/
 *.md
 package-lock.json
 wrangler.jsonc
+src/types/database.types.ts

@@ -20,9 +20,17 @@ alter table public.push_subscriptions
   drop constraint if exists push_subscriptions_user_id_subscription_key;
 
 -- Create new unique constraint on (user_id, endpoint)
-alter table public.push_subscriptions 
-  add constraint push_subscriptions_user_id_endpoint_key 
-  unique (user_id, endpoint);
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint 
+    where conname = 'push_subscriptions_user_id_endpoint_key'
+  ) then
+    alter table public.push_subscriptions 
+      add constraint push_subscriptions_user_id_endpoint_key 
+      unique (user_id, endpoint);
+  end if;
+end $$;
 
 -- Create index on endpoint for faster lookups
 create index if not exists idx_push_subscriptions_endpoint 
