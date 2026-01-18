@@ -77,7 +77,19 @@ const en = {
   "login.password": "Password",
   "login.signIn": "Sign in",
   "login.signingIn": "Signing in...",
-  "login.noAccount": "Don't have an account? Contact your administrator.",
+  "login.noAccount": "Don't have an account?",
+  "login.noAccountLink": "Sign up here",
+  "login.signUp": "Sign up",
+  "signup.title": "Create an account",
+  "signup.displayName": "Full Name",
+  "signup.email": "Email Address (@s-e-g.ca)",
+  "signup.password": "Password",
+  "signup.createAccount": "Create account",
+  "signup.creatingAccount": "Creating account...",
+  "signup.alreadyHaveAccount": "Already have an account? Sign in",
+  "signup.invalidDomain": "Email must end with @s-e-g.ca",
+  "signup.success":
+    "Account created! Please check your email for a confirmation link.",
 
   // Settings / Layout
   "layout.settings": "Settings",

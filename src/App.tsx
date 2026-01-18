@@ -36,6 +36,7 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Inventory = lazy(() => import("./pages/Inventory"));
 const Appliances = lazy(() => import("./pages/Appliances"));
 const Login = lazy(() => import("./pages/Login"));
+const Signup = lazy(() => import("./pages/Signup"));
 const Settings = lazy(() => import("./pages/Settings"));
 const InventoryActivity = lazy(() => import("./pages/InventoryActivity"));
 const StockLocations = lazy(() => import("./pages/StockLocations"));
@@ -262,6 +263,10 @@ const AppContent = () => {
                 />
               )
             }
+          />
+          <Route
+            path="/signup"
+            element={!session ? <Signup /> : <Navigate to="/" replace />}
           />
           {session ? (
             <Route

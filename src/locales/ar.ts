@@ -78,7 +78,19 @@ const ar = {
   "login.password": "كلمة المرور",
   "login.signIn": "تسجيل الدخول",
   "login.signingIn": "جاري تسجيل الدخول...",
-  "login.noAccount": "ليس لديك حساب؟ اتصل بمسؤول النظام.",
+  "login.noAccount": "ليس لديك حساب؟",
+  "login.noAccountLink": "سجل هنا",
+  "login.signUp": "سجل",
+  "signup.title": "إنشاء حساب",
+  "signup.displayName": "الاسم الكامل",
+  "signup.email": "عنوان البريد الإلكتروني (@s-e-g.ca)",
+  "signup.password": "كلمة المرور",
+  "signup.createAccount": "إنشاء حساب",
+  "signup.creatingAccount": "جاري إنشاء الحساب...",
+  "signup.alreadyHaveAccount": "هل لديك حساب بالفعل؟ تسجيل الدخول",
+  "signup.invalidDomain": "يجب أن ينتهي البريد الإلكتروني بـ @s-e-g.ca",
+  "signup.success":
+    "تم إنشاء الحساب! يرجى التحقق من بريدك الإلكتروني للحصول على رابط التأكيد.",
 
   // Security
   "security.signOut": "تسجيل الخروج",

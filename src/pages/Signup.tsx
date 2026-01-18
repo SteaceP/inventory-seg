@@ -9,48 +9,106 @@ import {
   Alert,
   IconButton,
   InputAdornment,
+  Link,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import { useTranslation } from "../i18n";
 import { supabase } from "../supabaseClient";
-import { useNavigate, useLocation, Link as RouterLink } from "react-router-dom";
-import { Link } from "@mui/material";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 
-interface LocationState {
-  from?: {
-    pathname: string;
-  };
-}
-
-const Login: React.FC = () => {
+const Signup: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
   const { t } = useTranslation();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    // Domain validation
+    if (!email.toLowerCase().endsWith("@s-e-g.ca")) {
+      setError(t("signup.invalidDomain"));
+      setLoading(false);
+      return;
+    }
+
+    const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          display_name: displayName,
+        },
+      },
     });
 
-    if (error) {
-      setError(error.message);
+    if (signUpError) {
+      setError(signUpError.message);
       setLoading(false);
     } else {
-      const from = (location.state as LocationState)?.from?.pathname || "/";
-      void navigate(from, { replace: true });
+      setSuccess(true);
+      setLoading(false);
     }
   };
+
+  if (success) {
+    return (
+      <Container maxWidth="xs">
+        <Box
+          sx={{
+            minHeight: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Paper
+            elevation={0}
+            sx={{
+              p: 4,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              background: (theme) =>
+                theme.palette.mode === "dark"
+                  ? "rgba(22, 27, 34, 0.7)"
+                  : "#ffffff",
+              backdropFilter: "blur(20px)",
+              border: "1px solid",
+              borderColor: "divider",
+              borderRadius: "16px",
+              textAlign: "center",
+            }}
+          >
+            <Typography variant="h5" fontWeight="bold" gutterBottom>
+              {t("signup.title")}
+            </Typography>
+            <Alert severity="success" sx={{ mb: 3 }}>
+              {t("signup.success")}
+            </Alert>
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={() => {
+                void navigate("/login");
+              }}
+            >
+              {t("login.signIn")}
+            </Button>
+          </Paper>
+        </Box>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="xs">
@@ -101,7 +159,7 @@ const Login: React.FC = () => {
                 alt="Logo"
               />
               <Typography variant="h5" fontWeight="bold" color="text.primary">
-                {t("login.signIn")}
+                {t("signup.title")}
               </Typography>
             </Box>
 
@@ -117,7 +175,7 @@ const Login: React.FC = () => {
             <Box
               component="form"
               onSubmit={(e) => {
-                void handleLogin(e);
+                void handleSignup(e);
               }}
               sx={{ width: "100%" }}
             >
@@ -125,11 +183,23 @@ const Login: React.FC = () => {
                 margin="normal"
                 required
                 fullWidth
+                id="displayName"
+                label={t("signup.displayName")}
+                name="displayName"
+                autoComplete="name"
+                autoFocus
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
                 id="email"
-                label={t("login.email")}
+                label={t("signup.email")}
                 name="email"
                 autoComplete="email"
-                autoFocus
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 sx={{ mb: 2 }}
@@ -139,10 +209,10 @@ const Login: React.FC = () => {
                 required
                 fullWidth
                 name="password"
-                label={t("login.password")}
+                label={t("signup.password")}
                 type={showPassword ? "text" : "password"}
                 id="password"
-                autoComplete="current-password"
+                autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 slotProps={{
@@ -174,19 +244,16 @@ const Login: React.FC = () => {
                   boxShadow: "0 4px 14px 0 rgba(88, 166, 255, 0.39)",
                 }}
               >
-                {loading ? t("login.signingIn") : t("login.signIn")}
+                {loading
+                  ? t("signup.creatingAccount")
+                  : t("signup.createAccount")}
               </Button>
             </Box>
 
             <Typography variant="body2" sx={{ mt: 3, color: "text.secondary" }}>
-              {t("login.noAccount")}{" "}
-              <Link
-                component={RouterLink}
-                to="/signup"
-                fontWeight="bold"
-                sx={{ cursor: "pointer" }}
-              >
-                {t("login.noAccountLink")}
+              {t("signup.alreadyHaveAccount")}{" "}
+              <Link component={RouterLink} to="/login" fontWeight="bold">
+                {t("login.signIn")}
               </Link>
             </Typography>
           </Paper>
@@ -196,4 +263,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Signup;

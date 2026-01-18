@@ -82,8 +82,19 @@ const fr = {
   "login.password": "Mot de passe",
   "login.signIn": "Se connecter",
   "login.signingIn": "Connexion en cours...",
-  "login.noAccount":
-    "Vous n'avez pas de compte ? Contactez votre administrateur.",
+  "login.noAccount": "Vous n'avez pas de compte ?",
+  "login.noAccountLink": "Inscrivez-vous ici",
+  "login.signUp": "S'inscrire",
+  "signup.title": "Créer un compte",
+  "signup.displayName": "Nom complet",
+  "signup.email": "Adresse e-mail (@s-e-g.ca)",
+  "signup.password": "Mot de passe",
+  "signup.createAccount": "Créer le compte",
+  "signup.creatingAccount": "Création du compte...",
+  "signup.alreadyHaveAccount": "Vous avez déjà un compte ? Connectez-vous",
+  "signup.invalidDomain": "L'e-mail doit se terminer par @s-e-g.ca",
+  "signup.success":
+    "Compte créé ! Veuillez vérifier votre e-mail pour le lien de confirmation.",
 
   // Security
   "security.signOut": "Se déconnecter",
