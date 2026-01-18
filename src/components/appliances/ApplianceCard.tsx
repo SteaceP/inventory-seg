@@ -18,7 +18,6 @@ import {
   Build as BuildIcon,
   Delete as DeleteIcon,
   History as HistoryIcon,
-  Print as PrintIcon,
   Warning as WarningIcon,
   CheckCircle as HealthyIcon,
   Error as BrokenIcon,
@@ -34,7 +33,6 @@ interface ApplianceCardProps {
   onViewRepairs: (appliance: Appliance) => void;
   onAddRepair: (appliance: Appliance) => void;
   onDelete: (id: string) => void;
-  onPrint: (id: string) => void;
 }
 
 const ApplianceCard: React.FC<ApplianceCardProps> = ({
@@ -45,7 +43,6 @@ const ApplianceCard: React.FC<ApplianceCardProps> = ({
   onViewRepairs,
   onAddRepair,
   onDelete,
-  onPrint,
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -323,14 +320,6 @@ const ApplianceCard: React.FC<ApplianceCardProps> = ({
           {t("appliances.history")}
         </Button>
         <Box sx={{ flexGrow: 1 }} />
-        <IconButton
-          size="small"
-          onClick={() => onPrint(appliance.id)}
-          title={t("appliances.printLabel")}
-          sx={{ color: theme.palette.text.secondary }}
-        >
-          <PrintIcon fontSize="small" />
-        </IconButton>
         <IconButton
           size="small"
           color="primary"

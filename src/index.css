@@ -124,26 +124,23 @@ button:active {
     background-color: #f0f0f0 !important;
   }
 
-  /* Show #root but hide navigation elements */
+  /* Hide #root but hide navigation elements */
   #root {
-    display: block !important;
-  }
-
-  /* Hide navigation and sidebar */
-  nav,
-  aside,
-  header,
-  footer,
-  .MuiDrawer-root,
-  .MuiAppBar-root {
     display: none !important;
   }
 
-  /* Make main content full width */
-  main,
-  [role="main"] {
-    margin-left: 0 !important;
-    padding: 0 !important;
+  .print-only-area {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
     width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
   }
+
+  /* Show #root but hide navigation elements */
+  /* Remove navigation and sidebar hides as we hide #root anyway */
 }

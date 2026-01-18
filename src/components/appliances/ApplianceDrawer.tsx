@@ -226,7 +226,7 @@ const ApplianceDrawer: React.FC<ApplianceDrawerProps> = ({
             sx={{ mt: 2, display: "flex", alignItems: "center", gap: 1 }}
           >
             <InventoryIcon fontSize="small" color="primary" />{" "}
-            {t("common.details") || "Specifications"}
+            {t("common.details")}
           </Typography>
           <Grid container spacing={2} sx={{ mb: 4 }}>
             {[
@@ -248,7 +248,7 @@ const ApplianceDrawer: React.FC<ApplianceDrawerProps> = ({
               {
                 label: t("appliances.expectedLife"),
                 value: appliance.expected_life
-                  ? `${appliance.expected_life} ${t("common.years") || "Years"}`
+                  ? `${appliance.expected_life} ${t("common.years")}`
                   : "—",
                 key: "life",
               },

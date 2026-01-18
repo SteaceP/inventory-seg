@@ -110,9 +110,7 @@ const ApplianceDialog: React.FC<ApplianceDialogProps> = ({
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle fontWeight="bold">
-        {isEdit
-          ? t("appliances.edit") || "Edit Appliance"
-          : t("appliances.add")}
+        {isEdit ? t("appliances.edit") : t("appliances.add")}
       </DialogTitle>
       <DialogContent sx={{ px: { xs: 2, sm: 3 } }}>
         <Grid container spacing={2} sx={{ mt: 0.5 }}>
@@ -130,19 +128,19 @@ const ApplianceDialog: React.FC<ApplianceDialogProps> = ({
             <TextField
               select
               margin="dense"
-              label={t("appliances.status.title") || "Status"}
+              label={t("appliances.status.title")}
               fullWidth
               value={formData.status || "functional"}
               onChange={handleChange("status" as keyof Appliance)}
             >
               <MenuItem value="functional">
-                {t("appliances.status.functional") || "Operational"}
+                {t("appliances.status.functional")}
               </MenuItem>
               <MenuItem value="needs_service">
-                {t("appliances.status.needsService") || "Needs Service"}
+                {t("appliances.status.needsService")}
               </MenuItem>
               <MenuItem value="broken">
-                {t("appliances.status.broken") || "Broken"}
+                {t("appliances.status.broken")}
               </MenuItem>
             </TextField>
           </Grid>
@@ -174,7 +172,7 @@ const ApplianceDialog: React.FC<ApplianceDialogProps> = ({
           <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               margin="dense"
-              label={t("appliances.serialLabel") || "Serial Number"}
+              label={t("appliances.serialLabel")}
               fullWidth
               value={formData.serial_number || ""}
               onChange={handleChange("serial_number")}
@@ -223,7 +221,7 @@ const ApplianceDialog: React.FC<ApplianceDialogProps> = ({
           <Grid size={{ xs: 12, md: 4 }}>
             <TextField
               margin="dense"
-              label={t("appliances.warrantyExpiry") || "Warranty Expiry"}
+              label={t("appliances.warrantyExpiry")}
               type="date"
               fullWidth
               slotProps={{ inputLabel: { shrink: true } }}
@@ -234,7 +232,7 @@ const ApplianceDialog: React.FC<ApplianceDialogProps> = ({
           <Grid size={{ xs: 12, md: 4 }}>
             <TextField
               margin="dense"
-              label={t("appliances.expectedLife") || "Expected Life (Years)"}
+              label={t("appliances.expectedLife")}
               type="number"
               fullWidth
               value={formData.expected_life || 10}
@@ -308,7 +306,7 @@ const ApplianceDialog: React.FC<ApplianceDialogProps> = ({
           }
           sx={{ px: 4 }}
         >
-          {isEdit ? t("common.save") || "Save" : t("appliances.add")}
+          {isEdit ? t("common.save") : t("appliances.add")}
         </Button>
       </DialogActions>
     </Dialog>

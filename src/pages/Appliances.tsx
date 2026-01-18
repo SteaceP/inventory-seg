@@ -344,10 +344,6 @@ const Appliances: React.FC = () => {
                     setOpenAddRepair(true);
                   }}
                   onDelete={(id) => handleDeleteClick(id)}
-                  onPrint={(id) => {
-                    setSelectedItems(new Set([id]));
-                    setTimeout(() => handlePrint(), 0);
-                  }}
                 />
               </Grid>
             ))}
