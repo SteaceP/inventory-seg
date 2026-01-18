@@ -18,6 +18,7 @@ import type {
 } from "../types/inventory";
 import { useTranslation } from "../i18n";
 import { useAlert } from "./AlertContext";
+import { useUserContext } from "./UserContext";
 
 export const InventoryContext = createContext<InventoryContextType | undefined>(
   undefined
@@ -43,6 +44,15 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
   const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
   const { showError } = useAlert();
+  const { userId, displayName } = useUserContext();
+
+  const [presence, setPresence] = useState<
+    Record<
+      string,
+      { userId: string; displayName: string; editingId: string | null }
+    >
+  >({});
+  const [editingId, setEditingIdState] = useState<string | null>(null);
 
   const isFetching = useRef(false);
 
@@ -195,6 +205,64 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, [fetchInventory]);
 
+  // Presence and Sync Channel
+  useEffect(() => {
+    if (!userId || !navigator.onLine) return;
+
+    const channel = supabase.channel("inventory-sync", {
+      config: {
+        presence: {
+          key: userId,
+        },
+      },
+    });
+
+    channel
+      .on("presence", { event: "sync" }, () => {
+        const newState = channel.presenceState();
+        const simplifiedPresence: Record<
+          string,
+          { userId: string; displayName: string; editingId: string | null }
+        > = {};
+        Object.keys(newState).forEach((key) => {
+          simplifiedPresence[key] = newState[key][0] as unknown as {
+            userId: string;
+            displayName: string;
+            editingId: string | null;
+          };
+        });
+        setPresence(simplifiedPresence);
+      })
+      .on("broadcast", { event: "inventory-updated" }, () => {
+        void fetchInventory();
+      })
+      .subscribe((status) => {
+        if ((status as string) === "SUBSCRIBED") {
+          void channel.track({
+            userId,
+            displayName: displayName || "Anonymous",
+            editingId: editingId,
+          });
+        }
+      });
+
+    return () => {
+      void channel.unsubscribe();
+    };
+  }, [userId, displayName, editingId, fetchInventory]);
+
+  const setEditingId = useCallback((id: string | null) => {
+    setEditingIdState(id);
+  }, []);
+
+  const broadcastInventoryChange = useCallback(() => {
+    void supabase.channel("inventory-sync").send({
+      type: "broadcast",
+      event: "inventory-updated",
+      payload: { timestamp: new Date().toISOString() },
+    });
+  }, []);
+
   const contextValue = useMemo(
     () => ({
       items,
@@ -204,6 +272,9 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
       error,
       refreshInventory: fetchInventory,
       updateCategoryThreshold,
+      presence,
+      setEditingId,
+      broadcastInventoryChange,
     }),
     [
       items,
@@ -213,6 +284,9 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
       error,
       fetchInventory,
       updateCategoryThreshold,
+      presence,
+      setEditingId,
+      broadcastInventoryChange,
     ]
   );
 

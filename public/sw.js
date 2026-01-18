@@ -1,6 +1,7 @@
-const STATIC_CACHE_NAME = "inventory-seg-static-v5";
-const DYNAMIC_CACHE_NAME = "inventory-seg-dynamic-v5";
-const API_CACHE_NAME = "inventory-seg-api-v5";
+const STATIC_CACHE_NAME = "inventory-seg-static-v7";
+const IMAGE_CACHE_NAME = "inventory-seg-images-v7";
+const API_CACHE_NAME = "inventory-seg-api-v7";
+const FONT_CACHE_NAME = "inventory-seg-fonts-v7";
 
 const ASSETS_TO_CACHE = [
   "/",
@@ -11,11 +12,17 @@ const ASSETS_TO_CACHE = [
 
 const SUPABASE_IMAGE_URL_SIGNATURE =
   "/storage/v1/object/public/inventory-images";
+
 const SUPABASE_API_URL_SIGNATURES = [
   "/rest/v1/inventory",
   "/rest/v1/appliances",
+  "/rest/v1/inventory_categories",
+  "/rest/v1/inventory_locations",
+  "/rest/v1/inventory_activity",
+  "/rest/v1/repairs",
 ];
-const NO_CACHE_API_SIGNATURES = ["/rest/v1/user_settings", "/auth/v1/"];
+
+const BYPASS_CACHE_SIGNATURES = ["/rest/v1/user_settings", "/auth/v1/"];
 
 // Helper function for network-first strategy
 function networkFirst(cacheName, request) {
@@ -46,7 +53,6 @@ function staleWhileRevalidate(cacheName, request) {
           return networkResponse;
         })
         .catch(() => {
-          // If fetch fails, return the cached response if it exists
           return cachedResponse;
         });
 
@@ -62,7 +68,6 @@ self.addEventListener("install", (event) => {
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
-  // Force the waiting service worker to become active immediately
   self.skipWaiting();
 });
 
@@ -70,13 +75,15 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
+      const activeCaches = [
+        STATIC_CACHE_NAME,
+        IMAGE_CACHE_NAME,
+        API_CACHE_NAME,
+        FONT_CACHE_NAME,
+      ];
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (
-            cacheName !== STATIC_CACHE_NAME &&
-            cacheName !== DYNAMIC_CACHE_NAME &&
-            cacheName !== API_CACHE_NAME
-          ) {
+          if (!activeCaches.includes(cacheName)) {
             return caches.delete(cacheName);
           }
         })
@@ -95,63 +102,60 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Handle navigation requests (html)
+  // Strategy: Network-First for API calls (excluding sensitive ones)
+  if (SUPABASE_API_URL_SIGNATURES.some((sig) => url.pathname.includes(sig))) {
+    event.respondWith(networkFirst(API_CACHE_NAME, event.request));
+    return;
+  }
+
+  // Explicitly bypass caching for sensitive endpoints
+  if (BYPASS_CACHE_SIGNATURES.some((sig) => url.pathname.includes(sig))) {
+    return;
+  }
+
+  // Strategy: Stale-While-Revalidate for Supabase Images
+  if (url.pathname.startsWith(SUPABASE_IMAGE_URL_SIGNATURE)) {
+    event.respondWith(staleWhileRevalidate(IMAGE_CACHE_NAME, event.request));
+    return;
+  }
+
+  // Strategy: Stale-While-Revalidate for Fonts (External + Local)
+  if (
+    url.hostname.includes("fonts.googleapis.com") ||
+    url.hostname.includes("fonts.gstatic.com") ||
+    url.pathname.endsWith(".woff2")
+  ) {
+    event.respondWith(staleWhileRevalidate(FONT_CACHE_NAME, event.request));
+    return;
+  }
+
+  // Strategy: Cache-First for local static assets
+  if (ASSETS_TO_CACHE.includes(url.pathname)) {
+    event.respondWith(
+      caches.match(event.request).then((response) => {
+        return response || fetch(event.request);
+      })
+    );
+    return;
+  }
+
+  // Strategy: Stale-While-Revalidate for built assets (JS, CSS)
+  if (
+    url.pathname.includes("/assets/") ||
+    url.pathname.endsWith(".js") ||
+    url.pathname.endsWith(".css")
+  ) {
+    event.respondWith(staleWhileRevalidate(STATIC_CACHE_NAME, event.request));
+    return;
+  }
+
+  // Handle navigation requests (SPA)
   if (event.request.mode === "navigate") {
     event.respondWith(
       fetch(event.request).catch(() => {
         return caches.match("/index.html") || caches.match("/");
       })
     );
-    return;
-  }
-
-  // Ignore requests to other origins, unless it's Supabase API/storage
-  if (
-    !url.origin.startsWith(self.location.origin) &&
-    !url.origin.includes("supabase")
-  ) {
-    return;
-  }
-
-  // Never cache user_settings - always fetch fresh from network
-  if (NO_CACHE_API_SIGNATURES.some((sig) => url.pathname.includes(sig))) {
-    event.respondWith(
-      fetch(event.request).catch(() => {
-        return new Response(JSON.stringify({ error: "Network error" }), {
-          status: 503,
-          headers: { "Content-Type": "application/json" },
-        });
-      })
-    );
-    return;
-  }
-
-  // Strategy: Stale-While-Revalidate for Supabase Images
-  if (url.pathname.startsWith(SUPABASE_IMAGE_URL_SIGNATURE)) {
-    event.respondWith(staleWhileRevalidate(DYNAMIC_CACHE_NAME, event.request));
-  }
-  // Strategy: Network First for API calls (ensures Realtime updates are fresh)
-  else if (
-    SUPABASE_API_URL_SIGNATURES.some((sig) => url.pathname.startsWith(sig)) ||
-    url.pathname.includes("/rest/v1/inventory_activity")
-  ) {
-    event.respondWith(networkFirst(API_CACHE_NAME, event.request));
-  }
-  // Strategy: Cache First for App Shell assets
-  else if (
-    ASSETS_TO_CACHE.includes(url.pathname) ||
-    url.pathname === "/" ||
-    url.pathname === "/index.html"
-  ) {
-    event.respondWith(
-      caches.match(event.request).then((response) => {
-        return response || fetch(event.request);
-      })
-    );
-  }
-  // For other requests (JS, CSS, etc.), use SWR to keep them up to date
-  else {
-    event.respondWith(staleWhileRevalidate(STATIC_CACHE_NAME, event.request));
   }
 });
 

@@ -204,6 +204,7 @@ const fr = {
   "inventory.categories.newName": "Nouveau nom de catégorie",
   "inventory.searchPlaceholder": "Rechercher par nom, SKU ou catégorie...",
   "inventory.search": "Rechercher...",
+  "inventory.isEditing": "est en train de modifier...",
   "inventory.current": "Actuel :",
   "inventory.back": "Retour",
   "inventory.history": "Historique du stock",

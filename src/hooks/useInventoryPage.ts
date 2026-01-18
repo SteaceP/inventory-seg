@@ -21,6 +21,8 @@ export const useInventoryPage = () => {
     refreshInventory,
     updateCategoryThreshold,
     categories,
+    setEditingId,
+    broadcastInventoryChange,
   } = useInventoryContext();
   const { role, lowStockThreshold: globalThreshold } = useUserContext();
   const { t } = useTranslation();
@@ -120,20 +122,26 @@ export const useInventoryPage = () => {
     }
   }, []);
 
-  const handleAdjust = useCallback((item: InventoryItem) => {
-    setSelectedItem(item);
-    setStockDialogOpen(true);
-  }, []);
+  const handleAdjust = useCallback(
+    (item: InventoryItem) => {
+      setSelectedItem(item);
+      setStockDialogOpen(true);
+      setEditingId(item.id);
+    },
+    [setEditingId]
+  );
 
   const handleEdit = (item: InventoryItem) => {
     setEditingItem(item);
     setFormData(item);
     setOpenDrawer(false);
     setOpen(true);
+    setEditingId(item.id);
   };
 
   const handleClose = () => {
     setOpen(false);
+    setEditingId(null);
   };
 
   const getBarcodeFormat = (sku: string) => {
@@ -270,6 +278,8 @@ export const useInventoryPage = () => {
 
       setStockDialogOpen(false);
       void refreshInventory();
+      broadcastInventoryChange();
+      setEditingId(null);
     } catch (err: unknown) {
       showError(
         t("inventory.updateStockError") + ": " + (err as Error).message
@@ -408,6 +418,8 @@ export const useInventoryPage = () => {
 
       handleClose();
       void refreshInventory();
+      broadcastInventoryChange();
+      setEditingId(null);
     } catch (err: unknown) {
       showError(t("inventory.saveItemError") + ": " + (err as Error).message);
     } finally {
@@ -447,6 +459,7 @@ export const useInventoryPage = () => {
           });
         }
         void refreshInventory();
+        broadcastInventoryChange();
       }
     } catch (err: unknown) {
       showError(t("inventory.deleteItemError") + ": " + (err as Error).message);

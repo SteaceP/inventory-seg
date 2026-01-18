@@ -198,6 +198,7 @@ const en = {
   "inventory.categories.newName": "New category name",
   "inventory.searchPlaceholder": "Search items by name, SKU or category...",
   "inventory.search": "Search...",
+  "inventory.isEditing": "is editing...",
   "inventory.current": "Current:",
   "inventory.back": "Back",
   "inventory.history": "Stock History",

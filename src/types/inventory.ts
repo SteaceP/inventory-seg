@@ -40,4 +40,10 @@ export interface InventoryContextType {
     name: string,
     threshold: number | null
   ) => Promise<void>;
+  presence: Record<
+    string,
+    { userId: string; displayName: string; editingId: string | null }
+  >;
+  setEditingId: (id: string | null) => void;
+  broadcastInventoryChange: () => void;
 }

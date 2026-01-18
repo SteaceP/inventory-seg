@@ -3,6 +3,6 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-XSS-Protection: 1; mode=block
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.gstatic.com data:; img-src 'self' data: https://*.supabase.co; connect-src 'self' https://*.supabase.co https://api.brevo.com wss://*.supabase.co https://*.workers.dev https://inv.coderage.pro; worker-src 'self'; frame-ancestors 'none';
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.gstatic.com data:; img-src 'self' data: https://*.supabase.co; connect-src 'self' https://*.supabase.co https://api.brevo.com wss://*.supabase.co https://*.workers.dev https://inv.coderage.pro https://*.sentry.io; worker-src 'self' blob:; frame-ancestors 'none';
   Permissions-Policy: camera=(self), microphone=(), geolocation=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload

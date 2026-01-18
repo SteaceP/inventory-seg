@@ -196,6 +196,7 @@ const ar = {
   "inventory.categories.newName": "اسم الفئة الجديدة",
   "inventory.searchPlaceholder": "البحث بالاسم، SKU أو الفئة...",
   "inventory.search": "بحث...",
+  "inventory.isEditing": "يقوم بالتعديل...",
   "inventory.current": "الحالي:",
   "inventory.back": "رجوع",
   "inventory.history": "سجل المخزون",

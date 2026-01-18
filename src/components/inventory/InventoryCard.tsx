@@ -52,8 +52,8 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
   const theme = useTheme();
   const { compactView } = useThemeContext();
   const { lowStockThreshold: globalThreshold } = useUserContext();
-  const { categories } = useInventoryContext();
-  const { role } = useUserContext();
+  const { categories, presence } = useInventoryContext();
+  const { role, userId: currentUserId } = useUserContext();
   const isAdmin = role === "admin";
 
   const categoryThreshold = categories.find(
@@ -65,6 +65,13 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
 
   const isLowStock = (item.stock || 0) <= effectiveThreshold;
   const isOutOfStock = (item.stock || 0) === 0;
+
+  // Find other users editing this card
+  const editors = Object.values(presence).filter(
+    (p) => p.editingId === item.id && p.userId !== currentUserId
+  );
+  const isBeingEdited = editors.length > 0;
+  const editorNames = editors.map((e) => e.displayName).join(", ");
 
   return (
     <motion.div
@@ -142,6 +149,22 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
                 borderColor: alpha(theme.palette.primary.main, 0.2),
               }}
             />
+            {isBeingEdited && (
+              <Chip
+                label={`${editorNames} ${t("inventory.isEditing") || "is editing..."}`}
+                size="small"
+                color="warning"
+                sx={{
+                  fontWeight: "bold",
+                  animation: "pulse 2s infinite",
+                  "@keyframes pulse": {
+                    "0%": { opacity: 1 },
+                    "50%": { opacity: 0.6 },
+                    "100%": { opacity: 1 },
+                  },
+                }}
+              />
+            )}
           </Box>
 
           <Box
