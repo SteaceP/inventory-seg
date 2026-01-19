@@ -60,6 +60,7 @@ export const useInventoryPage = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [currentTab, setCurrentTab] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   useEffect(() => {
     const filter = searchParams.get("filter");
@@ -512,6 +513,10 @@ export const useInventoryPage = () => {
       (item.sku && item.sku.toLowerCase().includes(query)) ||
       (item.category && item.category.toLowerCase().includes(query));
 
+    if (selectedCategory && item.category !== selectedCategory) {
+      return false;
+    }
+
     if (isLowStockFilter) {
       const categoryThreshold = categories.find(
         (c) => c.name === item.category
@@ -551,6 +556,7 @@ export const useInventoryPage = () => {
     openDrawer,
     selectedItem,
     currentTab,
+    selectedCategory,
     filteredItems,
     role,
     globalThreshold,
@@ -567,6 +573,7 @@ export const useInventoryPage = () => {
     setSelectedItemForHistory,
     setOpenDrawer,
     setCurrentTab,
+    setSelectedCategory,
     toggleLowStockFilter,
     handleOpen,
     handleAdjust,

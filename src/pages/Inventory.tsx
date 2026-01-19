@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Box,
-  CircularProgress,
-  Divider,
-  useTheme,
-  useMediaQuery,
-} from "@mui/material";
+import { Box, CircularProgress, useTheme, useMediaQuery } from "@mui/material";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { useTranslation } from "../i18n";
 import BarcodePrinter from "../components/BarcodePrinter";
@@ -19,7 +13,7 @@ import ConfirmDialog from "../components/ConfirmDialog";
 import CategoryManagementDialog from "../components/inventory/CategoryManagementDialog";
 import InventoryDrawer from "../components/inventory/InventoryDrawer";
 import InventoryStats from "../components/inventory/InventoryStats";
-import { Tabs, Tab } from "@mui/material";
+import CategoryFilters from "../components/inventory/CategoryFilters";
 import { useInventoryPage } from "../hooks/useInventoryPage";
 
 const Inventory: React.FC = () => {
@@ -42,6 +36,7 @@ const Inventory: React.FC = () => {
     openDrawer,
     selectedItem,
     currentTab,
+    selectedCategory,
     filteredItems,
     role,
     globalThreshold,
@@ -56,6 +51,7 @@ const Inventory: React.FC = () => {
     setSelectedItemForHistory,
     setOpenDrawer,
     setCurrentTab,
+    setSelectedCategory,
     toggleLowStockFilter,
     handleOpen,
     handleAdjust,
@@ -112,50 +108,26 @@ const Inventory: React.FC = () => {
             items={items}
             globalThreshold={globalThreshold}
             categories={categories}
+            activeTab={currentTab}
+            onTabChange={(newValue: number) => {
+              setCurrentTab(newValue);
+              if (newValue === 1) {
+                setSearchParams({ filter: "lowStock" });
+              } else if (newValue === 2) {
+                setSearchParams({ filter: "outOfStock" });
+              } else {
+                const newParams = new URLSearchParams(searchParams);
+                newParams.delete("filter");
+                setSearchParams(newParams);
+              }
+            }}
           />
 
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: { xs: "column", sm: "row" },
-              justifyContent: "space-between",
-              alignItems: { xs: "stretch", sm: "center" },
-              gap: 2,
-              mb: 3,
-            }}
-          >
-            <Tabs
-              value={currentTab}
-              onChange={(_, newValue: number) => {
-                setCurrentTab(newValue);
-                if (newValue === 1) {
-                  setSearchParams({ filter: "lowStock" });
-                } else if (newValue === 2) {
-                  setSearchParams({ filter: "outOfStock" });
-                } else {
-                  const newParams = new URLSearchParams(searchParams);
-                  newParams.delete("filter");
-                  setSearchParams(newParams);
-                }
-              }}
-              variant="scrollable"
-              scrollButtons="auto"
-              sx={{
-                mb: { xs: 1, sm: 0 },
-                "& .MuiTab-root": {
-                  textTransform: "none",
-                  fontWeight: "bold",
-                  minWidth: 100,
-                },
-              }}
-            >
-              <Tab label={t("common.all")} />
-              <Tab label={t("inventory.stats.lowStock")} />
-              <Tab label={t("inventory.stats.outOfStock")} />
-            </Tabs>
-          </Box>
-
-          <Divider sx={{ mb: 4 }} />
+          <CategoryFilters
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+          />
 
           <InventoryCategorizedGrid
             items={filteredItems}
@@ -171,6 +143,7 @@ const Inventory: React.FC = () => {
               setHistoryDialogOpen(true);
             }}
             compactView={compactView}
+            selectedCategory={selectedCategory}
           />
         </>
       )}

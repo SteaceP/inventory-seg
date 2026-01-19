@@ -38,6 +38,7 @@ interface InventoryCategorizedGridProps {
   onDelete?: (id: string) => void;
   onViewHistory?: (itemId: string, itemName: string) => void;
   compactView?: boolean;
+  selectedCategory?: string | null;
 }
 
 const CategoryThresholdDialog: React.FC<{
@@ -99,6 +100,7 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
   onDelete,
   onViewHistory,
   compactView = false,
+  selectedCategory = null,
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -202,7 +204,7 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
           >
             <Box
               onClick={() => {
-                if (groupedItems[category].length > 4) {
+                if (!selectedCategory && groupedItems[category].length > 4) {
                   toggleCategory(category);
                 }
               }}
@@ -211,9 +213,11 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
                 alignItems: "center",
                 flexGrow: 1,
                 cursor:
-                  groupedItems[category].length > 4 ? "pointer" : "default",
+                  !selectedCategory && groupedItems[category].length > 4
+                    ? "pointer"
+                    : "default",
                 "&:hover":
-                  groupedItems[category].length > 4
+                  !selectedCategory && groupedItems[category].length > 4
                     ? {
                         opacity: 0.8,
                       }
@@ -258,16 +262,18 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
                   {t("inventory.items") || "Items"}
                 </Box>
               </Typography>
-              <ChevronRightIcon
-                sx={{
-                  ml: 1,
-                  opacity: groupedItems[category].length > 4 ? 0.6 : 0.2,
-                  transform: collapsedCategories.has(category)
-                    ? "rotate(0deg)"
-                    : "rotate(90deg)",
-                  transition: "transform 0.3s ease, opacity 0.2s",
-                }}
-              />
+              {!selectedCategory && (
+                <ChevronRightIcon
+                  sx={{
+                    ml: 1,
+                    opacity: groupedItems[category].length > 4 ? 0.6 : 0.2,
+                    transform: collapsedCategories.has(category)
+                      ? "rotate(0deg)"
+                      : "rotate(90deg)",
+                    transition: "transform 0.3s ease, opacity 0.2s",
+                  }}
+                />
+              )}
             </Box>
 
             {isAdmin && (
@@ -304,9 +310,9 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
               }}
             >
               <AnimatePresence>
-                {(collapsedCategories.has(category)
-                  ? groupedItems[category].slice(0, 4)
-                  : groupedItems[category]
+                {(selectedCategory || !collapsedCategories.has(category)
+                  ? groupedItems[category]
+                  : groupedItems[category].slice(0, 4)
                 ).map((item) => (
                   <Grid
                     size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 3 }}
