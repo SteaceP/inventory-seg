@@ -136,9 +136,13 @@ const Layout: React.FC = () => {
             />
             <Typography
               variant={compactView ? "body1" : "h6"}
-              noWrap
               component="div"
-              sx={{ fontWeight: "bold", color: "primary.main" }}
+              sx={{
+                fontWeight: "bold",
+                color: "primary.main",
+                lineHeight: 1.2,
+                whiteSpace: "normal",
+              }}
             >
               {t("app.title")}
             </Typography>
@@ -357,13 +361,14 @@ const Layout: React.FC = () => {
             />
             <Typography
               variant={compactView ? "body1" : "h6"}
-              noWrap
               component="div"
               sx={{
                 fontWeight: "bold",
                 color: "primary.main",
                 flexGrow: 1,
                 minWidth: 0,
+                lineHeight: 1.2,
+                whiteSpace: "normal",
               }}
             >
               {t("app.title").toUpperCase()}
