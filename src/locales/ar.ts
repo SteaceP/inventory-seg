@@ -87,7 +87,7 @@ const ar = {
   "signup.password": "كلمة المرور",
   "signup.createAccount": "إنشاء حساب",
   "signup.creatingAccount": "جاري إنشاء الحساب...",
-  "signup.alreadyHaveAccount": "هل لديك حساب بالفعل؟ تسجيل الدخول",
+  "signup.alreadyHaveAccount": "هل لديك حساب بالفعل؟",
   "signup.invalidDomain": "يجب أن ينتهي البريد الإلكتروني بـ @s-e-g.ca",
   "signup.success":
     "تم إنشاء الحساب! يرجى التحقق من بريدك الإلكتروني للحصول على رابط التأكيد.",
@@ -196,6 +196,7 @@ const ar = {
   "inventory.category": "الفئة",
   "inventory.stockLabel": "المخزون",
   "inventory.stockLocations": "مواقع المخزون",
+  "inventory.noLocationsDefined": "لم يتم تحديد مواقع للمخزون.",
   "inventory.skuLabel": "الرمز الشريطي (SKU)",
   "inventory.locationLabel": "الموقع",
   "inventory.locationPlaceholder": "مثال: المطبخ، المرآب، الرف A3",

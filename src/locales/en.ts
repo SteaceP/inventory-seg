@@ -86,7 +86,7 @@ const en = {
   "signup.password": "Password",
   "signup.createAccount": "Create account",
   "signup.creatingAccount": "Creating account...",
-  "signup.alreadyHaveAccount": "Already have an account? Sign in",
+  "signup.alreadyHaveAccount": "Already have an account?",
   "signup.invalidDomain": "Email must end with @s-e-g.ca",
   "signup.success":
     "Account created! Please check your email for a confirmation link.",
@@ -198,6 +198,7 @@ const en = {
   "inventory.category": "Category",
   "inventory.stockLabel": "Stock",
   "inventory.stockLocations": "Stock Locations",
+  "inventory.noLocationsDefined": "No stock locations defined.",
   "inventory.skuLabel": "Barcode (SKU)",
   "inventory.locationLabel": "Location",
   "inventory.locationPlaceholder": "e.g. Kitchen, Garage, Shelf A3",

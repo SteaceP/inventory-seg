@@ -9,13 +9,17 @@ import {
   Alert,
   IconButton,
   InputAdornment,
+  ToggleButton,
+  ToggleButtonGroup,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import { useTranslation } from "../i18n";
+import { useUserContext } from "../contexts/UserContext";
 import { supabase } from "../supabaseClient";
 import { useNavigate, useLocation, Link as RouterLink } from "react-router-dom";
 import { Link } from "@mui/material";
+import type { Language } from "../types/user";
 
 interface LocationState {
   from?: {
@@ -32,6 +36,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+  const { language, setLanguage } = useUserContext();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -178,7 +183,10 @@ const Login: React.FC = () => {
               </Button>
             </Box>
 
-            <Typography variant="body2" sx={{ mt: 3, color: "text.secondary" }}>
+            <Typography
+              variant="body2"
+              sx={{ mt: 3, mb: 1, color: "text.secondary" }}
+            >
               {t("login.noAccount")}{" "}
               <Link
                 component={RouterLink}
@@ -189,6 +197,46 @@ const Login: React.FC = () => {
                 {t("login.noAccountLink")}
               </Link>
             </Typography>
+
+            <Box
+              sx={{
+                mt: 2,
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
+              }}
+            >
+              <ToggleButtonGroup
+                value={language}
+                exclusive
+                onChange={(_e, val: string | null) => {
+                  if (val) void setLanguage(val as Language);
+                }}
+                size="small"
+                aria-label="language switcher"
+                sx={{
+                  "& .MuiToggleButton-root": {
+                    px: 2,
+                    py: 0.5,
+                    fontSize: "0.75rem",
+                    fontWeight: "bold",
+                    textTransform: "uppercase",
+                    borderColor: "divider",
+                    "&.Mui-selected": {
+                      backgroundColor: "primary.main",
+                      color: "primary.contrastText",
+                      "&:hover": {
+                        backgroundColor: "primary.dark",
+                      },
+                    },
+                  },
+                }}
+              >
+                <ToggleButton value="fr">FR</ToggleButton>
+                <ToggleButton value="en">EN</ToggleButton>
+                <ToggleButton value="ar">AR</ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
           </Paper>
         </motion.div>
       </Box>

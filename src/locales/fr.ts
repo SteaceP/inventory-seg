@@ -78,7 +78,7 @@ const fr = {
 
   // Login
   "login.title": "Connexion",
-  "login.email": "Adresse e-mail",
+  "login.email": "Adresse courriel",
   "login.password": "Mot de passe",
   "login.signIn": "Se connecter",
   "login.signingIn": "Connexion en cours...",
@@ -87,14 +87,14 @@ const fr = {
   "login.signUp": "S'inscrire",
   "signup.title": "Créer un compte",
   "signup.displayName": "Nom complet",
-  "signup.email": "Adresse e-mail (@s-e-g.ca)",
+  "signup.email": "Adresse courriel (@s-e-g.ca)",
   "signup.password": "Mot de passe",
   "signup.createAccount": "Créer le compte",
   "signup.creatingAccount": "Création du compte...",
-  "signup.alreadyHaveAccount": "Vous avez déjà un compte ? Connectez-vous",
-  "signup.invalidDomain": "L'e-mail doit se terminer par @s-e-g.ca",
+  "signup.alreadyHaveAccount": "Vous avez déjà un compte ?",
+  "signup.invalidDomain": "Le courriel doit se terminer par @s-e-g.ca",
   "signup.success":
-    "Compte créé ! Veuillez vérifier votre e-mail pour le lien de confirmation.",
+    "Compte créé ! Veuillez vérifier votre courriel pour le lien de confirmation.",
 
   // Security
   "security.signOut": "Se déconnecter",
@@ -131,7 +131,7 @@ const fr = {
   "notifications.title": "Notifications",
   "notifications.pushEnabled":
     "Activer les notifications push sur cet appareil",
-  "notifications.emailAlerts": "Alertes e-mail pour stock bas",
+  "notifications.emailAlerts": "Alertes courriel pour stock bas",
   "notifications.lowStockThreshold": "Seuil de stock bas",
 
   // Appliances
@@ -203,6 +203,7 @@ const fr = {
   "inventory.category": "Catégorie",
   "inventory.stockLabel": "Stock",
   "inventory.stockLocations": "Emplacements Stock",
+  "inventory.noLocationsDefined": "Aucun emplacement de stock défini.",
   "inventory.skuLabel": "Code-barres (SKU)",
   "inventory.locationLabel": "Emplacement",
   "inventory.locationPlaceholder": "ex: Cuisine, Garage, Étagère A3",
@@ -278,7 +279,7 @@ const fr = {
   "user.online": "Connecté",
   "profile.title": "Profil",
   "profile.displayName": "Nom d'affichage",
-  "profile.email": "E-mail",
+  "profile.email": "Courriel",
 
   // Dashboard
   "dashboard.hello": "Bonjour",
