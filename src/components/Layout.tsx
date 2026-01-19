@@ -62,7 +62,7 @@ const Layout: React.FC = () => {
       icon: (
         <Box
           component="img"
-          src="/icon.svg"
+          src="/icons/icon.svg"
           sx={{
             width: compactView ? 20 : 24,
             height: compactView ? 20 : 24,
@@ -126,7 +126,7 @@ const Layout: React.FC = () => {
           <Box sx={{ display: "flex", alignItems: "center", ml: 1 }}>
             <Box
               component="img"
-              src="/icon.svg"
+              src="/icons/icon.svg"
               sx={{
                 width: compactView ? 24 : 32,
                 height: compactView ? 24 : 32,
@@ -346,7 +346,7 @@ const Layout: React.FC = () => {
             </IconButton>
             <Box
               component="img"
-              src="/icon.svg"
+              src="/icons/icon.svg"
               sx={{
                 width: compactView ? 20 : 28,
                 height: compactView ? 20 : 28,

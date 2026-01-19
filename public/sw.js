@@ -7,7 +7,7 @@ const ASSETS_TO_CACHE = [
   "/",
   "/index.html",
   "/manifest.webmanifest",
-  "/icon.svg",
+  "/icons/icon.svg",
 ];
 
 const SUPABASE_IMAGE_URL_SIGNATURE =
@@ -167,8 +167,8 @@ self.addEventListener("push", (event) => {
     const data = event.data.json();
     const options = {
       body: data.body,
-      icon: data.icon || "/icon.svg",
-      badge: data.badge || "/icon.svg",
+      icon: data.icon || "/icons/icon.svg",
+      badge: data.badge || "/icons/icon.svg",
       vibrate: data.vibrate || [200, 100, 200],
       data: data.data || { url: "/" },
       tag: data.tag || "inventory-alert",

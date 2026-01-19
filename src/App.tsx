@@ -56,7 +56,7 @@ const PageLoader = () => (
   >
     <Box
       component="img"
-      src="/icon.svg"
+      src="/icons/icon.svg"
       sx={{
         width: 60,
         height: 60,
@@ -201,7 +201,7 @@ const AppContent = () => {
         >
           <Box
             component="img"
-            src="/icon.svg"
+            src="/icons/icon.svg"
             sx={{
               width: 80,
               height: 80,

@@ -1,5 +1,6 @@
 import webpush from "web-push";
 import * as Sentry from "@sentry/cloudflare";
+import postgres from "postgres";
 
 interface Env {
   BREVO_API_KEY: string;
@@ -11,6 +12,7 @@ interface Env {
   ASSETS: { fetch: typeof fetch };
   ALLOWED_ORIGIN?: string; // e.g. https://inventory.example.com
   SENTRY_DSN: string;
+  HYPERDRIVE: { connectionString: string };
 }
 
 interface RequestBody {
@@ -180,20 +182,12 @@ export default Sentry.withSentry(
             );
           }
 
-          if (userId && env.SUPABASE_URL && env.SUPABASE_SECRET_KEY) {
-            const subResponse = await fetch(
-              `${env.SUPABASE_URL}/rest/v1/push_subscriptions?user_id=eq.${userId}`,
-              {
-                headers: {
-                  apikey: env.SUPABASE_SECRET_KEY,
-                  Authorization: `Bearer ${env.SUPABASE_SECRET_KEY}`,
-                },
-              }
-            );
-
-            if (subResponse.ok) {
-              const subscriptions: PushSubscriptionRow[] =
-                await subResponse.json();
+          if (userId && env.HYPERDRIVE) {
+            const sql = postgres(env.HYPERDRIVE.connectionString);
+            try {
+              const subscriptions = await sql<PushSubscriptionRow[]>`
+                SELECT * FROM push_subscriptions WHERE user_id = ${userId}
+              `;
 
               if (
                 subscriptions.length > 0 &&
@@ -211,7 +205,7 @@ export default Sentry.withSentry(
                 const payload = JSON.stringify({
                   title: "Push Notification Test",
                   body: "This is a test notification sent from the server!",
-                  icon: "/icon.svg",
+                  icon: "/icons/icon.svg",
                   data: { url: "/settings" },
                   tag: "test-notification",
                   requireInteraction: true,
@@ -226,6 +220,8 @@ export default Sentry.withSentry(
                 );
                 return createResponse({ success: true }, 200, env, request);
               }
+            } finally {
+              await sql.end();
             }
           }
           return createResponse(
@@ -249,6 +245,7 @@ export default Sentry.withSentry(
         url.pathname === "/api/send-low-stock-alert" &&
         request.method === "POST"
       ) {
+        let sql: ReturnType<typeof postgres> | undefined;
         try {
           if (!(await verifyAuth(request, env))) {
             return createResponse({ error: "Unauthorized" }, 401, env, request);
@@ -316,23 +313,18 @@ export default Sentry.withSentry(
 
           // --- 0. FETCH USER SETTINGS (LANGUAGE) ---
           let language = "en";
-          if (env.SUPABASE_URL && env.SUPABASE_SECRET_KEY && userId) {
-            const userSettingsResponse = await fetch(
-              `${env.SUPABASE_URL}/rest/v1/user_settings?user_id=eq.${userId}&select=language`,
-              {
-                headers: {
-                  apikey: env.SUPABASE_SECRET_KEY,
-                  Authorization: `Bearer ${env.SUPABASE_SECRET_KEY}`,
-                },
-              }
-            );
-            if (userSettingsResponse.ok) {
-              const settings: Array<{ language: string }> =
-                await userSettingsResponse.json();
+          sql = postgres(env.HYPERDRIVE.connectionString);
+          try {
+            if (userId) {
+              const settings = await sql<Array<{ language: string }>>`
+                SELECT language FROM user_settings WHERE user_id = ${userId} LIMIT 1
+              `;
               if (settings && settings[0]) {
                 language = settings[0].language || "en";
               }
             }
+          } catch (err) {
+            console.error("Failed to fetch user settings via Hyperdrive:", err);
           }
 
           // Sanitize for HTML email
@@ -409,21 +401,12 @@ export default Sentry.withSentry(
           }
 
           // --- 2. BROADCAST PUSH NOTIFICATIONS ---
-          if (userId && env.SUPABASE_URL && env.SUPABASE_SECRET_KEY) {
-            // Fetch subscriptions for this user from Supabase
-            const subResponse = await fetch(
-              `${env.SUPABASE_URL}/rest/v1/push_subscriptions?user_id=eq.${userId}`,
-              {
-                headers: {
-                  apikey: env.SUPABASE_SECRET_KEY,
-                  Authorization: `Bearer ${env.SUPABASE_SECRET_KEY}`,
-                },
-              }
-            );
-
-            if (subResponse.ok) {
-              const subscriptions: PushSubscriptionRow[] =
-                await subResponse.json();
+          if (userId && env.HYPERDRIVE && sql) {
+            // Fetch subscriptions for this user from Hyperdrive
+            try {
+              const subscriptions = await sql<PushSubscriptionRow[]>`
+                SELECT * FROM push_subscriptions WHERE user_id = ${userId}
+              `;
 
               if (subscriptions.length > 0) {
                 if (env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY) {
@@ -438,7 +421,7 @@ export default Sentry.withSentry(
                   const payload = JSON.stringify({
                     title: t.title,
                     body: t.body,
-                    icon: "/icon.svg",
+                    icon: "/icons/icon.svg",
                     data: { url: "/inventory?filter=lowStock" },
                     tag: `low-stock-${itemName}`,
                     requireInteraction: true,
@@ -454,16 +437,9 @@ export default Sentry.withSentry(
                           const status = (error as { statusCode?: number })
                             ?.statusCode;
                           if (status === 410 || status === 404) {
-                            void fetch(
-                              `${env.SUPABASE_URL}/rest/v1/push_subscriptions?id=eq.${sub.id}`,
-                              {
-                                method: "DELETE",
-                                headers: {
-                                  apikey: env.SUPABASE_SECRET_KEY,
-                                  Authorization: `Bearer ${env.SUPABASE_SECRET_KEY}`,
-                                },
-                              }
-                            ).catch(() => {});
+                            void (sql as ReturnType<typeof postgres>)`
+                              DELETE FROM push_subscriptions WHERE id = ${sub.id}
+                            `.catch(() => {});
                           }
                         })
                     )
@@ -472,6 +448,8 @@ export default Sentry.withSentry(
                   console.error("VAPID keys missing in env!");
                 }
               }
+            } catch (err) {
+              console.error("Failed to fetch push subscriptions:", err);
             }
           }
 
@@ -491,6 +469,8 @@ export default Sentry.withSentry(
             env,
             request
           );
+        } finally {
+          if (sql) await sql.end();
         }
       }
 
