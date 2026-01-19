@@ -169,39 +169,19 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const { data: activityData, error: activityError } = await supabase
-          .from("inventory_activity")
-          .select("action, changes")
-          .gte(
-            "created_at",
-            new Date(new Date().setHours(0, 0, 0, 0)).toISOString()
-          );
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
 
-        if (activityError) throw activityError;
+        const response = await fetch("/api/activity/dashboard-stats", {
+          headers: {
+            Authorization: `Bearer ${session?.access_token}`,
+          },
+        });
 
-        if (activityData) {
-          let stockIn = 0;
-          let stockOut = 0;
-          const getNumber = (obj: Record<string, unknown>, key: string) => {
-            const val = obj[key];
-            return typeof val === "number" ? val : 0;
-          };
-
-          activityData.forEach((activity) => {
-            const changes = (activity.changes as Record<string, unknown>) || {};
-            if (activity.action === "created") {
-              stockIn += getNumber(changes, "stock");
-            } else if (activity.action === "deleted") {
-              stockOut += getNumber(changes, "stock");
-            } else if (activity.action === "updated") {
-              const diff =
-                getNumber(changes, "stock") - getNumber(changes, "old_stock");
-              if (diff > 0) stockIn += diff;
-              else if (diff < 0) stockOut += Math.abs(diff);
-            }
-          });
-          setDailyStats({ in: stockIn, out: stockOut });
-        }
+        if (!response.ok) throw new Error("Failed to fetch dashboard stats");
+        const data = await response.json();
+        setDailyStats(data as { in: number; out: number });
       } catch (err) {
         showError(t("errors.loadDashboard") + ": " + (err as Error).message);
       }

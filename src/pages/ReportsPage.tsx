@@ -21,10 +21,9 @@ import {
 } from "@mui/material";
 import { Print as PrintIcon } from "@mui/icons-material";
 import { useTranslation } from "../i18n";
-import { supabase } from "../supabaseClient";
 import { useInventoryContext } from "../contexts/InventoryContext";
 import { useAlert } from "../contexts/AlertContext";
-import type { InventoryActivity } from "../types/activity";
+import { supabase } from "../supabaseClient";
 
 const Reports: React.FC = () => {
   const { t, lang } = useTranslation();
@@ -62,41 +61,28 @@ const Reports: React.FC = () => {
         endDate.setMonth(endDate.getMonth() + 1);
       }
 
-      let query = supabase
-        .from("inventory_activity")
-        .select("*")
-        .eq("changes->>action_type", "remove")
-        .gte("created_at", startDate.toISOString())
-        .lt("created_at", endDate.toISOString());
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-      // Only filter by location if not "all"
-      if (selectedLocation !== "all") {
-        query = query.eq("changes->>destination_location", selectedLocation);
-      }
-
-      const { data: activityData, error } = await query;
-
-      if (error) throw error;
-
-      const activities = (activityData as unknown as InventoryActivity[]) || [];
-
-      const aggregation: Record<string, number> = {};
-
-      activities.forEach((activity) => {
-        const changes = activity.changes;
-        const oldStock = Number(changes?.old_stock) || 0;
-        const newStock = Number(changes?.stock) || 0;
-        const count = Math.abs(newStock - oldStock);
-
-        const itemName = activity.item_name || "Unknown Item";
-        aggregation[itemName] = (aggregation[itemName] || 0) + count;
+      const queryParams = new URLSearchParams({
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        location: selectedLocation,
       });
 
-      const result = Object.entries(aggregation)
-        .map(([itemName, total]) => ({ itemName, total }))
-        .sort((a, b) => b.total - a.total);
+      const response = await fetch(
+        `/api/activity/report-stats?${queryParams}`,
+        {
+          headers: {
+            Authorization: `Bearer ${session?.access_token || ""}`,
+          },
+        }
+      );
 
-      setData(result);
+      if (!response.ok) throw new Error("Failed to fetch report data");
+      const result = await response.json();
+      setData(result as { itemName: string; total: number }[]);
     } catch (err: unknown) {
       console.error("Error fetching report data:", err);
       const message = err instanceof Error ? err.message : String(err);

@@ -53,16 +53,25 @@ const InventoryActivityPage: React.FC = () => {
           setLoadingMore(true);
         }
 
-        const from = pageNum * PAGE_SIZE;
-        const to = from + PAGE_SIZE - 1;
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
 
-        const { data: activityData, error: activityError } = await supabase
-          .from("inventory_activity")
-          .select("*")
-          .order("created_at", { ascending: false })
-          .range(from, to);
+        const queryParams = new URLSearchParams({
+          page: pageNum.toString(),
+          pageSize: PAGE_SIZE.toString(),
+          actionFilter,
+          searchTerm,
+        });
 
-        if (activityError) throw activityError;
+        const response = await fetch(`/api/activity?${queryParams}`, {
+          headers: {
+            Authorization: `Bearer ${session?.access_token}`,
+          },
+        });
+
+        if (!response.ok) throw new Error("Failed to fetch activity");
+        const activityData: InventoryActivity[] = await response.json();
 
         if (!activityData || activityData.length < PAGE_SIZE) {
           setHasMore(false);
@@ -73,8 +82,8 @@ const InventoryActivityPage: React.FC = () => {
         const userIds = [
           ...new Set(
             (activityData || [])
-              .map((a: { user_id: string | null }) => a.user_id)
-              .filter((id): id is string => !!id)
+              .map((a: InventoryActivity) => a.user_id)
+              .filter((id: string | null): id is string => !!id)
           ),
         ];
 
@@ -98,11 +107,7 @@ const InventoryActivityPage: React.FC = () => {
           }
         }
 
-        const formattedData = (
-          (activityData as (Omit<InventoryActivity, "user_display_name"> & {
-            user_display_name?: string;
-          })[]) || []
-        ).map((item) => ({
+        const formattedData = activityData.map((item) => ({
           ...item,
           user_display_name: item.user_id
             ? userNames[item.user_id] || "Unknown User"
@@ -114,15 +119,15 @@ const InventoryActivityPage: React.FC = () => {
         } else {
           setActivities((prev) => [...prev, ...formattedData]);
         }
-      } catch (err) {
-        console.error("Error fetching global history:", err);
-        showError(t("inventory.locations.error.save"));
+      } catch (err: unknown) {
+        console.error("Error fetching activity:", err);
+        showError(t("errors.loadActivity") + ": " + (err as Error).message);
       } finally {
         setLoading(false);
         setLoadingMore(false);
       }
     },
-    [showError, t]
+    [actionFilter, searchTerm, showError, t]
   );
 
   useEffect(() => {

@@ -13,6 +13,7 @@ interface Env {
   ALLOWED_ORIGIN?: string; // e.g. https://inventory.example.com
   SENTRY_DSN: string;
   HYPERDRIVE: { connectionString: string };
+  DB: D1Database;
 }
 
 interface RequestBody {
@@ -162,6 +163,252 @@ export default Sentry.withSentry(
           status: 204,
           headers: getSecurityHeaders(finalOrigin),
         });
+      }
+
+      // Handle Activity Log POST
+      if (url.pathname === "/api/activity" && request.method === "POST") {
+        try {
+          if (!(await verifyAuth(request, env))) {
+            return createResponse({ error: "Unauthorized" }, 401, env, request);
+          }
+
+          const body: {
+            inventory_id: string;
+            user_id: string;
+            action: string;
+            item_name: string;
+            changes: unknown;
+          } = await request.json();
+
+          const id = crypto.randomUUID();
+          await env.DB.prepare(
+            `INSERT INTO inventory_activity (id, inventory_id, user_id, action, item_name, changes)
+             VALUES (?, ?, ?, ?, ?, ?)`
+          )
+            .bind(
+              id,
+              body.inventory_id,
+              body.user_id,
+              body.action,
+              body.item_name,
+              JSON.stringify(body.changes)
+            )
+            .run();
+
+          return createResponse({ success: true, id }, 201, env, request);
+        } catch (err) {
+          return createResponse(
+            { error: (err as Error).message },
+            500,
+            env,
+            request
+          );
+        }
+      }
+
+      // Handle Activity Log GET
+      if (url.pathname === "/api/activity" && request.method === "GET") {
+        try {
+          if (!(await verifyAuth(request, env))) {
+            return createResponse({ error: "Unauthorized" }, 401, env, request);
+          }
+
+          const page = parseInt(url.searchParams.get("page") || "0");
+          const pageSize = parseInt(url.searchParams.get("pageSize") || "10");
+          const actionFilter = url.searchParams.get("actionFilter") || "all";
+          const searchTerm = url.searchParams.get("searchTerm") || "";
+          const startDate = url.searchParams.get("startDate");
+          const endDate = url.searchParams.get("endDate");
+          const location = url.searchParams.get("location");
+          const actionType = url.searchParams.get("actionType");
+
+          let query = `SELECT * FROM inventory_activity WHERE 1=1`;
+          const params: unknown[] = [];
+
+          if (actionFilter !== "all" && actionFilter !== "stock") {
+            query += ` AND action = ?`;
+            params.push(actionFilter);
+          } else if (actionFilter === "stock") {
+            query += ` AND json_extract(changes, '$.action_type') IS NOT NULL`;
+          }
+
+          if (searchTerm) {
+            query += ` AND (item_name LIKE ? OR user_id LIKE ?)`;
+            params.push(`%${searchTerm}%`, `%${searchTerm}%`);
+          }
+
+          if (startDate) {
+            query += ` AND created_at >= ?`;
+            params.push(startDate);
+          }
+
+          if (endDate) {
+            query += ` AND created_at < ?`;
+            params.push(endDate);
+          }
+
+          if (location && location !== "all") {
+            query += ` AND json_extract(changes, '$.destination_location') = ?`;
+            params.push(location);
+          }
+
+          if (actionType) {
+            query += ` AND json_extract(changes, '$.action_type') = ?`;
+            params.push(actionType);
+          }
+
+          query += ` ORDER BY created_at DESC LIMIT ? OFFSET ?`;
+          params.push(pageSize, page * pageSize);
+
+          const { results } = await env.DB.prepare(query)
+            .bind(...params)
+            .all();
+
+          // Parse JSON changes
+          const formattedResults = results.map((r) => ({
+            ...r,
+            changes: JSON.parse(r.changes as string) as Record<string, unknown>,
+          }));
+
+          return createResponse(formattedResults, 200, env, request);
+        } catch (err) {
+          return createResponse(
+            { error: (err as Error).message },
+            500,
+            env,
+            request
+          );
+        }
+      }
+
+      // Handle Dashboard Stats
+      if (
+        url.pathname === "/api/activity/dashboard-stats" &&
+        request.method === "GET"
+      ) {
+        try {
+          if (!(await verifyAuth(request, env))) {
+            return createResponse({ error: "Unauthorized" }, 401, env, request);
+          }
+
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const startDate = today.toISOString();
+
+          const { results } = await env.DB.prepare(
+            `SELECT action, changes FROM inventory_activity WHERE created_at >= ?`
+          )
+            .bind(startDate)
+            .all();
+
+          let stockIn = 0;
+          let stockOut = 0;
+
+          const getNumber = (obj: Record<string, unknown>, key: string) => {
+            const val = obj[key];
+            return typeof val === "number" ? val : 0;
+          };
+
+          results.forEach((row) => {
+            const action = row.action as string;
+            const changes = JSON.parse(row.changes as string) as Record<
+              string,
+              unknown
+            >;
+
+            if (action === "created") {
+              stockIn += getNumber(changes, "stock");
+            } else if (action === "deleted") {
+              stockOut += getNumber(changes, "stock");
+            } else if (action === "updated") {
+              const diff =
+                getNumber(changes, "stock") - getNumber(changes, "old_stock");
+              if (diff > 0) stockIn += diff;
+              else if (diff < 0) stockOut += Math.abs(diff);
+            }
+          });
+
+          return createResponse(
+            { in: stockIn, out: stockOut },
+            200,
+            env,
+            request
+          );
+        } catch (err) {
+          return createResponse(
+            { error: (err as Error).message },
+            500,
+            env,
+            request
+          );
+        }
+      }
+
+      // Handle Report Stats
+      if (
+        url.pathname === "/api/activity/report-stats" &&
+        request.method === "GET"
+      ) {
+        try {
+          if (!(await verifyAuth(request, env))) {
+            return createResponse({ error: "Unauthorized" }, 401, env, request);
+          }
+
+          const startDate = url.searchParams.get("startDate");
+          const endDate = url.searchParams.get("endDate");
+          const location = url.searchParams.get("location");
+
+          if (!startDate || !endDate) {
+            return createResponse(
+              { error: "Missing startDate or endDate" },
+              400,
+              env,
+              request
+            );
+          }
+
+          let query = `SELECT item_name, changes FROM inventory_activity 
+                       WHERE created_at >= ? AND created_at < ? 
+                       AND json_extract(changes, '$.action_type') = 'remove'`;
+          const params: unknown[] = [startDate, endDate];
+
+          if (location && location !== "all") {
+            query += ` AND json_extract(changes, '$.destination_location') = ?`;
+            params.push(location);
+          }
+
+          const { results } = await env.DB.prepare(query)
+            .bind(...params)
+            .all();
+
+          const aggregation: Record<string, number> = {};
+
+          results.forEach((row) => {
+            const changes = JSON.parse(row.changes as string) as {
+              old_stock?: unknown;
+              stock?: unknown;
+            };
+            const oldStock = Number(changes.old_stock) || 0;
+            const newStock = Number(changes.stock) || 0;
+            const count = Math.abs(newStock - oldStock);
+
+            const itemName = (row.item_name as string) || "Unknown Item";
+            aggregation[itemName] = (aggregation[itemName] || 0) + count;
+          });
+
+          const result = Object.entries(aggregation)
+            .map(([itemName, total]) => ({ itemName, total }))
+            .sort((a, b) => b.total - a.total);
+
+          return createResponse(result, 200, env, request);
+        } catch (err) {
+          return createResponse(
+            { error: (err as Error).message },
+            500,
+            env,
+            request
+          );
+        }
       }
 
       // Handle Test Push

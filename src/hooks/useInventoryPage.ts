@@ -13,6 +13,31 @@ import {
   getExtensionFromMimeType,
 } from "../utils/crypto";
 
+// Helper to log activity via the Worker API
+const logActivity = async (
+  activity: {
+    inventory_id: string;
+    user_id: string;
+    action: string;
+    item_name: string;
+    changes: unknown;
+  },
+  session: { access_token: string } | null
+) => {
+  try {
+    await fetch("/api/activity", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+      body: JSON.stringify(activity),
+    });
+  } catch (err) {
+    console.error("Failed to log activity:", err);
+  }
+};
+
 export const useInventoryPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const {
@@ -265,13 +290,23 @@ export const useInventoryPage = () => {
         if (destination_location)
           activityChanges.destination_location = destination_location;
 
-        await supabase.from("inventory_activity").insert({
-          inventory_id: itemId,
-          user_id: user.id,
-          action: "updated",
-          item_name: item?.name || "Unknown Item",
-          changes: activityChanges,
-        });
+        if (destination_location)
+          activityChanges.destination_location = destination_location;
+
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        void logActivity(
+          {
+            inventory_id: itemId,
+            user_id: user.id,
+            action: "updated",
+            item_name: item?.name || "Unknown Item",
+            changes: activityChanges,
+          },
+          session
+        );
       }
 
       const updatedItem = items.find((i) => i.id === itemId);
@@ -331,13 +366,20 @@ export const useInventoryPage = () => {
         }
 
         if (user) {
-          await supabase.from("inventory_activity").insert({
-            inventory_id: editingItem.id,
-            user_id: user.id,
-            action: "updated",
-            item_name: sanitizedData.name,
-            changes: { ...sanitizedData, old_stock: editingItem.stock },
-          });
+          const {
+            data: { session },
+          } = await supabase.auth.getSession();
+
+          void logActivity(
+            {
+              inventory_id: editingItem.id,
+              user_id: user.id,
+              action: "updated",
+              item_name: sanitizedData.name,
+              changes: { ...sanitizedData, old_stock: editingItem.stock },
+            },
+            session
+          );
         }
 
         if (sanitizedData.stock_locations) {
@@ -383,13 +425,20 @@ export const useInventoryPage = () => {
         }
 
         if (user && newItem) {
-          void supabase.from("inventory_activity").insert({
-            inventory_id: newItem.id,
-            user_id: user.id,
-            action: "created",
-            item_name: sanitizedData.name,
-            changes: sanitizedData,
-          });
+          const {
+            data: { session },
+          } = await supabase.auth.getSession();
+
+          void logActivity(
+            {
+              inventory_id: newItem.id,
+              user_id: user.id,
+              action: "created",
+              item_name: sanitizedData.name,
+              changes: sanitizedData,
+            },
+            session
+          );
 
           if (sanitizedData.stock_locations) {
             const locationsToInsert = sanitizedData.stock_locations
@@ -455,13 +504,20 @@ export const useInventoryPage = () => {
         showError(t("errors.deleteItem") + ": " + error.message);
       } else {
         if (user) {
-          void supabase.from("inventory_activity").insert({
-            inventory_id: id,
-            user_id: user.id,
-            action: "deleted",
-            item_name: item?.name || "Unknown",
-            changes: { id },
-          });
+          const {
+            data: { session },
+          } = await supabase.auth.getSession();
+
+          void logActivity(
+            {
+              inventory_id: id,
+              user_id: user.id,
+              action: "deleted",
+              item_name: item?.name || "Unknown",
+              changes: { id },
+            },
+            session
+          );
         }
         void refreshInventory();
         broadcastInventoryChange();

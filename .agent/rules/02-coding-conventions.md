@@ -83,3 +83,8 @@ Implementation locations:
 - Functions/variables: camelCase
 - Constants: UPPER_SNAKE_CASE
 - Files: Match component name or use kebab-case for utilities
+
+## TypeScript Best Practices
+
+- **Strict Typing**: NEVER use the `any` type. Use `unknown`, proper interfaces, or generics instead.
+- **Type Exhaustiveness**: Ensure all switches/conditionals cover all possible types.
