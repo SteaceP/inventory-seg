@@ -73,7 +73,7 @@ const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
         .select("*")
         .eq("inventory_id", item.id)
         .order("created_at", { ascending: false })
-        .limit(10);
+        .limit(3);
 
       if (error) throw error;
       setActivities((data as StockActivity[]) || []);
