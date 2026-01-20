@@ -177,6 +177,7 @@ const ar = {
   "appliances.noAppliancesFound": "لم يتم العثور على أجهزة في هذه الفئة.",
   "appliances.unknown": "غير معروف",
   "appliances.close": "إغلاق",
+  "appliances.cancel": "إلغاء",
   "appliances.noSku": "لا يوجد SKU",
   "appliances.print": "طباعة",
   "appliances.repairDescription": "وصف الإصلاح",

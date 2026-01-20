@@ -184,6 +184,7 @@ const fr = {
   "appliances.noAppliancesFound": "Aucun appareil trouvé dans cette catégorie.",
   "appliances.unknown": "Inconnu",
   "appliances.close": "Fermer",
+  "appliances.cancel": "Annuler",
   "appliances.noSku": "Pas de SKU",
   "appliances.print": "Imprimer",
   "appliances.repairDescription": "Description de la réparation",

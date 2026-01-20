@@ -179,6 +179,7 @@ const en = {
   "appliances.noAppliancesFound": "No appliances found in this category.",
   "appliances.unknown": "Unknown",
   "appliances.close": "Close",
+  "appliances.cancel": "Cancel",
   "appliances.noSku": "No SKU",
   "appliances.print": "Print",
   "appliances.repairDescription": "Repair description",
