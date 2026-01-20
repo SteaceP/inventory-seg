@@ -13,6 +13,14 @@ export default defineConfig({
       project: "seg-inv-frontend",
     }),
   ],
+  server: {
+    proxy: {
+      "/api": {
+        target: "http://127.0.0.1:8787",
+        changeOrigin: true,
+      },
+    },
+  },
   build: {
     rollupOptions: {
       output: {

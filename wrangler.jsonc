@@ -28,7 +28,7 @@
 		{
 			"binding": "HYPERDRIVE",
 			"id": "4d4c0217ace743e896a6d735fed60a72",
-			"remote": true
+			"localConnectionString": "postgresql://postgres:postgres@127.0.0.1:54322/postgres"
 		}
 	],
 	"d1_databases": [
