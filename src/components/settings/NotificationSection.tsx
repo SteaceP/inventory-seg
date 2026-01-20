@@ -1,4 +1,5 @@
 import React from "react";
+import * as Sentry from "@sentry/react";
 import {
   Box,
   Paper,
@@ -54,7 +55,7 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
         throw new Error(await response.text());
       }
     } catch (err) {
-      console.error("Test push failed:", err);
+      Sentry.captureException(err);
     }
   };
 

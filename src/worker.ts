@@ -571,7 +571,7 @@ export default Sentry.withSentry(
               }
             }
           } catch (err) {
-            console.error("Failed to fetch user settings via Hyperdrive:", err);
+            Sentry.captureException(err);
           }
 
           // Sanitize for HTML email
@@ -692,17 +692,17 @@ export default Sentry.withSentry(
                     )
                   );
                 } else {
-                  console.error("VAPID keys missing in env!");
+                  Sentry.captureException(new Error("VAPID keys missing in env!"));
                 }
               }
             } catch (err) {
-              console.error("Failed to fetch push subscriptions:", err);
+              Sentry.captureException(err);
             }
           }
 
           return createResponse({ success: true }, 200, env, request);
         } catch (error) {
-          console.error("Worker Error:", error);
+          Sentry.captureException(error);
           const message =
             error instanceof Error
               ? error.message

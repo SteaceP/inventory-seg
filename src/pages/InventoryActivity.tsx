@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import * as Sentry from "@sentry/react";
 import {
   Box,
   Container,
@@ -120,7 +121,7 @@ const InventoryActivityPage: React.FC = () => {
           setActivities((prev) => [...prev, ...formattedData]);
         }
       } catch (err: unknown) {
-        console.error("Error fetching activity:", err);
+        Sentry.captureException(err);
         showError(t("errors.loadActivity") + ": " + (err as Error).message);
       } finally {
         setLoading(false);

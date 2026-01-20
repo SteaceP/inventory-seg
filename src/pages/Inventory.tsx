@@ -202,7 +202,7 @@ const Inventory: React.FC = () => {
         open={scanOpen}
         onClose={() => setScanOpen(false)}
         onScanSuccess={handleScanSuccess}
-        onError={(msg) => console.error(msg)}
+        onError={(msg) => showError(msg)}
       />
 
       <BarcodePrinter

@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import * as Sentry from "@sentry/react";
 import { useUserContext } from "../contexts/UserContext";
 import { useAlert } from "../contexts/AlertContext";
 import { useTranslation } from "../i18n";
@@ -101,7 +102,7 @@ const RealtimeNotifications: React.FC = () => {
           )
           .subscribe();
       } catch (err) {
-        console.error("Realtime subscription error:", err);
+        Sentry.captureException(err);
       }
     })();
 

@@ -22,6 +22,10 @@ import {
 } from "@mui/material";
 import { WifiOff as WifiOffIcon } from "@mui/icons-material";
 import Layout from "./components/Layout";
+import OfflineFallback from "./components/OfflineFallback";
+import { useTranslation } from "./i18n";
+import ErrorBoundary from "./components/ErrorBoundary";
+import RealtimeNotifications from "./components/RealtimeNotifications";
 import "./App.css";
 import { useLocation } from "react-router-dom";
 
@@ -156,11 +160,6 @@ const getTheme = (mode: "light" | "dark", compact: boolean) =>
       },
     },
   });
-
-import OfflineFallback from "./components/OfflineFallback";
-import { useTranslation } from "./i18n";
-import ErrorBoundary from "./components/ErrorBoundary";
-import RealtimeNotifications from "./components/RealtimeNotifications";
 
 const AppContent = () => {
   const { session, loading } = useUserContext();

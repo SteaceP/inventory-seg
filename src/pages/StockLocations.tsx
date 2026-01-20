@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import * as Sentry from "@sentry/react";
 import {
   Box,
   Container,
@@ -117,7 +118,7 @@ const StockLocationsPage: React.FC = () => {
       handleCloseDialog();
       void fetchLocations();
     } catch (err) {
-      console.error("Error saving location:", err);
+      Sentry.captureException(err);
       const error = err as { code?: string };
       if (error.code === "23505") {
         showError(t("inventory.locations.error.duplicate"));
@@ -141,7 +142,7 @@ const StockLocationsPage: React.FC = () => {
       if (error) throw error;
       void fetchLocations();
     } catch (err) {
-      console.error("Error deleting location:", err);
+      Sentry.captureException(err);
       showError(t("inventory.locations.error.delete"));
     } finally {
       setLoading(false);

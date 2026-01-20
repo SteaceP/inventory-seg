@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import * as Sentry from "@sentry/react";
 import {
   Dialog,
   DialogTitle,
@@ -117,7 +118,7 @@ const StockHistoryDialog: React.FC<StockHistoryDialogProps> = ({
 
       setActivities(formattedData);
     } catch (err) {
-      console.error("Error fetching history:", err);
+      Sentry.captureException(err);
     } finally {
       setLoading(false);
     }

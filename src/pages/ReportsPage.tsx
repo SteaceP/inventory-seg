@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
+import * as Sentry from "@sentry/react";
 import {
   Box,
   Container,
@@ -84,7 +85,7 @@ const Reports: React.FC = () => {
       const result = await response.json();
       setData(result as { itemName: string; total: number }[]);
     } catch (err: unknown) {
-      console.error("Error fetching report data:", err);
+      Sentry.captureException(err);
       const message = err instanceof Error ? err.message : String(err);
       showError(`${t("errors.saveItem")}: ${message}`);
     } finally {

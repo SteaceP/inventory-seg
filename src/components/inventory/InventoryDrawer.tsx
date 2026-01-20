@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import * as Sentry from "@sentry/react";
 import {
   Drawer,
   Box,
@@ -78,7 +79,7 @@ const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
       if (error) throw error;
       setActivities((data as StockActivity[]) || []);
     } catch (err) {
-      console.error("Error fetching activity:", err);
+      Sentry.captureException(err);
     }
   }, [item?.id]);
 

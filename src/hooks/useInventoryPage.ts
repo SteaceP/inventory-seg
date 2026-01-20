@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import * as Sentry from "@sentry/react";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import { useUserContext } from "../contexts/UserContext";
@@ -34,7 +35,7 @@ const logActivity = async (
       body: JSON.stringify(activity),
     });
   } catch (err) {
-    console.error("Failed to log activity:", err);
+    Sentry.captureException(err);
   }
 };
 

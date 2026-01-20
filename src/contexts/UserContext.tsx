@@ -7,6 +7,7 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
+import * as Sentry from "@sentry/react";
 import { supabase } from "../supabaseClient";
 import { useAlert } from "./AlertContext";
 import type {
@@ -88,15 +89,20 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     const initUser = async () => {
-      const {
-        data: { session: initialSession },
-      } = await supabase.auth.getSession();
+      try {
+        const {
+          data: { session: initialSession },
+        } = await supabase.auth.getSession();
 
-      setSession(initialSession);
-      if (initialSession?.user) {
-        setUserId(initialSession.user.id);
-        await fetchUserSettings(initialSession.user.id);
-      } else {
+        setSession(initialSession);
+        if (initialSession?.user) {
+          setUserId(initialSession.user.id);
+          await fetchUserSettings(initialSession.user.id);
+        } else {
+          setLoading(false);
+        }
+      } catch (err) {
+        Sentry.captureException(err);
         setLoading(false);
       }
     };
