@@ -1,5 +1,13 @@
 import React from "react";
-import { Box, Paper, Typography, alpha, CircularProgress } from "@mui/material";
+import {
+  Box,
+  Paper,
+  Typography,
+  alpha,
+  CircularProgress,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import {
   CheckCircle as HealthyIcon,
   Error as CrisisIcon,
@@ -12,6 +20,8 @@ const StockHealth: React.FC = () => {
   const { t } = useTranslation();
   const { items, categories: contextCategories } = useInventoryContext();
   const { lowStockThreshold } = useUserContext();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const health = React.useMemo(() => {
     if (!items || items.length === 0) return 100;
@@ -37,12 +47,13 @@ const StockHealth: React.FC = () => {
   };
 
   const statusColor = getColor(health);
+  const circleSize = isMobile ? 80 : 120;
 
   return (
     <Paper
       elevation={0}
       sx={{
-        p: 3,
+        p: isMobile ? 2 : 3,
         borderRadius: 4,
         border: "1px solid",
         borderColor: alpha(statusColor, 0.2),
@@ -51,7 +62,7 @@ const StockHealth: React.FC = () => {
         display: "flex",
         flexDirection: { xs: "column", sm: "row" },
         alignItems: "center",
-        gap: 4,
+        gap: isMobile ? 2 : 4,
         overflow: "hidden",
         position: "relative",
       }}
@@ -60,14 +71,14 @@ const StockHealth: React.FC = () => {
         <CircularProgress
           variant="determinate"
           value={100}
-          size={120}
+          size={circleSize}
           thickness={4}
           sx={{ color: alpha(statusColor, 0.1) }}
         />
         <CircularProgress
           variant="determinate"
           value={health}
-          size={120}
+          size={circleSize}
           thickness={5}
           sx={{
             color: statusColor,
@@ -90,26 +101,49 @@ const StockHealth: React.FC = () => {
           }}
         >
           <Typography
-            variant="h4"
+            variant={isMobile ? "h5" : "h4"}
             fontWeight="900"
             sx={{ color: statusColor, lineHeight: 1 }}
           >
             {health}%
           </Typography>
-          <Typography variant="caption" color="text.secondary" fontWeight="900">
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            fontWeight="900"
+            sx={{ fontSize: isMobile ? "0.65rem" : undefined }}
+          >
             {t("dashboard.health.title")}
           </Typography>
         </Box>
       </Box>
 
-      <Box sx={{ flex: 1 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+      <Box sx={{ flex: 1, textAlign: { xs: "center", sm: "left" } }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: { xs: "center", sm: "flex-start" },
+            gap: 1,
+            mb: 1,
+          }}
+        >
           {health > 80 ? (
-            <HealthyIcon sx={{ color: statusColor }} />
+            <HealthyIcon
+              sx={{
+                color: statusColor,
+                fontSize: isMobile ? "1.25rem" : "1.5rem",
+              }}
+            />
           ) : (
-            <CrisisIcon sx={{ color: statusColor }} />
+            <CrisisIcon
+              sx={{
+                color: statusColor,
+                fontSize: isMobile ? "1.25rem" : "1.5rem",
+              }}
+            />
           )}
-          <Typography variant="h6" fontWeight="900">
+          <Typography variant={isMobile ? "subtitle1" : "h6"} fontWeight="900">
             {health > 80
               ? t("dashboard.health.excellent")
               : health > 50
@@ -117,7 +151,11 @@ const StockHealth: React.FC = () => {
                 : t("dashboard.health.critical")}
           </Typography>
         </Box>
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ fontSize: isMobile ? "0.75rem" : undefined }}
+        >
           {health > 80
             ? t("dashboard.health.descGood")
             : t("dashboard.health.descLow")}
@@ -130,8 +168,8 @@ const StockHealth: React.FC = () => {
           position: "absolute",
           top: -20,
           right: -20,
-          width: 140,
-          height: 140,
+          width: isMobile ? 100 : 140,
+          height: isMobile ? 100 : 140,
           borderRadius: "50%",
           background: `radial-gradient(circle, ${alpha(statusColor, 0.1)} 0%, transparent 70%)`,
           zIndex: 0,

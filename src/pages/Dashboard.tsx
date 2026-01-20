@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Box, Typography, useTheme, alpha, Paper, Grid } from "@mui/material";
+import {
+  Box,
+  Typography,
+  useTheme,
+  alpha,
+  Paper,
+  Grid,
+  useMediaQuery,
+} from "@mui/material";
 import {
   Inventory as InventoryIcon,
   Warning as WarningIcon,
@@ -136,6 +144,8 @@ const Dashboard: React.FC = () => {
   const [dailyStats, setDailyStats] = useState({ in: 0, out: 0 });
   const { t } = useTranslation();
   const { items, categories: contextCategories } = useInventoryContext();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const stats = useMemo(() => {
     const totalItems = items.length;
@@ -192,8 +202,8 @@ const Dashboard: React.FC = () => {
   }, [t, handleError]);
 
   return (
-    <Box sx={{ p: 3, maxWidth: "1600px", mx: "auto" }}>
-      <Box sx={{ mb: 4 }}>
+    <Box sx={{ p: { xs: 2, sm: 3 }, maxWidth: "1600px", mx: "auto" }}>
+      <Box sx={{ mb: { xs: 2, sm: 4 } }}>
         <Typography variant="h4" fontWeight="900" gutterBottom>
           {t("dashboard.title")}
         </Typography>
@@ -202,7 +212,18 @@ const Dashboard: React.FC = () => {
         </Typography>
       </Box>
 
-      <Grid container spacing={{ xs: 1.5, sm: 3 }} sx={{ mt: 2 }}>
+      {/* QuickActions - Show at top on mobile for better accessibility */}
+      {isMobile && (
+        <Box sx={{ mb: 3 }}>
+          <QuickActions />
+        </Box>
+      )}
+
+      <Grid
+        container
+        spacing={{ xs: 1.5, sm: 3 }}
+        sx={{ mt: { xs: 0, sm: 2 } }}
+      >
         <Grid size={{ xs: 6, sm: 6, md: 3 }}>
           <StatCard
             title={t("dashboard.totalItems")}
@@ -237,12 +258,16 @@ const Dashboard: React.FC = () => {
         </Grid>
       </Grid>
 
-      <Box sx={{ mt: 4 }}>
+      <Box sx={{ mt: { xs: 3, sm: 4 } }}>
         <StockHealth />
       </Box>
-      <Box sx={{ mt: 4 }}>
-        <QuickActions />
-      </Box>
+
+      {/* QuickActions - Show at bottom on desktop/tablet */}
+      {!isMobile && (
+        <Box sx={{ mt: 4 }}>
+          <QuickActions />
+        </Box>
+      )}
     </Box>
   );
 };
