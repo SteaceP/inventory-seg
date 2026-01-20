@@ -27,7 +27,9 @@ import {
   History as ActivityIcon,
   LocationOn as LocationIcon,
   Assessment as AssessmentIcon,
+  Close as CloseIcon,
 } from "@mui/icons-material";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import { useThemeContext } from "../contexts/ThemeContext";
@@ -111,55 +113,95 @@ const Layout: React.FC = () => {
       ? collapsedWidth
       : drawerWidth;
 
-  const drawerContent = (
+  const content = (
     <>
       <Toolbar
+        data-testid="drawer-header"
+        disableGutters
         sx={{
           display: "flex",
           alignItems: "center",
           justifyContent: collapsed && !isMobile ? "center" : "space-between",
-          px: [1],
+          px: collapsed && !isMobile ? 0 : 2,
           minHeight: compactView ? "48px !important" : "64px !important",
         }}
       >
-        {(!collapsed || isMobile) && (
-          <Box sx={{ display: "flex", alignItems: "center", ml: 1 }}>
-            <Box
-              component="img"
-              src="/icons/icon.svg"
-              sx={{
-                width: compactView ? 24 : 32,
-                height: compactView ? 24 : 32,
-                mr: 1,
-              }}
-              alt="Logo"
-            />
+        <Box
+          sx={{
+            display: collapsed && !isMobile ? "none" : "flex",
+            alignItems: "center",
+            flex: 1,
+            minWidth: 0,
+            mr: 1,
+          }}
+        >
+          <Box
+            component="img"
+            src="/icons/icon.svg"
+            sx={{
+              width: compactView ? 24 : 32,
+              height: compactView ? 24 : 32,
+              mr: 1,
+              flexShrink: 0,
+            }}
+            alt="Logo"
+          />
+          {(!collapsed || isMobile) && (
             <Typography
               variant={compactView ? "body1" : "h6"}
               component="div"
+              noWrap
               sx={{
                 fontWeight: "bold",
                 color: "primary.main",
                 lineHeight: 1.2,
-                whiteSpace: "normal",
+                minWidth: 0,
               }}
             >
               {t("app.title")}
             </Typography>
-          </Box>
-        )}
-        {!isMobile && (
-          <IconButton
-            onClick={handleDrawerToggle}
-            sx={{ color: "primary.main", p: compactView ? 0.5 : 1 }}
-          >
-            {collapsed ? (
-              <MenuIcon fontSize={compactView ? "small" : "medium"} />
-            ) : (
-              <ChevronLeftIcon fontSize={compactView ? "small" : "medium"} />
-            )}
-          </IconButton>
-        )}
+          )}
+        </Box>
+        <IconButton
+          onClick={handleDrawerToggle}
+          size={compactView ? "small" : "medium"}
+          aria-label={
+            isMobile
+              ? "close menu"
+              : collapsed
+                ? "expand menu"
+                : "collapse menu"
+          }
+          data-testid="close-menu-button"
+          sx={{
+            color: "primary.main",
+            flexShrink: 0,
+            width: compactView ? 32 : 40,
+            height: compactView ? 32 : 40,
+            p: 0,
+            m: 0,
+            "&:hover": { bgcolor: "rgba(2, 125, 111, 0.08)" },
+          }}
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={isMobile ? "close" : collapsed ? "menu" : "chevron"}
+              initial={{ opacity: 0, rotate: -90, scale: 0.8 }}
+              animate={{ opacity: 1, rotate: 0, scale: 1 }}
+              exit={{ opacity: 0, rotate: 90, scale: 0.8 }}
+              transition={{ duration: 0.2 }}
+              style={{ display: "flex" }}
+            >
+              {isMobile ? (
+                <CloseIcon />
+              ) : collapsed ? (
+                <MenuIcon />
+              ) : (
+                <ChevronLeftIcon />
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </IconButton>
       </Toolbar>
 
       <Box
@@ -184,21 +226,30 @@ const Layout: React.FC = () => {
         >
           {getInitials(displayName)}
         </Avatar>
-        {(!collapsed || isMobile) && (
-          <Box sx={{ minWidth: 0, flex: 1, overflow: "hidden" }}>
-            <Typography variant="body2" fontWeight="bold" noWrap>
-              {displayName || t("user.default")}
-            </Typography>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              noWrap
-              display="block"
+        <AnimatePresence mode="wait">
+          {(!collapsed || isMobile) && (
+            <Box
+              component={motion.div}
+              initial={{ opacity: 0, width: 0 }}
+              animate={{ opacity: 1, width: "auto" }}
+              exit={{ opacity: 0, width: 0 }}
+              transition={{ duration: 0.3 }}
+              sx={{ minWidth: 0, flex: 1, overflow: "hidden" }}
             >
-              {t("user.online")}
-            </Typography>
-          </Box>
-        )}
+              <Typography variant="body2" fontWeight="bold" noWrap>
+                {displayName || t("user.default")}
+              </Typography>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                noWrap
+                display="block"
+              >
+                {t("user.online")}
+              </Typography>
+            </Box>
+          )}
+        </AnimatePresence>
       </Box>
 
       <Divider sx={{ borderColor: "divider" }} />
@@ -247,15 +298,26 @@ const Layout: React.FC = () => {
                 >
                   {item.icon}
                 </ListItemIcon>
-                {(!collapsed || isMobile) && (
-                  <ListItemText
-                    primary={item.text}
-                    primaryTypographyProps={{
-                      fontSize: compactView ? "0.8125rem" : "0.875rem",
-                      fontWeight: location.pathname === item.path ? 600 : 400,
-                    }}
-                  />
-                )}
+                <AnimatePresence mode="wait">
+                  {(!collapsed || isMobile) && (
+                    <ListItemText
+                      primary={
+                        <motion.span
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -10 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          {item.text}
+                        </motion.span>
+                      }
+                      primaryTypographyProps={{
+                        fontSize: compactView ? "0.8125rem" : "0.875rem",
+                        fontWeight: location.pathname === item.path ? 600 : 400,
+                      }}
+                    />
+                  )}
+                </AnimatePresence>
               </ListItemButton>
             </Tooltip>
           ))}
@@ -292,14 +354,25 @@ const Layout: React.FC = () => {
               >
                 <LogoutIcon fontSize={compactView ? "small" : "medium"} />
               </ListItemIcon>
-              {(!collapsed || isMobile) && (
-                <ListItemText
-                  primary={t("security.signOut")}
-                  primaryTypographyProps={{
-                    fontSize: compactView ? "0.8125rem" : "0.875rem",
-                  }}
-                />
-              )}
+              <AnimatePresence mode="wait">
+                {(!collapsed || isMobile) && (
+                  <ListItemText
+                    primary={
+                      <motion.span
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        {t("security.signOut")}
+                      </motion.span>
+                    }
+                    primaryTypographyProps={{
+                      fontSize: compactView ? "0.8125rem" : "0.875rem",
+                    }}
+                  />
+                )}
+              </AnimatePresence>
             </ListItemButton>
           </Tooltip>
         </List>
@@ -344,9 +417,27 @@ const Layout: React.FC = () => {
               aria-label="open drawer"
               edge="start"
               onClick={handleDrawerToggle}
-              sx={{ mr: { xs: 1, sm: 2 } }}
+              sx={{
+                mr: { xs: 1, sm: 2 },
+                color: "primary.main",
+              }}
             >
-              <MenuIcon fontSize={compactView ? "small" : "medium"} />
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={mobileOpen ? "close" : "menu"}
+                  initial={{ opacity: 0, rotate: -90, scale: 0.8 }}
+                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                  exit={{ opacity: 0, rotate: 90, scale: 0.8 }}
+                  transition={{ duration: 0.2 }}
+                  style={{ display: "flex" }}
+                >
+                  {mobileOpen ? (
+                    <CloseIcon />
+                  ) : (
+                    <MenuIcon fontSize={compactView ? "small" : "medium"} />
+                  )}
+                </motion.div>
+              </AnimatePresence>
             </IconButton>
             <Box
               component="img"
@@ -399,7 +490,7 @@ const Layout: React.FC = () => {
               },
             }}
           >
-            {drawerContent}
+            {content}
           </Drawer>
         ) : (
           <Drawer
@@ -422,7 +513,7 @@ const Layout: React.FC = () => {
               },
             }}
           >
-            {drawerContent}
+            {content}
           </Drawer>
         )}
       </Box>
