@@ -31,7 +31,6 @@ const Inventory: React.FC = () => {
     formData,
     selectedItems,
     searchQuery,
-    isLowStockFilter,
     deleteConfirmOpen,
     historyDialogOpen,
     selectedItemForHistory,
@@ -52,7 +51,6 @@ const Inventory: React.FC = () => {
     setOpenDrawer,
     setCurrentTab,
     setSelectedCategory,
-    toggleLowStockFilter,
     handleOpen,
     handleAdjust,
     handleEdit,
@@ -92,8 +90,6 @@ const Inventory: React.FC = () => {
         onPrint={() => window.print()}
         onScan={() => setScanOpen(true)}
         onAdd={role === "admin" ? () => handleOpen() : undefined}
-        isLowStockFilter={isLowStockFilter}
-        onToggleLowStock={toggleLowStockFilter}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onManageCategories={
