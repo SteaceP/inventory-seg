@@ -42,6 +42,8 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => {
         height: "100%",
         display: "flex",
         flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
         position: "relative",
         overflow: "hidden",
         backdropFilter: "blur(10px)",
@@ -70,6 +72,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => {
         sx={{
           display: "flex",
           alignItems: "center",
+          justifyContent: "center",
           gap: { xs: 1, sm: 1.5 },
           mb: 1,
           position: "relative",
@@ -118,7 +121,6 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => {
           overflow: "hidden",
           textOverflow: "ellipsis",
           whiteSpace: "nowrap",
-          ml: 0.5,
           fontSize: { xs: "1rem", sm: "1.35rem", md: "1.85rem" },
         }}
       >
