@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import * as Sentry from "@sentry/react";
+import { useErrorHandler } from "../hooks/useErrorHandler";
 import {
   Box,
   Container,
@@ -27,7 +27,6 @@ import {
 } from "@mui/icons-material";
 import { useTranslation } from "../i18n";
 import { supabase } from "../supabaseClient";
-import { useAlert } from "../contexts/AlertContext";
 import type { InventoryActivity } from "../types/activity";
 import { alpha } from "@mui/material/styles";
 import { getActivityNarrative, getStockChange } from "../utils/activityUtils";
@@ -35,7 +34,7 @@ import { getActivityNarrative, getStockChange } from "../utils/activityUtils";
 const InventoryActivityPage: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { showError } = useAlert();
+  const { handleError } = useErrorHandler();
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [activities, setActivities] = useState<InventoryActivity[]>([]);
@@ -121,14 +120,16 @@ const InventoryActivityPage: React.FC = () => {
           setActivities((prev) => [...prev, ...formattedData]);
         }
       } catch (err: unknown) {
-        Sentry.captureException(err);
-        showError(t("errors.loadActivity") + ": " + (err as Error).message);
+        handleError(
+          err,
+          t("errors.loadActivity") + ": " + (err as Error).message
+        );
       } finally {
         setLoading(false);
         setLoadingMore(false);
       }
     },
-    [actionFilter, searchTerm, showError, t]
+    [actionFilter, searchTerm, handleError, t]
   );
 
   useEffect(() => {

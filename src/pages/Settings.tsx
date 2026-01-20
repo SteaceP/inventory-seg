@@ -19,11 +19,6 @@ import ProfileSection from "../components/settings/ProfileSection";
 import NotificationSection from "../components/settings/NotificationSection";
 import AppearanceSection from "../components/settings/AppearanceSection";
 import SecuritySection from "../components/settings/SecuritySection";
-import {
-  checkPushSubscription,
-  subscribeToPush,
-  unsubscribeFromPush,
-} from "../utils/push-notifications";
 import type { Language } from "../types/user";
 import {
   validateImageFile,
@@ -102,9 +97,6 @@ const Settings: React.FC = () => {
             lowStockThreshold: settingsObj.low_stock_threshold ?? 5,
           }));
         }
-
-        const isSubscribed = await checkPushSubscription();
-        setSettings((prev) => ({ ...prev, pushEnabled: isSubscribed }));
       }
     };
     void loadUserData();
@@ -214,33 +206,7 @@ const Settings: React.FC = () => {
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <NotificationSection
-            userId={settings.userId}
-            emailAlerts={settings.emailAlerts}
-            lowStockThreshold={settings.lowStockThreshold}
-            pushEnabled={settings.pushEnabled}
-            onEmailAlertsChange={(enabled) =>
-              setSettings({ ...settings, emailAlerts: enabled })
-            }
-            onThresholdChange={(val) =>
-              setSettings({ ...settings, lowStockThreshold: val })
-            }
-            onPushToggle={(enabled) => {
-              void (async () => {
-                try {
-                  if (enabled) {
-                    await subscribeToPush();
-                    setSettings((prev) => ({ ...prev, pushEnabled: true }));
-                  } else {
-                    await unsubscribeFromPush();
-                    setSettings((prev) => ({ ...prev, pushEnabled: false }));
-                  }
-                } catch (err: unknown) {
-                  setError(err instanceof Error ? err.message : String(err));
-                }
-              })();
-            }}
-          />
+          <NotificationSection />
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>

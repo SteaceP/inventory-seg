@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
-import * as Sentry from "@sentry/react";
+import { useErrorHandler } from "../../hooks/useErrorHandler";
+import { useInventoryContext } from "../../contexts/InventoryContext";
+import { useUserContext } from "../../contexts/UserContext";
 import {
   Drawer,
   Box,
@@ -13,6 +15,7 @@ import {
   AppBar,
   Toolbar,
   Grid,
+  ListItemText,
 } from "@mui/material";
 import {
   Close as CloseIcon,
@@ -36,11 +39,9 @@ interface InventoryDrawerProps {
   onEdit: (item: InventoryItem) => void;
   onDelete: (id: string) => void;
   onAdjustStock: (item: InventoryItem) => void;
-  globalThreshold: number;
-  categories: { name: string; low_stock_threshold: number | null }[];
 }
 
-interface StockActivity {
+interface ActivityLog {
   id: string;
   created_at: string | null;
   action: string;
@@ -55,16 +56,18 @@ interface StockActivity {
 
 const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
   open,
-  onClose,
   item,
+  onClose,
   onEdit,
   onDelete,
   onAdjustStock,
-  globalThreshold,
-  categories,
 }) => {
   const { t } = useTranslation();
-  const [activities, setActivities] = useState<StockActivity[]>([]);
+  const { categories } = useInventoryContext();
+  const { lowStockThreshold: globalThreshold } = useUserContext();
+  // Removed showError as it was unused
+  const { handleError } = useErrorHandler();
+  const [activity, setActivity] = useState<ActivityLog[]>([]);
 
   const fetchActivity = useCallback(async () => {
     if (!item?.id) return;
@@ -77,11 +80,16 @@ const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
         .limit(3);
 
       if (error) throw error;
-      setActivities((data as StockActivity[]) || []);
-    } catch (err) {
-      Sentry.captureException(err);
+      setActivity((data as ActivityLog[]) || []);
+    } catch (err: unknown) {
+      handleError(
+        err,
+        t("errors.loadActivity") + ": " + (err as Error).message
+      );
+    } finally {
+      // Optional: Add any cleanup or finalization logic here
     }
-  }, [item?.id]);
+  }, [item?.id, handleError, t]); // Added handleError and t to dependencies
 
   useEffect(() => {
     if (open && item?.id) {
@@ -91,12 +99,17 @@ const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
 
   if (!item) return null;
 
-  const categoryThreshold = categories.find(
-    (c) => c.name === item.category
-  )?.low_stock_threshold;
-
+  const category = categories.find(
+    (c: { name: string; low_stock_threshold: number | null }) =>
+      c.name === item.category
+  );
   const effectiveThreshold =
-    item.low_stock_threshold ?? categoryThreshold ?? globalThreshold;
+    item.low_stock_threshold !== null
+      ? item.low_stock_threshold
+      : category?.low_stock_threshold !== null &&
+          category?.low_stock_threshold !== undefined
+        ? category.low_stock_threshold
+        : globalThreshold;
 
   const isLowStock = (item.stock || 0) <= effectiveThreshold;
   const isOutOfStock = (item.stock || 0) === 0;
@@ -310,14 +323,16 @@ const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
             <Button
               size="small"
               startIcon={<AddIcon />}
-              onClick={() => onAdjustStock(item)}
+              onClick={() => {
+                if (item) onAdjustStock(item);
+              }}
             >
               {t("inventory.manageStock")}
             </Button>
           </Box>
 
           <Stack spacing={2}>
-            {activities.length === 0 ? (
+            {activity.length === 0 ? (
               <Paper
                 sx={{
                   p: 3,
@@ -334,55 +349,57 @@ const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                 </Typography>
               </Paper>
             ) : (
-              activities.map((activity) => (
+              activity.map((log) => (
                 <Paper
-                  key={activity.id}
+                  key={log.id}
                   variant="outlined"
                   sx={{ p: 2, borderRadius: 3 }}
                 >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      mb: 1,
-                    }}
-                  >
-                    <Typography
-                      variant="subtitle2"
-                      fontWeight="bold"
-                      sx={{ textTransform: "capitalize" }}
-                    >
-                      {activity.action}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {activity.created_at
-                        ? new Date(activity.created_at).toLocaleString()
-                        : ""}
-                    </Typography>
-                  </Box>
-                  {activity.changes?.action_type && (
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      gutterBottom
-                    >
-                      {activity.changes.action_type === "add" ? "+" : "-"}
-                      {Math.abs(
-                        (activity.changes.stock || 0) -
-                          (activity.changes.old_stock || 0)
-                      )}{" "}
-                      units
-                    </Typography>
-                  )}
-                  {activity.changes?.location && (
-                    <Typography
-                      variant="caption"
-                      display="block"
-                      color="primary"
-                    >
-                      {activity.changes.location}
-                    </Typography>
-                  )}
+                  <ListItemText
+                    primary={log.action}
+                    secondary={
+                      <React.Fragment>
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          color="text.primary"
+                        >
+                          {log.created_at
+                            ? new Date(log.created_at).toLocaleString()
+                            : ""}
+                        </Typography>
+                        {log.changes && (
+                          <Box component="span" sx={{ display: "block" }}>
+                            {log.changes.action_type && (
+                              <Typography component="span" variant="caption">
+                                Action: {log.changes.action_type}
+                              </Typography>
+                            )}
+                            {log.changes.stock !== undefined && (
+                              <Typography component="span" variant="caption">
+                                New Stock: {log.changes.stock}
+                              </Typography>
+                            )}
+                            {log.changes.old_stock !== undefined && (
+                              <Typography component="span" variant="caption">
+                                (Was: {log.changes.old_stock})
+                              </Typography>
+                            )}
+                            {log.changes.location && (
+                              <Typography
+                                component="span"
+                                variant="caption"
+                                display="block"
+                                color="primary"
+                              >
+                                {log.changes.location}
+                              </Typography>
+                            )}
+                          </Box>
+                        )}
+                      </React.Fragment>
+                    }
+                  />
                 </Paper>
               ))
             )}
@@ -403,7 +420,9 @@ const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
             variant="outlined"
             color="primary"
             startIcon={<EditIcon />}
-            onClick={() => onEdit(item)}
+            onClick={() => {
+              if (item) onEdit(item);
+            }}
           >
             {t("inventory.edit")}
           </Button>

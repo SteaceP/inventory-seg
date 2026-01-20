@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import * as Sentry from "@sentry/react";
+import { useErrorHandler } from "../hooks/useErrorHandler";
 import { useUserContext } from "../contexts/UserContext";
 import { useAlert } from "../contexts/AlertContext";
 import { useTranslation } from "../i18n";
@@ -30,8 +30,9 @@ interface BroadcastPayload {
 }
 
 const RealtimeNotifications: React.FC = () => {
-  const { userId } = useUserContext();
   const { showInfo } = useAlert();
+  const { handleError } = useErrorHandler();
+  const { userId } = useUserContext();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -102,14 +103,14 @@ const RealtimeNotifications: React.FC = () => {
           )
           .subscribe();
       } catch (err) {
-        Sentry.captureException(err);
+        handleError(err);
       }
     })();
 
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [userId, showInfo, t]);
+  }, [userId, showInfo, t, handleError]);
 
   return null;
 };

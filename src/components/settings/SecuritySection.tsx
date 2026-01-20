@@ -18,6 +18,7 @@ import {
   VisibilityOff,
 } from "@mui/icons-material";
 import { useTranslation } from "../../i18n";
+import { useErrorHandler } from "../../hooks/useErrorHandler";
 
 interface SecuritySectionProps {
   onSignOut: () => void;
@@ -29,18 +30,21 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
   onChangePassword,
 }) => {
   const { t } = useTranslation();
+  const { handleError } = useErrorHandler();
   const [open, setOpen] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
   const [formData, setFormData] = React.useState({
     newPassword: "",
     confirmPassword: "",
   });
-  const [error, setError] = React.useState<string | null>(null);
+  const [validationError, setValidationError] = React.useState<string | null>(
+    null
+  );
   const [loading, setLoading] = React.useState(false);
 
   const handleOpen = () => {
     setOpen(true);
-    setError(null);
+    setValidationError(null);
     setFormData({ newPassword: "", confirmPassword: "" });
   };
 
@@ -52,15 +56,15 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    setValidationError(null);
 
     if (formData.newPassword.length < 6) {
-      setError(t("security.passwordTooShort"));
+      setValidationError(t("security.passwordTooShort"));
       return;
     }
 
     if (formData.newPassword !== formData.confirmPassword) {
-      setError(t("security.passwordsDoNotMatch"));
+      setValidationError(t("security.passwordsDoNotMatch"));
       return;
     }
 
@@ -69,7 +73,7 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
       await onChangePassword(formData.newPassword);
       handleClose();
     } catch (err: unknown) {
-      setError((err as Error).message);
+      handleError(err, t("security.errorChangingPassword"));
     } finally {
       setLoading(false);
     }
@@ -168,9 +172,9 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
                   setFormData({ ...formData, confirmPassword: e.target.value })
                 }
               />
-              {error && (
+              {validationError && (
                 <Typography color="error" variant="body2">
-                  {error}
+                  {validationError}
                 </Typography>
               )}
             </Box>

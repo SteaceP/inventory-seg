@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import * as Sentry from "@sentry/react";
+import { useErrorHandler } from "../../hooks/useErrorHandler";
 import {
   Dialog,
   DialogTitle,
@@ -61,6 +61,7 @@ const StockHistoryDialog: React.FC<StockHistoryDialogProps> = ({
   onClose,
 }) => {
   const { t } = useTranslation();
+  const { handleError } = useErrorHandler();
   const [loading, setLoading] = useState(false);
   const [activities, setActivities] = useState<InventoryActivity[]>([]);
 
@@ -117,12 +118,15 @@ const StockHistoryDialog: React.FC<StockHistoryDialogProps> = ({
       })) as InventoryActivity[];
 
       setActivities(formattedData);
-    } catch (err) {
-      Sentry.captureException(err);
+    } catch (err: unknown) {
+      handleError(
+        err,
+        t("errors.loadActivity") + ": " + (err as Error).message
+      );
     } finally {
       setLoading(false);
     }
-  }, [itemId]);
+  }, [itemId, handleError, t]);
 
   useEffect(() => {
     if (open && itemId) {

@@ -12,7 +12,7 @@ import { useInventoryContext } from "../contexts/InventoryContext";
 import { useThemeContext } from "../contexts/ThemeContext";
 import QuickActions from "../components/dashboard/QuickActions";
 import StockHealth from "../components/dashboard/StockHealth";
-import { useAlert } from "../contexts/AlertContext";
+import { useErrorHandler } from "../hooks/useErrorHandler";
 import { supabase } from "../supabaseClient";
 
 interface StatCardProps {
@@ -129,7 +129,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => {
 };
 
 const Dashboard: React.FC = () => {
-  const { showError } = useAlert();
+  const { handleError } = useErrorHandler();
   const { lowStockThreshold } = useUserContext();
   const [dailyStats, setDailyStats] = useState({ in: 0, out: 0 });
   const { t } = useTranslation();
@@ -183,11 +183,11 @@ const Dashboard: React.FC = () => {
         const data = await response.json();
         setDailyStats(data as { in: number; out: number });
       } catch (err) {
-        showError(t("errors.loadDashboard") + ": " + (err as Error).message);
+        handleError(err, t("errors.loadDashboard"));
       }
     };
     void fetchDashboardData();
-  }, [t, showError]);
+  }, [t, handleError]);
 
   return (
     <Box sx={{ p: 3, maxWidth: "1600px", mx: "auto" }}>

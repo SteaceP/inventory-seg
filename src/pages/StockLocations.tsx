@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
-import * as Sentry from "@sentry/react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Container,
@@ -17,7 +16,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemSecondaryAction,
   useTheme,
   alpha,
 } from "@mui/material";
@@ -30,16 +28,20 @@ import {
   LocationOn as LocationIcon,
 } from "@mui/icons-material";
 import { useTranslation } from "../i18n";
-import { supabase } from "../supabaseClient";
+import { useInventoryContext } from "../contexts/InventoryContext";
 import { useAlert } from "../contexts/AlertContext";
+import { useErrorHandler } from "../hooks/useErrorHandler";
+import { supabase } from "../supabaseClient";
 import type { MasterLocation } from "../types/inventory";
 
 const StockLocationsPage: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { showError } = useAlert();
+  const { locations, refreshInventory: refreshLocations } =
+    useInventoryContext();
+  const { showError, showSuccess } = useAlert();
+  const { handleError } = useErrorHandler();
   const [loading, setLoading] = useState(false);
-  const [locations, setLocations] = useState<MasterLocation[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingLocation, setEditingLocation] = useState<MasterLocation | null>(
     null
@@ -52,26 +54,27 @@ const StockLocationsPage: React.FC = () => {
     description: "",
   });
 
-  const fetchLocations = useCallback(async () => {
+  const fetchLocations = async () => {
+    // This function is no longer used directly, but kept for reference if needed.
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("inventory_locations")
         .select("*")
         .order("name");
 
       if (error) throw error;
-      setLocations(data || []);
+      // setLocations(data || []); // No longer setting local state
     } catch (err: unknown) {
-      showError("Failed to fetch locations: " + (err as Error).message);
+      handleError(err, "Failed to fetch locations");
     } finally {
       setLoading(false);
     }
-  }, [showError]);
+  };
 
   useEffect(() => {
-    void fetchLocations();
-  }, [fetchLocations]);
+    void refreshLocations();
+  }, [refreshLocations]);
 
   const handleOpenDialog = (location?: MasterLocation) => {
     if (location) {
@@ -116,14 +119,20 @@ const StockLocationsPage: React.FC = () => {
       }
 
       handleCloseDialog();
-      void fetchLocations();
+      void refreshLocations();
+      showSuccess(
+        editingLocation
+          ? t("inventory.locations.success.edit")
+          : t("inventory.locations.success.add")
+      );
     } catch (err) {
-      Sentry.captureException(err);
       const error = err as { code?: string };
       if (error.code === "23505") {
         showError(t("inventory.locations.error.duplicate"));
+        // Still report to Sentry as it's a conflict we might want to track
+        handleError(err);
       } else {
-        showError(t("inventory.locations.error.save"));
+        handleError(err, t("inventory.locations.error.save"));
       }
     } finally {
       setLoading(false);
@@ -140,10 +149,10 @@ const StockLocationsPage: React.FC = () => {
         .delete()
         .eq("id", id);
       if (error) throw error;
-      void fetchLocations();
+      void refreshLocations();
+      showSuccess(t("inventory.locations.success.delete"));
     } catch (err) {
-      Sentry.captureException(err);
-      showError(t("inventory.locations.error.delete"));
+      handleError(err, t("inventory.locations.error.delete"));
     } finally {
       setLoading(false);
     }
@@ -162,6 +171,26 @@ const StockLocationsPage: React.FC = () => {
               borderColor: "divider",
               "&:hover": { bgcolor: alpha(theme.palette.primary.main, 0.05) },
             }}
+            secondaryAction={
+              <>
+                <IconButton
+                  onClick={() => handleOpenDialog(location)}
+                  size="small"
+                  sx={{ mr: 1 }}
+                >
+                  <EditIcon fontSize="small" />
+                </IconButton>
+                <IconButton
+                  onClick={() => {
+                    void handleDelete(location.id);
+                  }}
+                  size="small"
+                  color="error"
+                >
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              </>
+            }
           >
             <Box
               sx={{
@@ -184,24 +213,6 @@ const StockLocationsPage: React.FC = () => {
                 fontWeight: location.parent_id ? "medium" : "bold",
               }}
             />
-            <ListItemSecondaryAction>
-              <IconButton
-                onClick={() => handleOpenDialog(location)}
-                size="small"
-                sx={{ mr: 1 }}
-              >
-                <EditIcon fontSize="small" />
-              </IconButton>
-              <IconButton
-                onClick={() => {
-                  void handleDelete(location.id);
-                }}
-                size="small"
-                color="error"
-              >
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            </ListItemSecondaryAction>
           </ListItem>
           {buildHierarchy(location.id, depth + 1)}
         </React.Fragment>

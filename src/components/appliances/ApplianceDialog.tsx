@@ -17,7 +17,7 @@ import {
 import { PhotoCamera, Autorenew as AutoRenewIcon } from "@mui/icons-material";
 import { useTranslation } from "../../i18n";
 import type { Appliance } from "../../types/appliances";
-import { useAlert } from "../../contexts/AlertContext";
+import { useErrorHandler } from "../../hooks/useErrorHandler";
 import { supabase } from "../../supabaseClient";
 import {
   validateImageFile,
@@ -42,7 +42,7 @@ const ApplianceDialog: React.FC<ApplianceDialogProps> = ({
   loading = false,
 }) => {
   const { t } = useTranslation();
-  const { showError } = useAlert();
+  const { handleError } = useErrorHandler();
 
   // Initialize with defaults if adding new
   const [formData, setFormData] = useState<Partial<Appliance>>({
@@ -79,9 +79,7 @@ const ApplianceDialog: React.FC<ApplianceDialogProps> = ({
 
       setFormData({ ...formData, photo_url: publicUrl });
     } catch (err: unknown) {
-      showError(
-        t("appliances.errorUploadingImage") + ": " + (err as Error).message
-      );
+      handleError(err, t("appliances.errorUploadingImage"));
     } finally {
       setUploading(false);
     }

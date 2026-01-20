@@ -14,11 +14,13 @@ import CategoryManagementDialog from "../components/inventory/CategoryManagement
 import InventoryDrawer from "../components/inventory/InventoryDrawer";
 import InventoryStats from "../components/inventory/InventoryStats";
 import CategoryFilters from "../components/inventory/CategoryFilters";
+import { useInventoryContext } from "../contexts/InventoryContext";
+import { useErrorHandler } from "../hooks/useErrorHandler";
 import { useInventoryPage } from "../hooks/useInventoryPage";
+import { useUserContext } from "../contexts/UserContext";
 
 const Inventory: React.FC = () => {
   const {
-    items,
     inventoryLoading,
     actionLoading,
     open,
@@ -38,9 +40,7 @@ const Inventory: React.FC = () => {
     currentTab,
     selectedCategory,
     filteredItems,
-    role,
     globalThreshold,
-    categories,
     setSearchQuery,
     setStockDialogOpen,
     setCategoriesDialogOpen,
@@ -74,6 +74,9 @@ const Inventory: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { t } = useTranslation();
+  const { role } = useUserContext();
+  const { items, categories } = useInventoryContext();
+  const { handleError } = useErrorHandler();
 
   return (
     <Box
@@ -202,7 +205,7 @@ const Inventory: React.FC = () => {
         open={scanOpen}
         onClose={() => setScanOpen(false)}
         onScanSuccess={handleScanSuccess}
-        onError={(msg) => showError(msg)}
+        onError={(msg) => handleError(new Error(msg), msg)}
       />
 
       <BarcodePrinter
@@ -237,8 +240,6 @@ const Inventory: React.FC = () => {
         onEdit={handleEdit}
         onDelete={handleDeleteClick}
         onAdjustStock={handleAdjust}
-        globalThreshold={globalThreshold}
-        categories={categories}
       />
     </Box>
   );

@@ -1,5 +1,7 @@
-import React from "react";
-import * as Sentry from "@sentry/react";
+import React, { useState, useEffect } from "react";
+import { useErrorHandler } from "../../hooks/useErrorHandler";
+import { useUserContext } from "../../contexts/UserContext";
+import { useAlert } from "../../contexts/AlertContext";
 import {
   Box,
   Paper,
@@ -13,34 +15,64 @@ import { Notifications as NotificationsIcon } from "@mui/icons-material";
 import { useTranslation } from "../../i18n";
 import { supabase } from "../../supabaseClient";
 
-interface NotificationSectionProps {
-  userId: string | null;
-  emailAlerts: boolean;
-  lowStockThreshold: number;
-  pushEnabled: boolean;
-  onEmailAlertsChange: (enabled: boolean) => void;
-  onThresholdChange: (threshold: number) => void;
-  onPushToggle: (enabled: boolean) => void;
-}
+// The original NotificationSectionProps interface is no longer needed as props are managed internally or via context.
+// interface NotificationSectionProps {
+//   userId: string | null;
+//   emailAlerts: boolean;
+//   lowStockThreshold: number;
+//   pushEnabled: boolean;
+//   onEmailAlertsChange: (enabled: boolean) => void;
+//   onThresholdChange: (threshold: number) => void;
+//   onPushToggle: (enabled: boolean) => void;
+// }
 
-const NotificationSection: React.FC<NotificationSectionProps> = ({
-  userId,
-  emailAlerts,
-  lowStockThreshold,
-  pushEnabled,
-  onEmailAlertsChange,
-  onThresholdChange,
-  onPushToggle,
-}) => {
+const NotificationSection: React.FC = () => {
   const { t } = useTranslation();
+  const { userId } = useUserContext();
+  const { showError, showSuccess } = useAlert();
+  const { handleError } = useErrorHandler();
+
+  // State for notification settings, assuming they are now managed internally
+  const [emailAlerts, setEmailAlerts] = useState(false);
+  const [lowStockThreshold, setLowStockThreshold] = useState(0);
+  const [pushEnabled, setPushEnabled] = useState(false);
+
+  // Placeholder for fetching initial settings or handling changes
+  useEffect(() => {
+    // In a real application, you would fetch these settings from a backend
+    // or user preferences and update the state here.
+    // For now, we'll just set some defaults or leave them as initial useState values.
+  }, [userId]);
+
+  const handleEmailAlertsChange = (enabled: boolean) => {
+    setEmailAlerts(enabled);
+    // Call API to update setting
+  };
+
+  const handleThresholdChange = (threshold: number) => {
+    setLowStockThreshold(threshold);
+    // Call API to update setting
+  };
+
+  const handlePushToggle = (enabled: boolean) => {
+    setPushEnabled(enabled);
+    // Call API to update setting
+  };
 
   const handleTestNotification = async () => {
-    if (!userId) return;
+    if (!userId) {
+      showError(t("notifications.testErrorNoUser")); // Example error for no user
+      return;
+    }
 
     try {
       const {
         data: { session },
       } = await supabase.auth.getSession();
+
+      if (!session) {
+        throw new Error("No active session found.");
+      }
 
       const response = await fetch("/api/send-test-push", {
         method: "POST",
@@ -54,8 +86,10 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
       if (!response.ok) {
         throw new Error(await response.text());
       }
+
+      showSuccess(t("notifications.testMobileSuccess")); // Show success message
     } catch (err) {
-      Sentry.captureException(err);
+      handleError(err, t("settings.notifications.testError"));
     }
   };
 
@@ -84,7 +118,7 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
           control={
             <Switch
               checked={pushEnabled}
-              onChange={(e) => onPushToggle(e.target.checked)}
+              onChange={(e) => handlePushToggle(e.target.checked)}
               color="primary"
             />
           }
@@ -111,7 +145,7 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
           control={
             <Switch
               checked={emailAlerts}
-              onChange={(e) => onEmailAlertsChange(e.target.checked)}
+              onChange={(e) => handleEmailAlertsChange(e.target.checked)}
               color="primary"
             />
           }
@@ -123,7 +157,9 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
             type="number"
             fullWidth
             value={lowStockThreshold}
-            onChange={(e) => onThresholdChange(parseInt(e.target.value) || 0)}
+            onChange={(e) =>
+              handleThresholdChange(parseInt(e.target.value) || 0)
+            }
             sx={{
               mt: 2,
               "& .MuiOutlinedInput-root": {

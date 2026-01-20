@@ -7,9 +7,9 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import * as Sentry from "@sentry/react";
 import { supabase } from "../supabaseClient";
 import { useAlert } from "./AlertContext";
+import { useErrorHandler } from "../hooks/useErrorHandler";
 import type {
   Language,
   UserProfile,
@@ -34,6 +34,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { showError } = useAlert();
+  const { handleError } = useErrorHandler();
   const [displayName, setDisplayName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [role, setRole] = useState("user");
@@ -102,7 +103,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
           setLoading(false);
         }
       } catch (err) {
-        Sentry.captureException(err);
+        handleError(err, "Failed to initialize user session");
         setLoading(false);
       }
     };
@@ -128,7 +129,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => {
       subscription.unsubscribe();
     };
-  }, [fetchUserSettings]);
+  }, [fetchUserSettings, handleError]);
 
   const setLanguage = useCallback(
     async (lang: Language) => {

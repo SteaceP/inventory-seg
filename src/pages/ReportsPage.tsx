@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import * as Sentry from "@sentry/react";
+import { useErrorHandler } from "../hooks/useErrorHandler";
 import {
   Box,
   Container,
@@ -23,13 +23,12 @@ import {
 import { Print as PrintIcon } from "@mui/icons-material";
 import { useTranslation } from "../i18n";
 import { useInventoryContext } from "../contexts/InventoryContext";
-import { useAlert } from "../contexts/AlertContext";
 import { supabase } from "../supabaseClient";
 
-const Reports: React.FC = () => {
+const ReportsPage: React.FC = () => {
   const { t, lang } = useTranslation();
   const { locations } = useInventoryContext();
-  const { showError } = useAlert();
+  const { handleError } = useErrorHandler();
 
   const [reportType, setReportType] = useState<"monthly" | "annual">("monthly");
   const [selectedMonth, setSelectedMonth] = useState<string>(
@@ -85,13 +84,18 @@ const Reports: React.FC = () => {
       const result = await response.json();
       setData(result as { itemName: string; total: number }[]);
     } catch (err: unknown) {
-      Sentry.captureException(err);
-      const message = err instanceof Error ? err.message : String(err);
-      showError(`${t("errors.saveItem")}: ${message}`);
+      handleError(err, t("errors.fetchReport") + ": " + (err as Error).message);
     } finally {
       setLoading(false);
     }
-  }, [reportType, selectedMonth, selectedYear, selectedLocation, t, showError]);
+  }, [
+    reportType,
+    selectedMonth,
+    selectedYear,
+    selectedLocation,
+    t,
+    handleError,
+  ]);
 
   useEffect(() => {
     void fetchReportData();
@@ -320,4 +324,4 @@ const Reports: React.FC = () => {
   );
 };
 
-export default Reports;
+export default ReportsPage;

@@ -16,7 +16,7 @@ import {
 import { Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
 import { useTranslation } from "../../i18n";
 import { useInventoryContext } from "../../contexts/InventoryContext";
-import { useAlert } from "../../contexts/AlertContext";
+import { useErrorHandler } from "../../hooks/useErrorHandler";
 import { supabase } from "../../supabaseClient";
 
 interface CategoryManagementDialogProps {
@@ -30,7 +30,7 @@ const CategoryManagementDialog: React.FC<CategoryManagementDialogProps> = ({
 }) => {
   const { t } = useTranslation();
   const { categories, refreshInventory } = useInventoryContext();
-  const { showError } = useAlert();
+  const { handleError } = useErrorHandler();
   const [newCategoryName, setNewCategoryName] = useState("");
   const [editingThresholds, setEditingThresholds] = useState<
     Record<string, string>
@@ -53,10 +53,9 @@ const CategoryManagementDialog: React.FC<CategoryManagementDialogProps> = ({
       if (error) throw error;
       void refreshInventory();
     } catch (err: unknown) {
-      showError(
-        (t("errors.updateCategory") || "Failed to update category") +
-          ": " +
-          (err as Error).message
+      handleError(
+        err,
+        t("errors.updateCategory") || "Failed to update category"
       );
     }
   };
@@ -71,11 +70,7 @@ const CategoryManagementDialog: React.FC<CategoryManagementDialogProps> = ({
       setNewCategoryName("");
       void refreshInventory();
     } catch (err: unknown) {
-      showError(
-        (t("errors.addCategory") || "Failed to add category") +
-          ": " +
-          (err as Error).message
-      );
+      handleError(err, t("errors.addCategory") || "Failed to add category");
     }
   };
 
@@ -88,10 +83,9 @@ const CategoryManagementDialog: React.FC<CategoryManagementDialogProps> = ({
       if (error) throw error;
       void refreshInventory();
     } catch (err: unknown) {
-      showError(
-        (t("errors.deleteCategory") || "Failed to delete category") +
-          ": " +
-          (err as Error).message
+      handleError(
+        err,
+        t("errors.deleteCategory") || "Failed to delete category"
       );
     }
   };

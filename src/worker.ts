@@ -1,5 +1,6 @@
 import webpush from "web-push";
 import * as Sentry from "@sentry/cloudflare";
+import { reportError } from "./utils/errorReporting";
 import postgres from "postgres";
 
 interface Env {
@@ -571,7 +572,7 @@ export default Sentry.withSentry(
               }
             }
           } catch (err) {
-            Sentry.captureException(err);
+            reportError(err);
           }
 
           // Sanitize for HTML email
@@ -692,17 +693,17 @@ export default Sentry.withSentry(
                     )
                   );
                 } else {
-                  Sentry.captureException(new Error("VAPID keys missing in env!"));
+                  reportError(new Error("VAPID keys missing in env!"));
                 }
               }
             } catch (err) {
-              Sentry.captureException(err);
+              reportError(err);
             }
           }
 
           return createResponse({ success: true }, 200, env, request);
         } catch (error) {
-          Sentry.captureException(error);
+          reportError(error);
           const message =
             error instanceof Error
               ? error.message

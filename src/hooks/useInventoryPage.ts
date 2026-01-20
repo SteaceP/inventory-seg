@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import * as Sentry from "@sentry/react";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import { useUserContext } from "../contexts/UserContext";
@@ -13,6 +12,7 @@ import {
   generateSecureId,
   getExtensionFromMimeType,
 } from "../utils/crypto";
+import { useErrorHandler } from "../hooks/useErrorHandler";
 
 // Helper to log activity via the Worker API
 const logActivity = async (
@@ -23,7 +23,8 @@ const logActivity = async (
     item_name: string;
     changes: unknown;
   },
-  session: { access_token: string } | null
+  session: { access_token: string } | null,
+  handleError: (error: unknown) => void
 ) => {
   try {
     await fetch("/api/activity", {
@@ -35,7 +36,7 @@ const logActivity = async (
       body: JSON.stringify(activity),
     });
   } catch (err) {
-    Sentry.captureException(err);
+    handleError(err);
   }
 };
 
@@ -87,6 +88,7 @@ export const useInventoryPage = () => {
   const { role, lowStockThreshold: globalThreshold } = useUserContext();
   const { t } = useTranslation();
   const { showError } = useAlert();
+  const { handleError } = useErrorHandler();
 
   useEffect(() => {
     const filter = searchParams.get("filter");
@@ -233,7 +235,7 @@ export const useInventoryPage = () => {
       validateImageFile(file);
       const ext = getExtensionFromMimeType(file.type);
       const fileName = generateSecureFileName(ext);
-      const filePath = `${fileName}`;
+      const filePath = fileName;
 
       const { error: uploadError } = await supabase.storage
         .from("inventory-images")
@@ -306,7 +308,8 @@ export const useInventoryPage = () => {
             item_name: item?.name || "Unknown Item",
             changes: activityChanges,
           },
-          session
+          session,
+          handleError
         );
       }
 
@@ -379,7 +382,8 @@ export const useInventoryPage = () => {
               item_name: sanitizedData.name,
               changes: { ...sanitizedData, old_stock: editingItem.stock },
             },
-            session
+            session,
+            handleError
           );
         }
 
@@ -438,7 +442,8 @@ export const useInventoryPage = () => {
               item_name: sanitizedData.name,
               changes: sanitizedData,
             },
-            session
+            session,
+            handleError
           );
 
           if (sanitizedData.stock_locations) {
@@ -517,7 +522,8 @@ export const useInventoryPage = () => {
               item_name: item?.name || "Unknown",
               changes: { id },
             },
-            session
+            session,
+            handleError
           );
         }
         void refreshInventory();

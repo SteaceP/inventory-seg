@@ -12,7 +12,7 @@ import {
   Divider,
 } from "@mui/material";
 import { supabase } from "../supabaseClient";
-import { useAlert } from "../contexts/AlertContext";
+import { useErrorHandler } from "../hooks/useErrorHandler";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { useTranslation } from "../i18n";
 import InventoryScanner from "../components/inventory/InventoryScanner";
@@ -44,7 +44,7 @@ const Appliances: React.FC = () => {
   const [repairs, setRepairs] = useState<Repair[]>([]);
   const [actionLoading, setActionLoading] = useState(false);
   const [filter, setFilter] = useState<ApplianceStatus | "all">("all");
-  const { showError } = useAlert();
+  const { handleError } = useErrorHandler();
 
   const [openAddAppliance, setOpenAddAppliance] = useState(false);
   const [openEditAppliance, setOpenEditAppliance] = useState(false);
@@ -64,7 +64,7 @@ const Appliances: React.FC = () => {
       .order("created_at", { ascending: false });
 
     if (error) {
-      showError(t("appliances.errorFetching") + ": " + error.message);
+      handleError(error, t("appliances.errorFetching"));
     } else if (data) {
       setAppliances(data as Appliance[]);
     }
@@ -98,7 +98,10 @@ const Appliances: React.FC = () => {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) {
-        showError(t("appliances.userNotLoggedIn"));
+        handleError(
+          new Error("User not logged in"),
+          t("appliances.userNotLoggedIn")
+        );
         return;
       }
 
@@ -110,13 +113,13 @@ const Appliances: React.FC = () => {
       ]);
 
       if (error) {
-        showError(t("appliances.errorCreating") + ": " + error.message);
+        handleError(error, t("appliances.errorCreating"));
       } else {
         setOpenAddAppliance(false);
         void fetchAppliances();
       }
     } catch (err: unknown) {
-      showError(t("appliances.errorCreating") + ": " + (err as Error).message);
+      handleError(err, t("appliances.errorCreating"));
     } finally {
       setActionLoading(false);
     }
@@ -132,14 +135,14 @@ const Appliances: React.FC = () => {
         .eq("id", selectedAppliance.id);
 
       if (error) {
-        showError(t("appliances.errorUpdating") + ": " + error.message);
+        handleError(error, t("appliances.errorUpdating"));
       } else {
         setOpenEditAppliance(false);
         setOpenDrawer(false);
         void fetchAppliances();
       }
     } catch (err: unknown) {
-      showError(t("appliances.errorUpdating") + ": " + (err as Error).message);
+      handleError(err, t("appliances.errorUpdating"));
     } finally {
       setActionLoading(false);
     }
@@ -147,7 +150,10 @@ const Appliances: React.FC = () => {
 
   const handleCreateRepair = async (newRepair: Partial<Repair>) => {
     if (!selectedAppliance) {
-      showError(t("appliances.noApplianceSelected"));
+      handleError(
+        new Error("No appliance selected"),
+        t("appliances.noApplianceSelected")
+      );
       return;
     }
 
@@ -162,15 +168,13 @@ const Appliances: React.FC = () => {
       ]);
 
       if (error) {
-        showError(t("appliances.errorCreatingRepair") + ": " + error.message);
+        handleError(error, t("appliances.errorCreatingRepair"));
       } else {
         setOpenAddRepair(false);
         void fetchRepairs(selectedAppliance.id);
       }
     } catch (err: unknown) {
-      showError(
-        t("appliances.errorCreatingRepair") + ": " + (err as Error).message
-      );
+      handleError(err, t("appliances.errorCreatingRepair"));
     } finally {
       setActionLoading(false);
     }
@@ -184,7 +188,7 @@ const Appliances: React.FC = () => {
       .order("repair_date", { ascending: false });
 
     if (error) {
-      showError(t("appliances.errorFetchingRepairs") + ": " + error.message);
+      handleError(error, t("appliances.errorFetchingRepairs"));
     } else if (data) {
       setRepairs(data as Repair[]);
     }
@@ -205,13 +209,13 @@ const Appliances: React.FC = () => {
       setActionLoading(true);
       const { error } = await supabase.from("appliances").delete().eq("id", id);
       if (error) {
-        showError(t("appliances.errorDeleting") + ": " + error.message);
+        handleError(error, t("appliances.errorDeleting"));
       } else {
         setOpenDrawer(false);
         void fetchAppliances();
       }
     } catch (err: unknown) {
-      showError(t("appliances.errorDeleting") + ": " + (err as Error).message);
+      handleError(err, t("appliances.errorDeleting"));
     } finally {
       setActionLoading(false);
     }
@@ -428,7 +432,7 @@ const Appliances: React.FC = () => {
         open={scanOpen}
         onClose={() => setScanOpen(false)}
         onScanSuccess={handleScanSuccess}
-        onError={(msg) => showError(t("inventory.scanError") + ": " + msg)}
+        onError={(msg) => handleError(new Error(msg), t("inventory.scanError"))}
       />
     </Box>
   );
