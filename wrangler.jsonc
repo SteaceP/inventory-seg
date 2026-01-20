@@ -61,7 +61,7 @@
 					"database_name": "sem-inventory-db",
 					"database_id": "64eb265b-9118-4a15-a544-110fec170502"
 				}
-			]
+			],"name": "inventory-seg"
 		}
 	}
 }
