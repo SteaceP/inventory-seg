@@ -8,8 +8,6 @@ updates:
       time: "09:00"
       timezone: "America/Montreal"
     open-pull-requests-limit: 10
-    labels:
-      - "dependencies"
     commit-message:
       prefix: "[skip ci]"
     groups:
@@ -25,9 +23,6 @@ updates:
       time: "09:00"
       timezone: "America/Montreal"
     open-pull-requests-limit: 5
-    labels:
-      - "dependencies"
-      - "github-actions"
     commit-message:
       prefix: "[skip ci]"
     groups:
