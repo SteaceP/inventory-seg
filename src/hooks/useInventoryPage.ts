@@ -40,19 +40,6 @@ const logActivity = async (
 
 export const useInventoryPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const {
-    items,
-    loading: inventoryLoading,
-    refreshInventory,
-    updateCategoryThreshold,
-    categories,
-    setEditingId,
-    broadcastInventoryChange,
-  } = useInventoryContext();
-  const { role, lowStockThreshold: globalThreshold } = useUserContext();
-  const { t } = useTranslation();
-  const { showError } = useAlert();
-
   const [actionLoading, setActionLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [stockDialogOpen, setStockDialogOpen] = useState(false);
@@ -86,6 +73,19 @@ export const useInventoryPage = () => {
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [currentTab, setCurrentTab] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const {
+    items,
+    loading: inventoryLoading,
+    refreshInventory,
+    updateCategoryThreshold,
+    categories,
+    setEditingId,
+    broadcastInventoryChange,
+  } = useInventoryContext();
+  const { role, lowStockThreshold: globalThreshold } = useUserContext();
+  const { t } = useTranslation();
+  const { showError } = useAlert();
 
   useEffect(() => {
     const filter = searchParams.get("filter");
