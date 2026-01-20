@@ -112,6 +112,8 @@ const en = {
   "common.selectAll": "Select All",
   "common.add": "Add",
   "common.close": "Close",
+  "common.showAll": "Show all",
+  "common.showLess": "Show less",
   "common.offline": "You're Offline",
   "common.offlineMessage": "Please check your internet connection.",
   "common.retry": "Retry",

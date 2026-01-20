@@ -115,6 +115,8 @@ const fr = {
   "common.selectAll": "Tout sélectionner",
   "common.add": "Ajouter",
   "common.close": "Fermer",
+  "common.showAll": "Tout afficher",
+  "common.showLess": "Afficher moins",
   "common.offline": "Vous êtes hors ligne",
   "common.offlineMessage": "Veuillez vérifier votre connexion internet.",
   "common.retry": "Réessayer",

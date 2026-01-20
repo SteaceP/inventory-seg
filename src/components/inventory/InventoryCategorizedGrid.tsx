@@ -262,17 +262,46 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
                   {t("inventory.items") || "Items"}
                 </Box>
               </Typography>
-              {!selectedCategory && (
-                <ChevronRightIcon
+              {!selectedCategory && groupedItems[category].length > 4 && (
+                <Box
                   sx={{
-                    ml: 1,
-                    opacity: groupedItems[category].length > 4 ? 0.6 : 0.2,
-                    transform: collapsedCategories.has(category)
-                      ? "rotate(0deg)"
-                      : "rotate(90deg)",
-                    transition: "transform 0.3s ease, opacity 0.2s",
+                    ml: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.5,
+                    px: 1.5,
+                    py: 0.5,
+                    borderRadius: 3,
+                    bgcolor: alpha(theme.palette.primary.main, 0.08),
+                    border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+                    transition: "all 0.2s ease",
                   }}
-                />
+                >
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      fontWeight: 700,
+                      color: "primary.main",
+                      fontSize: "0.7rem",
+                      textTransform: "uppercase",
+                      letterSpacing: 0.5,
+                    }}
+                  >
+                    {collapsedCategories.has(category)
+                      ? t("common.showAll") || "Show all"
+                      : t("common.showLess") || "Show less"}
+                  </Typography>
+                  <ChevronRightIcon
+                    sx={{
+                      fontSize: "1.1rem",
+                      color: "primary.main",
+                      transform: collapsedCategories.has(category)
+                        ? "rotate(0deg)"
+                        : "rotate(90deg)",
+                      transition: "transform 0.3s ease",
+                    }}
+                  />
+                </Box>
               )}
             </Box>
 

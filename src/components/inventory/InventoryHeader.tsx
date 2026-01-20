@@ -11,7 +11,6 @@ import {
   Add as AddIcon,
   QrCodeScanner as ScanIcon,
   Print as PrintIcon,
-  Warning as WarningIcon,
   Search as SearchIcon,
   Clear as ClearIcon,
   Category as CategoryIcon,
@@ -24,8 +23,6 @@ interface InventoryHeaderProps {
   onPrint: () => void;
   onScan: () => void;
   onAdd?: () => void;
-  isLowStockFilter: boolean;
-  onToggleLowStock: () => void;
   searchQuery: string;
   onSearchChange: (value: string) => void;
   onManageCategories?: () => void;
@@ -37,8 +34,6 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
   onPrint,
   onScan,
   onAdd,
-  isLowStockFilter,
-  onToggleLowStock,
   searchQuery,
   onSearchChange,
   onManageCategories,
@@ -46,26 +41,63 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
   const { t } = useTranslation();
   return (
     <Box sx={{ mb: 4, display: "flex", flexDirection: "column", gap: 2 }}>
-      {/* Top Row: Title and Main Actions */}
+      {/* Main Header Row: Title, Search, and Actions */}
       <Box
         sx={{
           display: "flex",
           flexDirection: { xs: "column", sm: "row" },
-          justifyContent: "space-between",
-          alignItems: { xs: "flex-start", sm: "center" },
           gap: 2,
+          alignItems: { xs: "flex-start", sm: "center" },
         }}
       >
-        <Typography variant={isMobile ? "h5" : "h4"} fontWeight="bold">
+        <Typography
+          variant={isMobile ? "h5" : "h4"}
+          fontWeight="bold"
+          sx={{ flexShrink: 0 }}
+        >
           {t("inventory.title") || "Inventaire"}
         </Typography>
+
+        <TextField
+          placeholder={t("inventory.search") || "Rechercher..."}
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
+          size="small"
+          sx={{
+            flexGrow: 1,
+            minWidth: { sm: 300 },
+            "& .MuiOutlinedInput-root": {
+              bgcolor: "background.paper",
+            },
+          }}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: "text.secondary" }} />
+                </InputAdornment>
+              ),
+              endAdornment: searchQuery && (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    onClick={() => onSearchChange("")}
+                    edge="end"
+                  >
+                    <ClearIcon fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
 
         <Box
           sx={{
             display: "flex",
             gap: 1,
             width: { xs: "100%", sm: "auto" },
-            justifyContent: { xs: "flex-start", sm: "flex-end" },
+            flexShrink: 0,
           }}
         >
           {onManageCategories && (
@@ -118,103 +150,33 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
         </Box>
       </Box>
 
-      {/* Second Row: Search and Filters */}
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: { xs: "column", sm: "row" },
-          gap: 2,
-          alignItems: "center",
-        }}
-      >
-        <TextField
-          placeholder={t("inventory.search") || "Rechercher..."}
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-          size="small"
-          fullWidth
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              bgcolor: "background.paper",
-            },
-          }}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ color: "text.secondary" }} />
-                </InputAdornment>
-              ),
-              endAdornment: searchQuery && (
-                <InputAdornment position="end">
-                  <IconButton
-                    size="small"
-                    onClick={() => onSearchChange("")}
-                    edge="end"
-                  >
-                    <ClearIcon fontSize="small" />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
-
-        <Box
-          sx={{
-            display: "flex",
-            gap: 2,
-            width: { xs: "100%", sm: "auto" },
-          }}
-        >
+      {/* Print Labels Button - Only shows when items are selected */}
+      {selectedCount > 0 && (
+        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
           <Button
-            variant={isLowStockFilter ? "contained" : "outlined"}
-            color={isLowStockFilter ? "warning" : "inherit"}
-            startIcon={<WarningIcon />}
-            fullWidth={isMobile}
-            onClick={onToggleLowStock}
+            variant="outlined"
+            startIcon={<PrintIcon />}
+            onClick={onPrint}
             sx={{
-              border: isLowStockFilter ? "none" : "1px solid",
+              border: "1px solid",
               borderColor: "divider",
-              color: isLowStockFilter ? "white" : "text.primary",
+              color: "text.primary",
               whiteSpace: "nowrap",
-              minWidth: "fit-content",
               "&:hover": {
-                borderColor: "warning.main",
-                bgcolor: isLowStockFilter ? "warning.dark" : "action.hover",
+                borderColor: "primary.main",
+                bgcolor: (theme) =>
+                  theme.palette.mode === "dark"
+                    ? "rgba(2, 125, 111, 0.1)"
+                    : "rgba(2, 125, 111, 0.05)",
               },
             }}
           >
-            {t("inventory.filter.lowStock")}
+            {isMobile
+              ? `${t("inventory.printLabels")} (${selectedCount})`
+              : `${t("inventory.printLabels")} (${selectedCount})`}
           </Button>
-
-          {selectedCount > 0 && (
-            <Button
-              variant="outlined"
-              startIcon={<PrintIcon />}
-              fullWidth={isMobile}
-              onClick={onPrint}
-              sx={{
-                border: "1px solid",
-                borderColor: "divider",
-                color: "text.primary",
-                whiteSpace: "nowrap",
-                "&:hover": {
-                  borderColor: "primary.main",
-                  bgcolor: (theme) =>
-                    theme.palette.mode === "dark"
-                      ? "rgba(2, 125, 111, 0.1)"
-                      : "rgba(2, 125, 111, 0.05)",
-                },
-              }}
-            >
-              {isMobile
-                ? `(${selectedCount})`
-                : `${t("inventory.printLabels")} (${selectedCount})`}
-            </Button>
-          )}
         </Box>
-      </Box>
+      )}
     </Box>
   );
 };

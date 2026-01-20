@@ -110,6 +110,8 @@ const ar = {
   "common.selectAll": "تحديد الكل",
   "common.add": "إضافة",
   "common.close": "إغلاق",
+  "common.showAll": "عرض الكل",
+  "common.showLess": "عرض أقل",
   "common.offline": "أنت غير متصل بالإنترنت",
   "common.offlineMessage": "يرجى التحقق من اتصالك بالإنترنت.",
   "common.retry": "إعادة المحاولة",
