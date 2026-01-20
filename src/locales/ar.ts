@@ -125,6 +125,10 @@ const ar = {
 
   // Notifications
   "notifications.testMobile": "تجربة التنبيه",
+  "notifications.testMobileSuccess": "تم إرسال التنبيه التجريبي بنجاح!",
+  "notifications.testError":
+    "فشل إرسال التنبيه التجريبي. يرجى المحاولة مرة أخرى.",
+  "notifications.testErrorNoUser": "يرجى تسجيل الدخول لتجربة التنبيهات.",
   "notifications.title": "التنبيهات",
   "notifications.pushEnabled": "تفعيل التنبيهات على هذا الجهاز",
   "notifications.emailAlerts": "تنبيهات البريد للإمدادات المنخفضة",

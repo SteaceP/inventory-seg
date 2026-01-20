@@ -127,6 +127,10 @@ const en = {
 
   // Notifications
   "notifications.testMobile": "Test notification",
+  "notifications.testMobileSuccess": "Test notification sent successfully!",
+  "notifications.testError":
+    "Failed to send test notification. Please try again.",
+  "notifications.testErrorNoUser": "Please log in to test notifications.",
   "notifications.title": "Notifications",
   "notifications.pushEnabled": "Enable Push Notifications on this device",
   "notifications.emailAlerts": "Email alerts for low stock",

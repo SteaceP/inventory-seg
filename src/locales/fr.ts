@@ -129,7 +129,13 @@ const fr = {
   "appearance.compactView": "Affichage compact",
 
   // Notifications
-  "notifications.testMobile": "Test notification",
+  "notifications.testMobile": "Tester les notifications",
+  "notifications.testMobileSuccess":
+    "Notification de test envoyée avec succès !",
+  "notifications.testError":
+    "Échec de l'envoi de la notification de test. Veuillez réessayer.",
+  "notifications.testErrorNoUser":
+    "Veuillez vous connecter pour tester les notifications.",
   "notifications.title": "Notifications",
   "notifications.pushEnabled":
     "Activer les notifications push sur cet appareil",
