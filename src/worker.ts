@@ -463,7 +463,18 @@ export default Sentry.withSentry(
                   subscriptions.map((sub) =>
                     webpush
                       .sendNotification(sub.subscription, payload, options)
-                      .catch(() => {})
+                      .catch((error: unknown) => {
+                        // If the subscription is no longer valid, we should ideally delete it
+                        const status = (error as { statusCode?: number })
+                          ?.statusCode;
+                        if (status === 410 || status === 404) {
+                          void sql`
+                              DELETE FROM push_subscriptions WHERE id = ${sub.id}
+                            `.catch((err: unknown) => {
+                            reportError(err);
+                          });
+                        }
+                      })
                   )
                 );
                 return createResponse({ success: true }, 200, env, request);
@@ -479,6 +490,7 @@ export default Sentry.withSentry(
             request
           );
         } catch (err) {
+          reportError(err);
           return createResponse(
             { error: (err as Error).message },
             500,
@@ -676,6 +688,7 @@ export default Sentry.withSentry(
                   });
 
                   // Send to all devices
+                  const activeSql = sql;
                   await Promise.allSettled(
                     subscriptions.map((sub) =>
                       webpush
@@ -684,10 +697,12 @@ export default Sentry.withSentry(
                           // If the subscription is no longer valid, we should ideally delete it
                           const status = (error as { statusCode?: number })
                             ?.statusCode;
-                          if (status === 410 || status === 404) {
-                            void (sql as ReturnType<typeof postgres>)`
+                          if ((status === 410 || status === 404) && activeSql) {
+                            void activeSql`
                               DELETE FROM push_subscriptions WHERE id = ${sub.id}
-                            `.catch(() => {});
+                            `.catch((err: unknown) => {
+                              reportError(err);
+                            });
                           }
                         })
                     )
