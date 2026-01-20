@@ -18,7 +18,7 @@
     "preview": "vite preview",
     "generate-vapid": "web-push generate-vapid-keys",
     "worker:dev": "wrangler dev",
-    "worker:deploy": "wrangler deploy",
+    "worker:deploy": "wrangler deploy --env production",
     "worker:tail": "wrangler tail",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
