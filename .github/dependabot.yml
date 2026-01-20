@@ -10,29 +10,12 @@ updates:
     open-pull-requests-limit: 10
     labels:
       - "dependencies"
+    commit-message:
+      prefix: "[skip ci]"
     groups:
-      dependencies:
+      all-npm-dependencies:
         patterns:
           - "*"
-        dependency-type: "production"
-        update-types:
-          - "minor"
-          - "patch"
-      dev-dependencies:
-        patterns:
-          - "*"
-        dependency-type: "development"
-        update-types:
-          - "minor"
-          - "patch"
-      types:
-        patterns:
-          - "@types/*"
-      major-updates:
-        patterns:
-          - "*"
-        update-types:
-          - "major"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -45,3 +28,9 @@ updates:
     labels:
       - "dependencies"
       - "github-actions"
+    commit-message:
+      prefix: "[skip ci]"
+    groups:
+      all-actions:
+        patterns:
+          - "*"
