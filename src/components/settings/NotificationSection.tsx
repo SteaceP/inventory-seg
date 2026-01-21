@@ -129,6 +129,7 @@ const NotificationSection: React.FC = () => {
           size="small"
           variant="outlined"
           onClick={() => void handleTestNotification()}
+          data-testid="test-push-button"
           sx={{
             ml: 4,
             mb: 1,

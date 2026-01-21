@@ -72,7 +72,11 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
         ))}
       </AnimatePresence>
       {visibleCount < items.length && (
-        <Box ref={sentinelRef} sx={{ width: "100%", height: 1 }} />
+        <Box
+          ref={sentinelRef}
+          data-testid="infinite-scroll-sentinel"
+          sx={{ width: "100%", height: 1 }}
+        />
       )}
     </Grid>
   );

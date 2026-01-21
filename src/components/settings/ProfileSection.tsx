@@ -69,6 +69,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
               "&:hover .avatar-overlay": { opacity: 1 },
             }}
             onClick={handleAvatarClick}
+            data-testid="avatar-container"
           >
             <Avatar
               src={avatarUrl}
@@ -109,6 +110,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
               ref={fileInputRef}
               accept="image/*"
               onChange={handleFileChange}
+              data-testid="avatar-input"
             />
           </Box>
         </Box>
