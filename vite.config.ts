@@ -2,25 +2,24 @@ import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import basicSsl from "@vitejs/plugin-basic-ssl";
+import { cloudflare } from "@cloudflare/vite-plugin";
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
     basicSsl(),
+    cloudflare({
+      // Automatically use wrangler.jsonc for configuration
+      configPath: "./wrangler.jsonc",
+      // Enable persistent storage for D1 and other bindings during dev
+      persistState: true,
+    }),
     sentryVitePlugin({
       org: "coderage",
       project: "seg-inv-frontend",
     }),
   ],
-  server: {
-    proxy: {
-      "/api": {
-        target: "http://127.0.0.1:8787",
-        changeOrigin: true,
-      },
-    },
-  },
   build: {
     rollupOptions: {
       output: {

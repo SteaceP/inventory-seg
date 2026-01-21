@@ -9,12 +9,10 @@ export interface Env {
   SUPABASE_SECRET_KEY: string;
   VAPID_PUBLIC_KEY: string;
   VAPID_PRIVATE_KEY: string;
-  ASSETS: { fetch: typeof fetch };
   fetch: typeof fetch;
   ALLOWED_ORIGIN?: string;
   SENTRY_DSN: string;
   HYPERDRIVE: { connectionString: string };
-  connectionString: string;
   DB: D1Database;
 }
 

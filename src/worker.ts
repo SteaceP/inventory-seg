@@ -75,28 +75,9 @@ export default Sentry.withSentry(
         return handleLowStockAlert(request, env);
       }
 
-      // Default: fall back to static assets
-      try {
-        const response = await env.ASSETS.fetch(request);
-
-        // If the asset is not found (404/403) and it's a GET request,
-        // it's likely a client-side route. serve index.html
-        if (
-          (response.status === 404 || response.status === 403) &&
-          request.method === "GET" &&
-          !url.pathname.includes(".") // If it has no extension, it's likely a route
-        ) {
-          const indexRequest = new Request(url.origin + "/index.html", request);
-          return env.ASSETS.fetch(indexRequest);
-        }
-
-        return response;
-      } catch (err) {
-        // Log to Sentry but try to serve index.html as a last resort for 404s
-        console.error("Asset fetch error:", err);
-        const indexRequest = new Request(url.origin + "/index.html", request);
-        return env.ASSETS.fetch(indexRequest);
-      }
+      // For non-API routes, return null to let the Vite plugin's
+      // automatic asset handling take over (via run_worker_first + not_found_handling config)
+      return new Response("Not Found", { status: 404 });
     },
   } satisfies ExportedHandler<Env>
 );

@@ -15,12 +15,10 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "preview": "vite preview",
+    "preview": "npm run build && vite preview",
     "generate-vapid": "web-push generate-vapid-keys",
-    "worker:dev": "wrangler dev",
-    "worker:deploy": "wrangler deploy --env production",
     "worker:tail": "wrangler tail",
-    "deploy": "npm run build && npm run worker:deploy",
+    "deploy": "npm run build && wrangler deploy --env production",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:gen-types": "supabase gen types typescript --local > src/types/database.types.ts",
@@ -51,6 +49,7 @@
     "web-push": "^3.6.7"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.21.1",
     "@cloudflare/vitest-pool-workers": "^0.12.5",
     "@cloudflare/workers-types": "^4.20260118.0",
     "@eslint/js": "^9.39.2",
