@@ -299,8 +299,17 @@ const AppContent = () => {
             </Route>
             <Route path="appliances" element={<Appliances />} />
             <Route path="settings" element={<Settings />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
+          <Route
+            path="*"
+            element={
+              !session ? (
+                <Navigate to="/login" state={{ from: location }} replace />
+              ) : (
+                <Navigate to="/" replace />
+              )
+            }
+          />
         </Routes>
       </Suspense>
       <RealtimeNotifications />

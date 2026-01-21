@@ -76,20 +76,27 @@ export default Sentry.withSentry(
       }
 
       // Default: fall back to static assets
-      const response = await env.ASSETS.fetch(request);
+      try {
+        const response = await env.ASSETS.fetch(request);
 
-      // If the asset is not found (404/403) and it's a GET request,
-      // it's likely a client-side route. serve index.html
-      if (
-        (response.status === 404 || response.status === 403) &&
-        request.method === "GET" &&
-        !url.pathname.includes(".") // If it has no extension, it's likely a route
-      ) {
+        // If the asset is not found (404/403) and it's a GET request,
+        // it's likely a client-side route. serve index.html
+        if (
+          (response.status === 404 || response.status === 403) &&
+          request.method === "GET" &&
+          !url.pathname.includes(".") // If it has no extension, it's likely a route
+        ) {
+          const indexRequest = new Request(url.origin + "/index.html", request);
+          return env.ASSETS.fetch(indexRequest);
+        }
+
+        return response;
+      } catch (err) {
+        // Log to Sentry but try to serve index.html as a last resort for 404s
+        console.error("Asset fetch error:", err);
         const indexRequest = new Request(url.origin + "/index.html", request);
         return env.ASSETS.fetch(indexRequest);
       }
-
-      return response;
     },
   } satisfies ExportedHandler<Env>
 );

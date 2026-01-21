@@ -113,29 +113,19 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-        setSession(newSession);
-        setUserId(newSession?.user?.id || null);
-        if (newSession?.user) {
+      setSession(newSession);
+      setUserId(newSession?.user?.id || null);
+
+      if (newSession?.user) {
+        if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
           await fetchUserSettings(newSession.user.id);
         }
-      } else if (event === "SIGNED_OUT") {
-        setSession(null);
-        setUserId(null);
+      } else {
         setDisplayName("");
         setAvatarUrl("");
         setRole("user");
         setLanguageState("fr");
         setLoading(false);
-      } else if (event === "INITIAL_SESSION") {
-        // Handled by initUser but redundant is safe here
-        if (newSession) {
-          setSession(newSession);
-          setUserId(newSession.user.id);
-          await fetchUserSettings(newSession.user.id);
-        } else {
-          setLoading(false);
-        }
       }
     });
 
