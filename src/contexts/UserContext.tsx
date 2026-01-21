@@ -46,7 +46,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const [userId, setUserId] = useState<string | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  // Use a ref to track the previous user ID to avoid dependency loops in useEffect
   const prevUserIdRef = useRef<string | null>(null);
 
   const fetchUserSettings = useCallback(
@@ -131,6 +130,12 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
     void initUser();
 
+    // Safety net: if loading is still true after 3 seconds, force it to false
+    // This prevents infinite loading states from edge cases
+    const safetyTimeout = setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, newSession) => {
@@ -142,18 +147,24 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       setSession(newSession);
       setUserId(nextUserId);
 
-      // Update the ref
       prevUserIdRef.current = nextUserId;
 
       if (nextUserId) {
+        // User is logged in
         if (
           event === "SIGNED_IN" ||
           event === "INITIAL_SESSION" ||
           (event === "TOKEN_REFRESHED" && nextUserId !== prevUserId)
         ) {
+          // Fetch settings for new/changed sessions
           await fetchUserSettings(nextUserId);
+        } else {
+          // For other events (e.g., TOKEN_REFRESHED with same user), just ensure loading is false
+          // Settings were already fetched by initUser or previous event
+          setLoading(false);
         }
       } else {
+        // User is logged out
         setDisplayName("");
         setAvatarUrl("");
         setRole("user");
@@ -165,6 +176,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     });
 
     return () => {
+      clearTimeout(safetyTimeout);
       subscription.unsubscribe();
     };
   }, [fetchUserSettings, handleError]);

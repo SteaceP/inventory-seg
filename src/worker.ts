@@ -87,14 +87,7 @@ export default Sentry.withSentry(
           !url.pathname.includes(".") // If it has no extension, it's likely a route
         ) {
           const indexRequest = new Request(url.origin + "/index.html", request);
-          const indexResponse = await env.ASSETS.fetch(indexRequest);
-
-          // Ensure we return successful status for the fallback
-          return new Response(indexResponse.body, {
-            status: 200,
-            statusText: "OK",
-            headers: indexResponse.headers,
-          });
+          return env.ASSETS.fetch(indexRequest);
         }
 
         return response;

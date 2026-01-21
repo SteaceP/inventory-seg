@@ -36,13 +36,19 @@ createRoot(document.getElementById("root")!).render(
 // Register the service worker
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("/sw.js")
-      .then(() => {
-        // SW registered
-      })
-      .catch(() => {
-        // SW registration failed
-      });
+    void Sentry.startSpan(
+      {
+        op: "serviceWorker.register",
+        name: "Service Worker Registration",
+      },
+      async () => {
+        try {
+          await navigator.serviceWorker.register("/sw.js");
+          // SW registered successfully
+        } catch (error) {
+          Sentry.captureException(error);
+        }
+      }
+    );
   });
 }
