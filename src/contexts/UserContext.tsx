@@ -50,11 +50,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const fetchUserSettings = useCallback(
     async (uid: string) => {
-      if (!navigator.onLine) {
-        setLoading(false);
-        return;
-      }
-
       try {
         const { data: settings, error } = await supabase
           .from("user_settings")
@@ -84,9 +79,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
           }
         }
       } catch (err: unknown) {
-        if (navigator.onLine) {
-          showError("Failed to fetch user settings: " + (err as Error).message);
-        }
+        showError("Failed to fetch user settings: " + (err as Error).message);
       } finally {
         setLoading(false);
       }

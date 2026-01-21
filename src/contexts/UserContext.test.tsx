@@ -122,12 +122,6 @@ describe("UserContext", () => {
     });
 
     mocks.upsert.mockResolvedValue({ error: null });
-
-    // Mock Navigator
-    Object.defineProperty(navigator, "onLine", {
-      value: true,
-      configurable: true,
-    });
   });
 
   it("should initialize with loading state", () => {
