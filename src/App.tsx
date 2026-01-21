@@ -1,5 +1,5 @@
 import { AlertProvider } from "./contexts/AlertContext";
-import { UserProvider } from "./contexts/UserContext";
+import { UserProvider, useUserContext } from "./contexts/UserContext";
 import {
   ThemeProvider as CustomThemeProvider,
   useThemeContext,
@@ -11,8 +11,8 @@ import {
   Routes,
   Route,
   Navigate,
+  useLocation,
 } from "react-router-dom";
-import { useUserContext } from "./contexts/UserContext";
 import {
   ThemeProvider,
   createTheme,
@@ -27,7 +27,6 @@ import { useTranslation } from "./i18n";
 import ErrorBoundary from "./components/ErrorBoundary";
 import RealtimeNotifications from "./components/RealtimeNotifications";
 import "./App.css";
-import { useLocation } from "react-router-dom";
 
 interface LocationState {
   from?: {

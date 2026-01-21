@@ -11,6 +11,7 @@ import {
   InputAdornment,
   ToggleButton,
   ToggleButtonGroup,
+  Link,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { motion } from "framer-motion";
@@ -18,7 +19,6 @@ import { useTranslation } from "../i18n";
 import { useUserContext } from "../contexts/UserContext";
 import { supabase } from "../supabaseClient";
 import { useNavigate, useLocation, Link as RouterLink } from "react-router-dom";
-import { Link } from "@mui/material";
 import type { Language } from "../types/user";
 
 interface LocationState {

@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { renderHook, act } from "@testing-library/react";
+import { renderHook, act, cleanup } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { useInventoryActions } from "./useInventoryActions";
 import { supabase } from "../../supabaseClient";
 import * as ActivityUtils from "../../utils/activityUtils";
-import { cleanup } from "@testing-library/react";
+
 import type { InventoryItem } from "../../types/inventory";
 
 // Mock Supabase

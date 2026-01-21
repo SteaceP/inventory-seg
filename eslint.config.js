@@ -8,6 +8,8 @@ import prettierRecommended from "eslint-plugin-prettier/recommended";
 import reactX from "eslint-plugin-react-x";
 import reactDom from "eslint-plugin-react-dom";
 
+import importPlugin from "eslint-plugin-import";
+
 export default defineConfig([
   globalIgnores([
     "dist",
@@ -24,13 +26,32 @@ export default defineConfig([
       reactRefresh.configs.vite,
       reactX.configs["recommended-typescript"],
       reactDom.configs.recommended,
+      importPlugin.flatConfigs.recommended,
+      importPlugin.flatConfigs.typescript,
     ],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
       parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
+        project: [
+          "./tsconfig.node.json",
+          "./tsconfig.app.json",
+          "./tsconfig.test.json",
+        ],
         tsconfigRootDir: import.meta.dirname,
+
+        noWarnOnMultipleProjects: true,
+      },
+    },
+    settings: {
+      "import/resolver": {
+        typescript: {
+          project: [
+            "./tsconfig.app.json",
+            "./tsconfig.node.json",
+            "./tsconfig.test.json",
+          ],
+        },
       },
     },
   },

@@ -228,7 +228,10 @@ const ReportsPage: React.FC = () => {
       <Box className="report-to-print">
         {/* Print only header */}
         <Box
-          sx={{ display: "none", "@media print": { display: "block", mb: 4 } }}
+          sx={{
+            display: "none",
+            "@media print": { display: "block", mb: 4 },
+          }}
         >
           <Typography variant="h4" align="center" gutterBottom>
             {t("reports.title")}
