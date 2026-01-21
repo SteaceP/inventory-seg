@@ -71,7 +71,7 @@ const InventoryActivityPage: React.FC = () => {
         });
 
         if (!response.ok) throw new Error("Failed to fetch activity");
-        const activityData: InventoryActivity[] = await response.json();
+        const activityData = (await response.json()) as InventoryActivity[];
 
         if (!activityData || activityData.length < PAGE_SIZE) {
           setHasMore(false);

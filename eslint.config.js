@@ -37,6 +37,7 @@ export default defineConfig([
           "./tsconfig.node.json",
           "./tsconfig.app.json",
           "./tsconfig.test.json",
+          "./tsconfig.worker.json",
         ],
         tsconfigRootDir: import.meta.dirname,
 
@@ -50,6 +51,7 @@ export default defineConfig([
             "./tsconfig.app.json",
             "./tsconfig.node.json",
             "./tsconfig.test.json",
+            "./tsconfig.worker.json",
           ],
         },
       },

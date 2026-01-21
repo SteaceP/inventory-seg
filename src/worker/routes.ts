@@ -5,7 +5,7 @@
 
 import webpush from "web-push";
 import postgres from "postgres";
-import { reportError } from "../utils/errorReporting";
+import { reportError } from "./errorReporting";
 import { verifyAuth } from "./auth";
 import { createResponse } from "./helpers";
 import {

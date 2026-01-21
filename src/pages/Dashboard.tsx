@@ -192,8 +192,8 @@ const Dashboard: React.FC = () => {
         });
 
         if (!response.ok) throw new Error("Failed to fetch dashboard stats");
-        const data = await response.json();
-        setDailyStats(data as { in: number; out: number });
+        const data = (await response.json()) as { in: number; out: number };
+        setDailyStats(data);
       } catch (err) {
         handleError(err, t("errors.loadDashboard"));
       }

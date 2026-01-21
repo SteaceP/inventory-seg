@@ -81,8 +81,11 @@ const ReportsPage: React.FC = () => {
       );
 
       if (!response.ok) throw new Error("Failed to fetch report data");
-      const result = await response.json();
-      setData(result as { itemName: string; total: number }[]);
+      const result = (await response.json()) as {
+        itemName: string;
+        total: number;
+      }[];
+      setData(result);
     } catch (err: unknown) {
       handleError(err, t("errors.fetchReport") + ": " + (err as Error).message);
     } finally {
