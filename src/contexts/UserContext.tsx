@@ -6,6 +6,7 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
+  useRef,
 } from "react";
 import { supabase } from "../supabaseClient";
 import { useAlert } from "./AlertContext";
@@ -45,6 +46,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const [userId, setUserId] = useState<string | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  // Use a ref to track the previous user ID to avoid dependency loops in useEffect
+  const prevUserIdRef = useRef<string | null>(null);
 
   const fetchUserSettings = useCallback(
     async (uid: string) => {
@@ -131,12 +134,16 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-      // Avoid redundant fetches if the user ID hasn't changed
-      const prevUserId = userId;
       const nextUserId = newSession?.user?.id || null;
+      const prevUserId = prevUserIdRef.current;
 
+      // Only update state if session/user actually changed to avoid unnecessary re-renders
+      // asking React to bail out if values are same
       setSession(newSession);
       setUserId(nextUserId);
+
+      // Update the ref
+      prevUserIdRef.current = nextUserId;
 
       if (nextUserId) {
         if (
@@ -160,7 +167,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => {
       subscription.unsubscribe();
     };
-  }, [fetchUserSettings, handleError, userId]);
+  }, [fetchUserSettings, handleError]);
 
   const setLanguage = useCallback(
     async (lang: Language) => {
