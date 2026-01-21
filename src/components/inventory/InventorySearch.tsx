@@ -14,10 +14,13 @@ const InventorySearch: React.FC<InventorySearchProps> = ({
 }) => {
   const { t } = useTranslation();
   const [local, setLocal] = useState<string>(value || "");
+  const [prevValue, setPrevValue] = useState<string>(value || "");
 
-  // No need for useEffect sync if we use a key to reset the component state when 'value' changes significantly
-  // or we just use value directly if we want a fully controlled component.
-  // Here we want local state for performance but sync for external changes.
+  // Render-phase sync: when value prop changes, update local state
+  if (value !== prevValue) {
+    setLocal(value || "");
+    setPrevValue(value || "");
+  }
 
   // debounce calling onChange to avoid rapid server calls
   useEffect(() => {

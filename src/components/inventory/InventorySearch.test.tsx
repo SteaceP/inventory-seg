@@ -60,17 +60,12 @@ describe("InventorySearch", () => {
       <InventorySearch value="initial" onChange={vi.fn()} />
     );
 
-    const input = screen.getByDisplayValue("initial");
-
     // Update props
     rerender(<InventorySearch value="updated" onChange={vi.fn()} />);
 
-    // Fast-forward time for the sync effect (0ms timeout)
-    act(() => {
-      vi.advanceTimersByTime(0);
-    });
-
-    expect(input).toHaveValue("updated");
+    // Since TextField has key={value}, it remounts. We need to get the new element.
+    const input = screen.getByDisplayValue("updated");
+    expect(input).toBeInTheDocument();
   });
 
   it("should not trigger onChange when syncing from external value", () => {
