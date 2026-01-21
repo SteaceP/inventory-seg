@@ -59,6 +59,8 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
         <FormControlLabel
           control={
             <Switch
+              id="dark-mode-toggle"
+              name="darkMode"
               checked={darkMode}
               onChange={(e) => handleThemeToggle(e.target.checked)}
               color="primary"
@@ -69,6 +71,8 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
         <FormControlLabel
           control={
             <Switch
+              id="compact-view-toggle"
+              name="compactView"
               checked={compactView}
               onChange={(e) => handleCompactToggle(e.target.checked)}
               color="primary"

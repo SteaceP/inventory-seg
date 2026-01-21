@@ -98,6 +98,8 @@ const CategoryManagementDialog: React.FC<CategoryManagementDialogProps> = ({
       <DialogContent>
         <Box sx={{ mb: 3, mt: 1, display: "flex", gap: 1 }}>
           <TextField
+            id="new-category-name"
+            name="newCategoryName"
             label={t("inventory.categories.newName") || "New category"}
             fullWidth
             size="small"
@@ -120,6 +122,8 @@ const CategoryManagementDialog: React.FC<CategoryManagementDialogProps> = ({
               secondaryAction={
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <TextField
+                    id={`category-threshold-${cat.name}`}
+                    name={`threshold-${cat.name}`}
                     label={t("inventory.lowStockThresholdLabel")}
                     type="number"
                     size="small"

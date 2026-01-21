@@ -130,6 +130,8 @@ const StockLocationFields: React.FC<StockLocationFieldsProps> = ({
             renderInput={(params) => (
               <TextField
                 {...params}
+                id={`location-select-${index}`}
+                name={`location-${index}`}
                 label={t("inventory.locationLabel")}
                 placeholder={t("inventory.locationPlaceholder")}
               />
@@ -137,6 +139,8 @@ const StockLocationFields: React.FC<StockLocationFieldsProps> = ({
           />
 
           <TextField
+            id={`location-quantity-${index}`}
+            name={`quantity-${index}`}
             label={t("inventory.stockLabel")}
             type="number"
             value={loc.quantity}

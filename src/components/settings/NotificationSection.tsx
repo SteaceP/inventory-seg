@@ -117,6 +117,8 @@ const NotificationSection: React.FC = () => {
         <FormControlLabel
           control={
             <Switch
+              id="push-notifications"
+              name="pushEnabled"
               checked={pushEnabled}
               onChange={(e) => handlePushToggle(e.target.checked)}
               color="primary"
@@ -145,6 +147,8 @@ const NotificationSection: React.FC = () => {
         <FormControlLabel
           control={
             <Switch
+              id="email-alerts"
+              name="emailAlerts"
               checked={emailAlerts}
               onChange={(e) => handleEmailAlertsChange(e.target.checked)}
               color="primary"
@@ -154,6 +158,8 @@ const NotificationSection: React.FC = () => {
         />
         {emailAlerts && (
           <TextField
+            id="low-stock-threshold"
+            name="lowStockThreshold"
             label={t("notifications.lowStockThreshold")}
             type="number"
             fullWidth

@@ -105,17 +105,22 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
               <CameraIcon sx={{ color: "white" }} />
             </Box>
             <input
+              id="avatar-upload"
+              name="avatar"
               type="file"
               hidden
               ref={fileInputRef}
               accept="image/*"
               onChange={handleFileChange}
               data-testid="avatar-input"
+              aria-label={t("profile.changeAvatar")}
             />
           </Box>
         </Box>
 
         <TextField
+          id="display-name"
+          name="displayName"
           label={t("profile.displayName")}
           fullWidth
           value={displayName}
@@ -129,6 +134,8 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
         />
 
         <TextField
+          id="email"
+          name="email"
           label={t("profile.email")}
           fullWidth
           value={email}

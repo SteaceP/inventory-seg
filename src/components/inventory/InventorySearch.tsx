@@ -35,11 +35,14 @@ const InventorySearch: React.FC<InventorySearchProps> = ({
   return (
     <Box sx={{ mb: 4 }}>
       <TextField
+        id="inventory-search"
+        name="search"
         fullWidth
         variant="outlined"
         placeholder={t("inventory.searchPlaceholder")}
         value={local}
         onChange={(e) => setLocal(e.target.value)}
+        aria-label={t("inventory.searchPlaceholder")}
         sx={{
           "& .MuiOutlinedInput-root": {
             bgcolor: (theme) =>

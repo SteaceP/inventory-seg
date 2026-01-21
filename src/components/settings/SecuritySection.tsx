@@ -138,6 +138,8 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
               sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}
             >
               <TextField
+                id="new-password"
+                name="newPassword"
                 autoFocus
                 label={t("security.newPassword")}
                 type={showPassword ? "text" : "password"}
@@ -163,6 +165,8 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
                 }}
               />
               <TextField
+                id="confirm-password"
+                name="confirmPassword"
                 label={t("security.confirmPassword")}
                 type={showPassword ? "text" : "password"}
                 fullWidth

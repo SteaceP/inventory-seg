@@ -59,9 +59,12 @@ const InventoryHeader: React.FC<InventoryHeaderProps> = ({
         </Typography>
 
         <TextField
+          id="inventory-header-search"
+          name="searchQuery"
           placeholder={t("inventory.search") || "Rechercher..."}
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
+          aria-label={t("inventory.search") || "Rechercher"}
           size="small"
           sx={{
             flexGrow: 1,

@@ -529,6 +529,8 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
                     sx={{ display: "flex", flexDirection: "column", gap: 2 }}
                   >
                     <TextField
+                      id="adjustment-recipient"
+                      name="recipient"
                       fullWidth
                       variant="filled"
                       label={t("inventory.recipientName")}
@@ -564,6 +566,8 @@ const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
                       renderInput={(params) => (
                         <TextField
                           {...params}
+                          id="adjustment-destination"
+                          name="destinationLocation"
                           variant="filled"
                           label={t("inventory.destinationLocation")}
                           placeholder={t("inventory.destinationPlaceholder")}

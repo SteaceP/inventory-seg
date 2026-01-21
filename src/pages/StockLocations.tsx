@@ -284,6 +284,8 @@ const StockLocationsPage: React.FC = () => {
           sx={{ pt: 2, display: "flex", flexDirection: "column", gap: 3 }}
         >
           <TextField
+            id="location-name"
+            name="name"
             autoFocus
             label={t("inventory.locations.name")}
             fullWidth
@@ -293,6 +295,8 @@ const StockLocationsPage: React.FC = () => {
           />
 
           <TextField
+            id="location-parent"
+            name="parent_id"
             select
             label={t("inventory.locations.parent")}
             fullWidth
@@ -314,6 +318,8 @@ const StockLocationsPage: React.FC = () => {
           </TextField>
 
           <TextField
+            id="location-description"
+            name="description"
             label="Description"
             fullWidth
             multiline

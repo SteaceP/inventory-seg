@@ -94,6 +94,8 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
           />
 
           <TextField
+            id="item-name"
+            name="name"
             autoFocus
             label={t("inventory.nameLabel")}
             fullWidth
@@ -120,7 +122,12 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
             disabled={!isAdmin}
             fullWidth
             renderInput={(params) => (
-              <TextField {...params} label={t("inventory.category")} />
+              <TextField
+                {...params}
+                id="item-category"
+                name="category"
+                label={t("inventory.category")}
+              />
             )}
           />
 
@@ -139,6 +146,8 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
           />
 
           <TextField
+            id="item-threshold"
+            name="low_stock_threshold"
             label={
               t("inventory.lowStockThresholdLabel") || "Seuil de stock bas"
             }
@@ -167,6 +176,8 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
           />
 
           <TextField
+            id="item-notes"
+            name="notes"
             label={t("inventory.notes")}
             multiline
             rows={3}
@@ -180,6 +191,8 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
 
           <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
             <TextField
+              id="item-sku"
+              name="sku"
               label={t("inventory.skuLabel")}
               fullWidth
               value={formData.sku || ""}
