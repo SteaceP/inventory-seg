@@ -3,7 +3,7 @@ import { Grid, Box } from "@mui/material";
 import { AnimatePresence } from "framer-motion";
 import type { InventoryItem } from "../../types/inventory";
 import InventoryCard from "./InventoryCard";
-import { useThemeContext } from "../../contexts/ThemeContext";
+import { useUserContext } from "../../contexts/UserContext";
 
 interface InventoryGridProps {
   items: InventoryItem[];
@@ -20,7 +20,7 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
   onEdit,
   onDelete,
 }) => {
-  const { compactView } = useThemeContext();
+  const { compactView } = useUserContext();
   const PAGE_SIZE = 8;
   const [visibleCount, setVisibleCount] = useState<number>(PAGE_SIZE);
   const sentinelRef = useRef<HTMLDivElement | null>(null);

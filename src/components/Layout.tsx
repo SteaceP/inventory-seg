@@ -16,7 +16,6 @@ import {
   Assessment as AssessmentIcon,
 } from "@mui/icons-material";
 import { useLocation, Outlet } from "react-router-dom";
-import { useThemeContext } from "../contexts/ThemeContext";
 import { useUserContext } from "../contexts/UserContext";
 import { useTranslation } from "../i18n";
 
@@ -29,8 +28,7 @@ import MobileAppBar from "./layout/MobileAppBar";
 const Layout: React.FC = () => {
   const location = useLocation();
   const theme = useTheme();
-  const { compactView } = useThemeContext();
-  const { displayName, avatarUrl } = useUserContext();
+  const { compactView, displayName, avatarUrl } = useUserContext();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { t } = useTranslation();
 

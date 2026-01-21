@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { supabase } from "../supabaseClient";
 import { useErrorHandler } from "../hooks/useErrorHandler";
-import { useThemeContext } from "../contexts/ThemeContext";
+import { useUserContext } from "../contexts/UserContext";
 import { useTranslation } from "../i18n";
 import InventoryScanner from "../components/inventory/InventoryScanner";
 import BarcodePrinter from "../components/BarcodePrinter";
@@ -31,7 +31,7 @@ import AppliancesStats from "../components/appliances/AppliancesStats";
 import type { Appliance, Repair, ApplianceStatus } from "../types/appliances";
 
 const Appliances: React.FC = () => {
-  const { compactView } = useThemeContext();
+  const { compactView } = useUserContext();
   const { t } = useTranslation();
   const [appliances, setAppliances] = useState<Appliance[]>([]);
   const [loading, setLoading] = useState(true);

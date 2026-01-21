@@ -26,7 +26,6 @@ import { motion } from "framer-motion";
 import type { InventoryItem } from "../../types/inventory";
 import { useTranslation } from "../../i18n";
 import { useUserContext } from "../../contexts/UserContext";
-import { useThemeContext } from "../../contexts/ThemeContext";
 import { useInventoryContext } from "../../contexts/InventoryContext";
 
 interface InventoryCardProps {
@@ -50,8 +49,7 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { compactView } = useThemeContext();
-  const { lowStockThreshold: globalThreshold } = useUserContext();
+  const { compactView, lowStockThreshold: globalThreshold } = useUserContext();
   const { categories, presence } = useInventoryContext();
   const { role, userId: currentUserId } = useUserContext();
   const isAdmin = role === "admin";

@@ -1,6 +1,5 @@
 import React from "react";
 import { Box, CircularProgress, useTheme, useMediaQuery } from "@mui/material";
-import { useThemeContext } from "../contexts/ThemeContext";
 import { useTranslation } from "../i18n";
 import BarcodePrinter from "../components/BarcodePrinter";
 import InventoryHeader from "../components/inventory/InventoryHeader";
@@ -68,7 +67,7 @@ const Inventory: React.FC = () => {
     searchParams,
   } = useInventoryPage();
 
-  const { compactView } = useThemeContext();
+  const { compactView } = useUserContext();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { t } = useTranslation();

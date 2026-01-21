@@ -1,9 +1,5 @@
 import { AlertProvider } from "./contexts/AlertContext";
 import { UserProvider, useUserContext } from "./contexts/UserContext";
-import {
-  ThemeProvider as CustomThemeProvider,
-  useThemeContext,
-} from "./contexts/ThemeContext";
 import { InventoryProvider } from "./contexts/InventoryContext";
 import { useState, useEffect, lazy, Suspense } from "react";
 import {
@@ -174,9 +170,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const AppContent = () => {
-  const { session, loading } = useUserContext();
+  const { session, loading, darkMode, compactView } = useUserContext();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const { darkMode, compactView } = useThemeContext();
   const { t } = useTranslation();
   const location = useLocation();
 
@@ -322,11 +317,9 @@ function App() {
     <ErrorBoundary>
       <AlertProvider>
         <UserProvider>
-          <CustomThemeProvider>
-            <Router>
-              <AppContent />
-            </Router>
-          </CustomThemeProvider>
+          <Router>
+            <AppContent />
+          </Router>
         </UserProvider>
       </AlertProvider>
     </ErrorBoundary>

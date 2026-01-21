@@ -14,7 +14,6 @@ import {
 import { useTranslation } from "../i18n";
 import { supabase } from "../supabaseClient";
 import { useUserContext } from "../contexts/UserContext";
-import { useThemeContext } from "../contexts/ThemeContext";
 import ProfileSection from "../components/settings/ProfileSection";
 import NotificationSection from "../components/settings/NotificationSection";
 import AppearanceSection from "../components/settings/AppearanceSection";
@@ -29,10 +28,16 @@ import {
 const Settings: React.FC = () => {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { darkMode, compactView } = useThemeContext();
 
-  const { displayName, avatarUrl, language, setLanguage, setUserProfile } =
-    useUserContext();
+  const {
+    displayName,
+    avatarUrl,
+    language,
+    setLanguage,
+    setUserProfile,
+    darkMode,
+    compactView,
+  } = useUserContext();
 
   const { t } = useTranslation();
 

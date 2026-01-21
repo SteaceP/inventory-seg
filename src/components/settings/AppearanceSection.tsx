@@ -7,7 +7,7 @@ import {
   Switch,
 } from "@mui/material";
 import { Palette as PaletteIcon } from "@mui/icons-material";
-import { useThemeContext } from "../../contexts/ThemeContext";
+import { useUserContext } from "../../contexts/UserContext";
 import { useTranslation } from "../../i18n";
 
 interface AppearanceSectionProps {
@@ -23,7 +23,7 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
   onDarkModeChange,
   onCompactViewChange,
 }) => {
-  const { toggleDarkMode, toggleCompactView } = useThemeContext();
+  const { toggleDarkMode, toggleCompactView } = useUserContext();
   const { t } = useTranslation();
 
   const handleThemeToggle = (enabled: boolean) => {

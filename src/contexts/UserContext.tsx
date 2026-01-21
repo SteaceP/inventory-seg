@@ -40,6 +40,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const [role, setRole] = useState("user");
   const [language, setLanguageState] = useState<Language>("fr");
   const [lowStockThreshold, setLowStockThresholdState] = useState(5);
+  const [darkMode, setDarkMode] = useState(true);
+  const [compactView, setCompactView] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
@@ -55,7 +57,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
         const { data: settings, error } = await supabase
           .from("user_settings")
           .select(
-            "display_name, avatar_url, role, language, low_stock_threshold"
+            "display_name, avatar_url, role, language, low_stock_threshold, dark_mode, compact_view"
           )
           .eq("user_id", uid)
           .single();
@@ -68,6 +70,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
           setAvatarUrl(s.avatar_url || "");
           setRole(s.role || "user");
           setLanguageState((s.language as Language) || "fr");
+          setDarkMode(s.dark_mode ?? true);
+          setCompactView(s.compact_view ?? false);
           if (
             s.low_stock_threshold !== undefined &&
             s.low_stock_threshold !== null
@@ -87,6 +91,20 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     },
     [showError]
   );
+
+  useEffect(() => {
+    if (!("serviceWorker" in navigator)) return;
+
+    const handleMessage = (event: MessageEvent) => {
+      const data = event.data as { type?: string; message?: string };
+      if (data.type === "SETTINGS_FETCH_ERROR") {
+        showError(data.message || "An error occurred");
+      }
+    };
+    navigator.serviceWorker.addEventListener("message", handleMessage);
+    return () =>
+      navigator.serviceWorker.removeEventListener("message", handleMessage);
+  }, [showError]);
 
   useEffect(() => {
     const initUser = async () => {
@@ -113,18 +131,28 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-      setSession(newSession);
-      setUserId(newSession?.user?.id || null);
+      // Avoid redundant fetches if the user ID hasn't changed
+      const prevUserId = userId;
+      const nextUserId = newSession?.user?.id || null;
 
-      if (newSession?.user) {
-        if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
-          await fetchUserSettings(newSession.user.id);
+      setSession(newSession);
+      setUserId(nextUserId);
+
+      if (nextUserId) {
+        if (
+          event === "SIGNED_IN" ||
+          event === "INITIAL_SESSION" ||
+          (event === "TOKEN_REFRESHED" && nextUserId !== prevUserId)
+        ) {
+          await fetchUserSettings(nextUserId);
         }
       } else {
         setDisplayName("");
         setAvatarUrl("");
         setRole("user");
         setLanguageState("fr");
+        setDarkMode(true);
+        setCompactView(false);
         setLoading(false);
       }
     });
@@ -132,7 +160,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => {
       subscription.unsubscribe();
     };
-  }, [fetchUserSettings, handleError]);
+  }, [fetchUserSettings, handleError, userId]);
 
   const setLanguage = useCallback(
     async (lang: Language) => {
@@ -176,6 +204,44 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     [userId, showError]
   );
 
+  const toggleDarkMode = useCallback(
+    async (enabled: boolean) => {
+      try {
+        setDarkMode(enabled);
+        if (userId) {
+          await supabase
+            .from("user_settings")
+            .upsert(
+              { user_id: userId, dark_mode: enabled },
+              { onConflict: "user_id" }
+            );
+        }
+      } catch {
+        showError("Failed to save theme setting");
+      }
+    },
+    [userId, showError]
+  );
+
+  const toggleCompactView = useCallback(
+    async (enabled: boolean) => {
+      try {
+        setCompactView(enabled);
+        if (userId) {
+          await supabase
+            .from("user_settings")
+            .upsert(
+              { user_id: userId, compact_view: enabled },
+              { onConflict: "user_id" }
+            );
+        }
+      } catch {
+        showError("Failed to save view setting");
+      }
+    },
+    [userId, showError]
+  );
+
   const setUserProfile = useCallback((profile: Partial<UserProfile>) => {
     if (profile.displayName !== undefined) setDisplayName(profile.displayName);
     if (profile.avatarUrl !== undefined) setAvatarUrl(profile.avatarUrl);
@@ -188,11 +254,15 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       role,
       language,
       lowStockThreshold,
+      darkMode,
+      compactView,
       userId,
       session,
       setUserProfile,
       setLanguage,
       setLowStockThreshold,
+      toggleDarkMode,
+      toggleCompactView,
       loading,
     }),
     [
@@ -201,11 +271,15 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       role,
       language,
       lowStockThreshold,
+      darkMode,
+      compactView,
       userId,
       session,
       setUserProfile,
       setLanguage,
       setLowStockThreshold,
+      toggleDarkMode,
+      toggleCompactView,
       loading,
     ]
   );

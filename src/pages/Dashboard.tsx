@@ -17,7 +17,6 @@ import {
 import { useUserContext } from "../contexts/UserContext";
 import { useTranslation } from "../i18n";
 import { useInventoryContext } from "../contexts/InventoryContext";
-import { useThemeContext } from "../contexts/ThemeContext";
 import QuickActions from "../components/dashboard/QuickActions";
 import StockHealth from "../components/dashboard/StockHealth";
 import { useErrorHandler } from "../hooks/useErrorHandler";
@@ -31,7 +30,7 @@ interface StatCardProps {
 }
 
 const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => {
-  const { compactView } = useThemeContext();
+  const { compactView } = useUserContext();
   const theme = useTheme();
 
   return (
