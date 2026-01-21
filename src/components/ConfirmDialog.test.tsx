@@ -1,7 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, act } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import ConfirmDialog from "./ConfirmDialog";
+
+// Create a theme with ripples and focus ripples disabled for testing
+const theme = createTheme({
+  components: {
+    MuiButtonBase: {
+      defaultProps: {
+        disableRipple: true,
+        disableTouchRipple: true,
+      },
+    },
+  },
+});
 
 // Mock the i18n hook
 vi.mock("../i18n", () => ({
@@ -32,8 +45,14 @@ describe("ConfirmDialog", () => {
     vi.clearAllMocks();
   });
 
+  const renderWithTheme = (ui: React.ReactElement) => {
+    return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>);
+  };
+
   it("should render when open is true", () => {
-    render(<ConfirmDialog {...defaultProps} />);
+    act(() => {
+      renderWithTheme(<ConfirmDialog {...defaultProps} />);
+    });
 
     expect(screen.getByText("Confirm Action")).toBeInTheDocument();
     expect(
@@ -44,14 +63,14 @@ describe("ConfirmDialog", () => {
   });
 
   it("should not render when open is false", () => {
-    render(<ConfirmDialog {...defaultProps} open={false} />);
+    renderWithTheme(<ConfirmDialog {...defaultProps} open={false} />);
 
     expect(screen.queryByText("Confirm Action")).not.toBeInTheDocument();
   });
 
   it("should call onConfirm when confirm button is clicked", async () => {
     const user = userEvent.setup();
-    render(<ConfirmDialog {...defaultProps} />);
+    renderWithTheme(<ConfirmDialog {...defaultProps} />);
 
     const confirmButton = screen.getByText("Confirm");
     await user.click(confirmButton);
@@ -62,7 +81,7 @@ describe("ConfirmDialog", () => {
 
   it("should call onCancel when cancel button is clicked", async () => {
     const user = userEvent.setup();
-    render(<ConfirmDialog {...defaultProps} />);
+    renderWithTheme(<ConfirmDialog {...defaultProps} />);
 
     const cancelButton = screen.getByText("Cancel");
     await user.click(cancelButton);
@@ -72,41 +91,41 @@ describe("ConfirmDialog", () => {
   });
 
   it("should render with error color by default", () => {
-    render(<ConfirmDialog {...defaultProps} />);
+    renderWithTheme(<ConfirmDialog {...defaultProps} />);
 
     const confirmButton = screen.getByText("Confirm");
     expect(confirmButton).toHaveClass("MuiButton-containedError");
   });
 
   it("should render with primary color when specified", () => {
-    render(<ConfirmDialog {...defaultProps} confirmColor="primary" />);
+    renderWithTheme(<ConfirmDialog {...defaultProps} confirmColor="primary" />);
 
     const confirmButton = screen.getByText("Confirm");
     expect(confirmButton).toHaveClass("MuiButton-containedPrimary");
   });
 
   it("should render with success color when specified", () => {
-    render(<ConfirmDialog {...defaultProps} confirmColor="success" />);
+    renderWithTheme(<ConfirmDialog {...defaultProps} confirmColor="success" />);
 
     const confirmButton = screen.getByText("Confirm");
     expect(confirmButton).toHaveClass("MuiButton-containedSuccess");
   });
 
   it("should render with warning color when specified", () => {
-    render(<ConfirmDialog {...defaultProps} confirmColor="warning" />);
+    renderWithTheme(<ConfirmDialog {...defaultProps} confirmColor="warning" />);
 
     const confirmButton = screen.getByText("Confirm");
     expect(confirmButton).toHaveClass("MuiButton-containedWarning");
   });
 
   it("should display custom title", () => {
-    render(<ConfirmDialog {...defaultProps} title="Delete Item?" />);
+    renderWithTheme(<ConfirmDialog {...defaultProps} title="Delete Item?" />);
 
     expect(screen.getByText("Delete Item?")).toBeInTheDocument();
   });
 
   it("should display custom content", () => {
-    render(
+    renderWithTheme(
       <ConfirmDialog
         {...defaultProps}
         content="This action cannot be undone."
