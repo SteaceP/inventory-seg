@@ -27,53 +27,58 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
   }, [onScanSuccess]);
 
   useEffect(() => {
-    if (open && !scannerRef.current) {
-      const timeoutId = setTimeout(() => {
-        void (async () => {
-          try {
-            const html5QrCode = new Html5Qrcode("reader");
-            scannerRef.current = html5QrCode;
-
-            const config = {
-              fps: 20,
-              qrbox: { width: 300, height: 150 },
-              aspectRatio: 1.0,
-            };
-
-            await html5QrCode.start(
-              { facingMode: "environment" },
-              config,
-              (decodedText) => {
-                html5QrCode
-                  .stop()
-                  .then(() => {
-                    scannerRef.current = null;
-                    onScanSuccessRef.current(decodedText);
-                  })
-                  .catch(() => {
-                    scannerRef.current = null;
-                    onScanSuccessRef.current(decodedText);
-                  });
-              },
-              () => {}
-            );
-          } catch {
-            onError(t("inventory.scanner.cameraError"));
-            onClose();
-          }
-        })();
-      }, 300);
-
-      return () => clearTimeout(timeoutId);
-    }
-
-    if (!open && scannerRef.current) {
-      const scanner = scannerRef.current;
-      scannerRef.current = null;
-      if (scanner.isScanning) {
-        scanner.stop().catch(() => {});
+    if (!open) {
+      if (scannerRef.current) {
+        const scanner = scannerRef.current;
+        scannerRef.current = null;
+        if (scanner.isScanning) {
+          scanner.stop().catch(() => {});
+        }
       }
+      return;
     }
+
+    if (scannerRef.current) return;
+
+    const initScanner = async () => {
+      try {
+        const html5QrCode = new Html5Qrcode("reader");
+        scannerRef.current = html5QrCode;
+
+        const config = {
+          fps: 20,
+          qrbox: { width: 300, height: 150 },
+          aspectRatio: 1.0,
+        };
+
+        await html5QrCode.start(
+          { facingMode: "environment" },
+          config,
+          (decodedText) => {
+            html5QrCode
+              .stop()
+              .then(() => {
+                scannerRef.current = null;
+                onScanSuccessRef.current(decodedText);
+              })
+              .catch(() => {
+                scannerRef.current = null;
+                onScanSuccessRef.current(decodedText);
+              });
+          },
+          () => {}
+        );
+      } catch {
+        onError(t("inventory.scanner.cameraError"));
+        onClose();
+      }
+    };
+
+    const timeoutId = setTimeout(() => {
+      void initScanner();
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
   }, [open, onClose, onError, t]);
 
   return (

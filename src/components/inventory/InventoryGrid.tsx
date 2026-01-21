@@ -26,10 +26,10 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   // Reset visible count when items list changes (e.g., new search)
-  useEffect(() => {
-    const id = setTimeout(() => setVisibleCount(PAGE_SIZE), 0);
-    return () => clearTimeout(id);
-  }, [items]);
+  // We handle this by using the number of items as a key if we want a full reset,
+  // but for infinite scroll, we usually just want to slice.
+  // Instead of an effect, we will reset the count if items.length changes significantly or just keep it simple.
+  // Using a key on the Grid is the most 'React' way to reset state.
 
   useEffect(() => {
     const el = sentinelRef.current;
@@ -51,7 +51,7 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
   const visibleItems = items.slice(0, visibleCount);
 
   return (
-    <Grid container spacing={compactView ? 1 : 2}>
+    <Grid container spacing={compactView ? 1 : 2} key={items.length}>
       <AnimatePresence>
         {visibleItems.map((item) => (
           <Grid

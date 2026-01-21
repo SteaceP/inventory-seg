@@ -15,14 +15,9 @@ const InventorySearch: React.FC<InventorySearchProps> = ({
   const { t } = useTranslation();
   const [local, setLocal] = useState<string>(value || "");
 
-  // keep local state in sync if parent changes externally
-  useEffect(() => {
-    if (value !== local) {
-      const id = setTimeout(() => setLocal(value || ""), 0);
-      return () => clearTimeout(id);
-    }
-    return;
-  }, [value, local]);
+  // No need for useEffect sync if we use a key to reset the component state when 'value' changes significantly
+  // or we just use value directly if we want a fully controlled component.
+  // Here we want local state for performance but sync for external changes.
 
   // debounce calling onChange to avoid rapid server calls
   useEffect(() => {
@@ -37,6 +32,7 @@ const InventorySearch: React.FC<InventorySearchProps> = ({
       <TextField
         id="inventory-search"
         name="search"
+        key={value}
         fullWidth
         variant="outlined"
         placeholder={t("inventory.searchPlaceholder")}
