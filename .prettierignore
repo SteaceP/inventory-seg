@@ -12,3 +12,4 @@ package-lock.json
 wrangler.jsonc
 src/types/database.types.ts
 .wrangler/
+coverage/

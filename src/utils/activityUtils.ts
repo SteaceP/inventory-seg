@@ -86,3 +86,28 @@ export const getActivityNarrative = (
     item: item_name || "Unknown Item",
   });
 };
+
+export const logActivity = async (
+  activity: {
+    inventory_id: string;
+    user_id: string;
+    action: string;
+    item_name: string;
+    changes: unknown;
+  },
+  session: { access_token: string } | null,
+  handleError: (error: unknown) => void
+) => {
+  try {
+    await fetch("/api/activity", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+      body: JSON.stringify(activity),
+    });
+  } catch (err) {
+    handleError(err);
+  }
+};
