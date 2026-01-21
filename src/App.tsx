@@ -160,6 +160,19 @@ const getTheme = (mode: "light" | "dark", compact: boolean) =>
     },
   });
 
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { session, loading } = useUserContext();
+  const location = useLocation();
+
+  if (loading) return <PageLoader />;
+
+  if (!session) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return <>{children}</>;
+};
+
 const AppContent = () => {
   const { session, loading } = useUserContext();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -266,34 +279,28 @@ const AppContent = () => {
             path="/signup"
             element={!session ? <Signup /> : <Navigate to="/" replace />}
           />
-          {session ? (
-            <Route
-              path="/"
-              element={
+
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
                 <InventoryProvider>
                   <Layout />
                 </InventoryProvider>
-              }
-            >
-              <Route index element={<Dashboard />} />
-              <Route path="inventory">
-                <Route index element={<Inventory />} />
-                <Route path="activity" element={<InventoryActivity />} />
-                <Route path="locations" element={<StockLocations />} />
-                <Route path="reports" element={<Reports />} />
-              </Route>
-              <Route path="appliances" element={<Appliances />} />
-              <Route path="settings" element={<Settings />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Dashboard />} />
+            <Route path="inventory">
+              <Route index element={<Inventory />} />
+              <Route path="activity" element={<InventoryActivity />} />
+              <Route path="locations" element={<StockLocations />} />
+              <Route path="reports" element={<Reports />} />
             </Route>
-          ) : (
-            <Route
-              path="*"
-              element={
-                <Navigate to="/login" state={{ from: location }} replace />
-              }
-            />
-          )}
+            <Route path="appliances" element={<Appliances />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
         </Routes>
       </Suspense>
       <RealtimeNotifications />

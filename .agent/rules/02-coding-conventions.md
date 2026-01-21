@@ -9,7 +9,7 @@ trigger: always_on
 ### MUI System
 
 - **Primary Method**: Use MUI's `sx` prop for component-level styling
-- **Colors**: 
+- **Colors**:
   - Active elements: `primary.main` (#027d6f)
   - Inactive/neutral elements: `text.secondary`
 - **Forbidden**: Do NOT use Tailwind CSS unless explicitly requested
@@ -33,11 +33,13 @@ trigger: always_on
 - **ThemeContext**: For global UI themes
 - **UserContext**: For user profile and authentication
 - **AlertContext**: For global notifications and alerts
+- **Error Handling**: Use `useErrorHandler` hook for centralized error reporting to Sentry and MUI alerts
 
 ### Navigation
 
-- Defined centrally in `Layout.tsx`
+- Defined centrally in `App.tsx` and `Layout.tsx`
 - Use React Router for page navigation
+- Use `ProtectedRoute` component for session-guarded routes
 - Maintain consistent navigation patterns
 
 ## Business Logic
@@ -51,6 +53,7 @@ Follow this precedence order:
 3. **Global threshold** from user settings (lowest priority)
 
 Implementation locations:
+
 - Item thresholds: `InventoryDialog`
 - Category thresholds: `inventory_categories` table
 - Global thresholds: `user_settings` table

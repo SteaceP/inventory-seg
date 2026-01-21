@@ -23,7 +23,8 @@ trigger: always_on
 - **Authentication**: Supabase Auth
 - **Real-time**: Supabase Realtime
 - **Storage**: Supabase Storage
-- **Worker**: Cloudflare Worker (for push notifications and email alerts)
+- **Worker**: Cloudflare Worker (for push notifications, email alerts, and static asset hosting)
+- **Deployment**: Cloudflare Workers with Assets (NOT Cloudflare Pages)
 
 ## Code Quality
 
@@ -31,7 +32,7 @@ trigger: always_on
 
 - **ESLint**: Type-aware configuration
 - **Prettier**: Code formatting
-- **React Plugins**: 
+- **React Plugins**:
   - `eslint-plugin-react-x`
   - `eslint-plugin-react-dom`
   - `eslint-plugin-react-hooks`
@@ -42,7 +43,7 @@ trigger: always_on
 - **Region**: Canada
 - **Currency**: CAD ($)
 - **Date Format**: YYYY-MM-DD or readable Canadian format (e.g., "January 1, 2026")
-- **Supported Languages**: 
+- **Supported Languages**:
   - English (en)
   - French (fr)
   - Arabic (ar)

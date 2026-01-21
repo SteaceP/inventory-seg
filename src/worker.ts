@@ -78,11 +78,12 @@ export default Sentry.withSentry(
       // Default: fall back to static assets
       const response = await env.ASSETS.fetch(request);
 
-      // If the asset is not found (404) and it's a navigation request, serve index.html
+      // If the asset is not found (404/403) and it's a GET request,
+      // it's likely a client-side route. serve index.html
       if (
         (response.status === 404 || response.status === 403) &&
         request.method === "GET" &&
-        request.headers.get("accept")?.includes("text/html")
+        !url.pathname.includes(".") // If it has no extension, it's likely a route
       ) {
         const indexRequest = new Request(url.origin + "/index.html", request);
         return env.ASSETS.fetch(indexRequest);

@@ -95,8 +95,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
           data: { session: initialSession },
         } = await supabase.auth.getSession();
 
-        setSession(initialSession);
         if (initialSession?.user) {
+          setSession(initialSession);
           setUserId(initialSession.user.id);
           await fetchUserSettings(initialSession.user.id);
         } else {
@@ -112,17 +112,30 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      setSession(newSession);
-      setUserId(newSession?.user?.id || null);
-      if (newSession?.user) {
-        void fetchUserSettings(newSession.user.id);
-      } else {
+    } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+        setSession(newSession);
+        setUserId(newSession?.user?.id || null);
+        if (newSession?.user) {
+          await fetchUserSettings(newSession.user.id);
+        }
+      } else if (event === "SIGNED_OUT") {
+        setSession(null);
+        setUserId(null);
         setDisplayName("");
         setAvatarUrl("");
         setRole("user");
         setLanguageState("fr");
-        setLoading(false); // Make sure to stop loading if no session
+        setLoading(false);
+      } else if (event === "INITIAL_SESSION") {
+        // Handled by initUser but redundant is safe here
+        if (newSession) {
+          setSession(newSession);
+          setUserId(newSession.user.id);
+          await fetchUserSettings(newSession.user.id);
+        } else {
+          setLoading(false);
+        }
       }
     });
 
