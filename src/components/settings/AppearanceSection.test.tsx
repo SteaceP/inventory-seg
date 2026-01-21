@@ -6,8 +6,8 @@ import AppearanceSection from "./AppearanceSection";
 const mockToggleDarkMode = vi.fn();
 const mockToggleCompactView = vi.fn();
 
-vi.mock("../../contexts/ThemeContext", () => ({
-  useThemeContext: () => ({
+vi.mock("../../contexts/UserContext", () => ({
+  useUserContext: () => ({
     toggleDarkMode: mockToggleDarkMode,
     toggleCompactView: mockToggleCompactView,
   }),

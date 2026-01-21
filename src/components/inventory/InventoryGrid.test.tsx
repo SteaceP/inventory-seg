@@ -16,9 +16,9 @@ vi.mock("./InventoryCard", () => ({
   ),
 }));
 
-// Mock ThemeContext
-vi.mock("../../contexts/ThemeContext", () => ({
-  useThemeContext: () => ({ compactView: false }),
+// Mock UserContext
+vi.mock("../../contexts/UserContext", () => ({
+  useUserContext: () => ({ compactView: false }),
 }));
 
 const theme = createTheme();
