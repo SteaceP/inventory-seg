@@ -2,48 +2,36 @@ import React, { useState } from "react";
 import {
   Box,
   Drawer,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Typography,
   Divider,
-  Toolbar,
-  IconButton,
-  Tooltip,
-  AppBar,
   useMediaQuery,
   useTheme,
   CssBaseline,
-  Avatar,
 } from "@mui/material";
 import {
   Dashboard as DashboardIcon,
   Settings as SettingsIcon,
-  ExitToApp as LogoutIcon,
-  ChevronLeft as ChevronLeftIcon,
-  Menu as MenuIcon,
   Kitchen as AppliancesIcon,
   History as ActivityIcon,
   LocationOn as LocationIcon,
   Assessment as AssessmentIcon,
-  Close as CloseIcon,
 } from "@mui/icons-material";
-import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate, useLocation, Outlet } from "react-router-dom";
-import { supabase } from "../supabaseClient";
+import { useLocation, Outlet } from "react-router-dom";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { useUserContext } from "../contexts/UserContext";
 import { useTranslation } from "../i18n";
 
+// Sub-components
+import SidebarHeader from "./layout/SidebarHeader";
+import UserProfile from "./layout/UserProfile";
+import NavigationList from "./layout/NavigationList";
+import MobileAppBar from "./layout/MobileAppBar";
+
 const Layout: React.FC = () => {
-  const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
   const { compactView } = useThemeContext();
   const { displayName, avatarUrl } = useUserContext();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
   const { t } = useTranslation();
 
   const drawerWidth = 240;
@@ -51,11 +39,6 @@ const Layout: React.FC = () => {
 
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  const getInitials = (name: string) => {
-    if (name) return name.substring(0, 2).toUpperCase();
-    return "U";
-  };
 
   const menuItems = [
     { text: t("menu.dashboard"), icon: <DashboardIcon />, path: "/" },
@@ -95,7 +78,6 @@ const Layout: React.FC = () => {
       icon: <AppliancesIcon />,
       path: "/appliances",
     },
-    // Keep Settings last in this section
     { text: t("menu.settings"), icon: <SettingsIcon />, path: "/settings" },
   ];
 
@@ -113,269 +95,30 @@ const Layout: React.FC = () => {
       ? collapsedWidth
       : drawerWidth;
 
-  const content = (
+  const sidebarContent = (
     <>
-      <Toolbar
-        data-testid="drawer-header"
-        disableGutters
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: collapsed && !isMobile ? "center" : "space-between",
-          px: collapsed && !isMobile ? 0 : 2,
-          minHeight: compactView ? "48px !important" : "64px !important",
-        }}
-      >
-        <Box
-          sx={{
-            display: collapsed && !isMobile ? "none" : "flex",
-            alignItems: "center",
-            flex: 1,
-            minWidth: 0,
-            mr: 1,
-          }}
-        >
-          <Box
-            component="img"
-            src="/icons/icon.svg"
-            sx={{
-              width: compactView ? 24 : 32,
-              height: compactView ? 24 : 32,
-              mr: 1,
-              flexShrink: 0,
-            }}
-            alt="Logo"
-          />
-          {(!collapsed || isMobile) && (
-            <Typography
-              variant={compactView ? "body1" : "h6"}
-              component="div"
-              noWrap
-              sx={{
-                fontWeight: "bold",
-                color: "primary.main",
-                lineHeight: 1.2,
-                minWidth: 0,
-              }}
-            >
-              {t("app.title")}
-            </Typography>
-          )}
-        </Box>
-        <IconButton
-          onClick={handleDrawerToggle}
-          size={compactView ? "small" : "medium"}
-          aria-label={
-            isMobile
-              ? "close menu"
-              : collapsed
-                ? "expand menu"
-                : "collapse menu"
-          }
-          data-testid="close-menu-button"
-          sx={{
-            color: "primary.main",
-            flexShrink: 0,
-            width: compactView ? 32 : 40,
-            height: compactView ? 32 : 40,
-            p: 0,
-            m: 0,
-            "&:hover": { bgcolor: "rgba(2, 125, 111, 0.08)" },
-          }}
-        >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={isMobile ? "close" : collapsed ? "menu" : "chevron"}
-              initial={{ opacity: 0, rotate: -90, scale: 0.8 }}
-              animate={{ opacity: 1, rotate: 0, scale: 1 }}
-              exit={{ opacity: 0, rotate: 90, scale: 0.8 }}
-              transition={{ duration: 0.2 }}
-              style={{ display: "flex" }}
-            >
-              {isMobile ? (
-                <CloseIcon />
-              ) : collapsed ? (
-                <MenuIcon />
-              ) : (
-                <ChevronLeftIcon />
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </IconButton>
-      </Toolbar>
-
-      <Box
-        sx={{
-          px: 2,
-          py: compactView ? 1.5 : 2,
-          display: "flex",
-          alignItems: "center",
-          gap: 2,
-          overflow: "hidden",
-        }}
-      >
-        <Avatar
-          src={avatarUrl}
-          sx={{
-            width: collapsed && !isMobile ? 32 : compactView ? 36 : 40,
-            height: collapsed && !isMobile ? 32 : compactView ? 36 : 40,
-            bgcolor: "primary.main",
-            fontSize: "0.875rem",
-            flexShrink: 0,
-          }}
-        >
-          {getInitials(displayName)}
-        </Avatar>
-        <AnimatePresence mode="wait">
-          {(!collapsed || isMobile) && (
-            <Box
-              component={motion.div}
-              initial={{ opacity: 0, width: 0 }}
-              animate={{ opacity: 1, width: "auto" }}
-              exit={{ opacity: 0, width: 0 }}
-              transition={{ duration: 0.3 }}
-              sx={{ minWidth: 0, flex: 1, overflow: "hidden" }}
-            >
-              <Typography variant="body2" fontWeight="bold" noWrap>
-                {displayName || t("user.default")}
-              </Typography>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                noWrap
-                display="block"
-              >
-                {t("user.online")}
-              </Typography>
-            </Box>
-          )}
-        </AnimatePresence>
-      </Box>
-
+      <SidebarHeader
+        collapsed={collapsed}
+        isMobile={isMobile}
+        compactView={compactView}
+        onToggle={handleDrawerToggle}
+      />
+      <UserProfile
+        displayName={displayName}
+        avatarUrl={avatarUrl}
+        collapsed={collapsed}
+        isMobile={isMobile}
+        compactView={compactView}
+      />
       <Divider sx={{ borderColor: "divider" }} />
-
       <Box sx={{ overflow: "auto", mt: compactView ? 1 : 2 }}>
-        <List dense={compactView}>
-          {menuItems.map((item) => (
-            <Tooltip
-              key={item.text}
-              title={collapsed && !isMobile ? item.text : ""}
-              placement="right"
-            >
-              <ListItemButton
-                onClick={() => {
-                  void navigate(item.path);
-                  if (isMobile) setMobileOpen(false);
-                }}
-                selected={location.pathname === item.path}
-                sx={{
-                  mx: 1,
-                  borderRadius: "8px",
-                  mb: 0.5,
-                  px: collapsed && !isMobile ? 1.5 : 2,
-                  py: compactView ? 0.5 : 1,
-                  justifyContent: collapsed && !isMobile ? "center" : "initial",
-                  "&.Mui-selected": {
-                    bgcolor: "rgba(2, 125, 111, 0.1)",
-                    color: "primary.main",
-                    "&:hover": {
-                      bgcolor: "rgba(2, 125, 111, 0.2)",
-                    },
-                  },
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    color:
-                      location.pathname === item.path
-                        ? "primary.main"
-                        : "text.secondary",
-                    opacity: location.pathname === item.path ? 1 : 0.7,
-                    minWidth: 0,
-                    mr: collapsed && !isMobile ? 0 : 2,
-                    justifyContent: "center",
-                  }}
-                >
-                  {item.icon}
-                </ListItemIcon>
-                <AnimatePresence mode="wait">
-                  {(!collapsed || isMobile) && (
-                    <ListItemText
-                      primary={
-                        <motion.span
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -10 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          {item.text}
-                        </motion.span>
-                      }
-                      primaryTypographyProps={{
-                        fontSize: compactView ? "0.8125rem" : "0.875rem",
-                        fontWeight: location.pathname === item.path ? 600 : 400,
-                      }}
-                    />
-                  )}
-                </AnimatePresence>
-              </ListItemButton>
-            </Tooltip>
-          ))}
-        </List>
-        <Divider sx={{ my: compactView ? 1 : 2, borderColor: "divider" }} />
-        <List dense={compactView}>
-          <Tooltip
-            title={collapsed && !isMobile ? t("security.signOut") : ""}
-            placement="right"
-          >
-            <ListItemButton
-              sx={{
-                mx: 1,
-                borderRadius: "8px",
-                px: collapsed && !isMobile ? 1.5 : 2,
-                py: compactView ? 0.5 : 1,
-                justifyContent: collapsed && !isMobile ? "center" : "initial",
-              }}
-              onClick={() => {
-                void (async () => {
-                  await supabase.auth.signOut();
-                  void navigate("/login");
-                  if (isMobile) setMobileOpen(false);
-                })();
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  color: "inherit",
-                  minWidth: 0,
-                  mr: collapsed && !isMobile ? 0 : 2,
-                  justifyContent: "center",
-                }}
-              >
-                <LogoutIcon fontSize={compactView ? "small" : "medium"} />
-              </ListItemIcon>
-              <AnimatePresence mode="wait">
-                {(!collapsed || isMobile) && (
-                  <ListItemText
-                    primary={
-                      <motion.span
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -10 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        {t("security.signOut")}
-                      </motion.span>
-                    }
-                    primaryTypographyProps={{
-                      fontSize: compactView ? "0.8125rem" : "0.875rem",
-                    }}
-                  />
-                )}
-              </AnimatePresence>
-            </ListItemButton>
-          </Tooltip>
-        </List>
+        <NavigationList
+          menuItems={menuItems}
+          collapsed={collapsed}
+          isMobile={isMobile}
+          compactView={compactView}
+          onNavigate={() => isMobile && setMobileOpen(false)}
+        />
       </Box>
     </>
   );
@@ -392,80 +135,11 @@ const Layout: React.FC = () => {
     >
       <CssBaseline />
       {isMobile && (
-        <AppBar
-          position="fixed"
-          sx={{
-            width: "100%",
-            background: (theme) =>
-              theme.palette.mode === "dark"
-                ? "rgba(22, 27, 34, 0.8)"
-                : "#ffffff",
-            backdropFilter: "blur(10px)",
-            borderBottom: "1px solid",
-            borderColor: "divider",
-            boxShadow: "none",
-          }}
-        >
-          <Toolbar
-            sx={{
-              minHeight: compactView ? "48px !important" : "64px !important",
-              px: { xs: 1, sm: 2 },
-            }}
-          >
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{
-                mr: { xs: 1, sm: 2 },
-                color: "primary.main",
-              }}
-            >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={mobileOpen ? "close" : "menu"}
-                  initial={{ opacity: 0, rotate: -90, scale: 0.8 }}
-                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
-                  exit={{ opacity: 0, rotate: 90, scale: 0.8 }}
-                  transition={{ duration: 0.2 }}
-                  style={{ display: "flex" }}
-                >
-                  {mobileOpen ? (
-                    <CloseIcon />
-                  ) : (
-                    <MenuIcon fontSize={compactView ? "small" : "medium"} />
-                  )}
-                </motion.div>
-              </AnimatePresence>
-            </IconButton>
-            <Box
-              component="img"
-              src="/icons/icon.svg"
-              sx={{
-                width: compactView ? 20 : 28,
-                height: compactView ? 20 : 28,
-                mr: { xs: 0.75, sm: 1.5 },
-                flexShrink: 0,
-              }}
-              alt="Logo"
-            />
-            <Typography
-              variant={compactView ? "body1" : "h6"}
-              component="div"
-              sx={{
-                fontWeight: "bold",
-                color: "primary.main",
-                flexGrow: 1,
-                minWidth: 0,
-                lineHeight: 1.2,
-                whiteSpace: "normal",
-              }}
-            >
-              {t("app.title").toUpperCase()}
-            </Typography>
-          </Toolbar>
-        </AppBar>
+        <MobileAppBar
+          mobileOpen={mobileOpen}
+          compactView={compactView}
+          onToggle={handleDrawerToggle}
+        />
       )}
 
       <Box
@@ -490,7 +164,7 @@ const Layout: React.FC = () => {
               },
             }}
           >
-            {content}
+            {sidebarContent}
           </Drawer>
         ) : (
           <Drawer
@@ -513,7 +187,7 @@ const Layout: React.FC = () => {
               },
             }}
           >
-            {content}
+            {sidebarContent}
           </Drawer>
         )}
       </Box>
