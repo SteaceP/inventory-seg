@@ -33,26 +33,14 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
       parserOptions: {
-        project: [
-          "./tsconfig.node.json",
-          "./tsconfig.app.json",
-          "./tsconfig.test.json",
-          "./tsconfig.worker.json",
-        ],
+        projectService: true,
         tsconfigRootDir: import.meta.dirname,
-
-        noWarnOnMultipleProjects: true,
       },
     },
     settings: {
       "import/resolver": {
         typescript: {
-          project: [
-            "./tsconfig.app.json",
-            "./tsconfig.node.json",
-            "./tsconfig.test.json",
-            "./tsconfig.worker.json",
-          ],
+          project: ["./tsconfig.json"],
         },
       },
     },

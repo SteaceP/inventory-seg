@@ -25,7 +25,9 @@ export async function subscribeToPush() {
   let subscription = await registration.pushManager.getSubscription();
 
   if (!subscription) {
-    const vapidPublicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY as string | undefined;
+    const vapidPublicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY as
+      | string
+      | undefined;
     if (!vapidPublicKey) {
       throw new Error("VAPID Public Key is missing from environment variables");
     }
