@@ -1,47 +1,47 @@
-# Supabase Local Development Guide
+# Guide de Développement Local Supabase
 
-This project uses the Supabase CLI to manage local development, database migrations, and TypeScript type generation.
+Ce projet utilise l'interface en ligne de commande (CLI) de Supabase pour gérer le développement local, les migrations de base de données et la génération de types TypeScript.
 
-## Prerequisites
+## Prérequis
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) or Docker Engine must be installed and running.
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) ou Docker Engine doit être installé et en cours d'exécution.
 
-## Initial Setup
+## Configuration Initiale
 
-Before starting for the first time, you need to link your local environment to the remote Supabase project:
+Avant de commencer pour la première fois, vous devez lier votre environnement local au projet Supabase distant :
 
 ```bash
-supabase link --project-ref <your-project-id>
+supabase link --project-ref <votre-id-de-projet>
 ```
 
 > [!NOTE]
-> You can find your Project ID in the [Supabase Dashboard](https://supabase.com/dashboard) under **Settings > General**.
+> Vous pouvez trouver votre ID de projet dans le [Tableau de bord Supabase](https://supabase.com/dashboard) sous **Settings > General**.
 
-## Common Commands
+## Commandes Courantes
 
-| Command | Script | Description |
+| Commande | Script | Description |
 | :--- | :--- | :--- |
-| `npm run supabase:start` | `supabase start` | Starts all local Supabase services via Docker. |
-| `npm run supabase:stop` | `supabase stop` | Stops all local Supabase services. |
-| `npm run supabase:gen-types` | `supabase gen types...` | Generates TypeScript types for your database schema. |
-| `supabase db diff` | - | Generates a new migration file based on local changes. |
-| `supabase db reset` | - | Resets the local database to the current migration state. |
+| `npm run supabase:start` | `supabase start` | Démarre tous les services Supabase locaux via Docker. |
+| `npm run supabase:stop` | `supabase stop` | Arrête tous les services Supabase locaux. |
+| `npm run supabase:gen-types` | `supabase gen types...` | Génère les types TypeScript pour votre schéma de base de données. |
+| `supabase db diff` | - | Génère un nouveau fichier de migration basé sur les changements locaux. |
+| `supabase db reset` | - | Réinitialise la base de données locale à l'état actuel des migrations. |
 
-## Workflow: Updating types
+## Flux de travail : Mise à jour des types
 
-After making changes to your database schema (e.g., via migrations), you should regenerate the TypeScript types:
+Après avoir apporté des modifications à votre schéma de base de données (ex: via des migrations), vous devez régénérer les types TypeScript :
 
-1. Ensure Supabase is running: `npm run supabase:start`
-2. Run type generation: `npm run supabase:gen-types`
-3. The types will be updated in `src/types/database.types.ts`.
+1. Assurez-vous que Supabase est en cours d'exécution : `npm run supabase:start`
+2. Lancez la génération de types : `npm run supabase:gen-types`
+3. Les types seront mis à jour dans `src/types/database.types.ts`.
 
-## Realtime Architecture
+## Architecture Realtime
 
-This project uses a **Broadcast-only** architecture for real-time synchronization.
+Ce projet utilise une architecture **Broadcast-uniquement** pour la synchronisation en temps réel.
 
-- **Legacy `supabase_realtime` publication**: Removed entirely to eliminate WAL decoding overhead and metadata polling.
-- **Method**: All components use `supabase.channel().send()` and `.on('broadcast')` for real-time updates.
-- **Database Functions**: The `public.handle_broadcast_activity` function is used by database triggers to manually broadcast changes through `realtime.broadcast_changes`.
+- **Publication legacy `supabase_realtime`** : Entièrement supprimée pour éliminer la charge de décodage WAL et le polling des métadonnées.
+- **Méthode** : Tous les composants utilisent `supabase.channel().send()` et `.on('broadcast')` pour les mises à jour en temps réel.
+- **Fonctions de base de données** : La fonction `public.handle_broadcast_activity` est utilisée par les déclencheurs (triggers) de la base de données pour diffuser manuellement les changements via `realtime.broadcast_changes`.
 
 > [!IMPORTANT]
-> When adding new tables that require real-time updates, do NOT add them to a publication. Instead, add a trigger to call `handle_broadcast_activity` on change.
+> Lors de l'ajout de nouvelles tables nécessitant des mises à jour en temps réel, ne les ajoutez PAS à une publication. À la place, ajoutez un déclencheur pour appeler `handle_broadcast_activity` lors d'un changement.
