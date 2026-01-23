@@ -43,4 +43,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy --env ${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
+          command: deploy ${{ github.ref != 'refs/heads/main' && '--env preview' || '' }}

@@ -11,82 +11,40 @@
 		"not_found_handling": "single-page-application",
 		"run_worker_first": ["/api/*"]
 	},
+	"vars": {
+		"SUPABASE_URL": "https://nidebcwouohczncxrgfv.supabase.co",
+		"VAPID_PUBLIC_KEY": "BPb01P8jNEFvyMS6hQW4i-wgqK3DDK9dWkJBuyinBxUGDhvSpGMHCMAmfU1LE3p6qTs0XkeP_pGupYhDMQ6F8pI",
+		"BREVO_SENDER_EMAIL": "steacypaquette@gmail.com",
+		"SENTRY_DSN": "https://603dd7abbe40a2fc6b2532d136ff845e@o1383731.ingest.us.sentry.io/4510731917066240"
+	},
+	"hyperdrive": [
+		{
+			"binding": "HYPERDRIVE",
+			"id": "4d4c0217ace743e896a6d735fed60a72",
+			"localConnectionString": "postgresql://postgres:postgres@127.0.0.1:54322/postgres"
+		}
+	],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "sem-inventory-db",
+			"database_id": "64eb265b-9118-4a15-a544-110fec170502"
+		}
+	],
+
 	"observability": {
 		"enabled": true
 	},
 	"env": {
 		"dev": {
 			"vars": {
-				"SUPABASE_URL": "http://127.0.0.1:54321",
-				"VAPID_PUBLIC_KEY": "BPb01P8jNEFvyMS6hQW4i-wgqK3DDK9dWkJBuyinBxUGDhvSpGMHCMAmfU1LE3p6qTs0XkeP_pGupYhDMQ6F8pI",
-				"BREVO_SENDER_EMAIL": "steacypaquette@gmail.com",
-				"SENTRY_DSN": "https://603dd7abbe40a2fc6b2532d136ff845e@o1383731.ingest.us.sentry.io/4510731917066240"
-			},
-			"hyperdrive": [
-				{
-					"binding": "HYPERDRIVE",
-					"id": "4d4c0217ace743e896a6d735fed60a72",
-					"localConnectionString": "postgresql://postgres:postgres@127.0.0.1:54322/postgres"
-				}
-			],
-			"d1_databases": [
-				{
-					"binding": "DB",
-					"database_name": "sem-inventory-db",
-					"database_id": "64eb265b-9118-4a15-a544-110fec170502"
-				}
-			]
-		},
-		"production": {
-			"name": "inventory-seg-production",
-			"routes": [
-				{
-					"pattern": "inv.coderage.pro",
-					"custom_domain": true
-				}
-			],
-			"vars": {
-				"SUPABASE_URL": "https://nidebcwouohczncxrgfv.supabase.co",
-				"VAPID_PUBLIC_KEY": "BPb01P8jNEFvyMS6hQW4i-wgqK3DDK9dWkJBuyinBxUGDhvSpGMHCMAmfU1LE3p6qTs0XkeP_pGupYhDMQ6F8pI",
-				"BREVO_SENDER_EMAIL": "steacypaquette@gmail.com",
-				"SENTRY_DSN": "https://603dd7abbe40a2fc6b2532d136ff845e@o1383731.ingest.us.sentry.io/4510731917066240"
-			},
-			"hyperdrive": [
-				{
-					"binding": "HYPERDRIVE",
-					"id": "4d4c0217ace743e896a6d735fed60a72",
-					"localConnectionString": "postgresql://postgres:postgres@127.0.0.1:54322/postgres"
-				}
-			],
-			"d1_databases": [
-				{
-					"binding": "DB",
-					"database_name": "sem-inventory-db",
-					"database_id": "64eb265b-9118-4a15-a544-110fec170502"
-				}
-			]
+				"SUPABASE_URL": "http://127.0.0.1:54321"
+			}
 		},
 		"preview": {
 			"vars": {
-				"SUPABASE_URL": "https://nidebcwouohczncxrgfv.supabase.co",
-				"VAPID_PUBLIC_KEY": "BPb01P8jNEFvyMS6hQW4i-wgqK3DDK9dWkJBuyinBxUGDhvSpGMHCMAmfU1LE3p6qTs0XkeP_pGupYhDMQ6F8pI",
-				"BREVO_SENDER_EMAIL": "steacypaquette@gmail.com",
-				"SENTRY_DSN": "https://603dd7abbe40a2fc6b2532d136ff845e@o1383731.ingest.us.sentry.io/4510731917066240"
-			},
-			"hyperdrive": [
-				{
-					"binding": "HYPERDRIVE",
-					"id": "4d4c0217ace743e896a6d735fed60a72",
-					"localConnectionString": "postgresql://postgres:postgres@127.0.0.1:54322/postgres" // Local fallback
-				}
-			],
-			"d1_databases": [
-				{
-					"binding": "DB",
-					"database_name": "sem-inventory-db",
-					"database_id": "64eb265b-9118-4a15-a544-110fec170502"
-				}
-			]
+				"SUPABASE_URL": "https://nidebcwouohczncxrgfv.supabase.co"
+			}
 		}
 	}
 }
