@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import InventoryDialog from "./InventoryDialog";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
@@ -89,11 +89,11 @@ describe("InventoryDialog", () => {
           stock: 10,
           unit_cost: 10,
           image_url: null,
+          location: null,
           low_stock_threshold: 5,
           notes: "",
-          user_id: "u1",
+
           created_at: "",
-          updated_at: "",
         }} // Partial mock is fine as long as editingItem is truthy
       />
     );
@@ -140,7 +140,6 @@ describe("InventoryDialog", () => {
     // Better approach: Mock Tooltip to just render children, but MUI Tooltip wraps.
     // In the code: <Tooltip title={t("inventory.generateSku")}>
 
-    const buttons = screen.getAllByRole("button");
     // Find the one that calls generate. Alternatively, since we mocked Tooltip? No we didn't mock MUI.
     // MUI Tooltip usually adds aria-label to child element equal to title.
 
