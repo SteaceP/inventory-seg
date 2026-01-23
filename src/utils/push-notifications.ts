@@ -1,8 +1,6 @@
 import { supabase } from "../supabaseClient";
 import { getDeviceInfo } from "./crypto";
 
-const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY as string;
-
 function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
@@ -27,13 +25,14 @@ export async function subscribeToPush() {
   let subscription = await registration.pushManager.getSubscription();
 
   if (!subscription) {
-    if (!VAPID_PUBLIC_KEY) {
+    const vapidPublicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY as string | undefined;
+    if (!vapidPublicKey) {
       throw new Error("VAPID Public Key is missing from environment variables");
     }
 
     subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+      applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
     });
   }
 

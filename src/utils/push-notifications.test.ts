@@ -49,6 +49,7 @@ describe("push-notifications", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubEnv("VITE_VAPID_PUBLIC_KEY", "test-vapid-key");
 
     // Mock window and navigator
     vi.stubGlobal("window", {
