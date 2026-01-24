@@ -117,7 +117,6 @@ describe("InventoryCategorizedGrid", () => {
     // Initial state: should show first 4 items
     expect(screen.getByText("Item 1")).toBeInTheDocument();
     expect(screen.getByText("Item 4")).toBeInTheDocument();
-    // Assuming ordering logic, verifying 5 and 6 are hidden.
     expect(screen.queryByText("Item 5")).not.toBeInTheDocument();
     expect(screen.queryByText("Item 6")).not.toBeInTheDocument();
 

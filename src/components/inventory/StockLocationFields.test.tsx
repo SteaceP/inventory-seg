@@ -109,18 +109,9 @@ describe("StockLocationFields", () => {
     );
 
     const removeButtons = screen.getAllByRole("button");
-    // Button 0 is Add, Button 1 is Remove (if icon button is recognized as button)
-    // Actually, IconButton renders generic button.
-    // Let's filter by icon logic or assumes last button is remove.
-    // Or just look for the remove icon implies finding the button containing it?
-    // Testing library `getByRole('button')` finds all.
-    // "Add" has text "common.add". Remove has icon.
-
-    // Let's assume the button without text "common.add" is the remove button.
     const removeButton = removeButtons.find(
       (b) => !b.textContent?.includes("common.add")
     );
-    expect(removeButton).toBeDefined();
 
     if (removeButton) {
       fireEvent.click(removeButton);

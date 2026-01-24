@@ -71,7 +71,6 @@ describe("InventoryHeader", () => {
     expect(screen.queryByText(/inventory.printLabels/)).not.toBeInTheDocument();
 
     rerender(<InventoryHeader {...defaultProps} selectedCount={5} />);
-    // Text might be "inventory.printLabels (5)"
     const printButton = screen.getByText((content) =>
       content.includes("inventory.printLabels")
     );
@@ -85,13 +84,8 @@ describe("InventoryHeader", () => {
   it("should adapt to mobile view", () => {
     render(<InventoryHeader {...defaultProps} isMobile={true} />);
 
-    // In mobile, category button might not have text or different layout behavior
-    // but buttons should still be accessible
-
-    // Check typography variant if possible or just existence
     const title = screen.getByText("inventory.title");
     expect(title).toBeInTheDocument();
-    // Assuming MUI renders H5 for mobile as per code: variant={isMobile ? "h5" : "h4"}
     expect(title.tagName).toBe("H5");
   });
 });

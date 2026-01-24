@@ -34,6 +34,8 @@ jobs:
 
       - name: Test
         run: npm run test:all
+        env:
+          D1_DATABASE_ID: ${{ vars.D1_DATABASE_ID }}
 
       - name: Build
         run: npm run build

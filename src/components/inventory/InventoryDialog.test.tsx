@@ -92,9 +92,8 @@ describe("InventoryDialog", () => {
           location: null,
           low_stock_threshold: 5,
           notes: "",
-
           created_at: "",
-        }} // Partial mock is fine as long as editingItem is truthy
+        }}
       />
     );
     expect(screen.getByText("inventory.edit")).toBeInTheDocument();
@@ -132,27 +131,6 @@ describe("InventoryDialog", () => {
 
   it("calls onGenerateSKU when refresh button is clicked (admin)", () => {
     renderWithTheme(<InventoryDialog {...defaultProps} role="admin" />);
-    // The refresh button is an IconButton with specific styling, let's find by svg or just assume it is the only icon button that is not 'cancel' (which is text).
-    // Actually, we can find it by the tooltip "inventory.generateSku"
-    // Wait, tooltip adds title potentially on hover or as aria-label.
-    // Let's use getByRole button that contains the icon.
-
-    // Better approach: Mock Tooltip to just render children, but MUI Tooltip wraps.
-    // In the code: <Tooltip title={t("inventory.generateSku")}>
-
-    // Find the one that calls generate. Alternatively, since we mocked Tooltip? No we didn't mock MUI.
-    // MUI Tooltip usually adds aria-label to child element equal to title.
-
-    // Let's try to find by label if MUI adds it, or just find any button that is likely it.
-    // There is a 'refresh' icon.
-
-    // We can rely on the fact that only admin sees it.
-    // Let's rely on firing click on the button that is likely the generate button.
-    // It is situated next to SKU field.
-
-    // Let's use `fireEvent.click` on the element that looks like the generate button.
-    // Or we can add an aria-label in the component if it's missing (a good practice), but I shouldn't modify source unless necessary.
-    // Material UI Tooltip passes the title as aria-label to the child.
     const generateButton = screen.getByLabelText("inventory.generateSku");
     fireEvent.click(generateButton);
     expect(defaultProps.onGenerateSKU).toHaveBeenCalled();

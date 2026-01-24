@@ -135,9 +135,4 @@ describe("Settings Page", () => {
       // but we verify the effect triggered.
     });
   });
-
-  // Note: Detailed interaction tests are tricky with mocked child components.
-  // We rely on child component tests for their internal logic.
-  // Integration tests for 'handleSaveSettings' could be added if we exposed the trigger from ProfileSection mock via props,
-  // but for now we verify the structure.
 });

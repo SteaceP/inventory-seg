@@ -33,12 +33,6 @@ vi.mock("../supabaseClient", () => ({
   },
 }));
 
-// Mock real utils or use them. Using real utils requires them to be pure.
-// getActivityNarrative takes 't'.
-// Let's rely on real utils if they are available, assuming they are pure.
-// If they cause trouble, we mock them.
-// For now, let's keep them real to test integration.
-
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 

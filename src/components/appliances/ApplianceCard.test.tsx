@@ -80,9 +80,6 @@ describe("ApplianceCard", () => {
     expect(defaultProps.onViewRepairs).toHaveBeenCalledWith(mockAppliance);
 
     const buttons = screen.getAllByRole("button");
-    // Button 0: history
-    // Button 1: add repair
-    // Button 2: delete
 
     fireEvent.click(buttons[1]);
     expect(defaultProps.onAddRepair).toHaveBeenCalledWith(mockAppliance);
@@ -115,7 +112,6 @@ describe("ApplianceCard", () => {
     );
     // The mock translation should handle this
     expect(screen.getByText(/Expiring in 5d/)).toBeInTheDocument();
-    // Note: exact day calculation depends on timezone/time, so using regex helper might be safer or mocking Date.
   });
 
   it("displays warning status correctly", () => {

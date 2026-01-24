@@ -52,13 +52,13 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const fetchUserSettings = useCallback(
     async (uid: string) => {
       try {
-        // Create a timeout promise
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(
+        let timeoutId: ReturnType<typeof setTimeout>;
+        const timeoutPromise = new Promise((_, reject) => {
+          timeoutId = setTimeout(
             () => reject(new Error("Request timed out after 5000ms")),
             5000
-          )
-        );
+          );
+        });
 
         // Actual fetch promise
         const fetchPromise = supabase
@@ -69,11 +69,20 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
           .eq("user_id", uid)
           .single();
 
-        // Race them
-        const result = (await Promise.race([fetchPromise, timeoutPromise])) as {
+        let result: {
           data: UserSettingsRow | null;
           error: PostgrestError | null;
         };
+
+        try {
+          // Race them
+          result = (await Promise.race([fetchPromise, timeoutPromise])) as {
+            data: UserSettingsRow | null;
+            error: PostgrestError | null;
+          };
+        } finally {
+          clearTimeout(timeoutId!);
+        }
 
         const { data: settings, error } = result;
 

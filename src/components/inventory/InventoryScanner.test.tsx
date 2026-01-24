@@ -78,15 +78,6 @@ describe("InventoryScanner", () => {
     renderWithTheme(<InventoryScanner {...defaultProps} />);
     // Close icon usually is a button
     const buttons = screen.getAllByRole("button");
-    // Assuming the first one or finding by icon logic if tricky.
-    // The component has CloseIcon in an IconButton.
-    // It's the first button usually, or we can look for "close" mostly like implied by usage of CloseIcon or aria-label/title if set (not set in code viewed).
-    // InventoryScanner.tsx source:
-    // <IconButton onClick={onClose} ...> <CloseIcon ...> </IconButton>
-
-    // Let's just assume it is the first button or the one that isn't the text "inventory.cancel"
-    // Actually, we can check calls.
-
     const closeIconButton = buttons[0];
     fireEvent.click(closeIconButton);
     expect(defaultProps.onClose).toHaveBeenCalled();

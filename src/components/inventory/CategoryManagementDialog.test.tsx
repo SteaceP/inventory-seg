@@ -90,16 +90,6 @@ describe("CategoryManagementDialog", () => {
     renderWithTheme(<CategoryManagementDialog {...defaultProps} />);
 
     // Find delete buttons. There are 2 categories.
-    // The Delete icon is inside IconButton.
-    // Let's rely on getAllByRole("button") that are not "Add" or "Close".
-
-    // Or finding by closest row content.
-    // Better: Mock DeleteIcon to have data-testid or assume order.
-
-    // Actually the DeleteIcon import.
-    // Let's just assume we click the first delete button (for Electronics).
-
-    // A safer way:
     const rows = screen.getAllByRole("listitem");
     const electronicsRow = rows[0];
     const deleteBtn = electronicsRow.querySelector("button");
@@ -132,7 +122,6 @@ describe("CategoryManagementDialog", () => {
 
     await waitFor(() => {
       expect(mockUpsert).toHaveBeenCalled();
-      // Relaxed check to avoid strict equality issues with numbers/strings
       expect(mockUpsert).toHaveBeenCalledWith(
         expect.objectContaining({
           name: "Electronics",
