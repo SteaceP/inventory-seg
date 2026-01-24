@@ -23,12 +23,16 @@ Une application de gestion d'inventaire pour La Société Emmanuel-Grégoire, en
   - Modes sombre et clair.
   - Vue compacte pour l'affichage d'informations à haute densité.
   - Personnalisation du profil utilisateur (Nom d'affichage, Avatar).
+- **🤖 Réapprovisionnement automatique par IA** :
+  - Analyse quotidienne des stocks et de l'historique de commandes via Cloudflare AI (Llama 3).
+  - Regroupement intelligent par fournisseur (BOD, Papeterie, etc.).
+  - Notifications push proactives lorsque le volume de commande est optimal.
 
 ## 🛠️ Stack technologique
 
 - **Frontend** : [React 19](https://react.dev/), [Vite](https://vitejs.dev/), [TypeScript](https://www.typescriptlang.org/)
 - **UI & Bibliothèque de composants** : [Material UI (MUI)](https://mui.com/), [Framer Motion](https://www.framer.com/motion/)
-- **Backend & Base de données** : [Supabase](https://supabase.com/) (PostgreSQL, Auth, Storage, Realtime)
+- **Backend & Base de données** : [Supabase](https://supabase.com/) (PostgreSQL, Auth, Storage, Realtime), [Cloudflare Workers AI](https://developers.cloudflare.com/workers-ai/)
 - **Gestion d'état** : React Context API
 - **Internationalisation** : Implémentation i18n personnalisée
 

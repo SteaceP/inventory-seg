@@ -24,6 +24,7 @@ trigger: always_on
 - **Real-time**: Supabase Realtime
 - **Storage**: Supabase Storage
 - **Worker**: Cloudflare Worker (for push notifications, email alerts, and static asset hosting)
+- **AI**: Cloudflare Workers AI (@cf/meta/llama-3-8b-instruct)
 - **Deployment**: Cloudflare Workers with Assets (NOT Cloudflare Pages)
 
 ## Code Quality

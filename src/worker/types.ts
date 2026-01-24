@@ -1,6 +1,7 @@
 /**
  * Shared types for the Cloudflare Worker
  */
+import type { Ai } from "@cloudflare/workers-types";
 
 export interface Env {
   BREVO_API_KEY: string;
@@ -14,6 +15,7 @@ export interface Env {
   SENTRY_DSN: string;
   HYPERDRIVE: { connectionString: string };
   DB: D1Database;
+  AI: Ai;
 }
 
 export interface RequestBody {

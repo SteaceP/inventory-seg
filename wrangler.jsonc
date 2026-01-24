@@ -11,6 +11,9 @@
 		"not_found_handling": "single-page-application",
 		"run_worker_first": ["/api/*"]
 	},
+	"triggers": {
+		"crons": ["0 13 * * *"]
+	},
 	"vars": {
 		"SUPABASE_URL": "https://nidebcwouohczncxrgfv.supabase.co",
 		"VAPID_PUBLIC_KEY": "BPb01P8jNEFvyMS6hQW4i-wgqK3DDK9dWkJBuyinBxUGDhvSpGMHCMAmfU1LE3p6qTs0XkeP_pGupYhDMQ6F8pI",
@@ -34,6 +37,9 @@
 
 	"observability": {
 		"enabled": true
+	},
+	"ai": {
+		"binding": "AI"
 	},
 	"env": {
 		"dev": {

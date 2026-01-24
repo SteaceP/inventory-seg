@@ -186,7 +186,20 @@ Stores web push notification subscriptions.
 ␊- Rate limiting on worker endpoints
 ␊- Input validation and sanitization (HTML sanitization in worker)
 
-␊#### Infrastructure & Performance
+␊
+#### AI-Driven Scheduled Reordering
+- Daily Cron Job triggers AI analysis (Llama 3-8b via Cloudflare AI)
+- Intelligent Supplier Grouping:
+  - **BOD** (Category "Entretien" starting with #)
+  - **Staples** (Category "Papeterie")
+  - **CIUSS** (Category "Infirmerie")
+  - **Amazon** (All others)
+- Historical Analysis:
+  - Aggregates "Stock Added" events (excluding initial "prime" creation) to learn reorder patterns
+  - Determines if current low stock items constitute a viable order size based on history
+  - Amazon items notified anytime; Restricted suppliers batched for bulk ordering
+
+#### Infrastructure & Performance
 ␊- **Cloudflare Hyperdrive**: Connects Worker to Supabase via pooled connections
 ␊- **Cloudflare Workers with Assets**: Integrated hosting and API environment
 ␊- **Centralized Error Handling**: Unified Sentry + MUI alert system

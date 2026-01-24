@@ -6,7 +6,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "lib": ["ESNext"],
-    "types": ["@cloudflare/workers-types"],
+    "types": ["@cloudflare/workers-types", "vite/client"],
     "moduleResolution": "bundler",
     "noEmit": true,
     "skipLibCheck": true

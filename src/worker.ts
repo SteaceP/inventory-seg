@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/cloudflare";
 import { getSecurityHeaders } from "./worker/helpers";
+import { handleScheduled } from "./worker/scheduled";
 import {
   handleActivityLogPost,
   handleActivityLogGet,
@@ -78,6 +79,10 @@ export default Sentry.withSentry(
       // For non-API routes, return null to let the Vite plugin's
       // automatic asset handling take over (via run_worker_first + not_found_handling config)
       return new Response("Not Found", { status: 404 });
+    },
+
+    scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext): void {
+      handleScheduled(event, env, ctx);
     },
   } satisfies ExportedHandler<Env>
 );
