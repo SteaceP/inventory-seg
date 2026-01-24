@@ -14,12 +14,7 @@ export default defineConfig({
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
 
     // Exclude worker tests and node_modules
-    exclude: [
-      "**/node_modules/**",
-      "**/dist/**",
-      "**/build/**",
-      "src/worker/**/*.{test,spec}.{ts,tsx}",
-    ],
+    exclude: ["**/node_modules/**", "**/dist/**", "**/build/**"],
 
     // Enable globals like 'describe', 'it', 'expect'
     globals: true,
