@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { UserProvider, useUserContext } from "./UserContext";
 
@@ -138,19 +138,39 @@ describe("UserContext", () => {
   });
 
   it("should load user session and settings on mount", async () => {
+    // Capture the subscription callback
+    let authCallback: (event: string, session: typeof mockSession) => void;
+    mocks.onAuthStateChange.mockImplementation(
+      (cb: (event: string, session: typeof mockSession) => void) => {
+        authCallback = cb;
+        return { data: { subscription: { unsubscribe: vi.fn() } } };
+      }
+    );
+
     render(
       <UserProvider>
         <TestComponent />
       </UserProvider>
     );
 
+    // Initial load finishes because session exists
     await waitFor(() => {
       expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
     });
 
     expect(screen.getByTestId("user-id")).toHaveTextContent("test-user-id");
-    expect(screen.getByTestId("display-name")).toHaveTextContent("Test User");
-    expect(screen.getByTestId("language")).toHaveTextContent("fr");
+
+    // Manually trigger the auth event to simulate INITIAL_SESSION and fetch settings
+    act(() => {
+      if (authCallback) {
+        authCallback("INITIAL_SESSION", mockSession);
+      }
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId("display-name")).toHaveTextContent("Test User");
+      expect(screen.getByTestId("language")).toHaveTextContent("fr");
+    });
   });
 
   it("should handle no session (logged out)", async () => {
