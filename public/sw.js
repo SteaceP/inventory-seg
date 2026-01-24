@@ -1,7 +1,7 @@
-const STATIC_CACHE_NAME = "inventory-seg-static-v9";
-const IMAGE_CACHE_NAME = "inventory-seg-images-v9";
-const API_CACHE_NAME = "inventory-seg-api-v9";
-const FONT_CACHE_NAME = "inventory-seg-fonts-v9";
+const STATIC_CACHE_NAME = "inventory-seg-static-v10";
+const IMAGE_CACHE_NAME = "inventory-seg-images-v10";
+const API_CACHE_NAME = "inventory-seg-api-v10";
+const FONT_CACHE_NAME = "inventory-seg-fonts-v10";
 
 const ASSETS_TO_CACHE = [
   "/",

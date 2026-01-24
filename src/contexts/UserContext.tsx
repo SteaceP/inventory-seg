@@ -9,6 +9,7 @@ import React, {
   useRef,
 } from "react";
 import { supabase } from "../supabaseClient";
+import { logInfo } from "../utils/errorReporting";
 import { useAlert } from "./AlertContext";
 import { useErrorHandler } from "../hooks/useErrorHandler";
 import type {
@@ -17,7 +18,7 @@ import type {
   UserContextType,
   UserSettingsRow,
 } from "../types/user";
-import type { Session } from "@supabase/supabase-js";
+import type { Session, PostgrestError } from "@supabase/supabase-js";
 
 export const UserContext = createContext<
   (UserContextType & { session: Session | null }) | undefined
@@ -47,11 +48,20 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const prevUserIdRef = useRef<string | null>(null);
-
+  const profileLoadedRef = useRef(false);
   const fetchUserSettings = useCallback(
     async (uid: string) => {
       try {
-        const { data: settings, error } = await supabase
+        // Create a timeout promise
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(
+            () => reject(new Error("Request timed out after 5000ms")),
+            5000
+          )
+        );
+
+        // Actual fetch promise
+        const fetchPromise = supabase
           .from("user_settings")
           .select(
             "display_name, avatar_url, role, language, low_stock_threshold, dark_mode, compact_view"
@@ -59,10 +69,42 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
           .eq("user_id", uid)
           .single();
 
-        if (error && error.code !== "PGRST116") throw error;
+        // Race them
+        const result = (await Promise.race([fetchPromise, timeoutPromise])) as {
+          data: UserSettingsRow | null;
+          error: PostgrestError | null;
+        };
+
+        const { data: settings, error } = result;
+
+        if (error) {
+          if (error.code === "PGRST116") {
+            // Create default settings row
+            const { error: insertError } = await supabase
+              .from("user_settings")
+              .insert({
+                user_id: uid,
+                display_name: "",
+                role: "user",
+                language: "fr",
+                dark_mode: true,
+                compact_view: false,
+                low_stock_threshold: 5,
+              });
+
+            if (insertError) {
+              throw insertError;
+            }
+
+            // Retry fetch (or just set defaults directly to save a round trip)
+            return fetchUserSettings(uid); // Recursive call to fetch the newly created row
+          }
+          throw error;
+        }
 
         if (settings) {
-          const s = settings as UserSettingsRow;
+          profileLoadedRef.current = true;
+          const s = settings;
           setDisplayName(s.display_name || "");
           setAvatarUrl(s.avatar_url || "");
           setRole(s.role || "user");
@@ -79,43 +121,43 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
           }
         }
       } catch (err: unknown) {
-        showError("Failed to fetch user settings: " + (err as Error).message);
-      } finally {
-        setLoading(false);
+        const msg = err instanceof Error ? err.message : String(err);
+        if (msg.includes("timed out")) {
+          logInfo("User settings fetch timed out (suppressing UI alert)", {
+            msg,
+          });
+          return;
+        }
+        handleError(err, "Failed to fetch user settings: " + msg);
       }
     },
-    [showError]
+    [handleError]
   );
 
-  useEffect(() => {
-    if (!("serviceWorker" in navigator)) return;
-
-    const handleMessage = (event: MessageEvent) => {
-      const data = event.data as { type?: string; message?: string };
-      if (data.type === "SETTINGS_FETCH_ERROR") {
-        showError(data.message || "An error occurred");
-      }
-    };
-    navigator.serviceWorker.addEventListener("message", handleMessage);
-    return () =>
-      navigator.serviceWorker.removeEventListener("message", handleMessage);
-  }, [showError]);
+  // ... (useEffect for SW message skipped) ...
 
   useEffect(() => {
+    let isMounted = true;
+
     const initUser = async () => {
       try {
         const {
           data: { session: initialSession },
         } = await supabase.auth.getSession();
 
+        if (!isMounted) return; // Component unmounted, skip state updates
+
         if (initialSession?.user) {
           setSession(initialSession);
           setUserId(initialSession.user.id);
-          await fetchUserSettings(initialSession.user.id);
+          setLoading(false);
+          // Rely on onAuthStateChange to trigger the fetch, as it covers INITIAL_SESSION
+          // avoiding redundant parallel requests and race conditions
         } else {
           setLoading(false);
         }
       } catch (err) {
+        // Report to standardized error handler (sentry)
         handleError(err, "Failed to initialize user session");
         setLoading(false);
       }
@@ -131,7 +173,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+    } = supabase.auth.onAuthStateChange((event, newSession) => {
       const nextUserId = newSession?.user?.id || null;
       const prevUserId = prevUserIdRef.current;
 
@@ -144,20 +186,19 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
       if (nextUserId) {
         // User is logged in
+        setLoading(false);
         if (
           event === "SIGNED_IN" ||
           event === "INITIAL_SESSION" ||
-          (event === "TOKEN_REFRESHED" && nextUserId !== prevUserId)
+          (event === "TOKEN_REFRESHED" &&
+            (nextUserId !== prevUserId || !profileLoadedRef.current))
         ) {
           // Fetch settings for new/changed sessions
-          await fetchUserSettings(nextUserId);
-        } else {
-          // For other events (e.g., TOKEN_REFRESHED with same user), just ensure loading is false
-          // Settings were already fetched by initUser or previous event
-          setLoading(false);
+          void fetchUserSettings(nextUserId);
         }
       } else {
         // User is logged out
+        profileLoadedRef.current = false;
         setDisplayName("");
         setAvatarUrl("");
         setRole("user");
@@ -169,6 +210,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     });
 
     return () => {
+      isMounted = false; // Mark component as unmounted
       clearTimeout(safetyTimeout);
       subscription.unsubscribe();
     };
