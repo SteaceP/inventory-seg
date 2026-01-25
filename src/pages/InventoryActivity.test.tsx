@@ -82,7 +82,7 @@ describe("InventoryActivity Page", () => {
     });
   });
 
-  it("renders activity page structure", () => {
+  it("renders activity page structure", async () => {
     renderWithProviders(<InventoryActivityPage />);
 
     expect(
@@ -91,6 +91,11 @@ describe("InventoryActivity Page", () => {
     expect(
       screen.getByPlaceholderText("inventory.searchPlaceholder")
     ).toBeInTheDocument();
+
+    // Wait for activities to load to avoid act warning
+    await waitFor(() => {
+      expect(screen.getByText("Drill")).toBeInTheDocument();
+    });
   });
 
   it("fetches and displays activities", async () => {

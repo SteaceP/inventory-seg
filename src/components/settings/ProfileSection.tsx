@@ -104,18 +104,18 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
             >
               <CameraIcon sx={{ color: "white" }} />
             </Box>
-            <input
-              id="avatar-upload"
-              name="avatar"
-              type="file"
-              hidden
-              ref={fileInputRef}
-              accept="image/*"
-              onChange={handleFileChange}
-              data-testid="avatar-input"
-              aria-label={t("profile.changeAvatar")}
-            />
           </Box>
+          <input
+            id="avatar-upload"
+            name="avatar"
+            type="file"
+            hidden
+            ref={fileInputRef}
+            accept="image/*"
+            onChange={handleFileChange}
+            data-testid="avatar-input"
+            aria-label={t("profile.changeAvatar")}
+          />
         </Box>
 
         <TextField

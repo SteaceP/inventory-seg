@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
 import { InventoryProvider, useInventoryContext } from "./InventoryContext";
 
 // Hoist mocks
@@ -172,14 +172,12 @@ describe("InventoryContext", () => {
     });
   });
 
-  it("should fetch all inventory data on mount", async () => {
-    render(
-      <InventoryProvider>
-        <TestComponent />
-      </InventoryProvider>
-    );
+  const renderWithProvider = (ui: React.ReactElement) => {
+    return render(<InventoryProvider>{ui}</InventoryProvider>);
+  };
 
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
+  it("should fetch all inventory data on mount", async () => {
+    renderWithProvider(<TestComponent />);
 
     await waitFor(() => {
       expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
@@ -210,11 +208,7 @@ describe("InventoryContext", () => {
       return { select: vi.fn().mockResolvedValue({ data: [], error: null }) };
     });
 
-    render(
-      <InventoryProvider>
-        <TestComponent />
-      </InventoryProvider>
-    );
+    renderWithProvider(<TestComponent />);
 
     await waitFor(() => {
       expect(
@@ -228,18 +222,16 @@ describe("InventoryContext", () => {
   });
 
   it("should update category threshold", async () => {
-    render(
-      <InventoryProvider>
-        <TestComponent />
-      </InventoryProvider>
-    );
+    renderWithProvider(<TestComponent />);
 
     await waitFor(() =>
       expect(screen.queryByText("Loading...")).not.toBeInTheDocument()
     );
 
     const btn = screen.getByTestId("update-threshold-btn");
-    btn.click();
+    act(() => {
+      btn.click();
+    });
 
     await waitFor(() => {
       expect(mocks.upsert).toHaveBeenCalledWith(
@@ -248,16 +240,11 @@ describe("InventoryContext", () => {
       );
     });
 
-    // Check that fetch is called multiple times (init + refresh)
     expect(mocks.from.mock.calls.length).toBeGreaterThan(3);
   });
 
   it("should setup presence channel", async () => {
-    render(
-      <InventoryProvider>
-        <TestComponent />
-      </InventoryProvider>
-    );
+    renderWithProvider(<TestComponent />);
 
     await waitFor(() =>
       expect(screen.queryByText("Loading...")).not.toBeInTheDocument()
@@ -277,7 +264,9 @@ describe("InventoryContext", () => {
     const calls = mocks.subscribe.mock.calls as [unknown][];
     const syncSubCallback = calls.find((c) => typeof c[0] === "function")?.[0];
     if (typeof syncSubCallback === "function") {
-      (syncSubCallback as (status: string) => void)("SUBSCRIBED");
+      act(() => {
+        (syncSubCallback as (status: string) => void)("SUBSCRIBED");
+      });
     }
 
     expect(mocks.track).toHaveBeenCalledWith(
@@ -289,33 +278,26 @@ describe("InventoryContext", () => {
   });
 
   it("should broadcast inventory changes", async () => {
-    render(
-      <InventoryProvider>
-        <TestComponent />
-      </InventoryProvider>
-    );
+    renderWithProvider(<TestComponent />);
 
     await waitFor(() =>
       expect(screen.queryByText("Loading...")).not.toBeInTheDocument()
     );
 
     const btn = screen.getByTestId("broadcast-btn");
-    btn.click();
+    act(() => {
+      btn.click();
+    });
 
     expect(mocks.send).toHaveBeenCalledWith({
       type: "broadcast",
       event: "inventory-updated",
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      payload: expect.any(Object),
+      payload: expect.any(Object) as unknown,
     });
   });
 
   it("should update presence when editing an item", async () => {
-    render(
-      <InventoryProvider>
-        <TestComponent />
-      </InventoryProvider>
-    );
+    renderWithProvider(<TestComponent />);
 
     await waitFor(() =>
       expect(screen.queryByText("Loading...")).not.toBeInTheDocument()
@@ -324,16 +306,19 @@ describe("InventoryContext", () => {
     const calls = mocks.subscribe.mock.calls as [unknown][];
     const syncSubCallback = calls.find((c) => typeof c[0] === "function")?.[0];
     if (typeof syncSubCallback === "function") {
-      (syncSubCallback as (status: string) => void)("SUBSCRIBED");
+      act(() => {
+        (syncSubCallback as (status: string) => void)("SUBSCRIBED");
+      });
     }
     mocks.track.mockClear();
 
     // Click edit
     const btn = screen.getByTestId("edit-btn");
-    btn.click();
+    act(() => {
+      btn.click();
+    });
 
     await waitFor(() => {
-      // Verify channel was created multiple times (initial + re-sync)
       expect(mocks.channel.mock.calls.length).toBeGreaterThan(1);
     });
   });

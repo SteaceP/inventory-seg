@@ -52,7 +52,7 @@ interface StockAdjustmentDialogProps {
 
 type Mode = "menu" | "add" | "remove" | "selectLocation";
 
-const MotionBox = motion(Box);
+const MotionBox = motion.create(Box);
 
 const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
   open,

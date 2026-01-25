@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
 import Settings from "./Settings";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -109,7 +109,7 @@ describe("Settings Page", () => {
     mockUpsert.mockResolvedValue({ error: null });
   });
 
-  it("renders all setting sections", () => {
+  it("renders all setting sections", async () => {
     renderWithProviders(<Settings />);
 
     expect(screen.getByText("settings.title")).toBeInTheDocument();
@@ -117,13 +117,21 @@ describe("Settings Page", () => {
     expect(screen.getByTestId("notification-section")).toBeInTheDocument();
     expect(screen.getByTestId("appearance-section")).toBeInTheDocument();
     expect(screen.getByTestId("security-section")).toBeInTheDocument();
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
   });
 
-  it("renders save button", () => {
+  it("renders save button", async () => {
     renderWithProviders(<Settings />);
     expect(
       screen.getByRole("button", { name: /settings.save/i })
     ).toBeInTheDocument();
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
   });
 
   it("loads user data on mount", async () => {
@@ -131,8 +139,6 @@ describe("Settings Page", () => {
 
     await waitFor(() => {
       expect(mockGetUser).toHaveBeenCalled();
-      // Supabase chain is a bit hard to mock perfectly with dot chaining in just one line,
-      // but we verify the effect triggered.
     });
   });
 });

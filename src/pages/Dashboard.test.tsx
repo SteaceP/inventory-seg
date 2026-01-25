@@ -116,14 +116,18 @@ describe("Dashboard Page", () => {
     });
   });
 
-  it("renders dashboard title and welcome message", () => {
+  it("renders dashboard title and welcome message", async () => {
     renderWithProviders(<Dashboard />);
-
     expect(screen.getByText("dashboard.title")).toBeInTheDocument();
     expect(screen.getByText("dashboard.welcome")).toBeInTheDocument();
+
+    // Wait for daily stats to avoid act warning
+    await waitFor(() => {
+      expect(screen.getByText("+10 / -5")).toBeInTheDocument();
+    });
   });
 
-  it("calculates and displays stats correctly", () => {
+  it("calculates and displays stats correctly", async () => {
     renderWithProviders(<Dashboard />);
 
     // Total Items: 3
@@ -138,6 +142,10 @@ describe("Dashboard Page", () => {
     // Top Category: Cat1 (2 items) vs Cat2 (1 item)
     expect(screen.getByText("Cat1")).toBeInTheDocument();
     expect(screen.getByText("dashboard.topCategory")).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByText("+10 / -5")).toBeInTheDocument();
+    });
   });
 
   it("fetches and displays daily stats", async () => {
@@ -167,10 +175,14 @@ describe("Dashboard Page", () => {
     });
   });
 
-  it("renders child components", () => {
+  it("renders child components", async () => {
     renderWithProviders(<Dashboard />);
 
     expect(screen.getByTestId("stock-health")).toBeInTheDocument();
     expect(screen.getAllByTestId("quick-actions")[0]).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByText("+10 / -5")).toBeInTheDocument();
+    });
   });
 });
