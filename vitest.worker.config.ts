@@ -5,6 +5,10 @@ import { loadEnv } from "vite";
 const env = loadEnv("", process.cwd(), "");
 Object.assign(process.env, env);
 
+// Fallback for D1 Database ID to satisfy TypeScript and provide a default for tests
+const D1_DATABASE_ID =
+  process.env.D1_DATABASE_ID || "00000000-0000-0000-0000-000000000000";
+
 export default defineWorkersConfig({
   test: {
     // Pool for Cloudflare Workers
@@ -24,7 +28,7 @@ export default defineWorkersConfig({
             binding: "AI",
           },
           d1Databases: {
-            DB: process.env.D1_DATABASE_ID,
+            DB: D1_DATABASE_ID,
           },
           assets: {
             directory: "./public",

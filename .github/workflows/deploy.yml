@@ -36,6 +36,8 @@ jobs:
         run: npm run test:all
         env:
           D1_DATABASE_ID: ${{ vars.D1_DATABASE_ID }}
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
 
       - name: Build
         run: npm run build
