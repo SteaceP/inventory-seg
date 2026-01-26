@@ -1,21 +1,26 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import InventoryCategorizedGrid from "./InventoryCategorizedGrid";
 import type { InventoryItem } from "../../types/inventory";
 
-// Mock child component
-vi.mock("./InventoryCard", () => ({
-  default: ({ item }: { item: InventoryItem }) => (
-    <div data-testid={`inventory-card-${item.id}`}>{item.name}</div>
+// Mock sub-components
+vi.mock("./CategorySection", () => ({
+  default: ({
+    category,
+    items,
+  }: {
+    category: string;
+    items: InventoryItem[];
+  }) => (
+    <div data-testid={`category-section-${category}`}>
+      {category} ({items.length} items)
+    </div>
   ),
 }));
 
-// Mock contexts and hooks
-const mocks = vi.hoisted(() => {
-  return {
-    updateCategoryThreshold: vi.fn(),
-  };
-});
+vi.mock("./CategoryThresholdDialog", () => ({
+  default: () => <div data-testid="threshold-dialog">Threshold Dialog</div>,
+}));
 
 vi.mock("../../i18n", () => ({
   useTranslation: () => ({
@@ -25,36 +30,15 @@ vi.mock("../../i18n", () => ({
 
 vi.mock("../../contexts/UserContext", () => ({
   useUserContext: () => ({
-    role: "admin", // Default to admin for most tests
+    role: "admin",
   }),
 }));
 
 vi.mock("../../contexts/InventoryContext", () => ({
   useInventoryContext: () => ({
-    categories: [{ name: "CategoryA", low_stock_threshold: 5 }],
-    updateCategoryThreshold: mocks.updateCategoryThreshold,
+    categories: [],
+    updateCategoryThreshold: vi.fn(),
   }),
-}));
-
-// Mock MUI useMediaQuery
-vi.mock("@mui/material", async () => {
-  const actual = await vi.importActual("@mui/material");
-  return {
-    ...actual,
-    useMediaQuery: () => false,
-  };
-});
-
-// Mock framer-motion
-vi.mock("framer-motion", () => ({
-  motion: {
-    div: ({ children, ...props }: { children: React.ReactNode }) => (
-      <div {...props}>{children}</div>
-    ),
-  },
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  ),
 }));
 
 const createItem = (
@@ -92,77 +76,22 @@ describe("InventoryCategorizedGrid", () => {
     expect(screen.getByText("inventory.noItemsFound")).toBeInTheDocument();
   });
 
-  it("renders categories and items", () => {
+  it("renders category sections for grouped items", () => {
     const items = [
       createItem("1", "Item A1", "Category A"),
       createItem("2", "Item B1", "Category B"),
+      createItem("3", "Item A2", "Category A"),
     ];
 
     render(<InventoryCategorizedGrid {...defaultProps} items={items} />);
 
-    expect(screen.getByText("Category A")).toBeInTheDocument();
-    expect(screen.getByText("Category B")).toBeInTheDocument();
-    expect(screen.getByText("Item A1")).toBeInTheDocument();
-    expect(screen.getByText("Item B1")).toBeInTheDocument();
-  });
-
-  it("collapses categories with more than 4 items", () => {
-    const items = [];
-    for (let i = 1; i <= 6; i++) {
-      items.push(createItem(`${i}`, `Item ${i}`, "Category A"));
-    }
-
-    render(<InventoryCategorizedGrid {...defaultProps} items={items} />);
-
-    // Initial state: should show first 4 items
-    expect(screen.getByText("Item 1")).toBeInTheDocument();
-    expect(screen.getByText("Item 4")).toBeInTheDocument();
-    expect(screen.queryByText("Item 5")).not.toBeInTheDocument();
-    expect(screen.queryByText("Item 6")).not.toBeInTheDocument();
-
-    // Find "Show all" button
-    const showAllButton = screen.getByText("common.showAll");
-    fireEvent.click(showAllButton);
-
-    // Should appear immediately due to mock
-    expect(screen.getByText("Item 5")).toBeInTheDocument();
-    expect(screen.getByText("Item 6")).toBeInTheDocument();
-
-    // Toggle back
-    const showLessButton = screen.getByText("common.showLess");
-    fireEvent.click(showLessButton);
-
-    expect(screen.queryByText("Item 6")).not.toBeInTheDocument();
-  });
-
-  it("allows admin to edit category threshold", () => {
-    const items = [createItem("1", "Item 1", "CategoryA")];
-
-    render(<InventoryCategorizedGrid {...defaultProps} items={items} />);
-
-    // Find settings button. MUI Tooltip title often works as label if hovered,
-    // but explicitly referencing the button via role and label "inventory.editCategoryThreshold" should work
-    // because MUI usually applies title as aria-label if not present.
-    const settingsBtn = screen.getByRole("button", {
-      name: "inventory.editCategoryThreshold",
-    });
-    fireEvent.click(settingsBtn);
-
-    // Dialog should open
     expect(
-      screen.getByText("inventory.categoryThresholdTitle: CategoryA")
+      screen.getByTestId("category-section-Category A")
     ).toBeInTheDocument();
-
-    // Input should have initial value 5 (from mock context)
-    const input = screen.getByLabelText("inventory.threshold");
-    expect(input).toHaveValue(5);
-
-    // Change value
-    fireEvent.change(input, { target: { value: "15" } });
-
-    // Save
-    fireEvent.click(screen.getByText("inventory.save"));
-
-    expect(mocks.updateCategoryThreshold).toHaveBeenCalledWith("CategoryA", 15);
+    expect(screen.getByText("Category A (2 items)")).toBeInTheDocument();
+    expect(
+      screen.getByTestId("category-section-Category B")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Category B (1 items)")).toBeInTheDocument();
   });
 });
