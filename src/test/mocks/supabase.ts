@@ -1,7 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { vi, type Mock } from "vitest";
 
 /**
  * Centralized Supabase client mocking utilities
+ * Note: Type safety is intentionally relaxed here to create flexible mocks
  */
 
 export interface MockSupabaseResponse<T> {
@@ -41,34 +46,31 @@ export const createMockSupabaseClient = () => {
 
   const mockRemoveChannel = vi.fn();
 
-  // Query builder mocks
+  // Query builder mocks (only keeping the ones we actually return)
   const mockEq = vi.fn();
-  const mockNeq = vi.fn();
-  const mockGt = vi.fn();
-  const mockLt = vi.fn();
-  const mockIn = vi.fn();
   const mockOrder = vi.fn();
-  const mockLimit = vi.fn();
   const mockSingle = vi.fn();
-  const mockMaybeSingle = vi.fn();
 
   // Chainable query methods
   const createChainableMock = (
     finalResolver: Mock = vi.fn().mockResolvedValue({ data: [], error: null })
-  ) => {
-    const chain = {
-      eq: vi.fn().mockReturnValue(chain),
-      neq: vi.fn().mockReturnValue(chain),
-      gt: vi.fn().mockReturnValue(chain),
-      lt: vi.fn().mockReturnValue(chain),
-      in: vi.fn().mockReturnValue(chain),
-      order: vi.fn().mockReturnValue(chain),
-      limit: vi.fn().mockReturnValue(chain),
-      single: vi.fn(() => finalResolver()),
-      maybeSingle: vi.fn(() => finalResolver()),
-      then: (resolve: (value: unknown) => unknown) =>
-        finalResolver().then(resolve),
-    };
+  ): any => {
+    // Declare chain first to avoid circular reference errors
+    const chain: any = {};
+
+    // Now assign properties that reference chain
+    chain.eq = vi.fn().mockReturnValue(chain);
+    chain.neq = vi.fn().mockReturnValue(chain);
+    chain.gt = vi.fn().mockReturnValue(chain);
+    chain.lt = vi.fn().mockReturnValue(chain);
+    chain.in = vi.fn().mockReturnValue(chain);
+    chain.order = vi.fn().mockReturnValue(chain);
+    chain.limit = vi.fn().mockReturnValue(chain);
+    chain.single = vi.fn(() => finalResolver());
+    chain.maybeSingle = vi.fn(() => finalResolver());
+    chain.then = (resolve: (value: unknown) => unknown) =>
+      finalResolver().then(resolve);
+
     return chain;
   };
 

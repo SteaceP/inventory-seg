@@ -62,10 +62,8 @@ export const setupRouterMock = (customMocks?: {
       useLocation: () => location,
       useParams: () => params,
       useSearchParams: () => createMockSearchParams(),
-      Link: ({ children, to, onClick }: { children: React.ReactNode; to: string; onClick?: () => void }) => (
-        // eslint-disable-next-line jsx-a11y/anchor-is-valid
-        <a href={to} onClick={onClick}>{children}</a>
-      ),
+      // Link component mock - just pass through for testing
+      Link: actual.Link,
     };
   });
 
