@@ -6,7 +6,7 @@ import InventoryHeader from "../components/inventory/InventoryHeader";
 import InventoryCategorizedGrid from "../components/inventory/InventoryCategorizedGrid";
 import InventoryDialog from "../components/inventory/InventoryDialog";
 import InventoryScanner from "../components/inventory/InventoryScanner";
-import StockAdjustmentDialog from "../components/inventory/StockAdjustmentDialog";
+import StockAdjustmentDialog from "../components/inventory/StockAdjustmentDialog/index";
 import StockHistoryDialog from "../components/inventory/StockHistoryDialog";
 import ConfirmDialog from "../components/ConfirmDialog";
 import CategoryManagementDialog from "../components/inventory/CategoryManagementDialog";
