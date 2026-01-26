@@ -1,22 +1,29 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import AppearanceSection from "../AppearanceSection";
+import {
+  createMockTranslation,
+  createMockUserContext,
+} from "../../../test/mocks";
 
-// Mock contexts
+// Mock contexts using centralized utilities
 const mockToggleDarkMode = vi.fn();
 const mockToggleCompactView = vi.fn();
+const mockUser = createMockUserContext({
+  darkMode: false,
+  compactView: false,
+  toggleDarkMode: mockToggleDarkMode,
+  toggleCompactView: mockToggleCompactView,
+});
+
+const { t } = createMockTranslation();
 
 vi.mock("../../../contexts/UserContext", () => ({
-  useUserContext: () => ({
-    toggleDarkMode: mockToggleDarkMode,
-    toggleCompactView: mockToggleCompactView,
-  }),
+  useUserContext: () => mockUser,
 }));
 
 vi.mock("../../../i18n", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: () => ({ t }),
 }));
 
 describe("AppearanceSection", () => {

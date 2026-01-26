@@ -37,6 +37,10 @@ export const createMockUserContext = (overrides?: {
   language?: string;
   notifications?: boolean;
   emailAlerts?: boolean;
+  toggleDarkMode?: ReturnType<typeof vi.fn>;
+  toggleCompactView?: ReturnType<typeof vi.fn>;
+  updateSettings?: ReturnType<typeof vi.fn>;
+  refreshUser?: ReturnType<typeof vi.fn>;
 }) => {
   return {
     userId: overrides?.userId ?? "test-user-123",
@@ -49,8 +53,10 @@ export const createMockUserContext = (overrides?: {
     notifications: overrides?.notifications ?? true,
     emailAlerts: overrides?.emailAlerts ?? false,
     avatarUrl: null,
-    updateSettings: vi.fn(),
-    refreshUser: vi.fn(),
+    toggleDarkMode: overrides?.toggleDarkMode ?? vi.fn(),
+    toggleCompactView: overrides?.toggleCompactView ?? vi.fn(),
+    updateSettings: overrides?.updateSettings ?? vi.fn(),
+    refreshUser: overrides?.refreshUser ?? vi.fn(),
   };
 };
 

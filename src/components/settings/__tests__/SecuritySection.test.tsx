@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import SecuritySection from "../SecuritySection";
+import { createMockTranslation } from "../../../test/mocks";
 
 // Mock hooks
 const mockHandleError = vi.fn();
@@ -10,10 +11,9 @@ vi.mock("../../../hooks/useErrorHandler", () => ({
   }),
 }));
 
+const { t } = createMockTranslation();
 vi.mock("../../../i18n", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: () => ({ t }),
 }));
 
 const defaultProps = {
