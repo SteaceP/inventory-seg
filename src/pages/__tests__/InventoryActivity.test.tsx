@@ -2,23 +2,24 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import InventoryActivityPage from "../InventoryActivity";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { createMockTranslation, createMockActivity } from "../../test/mocks";
 
-// Mocks
+// Mock error handler
 const mockHandleError = vi.fn();
-const mockGetSession = vi.fn();
-
 vi.mock("../../hooks/useErrorHandler", () => ({
   useErrorHandler: () => ({
     handleError: mockHandleError,
   }),
 }));
 
+// Mock i18n
+const { t } = createMockTranslation();
 vi.mock("../../i18n", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: () => ({ t }),
 }));
 
+// Mock Supabase
+const mockGetSession = vi.fn();
 vi.mock("../../supabaseClient", () => ({
   supabase: {
     auth: {
@@ -51,23 +52,20 @@ const renderWithProviders = (ui: React.ReactElement) => {
   return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>);
 };
 
+// Create test data using factory
 const mockActivities = [
-  {
+  createMockActivity({
     id: "1",
     item_name: "Drill",
     action: "updated",
-    user_id: "user1",
-    created_at: new Date().toISOString(),
     changes: { action_type: "add", quantity: 5 },
-  },
-  {
+  }),
+  createMockActivity({
     id: "2",
     item_name: "Hammer",
     action: "deleted",
-    user_id: "user2",
-    created_at: new Date().toISOString(),
     changes: {},
-  },
+  }),
 ];
 
 describe("InventoryActivity Page", () => {

@@ -3,13 +3,10 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import Login from "../Login";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { createMockTranslation, createMockUserContext } from "../../test/mocks";
 
-// Mocks
+// Mock Supabase
 const mockSignInWithPassword = vi.fn();
-const mockSetLanguage = vi.fn();
-const mockNavigate = vi.fn();
-const mockLocation = { state: null };
-
 vi.mock("../../supabaseClient", () => ({
   supabase: {
     auth: {
@@ -19,19 +16,26 @@ vi.mock("../../supabaseClient", () => ({
   },
 }));
 
+// Mock UserContext
+const mockSetLanguage = vi.fn();
+const mockUser = createMockUserContext({
+  language: "en",
+});
+mockUser.setLanguage = mockSetLanguage;
+
 vi.mock("../../contexts/UserContext", () => ({
-  useUserContext: () => ({
-    language: "en",
-    setLanguage: mockSetLanguage,
-  }),
+  useUserContext: () => mockUser,
 }));
 
+// Mock i18n
+const { t } = createMockTranslation();
 vi.mock("../../i18n", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: () => ({ t }),
 }));
 
+// Mock router
+const mockNavigate = vi.fn();
+const mockLocation = { state: null };
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
   return {

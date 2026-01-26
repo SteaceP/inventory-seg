@@ -41,6 +41,7 @@ export const createMockUserContext = (overrides?: {
   toggleCompactView?: ReturnType<typeof vi.fn>;
   updateSettings?: ReturnType<typeof vi.fn>;
   refreshUser?: ReturnType<typeof vi.fn>;
+  setLanguage?: ReturnType<typeof vi.fn>;
 }) => {
   return {
     userId: overrides?.userId ?? "test-user-123",
@@ -57,6 +58,7 @@ export const createMockUserContext = (overrides?: {
     toggleCompactView: overrides?.toggleCompactView ?? vi.fn(),
     updateSettings: overrides?.updateSettings ?? vi.fn(),
     refreshUser: overrides?.refreshUser ?? vi.fn(),
+    setLanguage: overrides?.setLanguage ?? vi.fn(),
   };
 };
 
