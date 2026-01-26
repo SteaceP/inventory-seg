@@ -14,11 +14,13 @@ export const createMockAlertContext = (overrides?: {
   showInfo?: ReturnType<typeof vi.fn>;
   showError?: ReturnType<typeof vi.fn>;
   showSuccess?: ReturnType<typeof vi.fn>;
+  showWarning?: ReturnType<typeof vi.fn>;
 }) => {
   return {
     showInfo: overrides?.showInfo || vi.fn(),
     showError: overrides?.showError || vi.fn(),
     showSuccess: overrides?.showSuccess || vi.fn(),
+    showWarning: overrides?.showWarning || vi.fn(),
   };
 };
 

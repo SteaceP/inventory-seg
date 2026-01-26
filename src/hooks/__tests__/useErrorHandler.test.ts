@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useErrorHandler } from "../useErrorHandler";
 import { useAlert } from "../../contexts/AlertContext";
 import { reportError } from "../../utils/errorReporting";
+import { createMockAlertContext } from "../../test/mocks";
 
 // Mock dependencies
 vi.mock("../../contexts/AlertContext", () => ({
@@ -14,16 +15,11 @@ vi.mock("../../utils/errorReporting", () => ({
 }));
 
 describe("useErrorHandler", () => {
-  const mockShowError = vi.fn();
+  const mockAlert = createMockAlertContext();
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(useAlert).mockReturnValue({
-      showError: mockShowError,
-      showSuccess: vi.fn(),
-      showInfo: vi.fn(),
-      showWarning: vi.fn(),
-    });
+    vi.mocked(useAlert).mockReturnValue(mockAlert);
   });
 
   it("reports error to Sentry", () => {
@@ -52,7 +48,7 @@ describe("useErrorHandler", () => {
 
     result.current.handleError(error, message);
 
-    expect(mockShowError).toHaveBeenCalledWith(message);
+    expect(mockAlert.showError).toHaveBeenCalledWith(message);
   });
 
   it("does not show user alert when message is undefined", () => {
@@ -61,6 +57,6 @@ describe("useErrorHandler", () => {
 
     result.current.handleError(error);
 
-    expect(mockShowError).not.toHaveBeenCalled();
+    expect(mockAlert.showError).not.toHaveBeenCalled();
   });
 });
