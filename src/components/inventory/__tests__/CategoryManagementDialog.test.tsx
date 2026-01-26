@@ -2,12 +2,16 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import CategoryManagementDialog from "../CategoryManagementDialog";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import {
+  createMockTranslation,
+  createMockInventoryContext,
+  createMockCategory,
+} from "../../../test/mocks";
 
 // Mock i18n
+const { t } = createMockTranslation();
 vi.mock("../../../i18n", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: () => ({ t }),
 }));
 
 // Mock ErrorHandler
@@ -38,16 +42,16 @@ vi.mock("../../../supabaseClient", () => ({
   },
 }));
 
-// Mock InventoryContext
-const mockRefreshInventory = vi.fn();
+// Mock InventoryContext using centralized utilities
+const mockInventory = createMockInventoryContext({
+  categories: [
+    createMockCategory({ name: "Electronics", low_stock_threshold: 5 }),
+    createMockCategory({ name: "Furniture", low_stock_threshold: 10 }),
+  ],
+});
+
 vi.mock("../../../contexts/InventoryContext", () => ({
-  useInventoryContext: () => ({
-    categories: [
-      { name: "Electronics", low_stock_threshold: 5 },
-      { name: "Furniture", low_stock_threshold: 10 },
-    ],
-    refreshInventory: mockRefreshInventory,
-  }),
+  useInventoryContext: () => mockInventory,
 }));
 
 const theme = createTheme();
@@ -82,7 +86,7 @@ describe("CategoryManagementDialog", () => {
 
     await waitFor(() => {
       expect(mockInsert).toHaveBeenCalledWith({ name: "Books" });
-      expect(mockRefreshInventory).toHaveBeenCalled();
+      expect(mockInventory.refreshInventory).toHaveBeenCalled();
     });
   });
 
@@ -99,7 +103,7 @@ describe("CategoryManagementDialog", () => {
 
     await waitFor(() => {
       expect(mockDelete).toHaveBeenCalledWith("name", "Electronics"); // eq("name", name)
-      expect(mockRefreshInventory).toHaveBeenCalled();
+      expect(mockInventory.refreshInventory).toHaveBeenCalled();
     });
   });
 
@@ -127,7 +131,7 @@ describe("CategoryManagementDialog", () => {
           name: "Electronics",
         })
       );
-      expect(mockRefreshInventory).toHaveBeenCalled();
+      expect(mockInventory.refreshInventory).toHaveBeenCalled();
     });
   });
 });

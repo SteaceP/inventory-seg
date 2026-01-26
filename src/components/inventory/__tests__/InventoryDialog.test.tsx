@@ -2,6 +2,13 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import InventoryDialog from "../InventoryDialog";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import {
+  createMockTranslation,
+  createMockUserContext,
+  createMockInventoryContext,
+  createMockCategory,
+  createMockLocation,
+} from "../../../test/mocks";
 
 // Mock Child Components
 vi.mock("../ImageUploadField", () => ({
@@ -20,28 +27,27 @@ vi.mock("react-barcode", () => ({
   ),
 }));
 
-// Mock Contexts
+// Mock Contexts using centralized utilities
+const mockUser = createMockUserContext({ lowStockThreshold: 10 });
+const mockInventory = createMockInventoryContext({
+  categories: [
+    createMockCategory({ name: "Electronics", low_stock_threshold: 5 }),
+    createMockCategory({ name: "Furniture", low_stock_threshold: null }),
+  ],
+  locations: [createMockLocation({ id: "loc1", name: "Warehouse A" })],
+});
+const { t } = createMockTranslation();
+
 vi.mock("../../../contexts/UserContext", () => ({
-  useUserContext: () => ({
-    lowStockThreshold: 10,
-  }),
+  useUserContext: () => mockUser,
 }));
 
 vi.mock("../../../contexts/InventoryContext", () => ({
-  useInventoryContext: () => ({
-    categories: [
-      { name: "Electronics", low_stock_threshold: 5 },
-      { name: "Furniture", low_stock_threshold: null },
-    ],
-    locations: [{ id: "loc1", name: "Warehouse A" }],
-  }),
+  useInventoryContext: () => mockInventory,
 }));
 
-// Mock Translation
 vi.mock("../../../i18n", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: () => ({ t }),
 }));
 
 const theme = createTheme();

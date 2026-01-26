@@ -3,49 +3,62 @@ import { render, screen, waitFor } from "@testing-library/react";
 import Dashboard from "../Dashboard";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { MemoryRouter } from "react-router-dom";
+import {
+  createMockTranslation,
+  createMockUserContext,
+  createMockInventoryContext,
+  createMockInventoryItem,
+  createMockCategory,
+} from "../../test/mocks";
 
-// Mocks
-const mockHandleError = vi.fn();
+// Create test data using factories
 const mockInventoryItems = [
-  {
+  createMockInventoryItem({
     id: "1",
     name: "Item 1",
     category: "Cat1",
     stock: 10,
     low_stock_threshold: 5,
-  },
-  {
+  }),
+  createMockInventoryItem({
     id: "2",
     name: "Item 2",
     category: "Cat1",
     stock: 2,
     low_stock_threshold: 5,
-  }, // Low stock
-  {
+  }), // Low stock
+  createMockInventoryItem({
     id: "3",
     name: "Item 3",
     category: "Cat2",
     stock: 20,
     low_stock_threshold: 5,
-  },
-];
-const mockCategories = [
-  { name: "Cat1", low_stock_threshold: 5 },
-  { name: "Cat2", low_stock_threshold: 10 },
+  }),
 ];
 
+const mockCategories = [
+  createMockCategory({ name: "Cat1", low_stock_threshold: 5 }),
+  createMockCategory({ name: "Cat2", low_stock_threshold: 10 }),
+];
+
+// Mock contexts using centralized utilities
+const mockHandleError = vi.fn();
+const mockUser = createMockUserContext({
+  lowStockThreshold: 5,
+  compactView: false,
+});
+const mockInventory = createMockInventoryContext({
+  items: mockInventoryItems,
+  categories: mockCategories,
+});
+const { t } = createMockTranslation();
+
 vi.mock("../../contexts/UserContext", () => ({
-  useUserContext: () => ({
-    lowStockThreshold: 5,
-    compactView: false,
-  }),
+  useUserContext: () => mockUser,
 }));
 
 vi.mock("../../contexts/InventoryContext", () => ({
-  useInventoryContext: () => ({
-    items: mockInventoryItems,
-    categories: mockCategories,
-  }),
+  useInventoryContext: () => mockInventory,
 }));
 
 vi.mock("../../hooks/useErrorHandler", () => ({
@@ -55,9 +68,7 @@ vi.mock("../../hooks/useErrorHandler", () => ({
 }));
 
 vi.mock("../../i18n", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: () => ({ t }),
 }));
 
 vi.mock("../../supabaseClient", () => ({
