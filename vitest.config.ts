@@ -19,6 +19,20 @@ export default defineConfig({
     // Enable globals like 'describe', 'it', 'expect'
     globals: true,
 
+    // Test timeouts for CI/CD reliability
+    testTimeout: 10000, // 10 seconds per test
+    hookTimeout: 10000, // 10 seconds per hook (beforeEach, afterEach)
+    teardownTimeout: 10000, // 10 seconds for cleanup
+
+    // Parallelization for faster test execution
+    pool: "threads",
+    poolOptions: {
+      threads: {
+        singleThread: false, // Enable parallel test execution
+        isolate: true, // Isolate test contexts for safety
+      },
+    },
+
     // Coverage configuration
     coverage: {
       provider: "v8",
