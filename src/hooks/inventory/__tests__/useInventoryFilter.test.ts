@@ -1,7 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useInventoryFilter } from "../useInventoryFilter";
-import type { InventoryItem, InventoryCategory } from "../../../types/inventory";
+import type {
+  InventoryItem,
+  InventoryCategory,
+} from "../../../types/inventory";
 
 // Mock React Router
 const mockSearchParams = new URLSearchParams();

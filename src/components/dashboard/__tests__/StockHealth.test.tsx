@@ -3,7 +3,10 @@ import { describe, it, expect, vi } from "vitest";
 import StockHealth from "../StockHealth";
 import { ThemeProvider, createTheme } from "@mui/material";
 
-import type { InventoryItem, InventoryCategory } from "../../../types/inventory";
+import type {
+  InventoryItem,
+  InventoryCategory,
+} from "../../../types/inventory";
 
 // Mock data containers
 const mockItems: { current: Partial<InventoryItem>[] } = { current: [] };
