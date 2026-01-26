@@ -13,19 +13,20 @@ const createItem = (
   id: string,
   name: string,
   category: string | null
-): InventoryItem => ({
-  id,
-  name,
-  category,
-  sku: `SKU-${id}`,
-  stock: 10,
-  unit_cost: 5,
-  image_url: null,
-  low_stock_threshold: null,
-  notes: null,
-  created_at: "2023-01-01",
-  location: null,
-});
+): InventoryItem =>
+  ({
+    id,
+    name,
+    category: category as string,
+    sku: `SKU-${id}`,
+    stock: 10,
+    unit_cost: 5,
+    image_url: null,
+    low_stock_threshold: null,
+    notes: null,
+    created_at: "2023-01-01",
+    location: null,
+  }) as InventoryItem;
 
 describe("useInventoryCategorization", () => {
   it("groups items by category", () => {
