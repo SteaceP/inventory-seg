@@ -2,24 +2,28 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import NotificationSection from "../NotificationSection";
 import type { Session } from "@supabase/supabase-js";
+import {
+  createMockAlertContext,
+  createMockTranslation,
+  createMockUserContext,
+} from "../../../test/mocks";
 
 // Hoist mocks to avoid unbound-method lint errors
 const mocks = vi.hoisted(() => ({
   getSession: vi.fn(),
 }));
 
-// Mock AlertContext
-const mockShowError = vi.fn();
-const mockShowSuccess = vi.fn();
+// Mock contexts using centralized utilities
+const mockAlert = createMockAlertContext();
+const mockHandleError = vi.fn();
+const mockUser = createMockUserContext({ userId: "user-123" });
+const { t } = createMockTranslation();
+
 vi.mock("../../../contexts/AlertContext", () => ({
-  useAlert: () => ({
-    showError: mockShowError,
-    showSuccess: mockShowSuccess,
-  }),
+  useAlert: () => mockAlert,
 }));
 
 // Mock useErrorHandler
-const mockHandleError = vi.fn();
 vi.mock("../../../hooks/useErrorHandler", () => ({
   useErrorHandler: () => ({
     handleError: mockHandleError,
@@ -28,16 +32,12 @@ vi.mock("../../../hooks/useErrorHandler", () => ({
 
 // Mock UserContext
 vi.mock("../../../contexts/UserContext", () => ({
-  useUserContext: () => ({
-    userId: "user-123",
-  }),
+  useUserContext: () => mockUser,
 }));
 
 // Mock i18n
 vi.mock("../../../i18n", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: () => ({ t }),
 }));
 
 // Mock supabaseClient
@@ -129,7 +129,7 @@ describe("NotificationSection", () => {
         "/api/send-test-push",
         expect.any(Object)
       );
-      expect(mockShowSuccess).toHaveBeenCalledWith(
+      expect(mockAlert.showSuccess).toHaveBeenCalledWith(
         "notifications.testMobileSuccess"
       );
     });

@@ -8,36 +8,50 @@ import {
 } from "@testing-library/react";
 import StockLocationsPage from "../StockLocations";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import {
+  createMockAlertContext,
+  createMockTranslation,
+  createMockInventoryContext,
+  createMockLocation,
+} from "../../test/mocks";
 
-// Mocks
-const mockHandleError = vi.fn();
-const mockShowSuccess = vi.fn();
-const mockShowError = vi.fn();
-const mockRefreshLocations = vi.fn();
-
+// Create mock data using factories
 const mockLocations = [
-  {
+  createMockLocation({
     id: "1",
     name: "Warehouse A",
     parent_id: null,
     description: "Main Warehouse",
-  },
-  { id: "2", name: "Shelf 1", parent_id: "1", description: "Top Shelf" },
-  { id: "3", name: "Store B", parent_id: null, description: "Retail Store" },
+  }),
+  createMockLocation({
+    id: "2",
+    name: "Shelf 1",
+    parent_id: "1",
+    description: "Top Shelf",
+  }),
+  createMockLocation({
+    id: "3",
+    name: "Store B",
+    parent_id: null,
+    description: "Retail Store",
+  }),
 ];
 
+// Centralized mocks
+const mockHandleError = vi.fn();
+const mockAlert = createMockAlertContext();
+const mockInventory = createMockInventoryContext({
+  locations: mockLocations,
+  refreshInventory: vi.fn(),
+});
+const { t } = createMockTranslation();
+
 vi.mock("../../contexts/InventoryContext", () => ({
-  useInventoryContext: () => ({
-    locations: mockLocations,
-    refreshInventory: mockRefreshLocations,
-  }),
+  useInventoryContext: () => mockInventory,
 }));
 
 vi.mock("../../contexts/AlertContext", () => ({
-  useAlert: () => ({
-    showSuccess: mockShowSuccess,
-    showError: mockShowError,
-  }),
+  useAlert: () => mockAlert,
 }));
 
 vi.mock("../../hooks/useErrorHandler", () => ({
@@ -47,9 +61,7 @@ vi.mock("../../hooks/useErrorHandler", () => ({
 }));
 
 vi.mock("../../i18n", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: () => ({ t }),
 }));
 
 const mockSupabaseSelect = vi.fn();
@@ -154,10 +166,10 @@ describe("StockLocationsPage", () => {
           parent_id: null,
         }),
       ]);
-      expect(mockShowSuccess).toHaveBeenCalledWith(
+      expect(mockAlert.showSuccess).toHaveBeenCalledWith(
         "inventory.locations.success.add"
       );
-      expect(mockRefreshLocations).toHaveBeenCalled();
+      expect(mockInventory.refreshInventory).toHaveBeenCalled();
     });
   });
 
@@ -192,7 +204,7 @@ describe("StockLocationsPage", () => {
         expect.objectContaining({ name: "Warehouse A Updated" })
       );
       expect(mockSupabaseEq).toHaveBeenCalledWith("id", "1"); // Warehouse A id
-      expect(mockShowSuccess).toHaveBeenCalledWith(
+      expect(mockAlert.showSuccess).toHaveBeenCalledWith(
         "inventory.locations.success.edit"
       );
     });
@@ -218,7 +230,7 @@ describe("StockLocationsPage", () => {
       expect(confirmSpy).toHaveBeenCalled();
       expect(mockSupabaseDelete).toHaveBeenCalled();
       expect(mockSupabaseEq).toHaveBeenCalledWith("id", "1");
-      expect(mockShowSuccess).toHaveBeenCalledWith(
+      expect(mockAlert.showSuccess).toHaveBeenCalledWith(
         "inventory.locations.success.delete"
       );
     });
