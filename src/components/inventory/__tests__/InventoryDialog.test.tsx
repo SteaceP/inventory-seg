@@ -1,0 +1,144 @@
+import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import InventoryDialog from "../InventoryDialog";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+
+// Mock Child Components
+vi.mock("../ImageUploadField", () => ({
+  default: () => <div data-testid="image-upload-field">Image Upload</div>,
+}));
+
+vi.mock("../StockLocationFields", () => ({
+  default: () => (
+    <div data-testid="stock-location-fields">Stock Location Fields</div>
+  ),
+}));
+
+vi.mock("react-barcode", () => ({
+  default: ({ value }: { value: string }) => (
+    <div data-testid="barcode">{value}</div>
+  ),
+}));
+
+// Mock Contexts
+vi.mock("../../../contexts/UserContext", () => ({
+  useUserContext: () => ({
+    lowStockThreshold: 10,
+  }),
+}));
+
+vi.mock("../../../contexts/InventoryContext", () => ({
+  useInventoryContext: () => ({
+    categories: [
+      { name: "Electronics", low_stock_threshold: 5 },
+      { name: "Furniture", low_stock_threshold: null },
+    ],
+    locations: [{ id: "loc1", name: "Warehouse A" }],
+  }),
+}));
+
+// Mock Translation
+vi.mock("../../../i18n", () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+  }),
+}));
+
+const theme = createTheme();
+
+const defaultProps = {
+  open: true,
+  editingItem: null,
+  formData: {},
+  isMobile: false,
+  onClose: vi.fn(),
+  onSave: vi.fn(),
+  onFormDataChange: vi.fn(),
+  onGenerateSKU: vi.fn(),
+  onImageUpload: vi.fn(),
+  getBarcodeFormat: vi.fn().mockReturnValue("CODE128"),
+  role: "admin",
+  loading: false,
+};
+
+const renderWithTheme = (component: React.ReactNode) => {
+  return render(<ThemeProvider theme={theme}>{component}</ThemeProvider>);
+};
+
+describe("InventoryDialog", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("renders correctly in Add mode", () => {
+    renderWithTheme(<InventoryDialog {...defaultProps} />);
+    expect(screen.getByText("inventory.add")).toBeInTheDocument();
+    expect(screen.getByLabelText("inventory.nameLabel")).toBeInTheDocument();
+    expect(screen.getByText("inventory.save")).toBeInTheDocument();
+  });
+
+  it("renders correctly in Edit mode", () => {
+    renderWithTheme(
+      <InventoryDialog
+        {...defaultProps}
+        editingItem={{
+          id: "1",
+          name: "Item 1",
+          category: "Electronics",
+          sku: "123",
+          stock: 10,
+          unit_cost: 10,
+          image_url: null,
+          location: null,
+          low_stock_threshold: 5,
+          notes: "",
+          created_at: "",
+        }}
+      />
+    );
+    expect(screen.getByText("inventory.edit")).toBeInTheDocument();
+  });
+
+  it("calls onFormDataChange when name input changes", () => {
+    renderWithTheme(<InventoryDialog {...defaultProps} />);
+    const nameInput = screen.getByLabelText("inventory.nameLabel");
+    fireEvent.change(nameInput, { target: { value: "New Name" } });
+    expect(defaultProps.onFormDataChange).toHaveBeenCalledWith(
+      expect.objectContaining({ name: "New Name" })
+    );
+  });
+
+  it("calls onSave when save button is clicked", () => {
+    renderWithTheme(<InventoryDialog {...defaultProps} />);
+    const saveButton = screen.getByText("inventory.save");
+    fireEvent.click(saveButton);
+    expect(defaultProps.onSave).toHaveBeenCalled();
+  });
+
+  it("calls onClose when cancel button is clicked", () => {
+    renderWithTheme(<InventoryDialog {...defaultProps} />);
+    const cancelButton = screen.getByText("inventory.cancel");
+    fireEvent.click(cancelButton);
+    expect(defaultProps.onClose).toHaveBeenCalled();
+  });
+
+  it("shows barcode when SKU is present", () => {
+    renderWithTheme(
+      <InventoryDialog {...defaultProps} formData={{ sku: "12345" }} />
+    );
+    expect(screen.getByTestId("barcode")).toHaveTextContent("12345");
+  });
+
+  it("calls onGenerateSKU when refresh button is clicked (admin)", () => {
+    renderWithTheme(<InventoryDialog {...defaultProps} role="admin" />);
+    const generateButton = screen.getByLabelText("inventory.generateSku");
+    fireEvent.click(generateButton);
+    expect(defaultProps.onGenerateSKU).toHaveBeenCalled();
+  });
+
+  it("disables inputs for non-admin users", () => {
+    renderWithTheme(<InventoryDialog {...defaultProps} role="user" />);
+    const nameInput = screen.getByLabelText("inventory.nameLabel");
+    expect(nameInput).toBeDisabled();
+  });
+});
