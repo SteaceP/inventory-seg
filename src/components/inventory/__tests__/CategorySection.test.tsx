@@ -2,6 +2,10 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import CategorySection from "../CategorySection";
 import type { InventoryItem } from "../../../types/inventory";
+import {
+  createMockTranslation,
+  createMockInventoryItem,
+} from "../../../test/mocks";
 
 // Mock InventoryCard
 vi.mock("../InventoryCard", () => ({
@@ -10,10 +14,10 @@ vi.mock("../InventoryCard", () => ({
   ),
 }));
 
+// Mock i18n
+const { t } = createMockTranslation();
 vi.mock("../../../i18n", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: () => ({ t }),
 }));
 
 // Mock MUI useMediaQuery
@@ -37,19 +41,17 @@ vi.mock("framer-motion", () => ({
   ),
 }));
 
-const createItem = (id: string, name: string): InventoryItem => ({
-  id,
-  name,
-  category: "Test",
-  sku: `SKU-${id}`,
-  stock: 10,
-  unit_cost: 5,
-  image_url: null,
-  low_stock_threshold: null,
-  notes: null,
-  created_at: "2023-01-01",
-  location: null,
-});
+// Helper function using factory
+const createItem = (id: string, name: string): InventoryItem =>
+  createMockInventoryItem({
+    id,
+    name,
+    category: "Test",
+    sku: `SKU-${id}`,
+    stock: 10,
+    unit_cost: 5,
+    created_at: "2023-01-01",
+  });
 
 describe("CategorySection", () => {
   const defaultProps = {

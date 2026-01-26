@@ -1,12 +1,12 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import InventorySearch from "../InventorySearch";
+import { createMockTranslation } from "../../../test/mocks";
 
 // Mock translation hook
+const { t } = createMockTranslation();
 vi.mock("../../../i18n", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: () => ({ t }),
 }));
 
 describe("InventorySearch", () => {

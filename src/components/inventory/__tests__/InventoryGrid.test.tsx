@@ -3,6 +3,10 @@ import { describe, it, expect, vi } from "vitest";
 import InventoryGrid from "../InventoryGrid";
 import type { InventoryItem } from "../../../types/inventory";
 import { ThemeProvider, createTheme } from "@mui/material";
+import {
+  createMockUserContext,
+  createMockInventoryItem,
+} from "../../../test/mocks";
 
 // Mock framer-motion
 vi.mock("framer-motion", () => ({
@@ -17,26 +21,23 @@ vi.mock("../InventoryCard", () => ({
 }));
 
 // Mock UserContext
+const mockUser = createMockUserContext({ compactView: false });
 vi.mock("../../../contexts/UserContext", () => ({
-  useUserContext: () => ({ compactView: false }),
+  useUserContext: () => mockUser,
 }));
 
 const theme = createTheme();
 
 describe("InventoryGrid", () => {
-  const mockItems: InventoryItem[] = Array.from({ length: 20 }, (_, i) => ({
-    id: `item-${i}`,
-    name: `Item ${i}`,
-    category: "Test",
-    sku: null,
-    stock: 10,
-    created_at: null,
-    image_url: null,
-    location: null,
-    low_stock_threshold: null,
-    notes: null,
-    unit_cost: null,
-  }));
+  // Generate test data using factory
+  const mockItems: InventoryItem[] = Array.from({ length: 20 }, (_, i) =>
+    createMockInventoryItem({
+      id: `item-${i}`,
+      name: `Item ${i}`,
+      category: "Test",
+      stock: 10,
+    })
+  );
 
   const defaultProps = {
     items: mockItems,
