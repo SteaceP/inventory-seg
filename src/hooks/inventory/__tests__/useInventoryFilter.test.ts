@@ -177,7 +177,7 @@ describe("useInventoryFilter", () => {
     // Carrot (stock 2 <= global thresh 3)
     // Should NOT include:
     // Banana (stock 20 > cat thresh 5)
-    // Empty Box (stock 0, but logic says (item.stock || 0) > 0 for low stock filter usually?
+    // Empty Box (stock 0)
     // Check code: (item.stock || 0) <= effectiveThreshold && (item.stock || 0) > 0
     // So Empty Box is EXCLUDED.
 

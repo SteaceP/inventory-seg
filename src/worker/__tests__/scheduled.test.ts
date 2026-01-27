@@ -108,7 +108,6 @@ describe("handleScheduled", () => {
     const aiRunSpy = env.AI.run as Mock;
     expect(aiRunSpy).not.toHaveBeenCalled();
     // Should NOT send notifications
-    // We need to import the mocked module to check it, or just rely on 'sendNotification' mock above if we exported it?
     // Since we mocked the module 'web-push', we can import it here to check.
     const webpush = await import("web-push");
     expect(webpush.default.sendNotification as Mock).not.toHaveBeenCalled();
@@ -292,9 +291,7 @@ describe("handleScheduled", () => {
     mockSql.mockResolvedValueOnce([amazonItem, bodItem]);
     // 3. Subscription (for Amazon notification)
     mockSql.mockResolvedValueOnce([
-      { subscription: { endpoint: "test" }, user_id: "u1" }, // Matches user_id assumption or ignores it?
-      // Wait, sendNotification fetches ALL subscriptions, it doesn't filter by user_id actually in the code (it notifies everyone who is subscribed)
-      // See: const subs = await sql<PushSubscriptionRow[]>`SELECT * FROM push_subscriptions`;
+      { subscription: { endpoint: "test" }, user_id: "u1" },
     ]);
     // 4. Subscription (for BOD notification, IF triggered)
     mockSql.mockResolvedValueOnce([

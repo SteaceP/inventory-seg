@@ -34,3 +34,16 @@ export interface InventoryContextType {
   setEditingId: (id: string | null) => void;
   broadcastInventoryChange: () => void;
 }
+
+export interface ActivityLog {
+  id: string;
+  created_at: string | null;
+  action: string;
+  changes?: {
+    action_type?: string;
+    stock?: number;
+    old_stock?: number;
+    location?: string;
+    [key: string]: unknown;
+  };
+}

@@ -1,4 +1,3 @@
-import webpush from "web-push";
 import postgres from "postgres";
 import { reportError } from "../errorReporting";
 import { verifyAuth } from "../auth";
@@ -10,7 +9,10 @@ import {
   validateStock,
   validateThreshold,
 } from "../validators";
-import type { Env, RequestBody, PushSubscriptionRow } from "../types";
+import type { Env, RequestBody } from "../types";
+import { getTranslation } from "../notifications/translations";
+import { sendEmail } from "../notifications/email";
+import { broadcastPush } from "../notifications/push";
 
 /**
  * Handle test push notification
@@ -30,64 +32,18 @@ export async function handleTestPush(
       return createResponse({ error: "Missing userId" }, 400, env, request);
     }
 
-    if (userId && env.HYPERDRIVE) {
-      const sql = postgres(env.HYPERDRIVE.connectionString);
-      try {
-        const subscriptions = await sql<PushSubscriptionRow[]>`
-          SELECT * FROM push_subscriptions WHERE user_id = ${userId}
-        `;
-
-        if (
-          subscriptions.length > 0 &&
-          env.VAPID_PUBLIC_KEY &&
-          env.VAPID_PRIVATE_KEY
-        ) {
-          const options = {
-            vapidDetails: {
-              subject: "mailto:admin@coderage.pro",
-              publicKey: env.VAPID_PUBLIC_KEY,
-              privateKey: env.VAPID_PRIVATE_KEY,
-            },
-          };
-
-          const payload = JSON.stringify({
-            title: "Push Notification Test",
-            body: "This is a test notification sent from the server!",
-            icon: "/icons/icon.svg",
-            data: { url: "/settings" },
-            tag: "test-notification",
-            requireInteraction: true,
-          });
-
-          await Promise.allSettled(
-            subscriptions.map((sub) =>
-              webpush
-                .sendNotification(sub.subscription, payload, options)
-                .catch((error: unknown) => {
-                  // If the subscription is no longer valid, delete it
-                  const status = (error as { statusCode?: number })?.statusCode;
-                  if (status === 410 || status === 404) {
-                    void sql`
-                        DELETE FROM push_subscriptions WHERE id = ${sub.id}
-                      `.catch((err: unknown) => {
-                      reportError(err);
-                    });
-                  }
-                })
-            )
-          );
-          return createResponse({ success: true }, 200, env, request);
-        }
-      } finally {
-        await sql.end();
-      }
-    }
-    return createResponse(
-      { error: "No subscriptions found" },
-      404,
-      env,
-      request
+    await broadcastPush(
+      {
+        userId,
+        title: "Push Notification Test",
+        body: "This is a test notification sent from the server!",
+        url: "/settings",
+        tag: "test-notification",
+      },
+      env
     );
+
+    return createResponse({ success: true }, 200, env, request);
   } catch (err) {
     reportError(err);
     return createResponse({ error: (err as Error).message }, 500, env, request);
@@ -161,16 +117,17 @@ export async function handleLowStockAlert(
     let language = "en";
     sql = postgres(env.HYPERDRIVE.connectionString);
     try {
-      if (userId) {
-        const settings = await sql<Array<{ language: string }>>`
-          SELECT language FROM user_settings WHERE user_id = ${userId} LIMIT 1
-        `;
-        if (settings && settings[0]) {
-          language = settings[0].language || "en";
-        }
+      const settings = await sql<Array<{ language: string }>>`
+        SELECT language FROM user_settings WHERE user_id = ${userId} LIMIT 1
+      `;
+      if (settings && settings[0]) {
+        language = settings[0].language || "en";
       }
     } catch (err) {
       reportError(err);
+    } finally {
+      await sql.end();
+      sql = undefined;
     }
 
     // Sanitize for HTML email
@@ -178,128 +135,42 @@ export async function handleLowStockAlert(
     const sanitizedThreshold = sanitizeHtml(threshold.toString());
     const sanitizedStock = sanitizeHtml(currentStock.toString());
 
-    // Translation dictionary
-    const translations: Record<string, Record<string, string>> = {
-      en: {
-        subject: `Low Stock Alert: ${sanitizedItemName}`,
-        title: "Low Stock Alert",
-        body: `The item "${sanitizedItemName}" is at ${sanitizedStock} units.`,
-        emailTitle: "Low Stock Alert",
-        emailIntro: `The following item has fallen below your threshold of <strong>${sanitizedThreshold}</strong>:`,
-        emailItem: "Item:",
-        emailStock: "Current Stock:",
-        emailFooter: "Please log in to your inventory dashboard to restock.",
-      },
-      fr: {
-        subject: `Alerte Stock Faible: ${sanitizedItemName}`,
-        title: "Alerte Stock Faible",
-        body: `L'article "${sanitizedItemName}" est à ${sanitizedStock} unités.`,
-        emailTitle: "Alerte Stock Faible",
-        emailIntro: `L'article suivant est tombé en dessous de votre seuil de <strong>${sanitizedThreshold}</strong> :`,
-        emailItem: "Article :",
-        emailStock: "Stock Actuel :",
-        emailFooter:
-          "Veuillez vous connecter à votre tableau de bord d'inventaire pour vous réapprovisionner.",
-      },
-      ar: {
-        subject: `تنبيه انخفاض المخزون: ${sanitizedItemName}`,
-        title: "تنبيه انخفاض المخزون",
-        body: `المنتج "${sanitizedItemName}" وصل إلى ${sanitizedStock} وحدة.`,
-        emailTitle: "تنبيه انخفاض المخزون",
-        emailIntro: `المنتج التالي انخفض عن الحد المسموح به <strong>${sanitizedThreshold}</strong>:`,
-        emailItem: "المنتج:",
-        emailStock: "المخزون الحالي:",
-        emailFooter: "يرجى تسجيل الدخول إلى لوحة التحكم لإعادة التعبئة.",
-      },
-    };
-
-    const t = translations[language] || translations.en;
-
     // --- 1. SEND EMAIL (BREVO) ---
-    if (env.BREVO_API_KEY && userEmail) {
-      await fetch("https://api.brevo.com/v3/smtp/email", {
-        method: "POST",
-        headers: {
-          "api-key": env.BREVO_API_KEY,
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          sender: {
-            name: "Inventaire SEG",
-            email: env.BREVO_SENDER_EMAIL || "noreply@coderage.pro",
-          },
-          to: [{ email: userEmail }],
-          subject: t.subject,
-          htmlContent: `
+    if (userEmail) {
+      const emailOptions = {
+        to: userEmail,
+        subject: getTranslation(language, "subject", {
+          itemName: sanitizedItemName,
+        }),
+        htmlContent: `
           <div style="font-family: sans-serif; padding: 20px; color: #333; direction: ${language === "ar" ? "rtl" : "ltr"};">
-            <h2 style="color: #d32f2f;">${t.emailTitle}</h2>
-            <p>${t.emailIntro}</p>
+            <h2 style="color: #d32f2f;">${getTranslation(language, "emailTitle")}</h2>
+            <p>${getTranslation(language, "emailIntro", { threshold: sanitizedThreshold })}</p>
             <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
-              <p style="margin: 5px 0;"><strong>${t.emailItem}</strong> ${sanitizedItemName}</p>
-              <p style="margin: 5px 0;"><strong>${t.emailStock}</strong> ${sanitizedStock}</p>
+              <p style="margin: 5px 0;"><strong>${getTranslation(language, "emailItem")}</strong> ${sanitizedItemName}</p>
+              <p style="margin: 5px 0;"><strong>${getTranslation(language, "emailStock")}</strong> ${sanitizedStock}</p>
             </div>
-            <p>${t.emailFooter}</p>
+            <p>${getTranslation(language, "emailFooter")}</p>
           </div>
         `,
-        }),
-      });
+      };
+      await sendEmail(emailOptions, env).catch(reportError);
     }
 
     // --- 2. BROADCAST PUSH NOTIFICATIONS ---
-    if (userId && env.HYPERDRIVE && sql) {
-      // Fetch subscriptions for this user from Hyperdrive
-      try {
-        const subscriptions = await sql<PushSubscriptionRow[]>`
-          SELECT * FROM push_subscriptions WHERE user_id = ${userId}
-        `;
-
-        if (subscriptions.length > 0) {
-          if (env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY) {
-            const options = {
-              vapidDetails: {
-                subject: "mailto:admin@coderage.pro",
-                publicKey: env.VAPID_PUBLIC_KEY,
-                privateKey: env.VAPID_PRIVATE_KEY,
-              },
-            };
-
-            const payload = JSON.stringify({
-              title: t.title,
-              body: t.body,
-              icon: "/icons/icon.svg",
-              data: { url: "/inventory?filter=lowStock" },
-              tag: `low-stock-${itemName}`,
-              requireInteraction: true,
-            });
-
-            // Send to all devices
-            const activeSql = sql;
-            await Promise.allSettled(
-              subscriptions.map((sub) =>
-                webpush
-                  .sendNotification(sub.subscription, payload, options)
-                  .catch((error: unknown) => {
-                    // If the subscription is no longer valid, delete it
-                    const status = (error as { statusCode?: number })
-                      ?.statusCode;
-                    if ((status === 410 || status === 404) && activeSql) {
-                      void activeSql`
-                        DELETE FROM push_subscriptions WHERE id = ${sub.id}
-                      `.catch((err: unknown) => {
-                        reportError(err);
-                      });
-                    }
-                  })
-              )
-            );
-          } else {
-            reportError(new Error("VAPID keys missing in env!"));
-          }
-        }
-      } catch (err) {
-        reportError(err);
-      }
-    }
+    await broadcastPush(
+      {
+        userId,
+        title: getTranslation(language, "title"),
+        body: getTranslation(language, "body", {
+          itemName: sanitizedItemName,
+          currentStock: sanitizedStock,
+        }),
+        url: "/inventory?filter=lowStock",
+        tag: `low-stock-${itemName}`,
+      },
+      env
+    ).catch(reportError);
 
     return createResponse({ success: true }, 200, env, request);
   } catch (error) {

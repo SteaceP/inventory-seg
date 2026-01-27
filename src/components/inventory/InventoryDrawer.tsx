@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { useErrorHandler } from "../../hooks/useErrorHandler";
+import React from "react";
 import { useInventoryContext } from "../../contexts/InventoryContext";
 import { useUserContext } from "../../contexts/UserContext";
 import {
@@ -15,7 +14,6 @@ import {
   AppBar,
   Toolbar,
   Grid,
-  ListItemText,
 } from "@mui/material";
 import {
   Close as CloseIcon,
@@ -30,7 +28,7 @@ import {
 } from "@mui/icons-material";
 import { useTranslation } from "../../i18n";
 import type { InventoryItem } from "../../types/inventory";
-import { supabase } from "../../supabaseClient";
+import InventoryActivityLog from "./InventoryActivityLog";
 
 interface InventoryDrawerProps {
   open: boolean;
@@ -39,19 +37,6 @@ interface InventoryDrawerProps {
   onEdit: (item: InventoryItem) => void;
   onDelete: (id: string) => void;
   onAdjustStock: (item: InventoryItem) => void;
-}
-
-interface ActivityLog {
-  id: string;
-  created_at: string | null;
-  action: string;
-  changes?: {
-    action_type?: string;
-    stock?: number;
-    old_stock?: number;
-    location?: string;
-    [key: string]: unknown;
-  };
 }
 
 const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
@@ -66,36 +51,6 @@ const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
   const { categories } = useInventoryContext();
   const { lowStockThreshold: globalThreshold } = useUserContext();
   // Removed showError as it was unused
-  const { handleError } = useErrorHandler();
-  const [activity, setActivity] = useState<ActivityLog[]>([]);
-
-  const fetchActivity = useCallback(async () => {
-    if (!item?.id) return;
-    try {
-      const { data, error } = await supabase
-        .from("inventory_activity")
-        .select("*")
-        .eq("inventory_id", item.id)
-        .order("created_at", { ascending: false })
-        .limit(3);
-
-      if (error) throw error;
-      setActivity((data as ActivityLog[]) || []);
-    } catch (err: unknown) {
-      handleError(
-        err,
-        t("errors.loadActivity") + ": " + (err as Error).message
-      );
-    } finally {
-      // Optional: Add any cleanup or finalization logic here
-    }
-  }, [item?.id, handleError, t]); // Added handleError and t to dependencies
-
-  useEffect(() => {
-    if (open && item?.id) {
-      void fetchActivity();
-    }
-  }, [open, item?.id, fetchActivity]);
 
   if (!item) return null;
 
@@ -331,79 +286,7 @@ const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
             </Button>
           </Box>
 
-          <Stack spacing={2}>
-            {activity.length === 0 ? (
-              <Paper
-                sx={{
-                  p: 3,
-                  textAlign: "center",
-                  bgcolor: "action.hover",
-                  borderRadius: 3,
-                }}
-              >
-                <HistoryIcon
-                  sx={{ fontSize: 40, color: "text.disabled", mb: 1 }}
-                />
-                <Typography variant="body2" color="text.secondary">
-                  {t("inventory.drawer.noHistory")}
-                </Typography>
-              </Paper>
-            ) : (
-              activity.map((log) => (
-                <Paper
-                  key={log.id}
-                  variant="outlined"
-                  sx={{ p: 2, borderRadius: 3 }}
-                >
-                  <ListItemText
-                    primary={log.action}
-                    secondary={
-                      <React.Fragment>
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          color="text.primary"
-                        >
-                          {log.created_at
-                            ? new Date(log.created_at).toLocaleString()
-                            : ""}
-                        </Typography>
-                        {log.changes && (
-                          <Box component="span" sx={{ display: "block" }}>
-                            {log.changes.action_type && (
-                              <Typography component="span" variant="caption">
-                                Action: {log.changes.action_type}
-                              </Typography>
-                            )}
-                            {log.changes.stock !== undefined && (
-                              <Typography component="span" variant="caption">
-                                New Stock: {log.changes.stock}
-                              </Typography>
-                            )}
-                            {log.changes.old_stock !== undefined && (
-                              <Typography component="span" variant="caption">
-                                (Was: {log.changes.old_stock})
-                              </Typography>
-                            )}
-                            {log.changes.location && (
-                              <Typography
-                                component="span"
-                                variant="caption"
-                                display="block"
-                                color="primary"
-                              >
-                                {log.changes.location}
-                              </Typography>
-                            )}
-                          </Box>
-                        )}
-                      </React.Fragment>
-                    }
-                  />
-                </Paper>
-              ))
-            )}
-          </Stack>
+          <InventoryActivityLog itemId={item.id} />
         </Box>
 
         <Box

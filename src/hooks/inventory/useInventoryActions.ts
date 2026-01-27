@@ -7,11 +7,8 @@ import { useTranslation } from "../../i18n";
 import { useErrorHandler } from "../useErrorHandler";
 import { logActivity } from "../../utils/activityUtils";
 import type { InventoryItem } from "../../types/inventory";
-import {
-  validateImageFile,
-  generateSecureFileName,
-  getExtensionFromMimeType,
-} from "../../utils/crypto";
+import { useInventoryImage } from "./useInventoryImage";
+import { useInventoryStock } from "./useInventoryStock";
 
 interface UseInventoryActionsProps {
   formData: Partial<InventoryItem>;
@@ -40,164 +37,13 @@ export const useInventoryActions = ({
     broadcastInventoryChange,
   } = useInventoryContext();
 
-  const { role, lowStockThreshold: globalThreshold } = useUserContext();
+  const { role } = useUserContext();
   const { t } = useTranslation();
   const { showError } = useAlert();
   const { handleError } = useErrorHandler();
 
-  const checkLowStockAndNotify = async (item: Partial<InventoryItem>) => {
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const categoryThreshold = categories.find(
-        (c) => c.name === item.category
-      )?.low_stock_threshold;
-
-      const effectiveThreshold =
-        item.low_stock_threshold ?? categoryThreshold ?? globalThreshold;
-
-      const isLowStock = (item.stock || 0) <= effectiveThreshold;
-
-      if (isLowStock) {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-
-        await fetch("/api/send-low-stock-alert", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.access_token}`,
-          },
-          body: JSON.stringify({
-            itemName: item.name,
-            currentStock: item.stock,
-            threshold: effectiveThreshold,
-            userEmail: user.email,
-            userId: user.id,
-          }),
-        });
-      }
-    } catch (err: unknown) {
-      showError(
-        t("inventory.lowStockAlertError") + ": " + (err as Error).message
-      );
-    }
-  };
-
-  const handleImageUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    try {
-      setActionLoading(true);
-      validateImageFile(file);
-      const ext = getExtensionFromMimeType(file.type);
-      const fileName = generateSecureFileName(ext);
-      const filePath = fileName;
-
-      const { error: uploadError } = await supabase.storage
-        .from("inventory-images")
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("inventory-images").getPublicUrl(filePath);
-
-      setFormData((prev) => ({ ...prev, image_url: publicUrl }));
-    } catch (err: unknown) {
-      showError(t("errors.uploadImage") + ": " + (err as Error).message);
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  const handleStockSave = async (
-    itemId: string,
-    newStock: number,
-    location?: string,
-    actionType?: "add" | "remove",
-    parentLocation?: string,
-    recipient?: string,
-    destination_location?: string
-  ) => {
-    try {
-      setActionLoading(true);
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      const { error } = await supabase
-        .from("inventory")
-        .update({ stock: newStock })
-        .eq("id", itemId);
-
-      if (error) throw error;
-
-      if (user) {
-        const item = items.find((i) => i.id === itemId);
-        const activityChanges: {
-          [key: string]: import("../../types/database.types").Json;
-        } = {
-          stock: newStock,
-          old_stock: item?.stock ?? null,
-        };
-
-        if (actionType) activityChanges.action_type = actionType;
-        if (location) activityChanges.location = location;
-        if (parentLocation) activityChanges.parent_location = parentLocation;
-        if (recipient) activityChanges.recipient = recipient;
-        if (destination_location)
-          activityChanges.destination_location = destination_location;
-
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-
-        void logActivity(
-          {
-            inventory_id: itemId,
-            user_id: user.id,
-            action: "updated",
-            item_name: item?.name || "Unknown Item",
-            changes: activityChanges,
-          },
-          session,
-          handleError
-        );
-      }
-
-      const updatedItem = items.find((i) => i.id === itemId);
-      if (updatedItem) {
-        void checkLowStockAndNotify({ ...updatedItem, stock: newStock });
-      }
-
-      // Note: We close stock dialog in parent usually, but this logic was embedded.
-      // We might need to return success/callback.
-      // Original code: setStockDialogOpen(false);
-      // We will assume the parent handles closing OR we add a callback arg.
-      // For now, let's return success promise.
-
-      void refreshInventory();
-      broadcastInventoryChange();
-      setEditingId(null);
-      return true; // Signal success
-    } catch (err: unknown) {
-      showError(
-        t("inventory.updateStockError") + ": " + (err as Error).message
-      );
-      return false;
-    } finally {
-      setActionLoading(false);
-    }
-  };
+  const { handleImageUpload, uploading } = useInventoryImage(setFormData);
+  const { handleStockSave, checkLowStockAndNotify } = useInventoryStock();
 
   const handleSave = async () => {
     const sanitizedData = {
@@ -405,12 +251,16 @@ export const useInventoryActions = ({
   };
 
   return {
-    actionLoading,
+    actionLoading: actionLoading || uploading,
     deleteConfirmOpen,
     setDeleteConfirmOpen,
     handleImageUpload,
     handleSave,
-    handleStockSave,
+    handleStockSave: async (...args: Parameters<typeof handleStockSave>) => {
+      const result = await handleStockSave(...args);
+      if (result) setEditingId(null);
+      return result;
+    },
     handleDeleteClick,
     handleDeleteConfirm,
   };
