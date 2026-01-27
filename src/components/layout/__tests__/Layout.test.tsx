@@ -4,11 +4,11 @@ import Layout from "../Layout";
 import { MemoryRouter } from "react-router-dom";
 
 // Mock dependencies
-vi.mock("../../contexts/UserContext", () => ({
+vi.mock("@contexts/UserContext", () => ({
   useUserContext: vi.fn(),
 }));
 
-vi.mock("../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),

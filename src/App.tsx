@@ -17,7 +17,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { WifiOff as WifiOffIcon } from "@mui/icons-material";
-import Layout from "./components/Layout";
+import Layout from "./components/layout/Layout";
 import OfflineFallback from "./components/OfflineFallback";
 import { useTranslation } from "./i18n";
 import ErrorBoundary from "./components/ErrorBoundary";

@@ -20,10 +20,10 @@ import { useUserContext } from "@contexts/UserContext";
 import { useTranslation } from "@/i18n";
 
 // Sub-components
-import SidebarHeader from "./layout/SidebarHeader";
-import UserProfile from "./layout/UserProfile";
-import NavigationList from "./layout/NavigationList";
-import MobileAppBar from "./layout/MobileAppBar";
+import SidebarHeader from "./SidebarHeader/SidebarHeader";
+import UserProfile from "./UserProfile/UserProfile";
+import NavigationList from "./NavigationList/NavigationList";
+import MobileAppBar from "./MobileAppBar/MobileAppBar";
 
 const Layout: React.FC = () => {
   const location = useLocation();
