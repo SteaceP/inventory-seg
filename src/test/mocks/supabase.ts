@@ -90,7 +90,7 @@ export const createMockSupabaseClient = () => {
     update: mockUpdate,
     delete: mockDelete,
     upsert: mockUpsert,
-  }));
+  })) as unknown as Mock<(table: string) => any>;
 
   const client = {
     auth: {
