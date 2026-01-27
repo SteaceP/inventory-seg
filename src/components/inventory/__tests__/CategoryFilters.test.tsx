@@ -2,30 +2,26 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import CategoryFilters from "../CategoryFilters";
 import { ThemeProvider, createTheme } from "@mui/material";
+import { createMockTranslation, createMockCategory } from "../../../test/mocks";
 
 // Mock translation hook
+const { t } = createMockTranslation();
 vi.mock("../../../i18n", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: () => ({ t }),
 }));
 
 const theme = createTheme();
 
 describe("CategoryFilters", () => {
   const mockCategories = [
-    {
+    createMockCategory({
       name: "Tools",
       low_stock_threshold: 10,
-      created_at: null,
-      updated_at: null,
-    },
-    {
+    }),
+    createMockCategory({
       name: "Electronics",
       low_stock_threshold: 5,
-      created_at: null,
-      updated_at: null,
-    },
+    }),
   ];
 
   const defaultProps = {

@@ -3,86 +3,59 @@ import { describe, it, expect, vi } from "vitest";
 import InventoryStats from "../InventoryStats";
 import type { InventoryItem } from "../../../types/inventory";
 import { ThemeProvider, createTheme } from "@mui/material";
+import {
+  createMockTranslation,
+  createMockInventoryItem,
+  createMockCategory,
+} from "../../../test/mocks";
 
 // Mock translation hook
+const { t } = createMockTranslation();
 vi.mock("../../../i18n", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: () => ({ t }),
 }));
 
 const theme = createTheme();
 
 describe("InventoryStats", () => {
+  // Generate test data using factories
   const mockItems: InventoryItem[] = [
-    {
+    createMockInventoryItem({
       id: "1",
       name: "Item 1",
       stock: 20,
       category: "Tools",
-      created_at: null,
-      image_url: null,
-      location: null,
-      low_stock_threshold: null,
-      notes: null,
-      sku: null,
-      unit_cost: null,
-    }, // OK
-    {
+    }), // OK
+    createMockInventoryItem({
       id: "2",
       name: "Item 2",
       stock: 5,
       category: "Tools",
-      created_at: null,
-      image_url: null,
-      location: null,
-      low_stock_threshold: null,
-      notes: null,
-      sku: null,
-      unit_cost: null,
-    }, // Low (threshold 10 from category)
-    {
+    }), // Low (threshold 10 from category)
+    createMockInventoryItem({
       id: "3",
       name: "Item 3",
       stock: 0,
       category: "Electronics",
-      created_at: null,
-      image_url: null,
-      location: null,
-      low_stock_threshold: null,
-      notes: null,
-      sku: null,
-      unit_cost: null,
-    }, // Out of stock
-    {
+    }), // Out of stock
+    createMockInventoryItem({
       id: "4",
       name: "Item 4",
       stock: 3,
       category: "Electronics",
-      created_at: null,
-      image_url: null,
-      location: null,
       low_stock_threshold: 15,
-      notes: null,
-      sku: null,
-      unit_cost: null,
-    }, // Low (threshold 15 from item)
-    {
+    }), // Low (threshold 15 from item)
+    createMockInventoryItem({
       id: "5",
       name: "Item 5",
       stock: 3,
       category: "Misc",
-      created_at: null,
-      image_url: null,
-      location: null,
-      low_stock_threshold: null,
-      notes: null,
-      sku: null,
-      unit_cost: null,
-    }, // Low (threshold 5 from global)
+    }), // Low (threshold 5 from global)
   ];
 
-  const mockCategories = [{ name: "Tools", low_stock_threshold: 10 }];
+  const mockCategories = [
+    createMockCategory({ name: "Tools", low_stock_threshold: 10 }),
+  ];
   const globalThreshold = 5;
 
   const defaultProps = {
