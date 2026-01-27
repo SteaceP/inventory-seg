@@ -114,7 +114,7 @@ describe("ApplianceDialog", () => {
     expect(screen.getByDisplayValue("APP-12345")).toBeInTheDocument();
   });
 
-  it.skip("handles image upload", async () => {
+  it("handles image upload", async () => {
     renderWithTheme(<ApplianceDialog {...defaultProps} />);
 
     const file = new File(["dummy content"], "example.png", {

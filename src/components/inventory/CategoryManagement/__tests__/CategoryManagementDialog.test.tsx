@@ -107,7 +107,7 @@ describe("CategoryManagementDialog", () => {
     });
   });
 
-  it.skip("updates threshold", async () => {
+  it("updates threshold", async () => {
     renderWithTheme(<CategoryManagementDialog {...defaultProps} />);
 
     // Use more specific query or wait for it
@@ -125,10 +125,13 @@ describe("CategoryManagementDialog", () => {
     fireEvent.blur(input);
 
     await waitFor(() => {
-      expect(mockUpsert).toHaveBeenCalled();
       expect(mockUpsert).toHaveBeenCalledWith(
         expect.objectContaining({
           name: "Electronics",
+          low_stock_threshold: 8,
+        }),
+        expect.objectContaining({
+          onConflict: "name",
         })
       );
       expect(mockInventory.refreshInventory).toHaveBeenCalled();
