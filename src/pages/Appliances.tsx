@@ -19,10 +19,10 @@ import ConfirmDialog from "../components/ConfirmDialog";
 
 // Components
 import AppliancesHeader from "../components/appliances/AppliancesHeader";
-import ApplianceCard from "../components/appliances/ApplianceCard";
-import ApplianceDialog from "../components/appliances/ApplianceDialog";
-import ApplianceRepairDialog from "../components/appliances/ApplianceRepairDialog";
-import ApplianceDrawer from "../components/appliances/ApplianceDrawer";
+import ApplianceCard from "../components/appliances/ApplianceCard/ApplianceCard";
+import ApplianceDialog from "../components/appliances/ApplianceDialog/ApplianceDialog";
+import ApplianceRepairDialog from "../components/appliances/ApplianceRepairDialog/ApplianceRepairDialog";
+import ApplianceDrawer from "../components/appliances/ApplianceDrawer/ApplianceDrawer";
 import AppliancesStats from "../components/appliances/AppliancesStats";
 
 // Types & Hooks

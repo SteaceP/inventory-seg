@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import ApplianceDialog from "../ApplianceDialog";
+import ApplianceDialog from "../ApplianceDialog/ApplianceDialog";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 // Mock Translation

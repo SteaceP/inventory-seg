@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import ApplianceCard from "../ApplianceCard";
+import ApplianceCard from "../ApplianceCard/ApplianceCard";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import type { Appliance } from "../../../types/appliances";
 

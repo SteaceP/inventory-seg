@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import ApplianceRepairDialog from "../ApplianceRepairDialog";
+import ApplianceRepairDialog from "../ApplianceRepairDialog/ApplianceRepairDialog";
 
 // Mock translation
 vi.mock("../../../i18n", () => ({

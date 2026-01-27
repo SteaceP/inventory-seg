@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import ApplianceHistoryDialog from "../ApplianceHistoryDialog";
+import ApplianceHistoryDialog from "../ApplianceHistoryDialog/ApplianceHistoryDialog";
 import type { Appliance, Repair } from "../../../types/appliances";
 
 // Mock translation

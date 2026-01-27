@@ -8,14 +8,14 @@ import {
   Button,
   Box,
   Typography,
-  IconButton,
   Divider,
   CircularProgress,
 } from "@mui/material";
-import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
-import { useTranslation } from "../../i18n";
-import type { Appliance, Repair, RepairPart } from "../../types/appliances";
-import { generateSecureId } from "../../utils/crypto";
+import { Add as AddIcon } from "@mui/icons-material";
+import { useTranslation } from "../../../i18n";
+import type { Appliance, Repair, RepairPart } from "../../../types/appliances";
+import { generateSecureId } from "../../../utils/crypto";
+import RepairPartItem from "./RepairPartItem";
 
 interface ApplianceRepairDialogProps {
   open: boolean;
@@ -58,14 +58,9 @@ const ApplianceRepairDialog: React.FC<ApplianceRepairDialogProps> = ({
     setFormData({ ...formData, parts });
   };
 
-  const handlePartChange =
-    (index: number, field: keyof RepairPart) =>
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePartFieldChange =
+    (index: number) => (field: keyof RepairPart, value: string | number) => {
       const parts = [...(formData.parts || [])];
-      const value =
-        field === "price"
-          ? parseFloat(event.target.value) || 0
-          : event.target.value;
       parts[index] = { ...parts[index], [field]: value };
       setFormData({ ...formData, parts });
     };
@@ -136,30 +131,13 @@ const ApplianceRepairDialog: React.FC<ApplianceRepairDialogProps> = ({
         <Divider sx={{ mb: 2 }} />
 
         {formData.parts?.map((part, index) => (
-          <Box
+          <RepairPartItem
             // eslint-disable-next-line react-x/no-array-index-key
             key={index}
-            sx={{ display: "flex", gap: 1, mb: 2, alignItems: "flex-start" }}
-          >
-            <TextField
-              size="small"
-              label={t("appliances.partName")}
-              sx={{ flex: 3 }}
-              value={part.name}
-              onChange={handlePartChange(index, "name")}
-            />
-            <TextField
-              size="small"
-              label={t("appliances.partPrice")}
-              type="number"
-              sx={{ flex: 1 }}
-              value={part.price || ""}
-              onChange={handlePartChange(index, "price")}
-            />
-            <IconButton color="error" onClick={() => handleRemovePart(index)}>
-              <DeleteIcon />
-            </IconButton>
-          </Box>
+            part={part}
+            onRemove={() => handleRemovePart(index)}
+            onFieldChange={handlePartFieldChange(index)}
+          />
         ))}
 
         {formData.parts && formData.parts.length > 0 && (
