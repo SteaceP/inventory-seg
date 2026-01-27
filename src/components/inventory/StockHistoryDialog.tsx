@@ -183,6 +183,7 @@ const StockHistoryDialog: React.FC<StockHistoryDialogProps> = ({
       }}
     >
       <DialogTitle
+        component="div"
         sx={{
           display: "flex",
           justifyContent: "space-between",
@@ -191,7 +192,7 @@ const StockHistoryDialog: React.FC<StockHistoryDialogProps> = ({
           "@media print": { display: "none" },
         }}
       >
-        <Typography variant="h6" fontWeight="bold">
+        <Typography variant="h6" component="h2" fontWeight="bold">
           {t("inventory.history")}
         </Typography>
         <Box sx={{ display: "flex", gap: 1 }}>
