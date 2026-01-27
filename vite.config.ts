@@ -1,3 +1,4 @@
+import path from "path";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
@@ -6,6 +7,20 @@ import { cloudflare } from "@cloudflare/vite-plugin";
 
 // https://vite.dev/config/
 export default defineConfig({
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+      "@components": path.resolve(__dirname, "src/components"),
+      "@contexts": path.resolve(__dirname, "src/contexts"),
+      "@hooks": path.resolve(__dirname, "src/hooks"),
+      "@i18n": path.resolve(__dirname, "src/i18n"),
+      "@locales": path.resolve(__dirname, "src/locales"),
+      "@pages": path.resolve(__dirname, "src/pages"),
+      "@supabaseClient": path.resolve(__dirname, "src/supabaseClient"),
+      "@test": path.resolve(__dirname, "src/test"),
+      "@utils": path.resolve(__dirname, "src/utils"),
+    },
+  },
   plugins: [
     react(),
     basicSsl(),

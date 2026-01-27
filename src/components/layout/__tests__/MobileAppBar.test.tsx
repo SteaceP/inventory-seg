@@ -4,7 +4,7 @@ import { ThemeProvider, createTheme } from "@mui/material";
 import MobileAppBar from "../MobileAppBar";
 
 // Mock translation hook
-vi.mock("../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),

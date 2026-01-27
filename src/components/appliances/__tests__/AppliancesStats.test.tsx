@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import AppliancesStats from "../AppliancesStats";
-import type { Appliance } from "../../../types/appliances";
+import type { Appliance } from "@/types/appliances";
 
 // Mock translation
-vi.mock("../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),

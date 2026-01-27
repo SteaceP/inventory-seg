@@ -3,21 +3,21 @@ import { render, screen, waitFor } from "@testing-library/react";
 import StockHistoryDialog from "../StockHistoryDialog";
 
 // Mock dependencies
-import { createMockTranslation } from "../../../../test/mocks";
+import { createMockTranslation } from "@test/mocks";
 
 const { t } = createMockTranslation();
-vi.mock("../../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 
-vi.mock("../../../../hooks/useErrorHandler", () => ({
+vi.mock("@hooks/useErrorHandler", () => ({
   useErrorHandler: () => ({
     handleError: vi.fn(),
   }),
 }));
 
 // Mock utils
-vi.mock("../../../../utils/activityUtils", () => ({
+vi.mock("@utils/activityUtils", () => ({
   getActivityNarrative: vi.fn(
     (activity: { action: string }) => `Activity: ${activity.action}`
   ),
@@ -37,7 +37,7 @@ const { mockFrom, mockSelect, mockEq, mockOrder, mockLimit, mockIn } =
     };
   });
 
-vi.mock("../../../../supabaseClient", () => ({
+vi.mock("@supabaseClient", () => ({
   supabase: {
     from: mockFrom,
   },

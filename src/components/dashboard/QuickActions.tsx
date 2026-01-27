@@ -16,9 +16,9 @@ import {
   ChevronLeft as ChevronLeftIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "../../i18n";
+import { useTranslation } from "@/i18n";
 import ActionCard from "./ActionCard";
-import { useScrollIndicators } from "../../hooks/useScrollIndicators";
+import { useScrollIndicators } from "@hooks/useScrollIndicators";
 
 const QuickActions: React.FC = () => {
   const { t } = useTranslation();

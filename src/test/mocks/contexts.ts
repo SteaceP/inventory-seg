@@ -3,7 +3,7 @@ import type {
   InventoryItem,
   InventoryCategory,
   MasterLocation,
-} from "../../types/inventory";
+} from "@/types/inventory";
 
 /**
  * Centralized context mocking utilities

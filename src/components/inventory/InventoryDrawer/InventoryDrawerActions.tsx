@@ -1,8 +1,8 @@
 import React from "react";
 import { Box, Button } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
-import { useTranslation } from "../../../i18n";
-import type { InventoryItem } from "../../../types/inventory";
+import { useTranslation } from "@/i18n";
+import type { InventoryItem } from "@/types/inventory";
 
 interface InventoryDrawerActionsProps {
   item: InventoryItem;

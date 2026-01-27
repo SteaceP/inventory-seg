@@ -1,6 +1,6 @@
 import React from "react";
-import { useInventoryContext } from "../../../contexts/InventoryContext";
-import { useUserContext } from "../../../contexts/UserContext";
+import { useInventoryContext } from "@contexts/InventoryContext";
+import { useUserContext } from "@contexts/UserContext";
 import {
   Drawer,
   Box,
@@ -17,8 +17,8 @@ import {
   Add as AddIcon,
   Description as NotesIcon,
 } from "@mui/icons-material";
-import { useTranslation } from "../../../i18n";
-import type { InventoryItem } from "../../../types/inventory";
+import { useTranslation } from "@/i18n";
+import type { InventoryItem } from "@/types/inventory";
 import InventoryActivityLog from "../shared/InventoryActivityLog";
 import InventoryDrawerHeader from "./InventoryDrawerHeader";
 import InventoryDrawerDetails from "./InventoryDrawerDetails";

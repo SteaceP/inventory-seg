@@ -8,14 +8,14 @@ import {
   createMockInventoryContext,
   createMockCategory,
   createMockLocation,
-} from "../../../../test/mocks";
+} from "@test/mocks";
 
 // Mock Child Components
-vi.mock("../../shared/ImageUploadField", () => ({
+vi.mock("@components/inventory/shared/ImageUploadField", () => ({
   default: () => <div data-testid="image-upload-field">Image Upload</div>,
 }));
 
-vi.mock("../../shared/StockLocationFields", () => ({
+vi.mock("@components/inventory/shared/StockLocationFields", () => ({
   default: () => (
     <div data-testid="stock-location-fields">Stock Location Fields</div>
   ),
@@ -38,15 +38,15 @@ const mockInventory = createMockInventoryContext({
 });
 const { t } = createMockTranslation();
 
-vi.mock("../../../../contexts/UserContext", () => ({
+vi.mock("@contexts/UserContext", () => ({
   useUserContext: () => mockUser,
 }));
 
-vi.mock("../../../../contexts/InventoryContext", () => ({
+vi.mock("@contexts/InventoryContext", () => ({
   useInventoryContext: () => mockInventory,
 }));
 
-vi.mock("../../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 

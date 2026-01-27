@@ -1,11 +1,11 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import InventoryHeader from "../InventoryHeader";
-import { createMockTranslation } from "../../../../test/mocks";
+import { createMockTranslation } from "@test/mocks";
 
 // Mock translation
 const { t } = createMockTranslation();
-vi.mock("../../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 

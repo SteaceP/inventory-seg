@@ -5,8 +5,8 @@ import {
   Assignment as HistoryIcon,
   Build as BuildIcon,
 } from "@mui/icons-material";
-import { useTranslation } from "../../../i18n";
-import type { Appliance, Repair } from "../../../types/appliances";
+import { useTranslation } from "@/i18n";
+import type { Appliance, Repair } from "@/types/appliances";
 
 import RepairItem from "../shared/RepairItem";
 

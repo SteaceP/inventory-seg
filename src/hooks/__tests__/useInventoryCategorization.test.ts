@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useInventoryCategorization } from "../useInventoryCategorization";
-import type { InventoryItem } from "../../types/inventory";
+import type { InventoryItem } from "@/types/inventory";
 
 vi.mock("../../i18n", () => ({
   useTranslation: () => ({

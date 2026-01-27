@@ -16,8 +16,8 @@ import {
   Assessment as AssessmentIcon,
 } from "@mui/icons-material";
 import { useLocation, Outlet } from "react-router-dom";
-import { useUserContext } from "../contexts/UserContext";
-import { useTranslation } from "../i18n";
+import { useUserContext } from "@contexts/UserContext";
+import { useTranslation } from "@/i18n";
 
 // Sub-components
 import SidebarHeader from "./layout/SidebarHeader";

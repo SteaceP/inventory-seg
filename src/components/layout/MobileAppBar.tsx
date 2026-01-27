@@ -2,7 +2,7 @@ import React from "react";
 import { AppBar, Toolbar, IconButton, Box, Typography } from "@mui/material";
 import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTranslation } from "../../i18n";
+import { useTranslation } from "@/i18n";
 
 interface MobileAppBarProps {
   mobileOpen: boolean;

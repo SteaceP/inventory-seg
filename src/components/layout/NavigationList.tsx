@@ -10,8 +10,8 @@ import {
 import { ExitToApp as LogoutIcon } from "@mui/icons-material";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useTranslation } from "../../i18n";
-import { supabase } from "../../supabaseClient";
+import { useTranslation } from "@/i18n";
+import { supabase } from "@/supabaseClient";
 
 interface NavItem {
   text: string;

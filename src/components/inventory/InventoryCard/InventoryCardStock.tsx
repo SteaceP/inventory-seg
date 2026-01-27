@@ -7,7 +7,7 @@ import {
   alpha,
   useTheme,
 } from "@mui/material";
-import type { InventoryItem } from "../../../types/inventory";
+import type { InventoryItem } from "@/types/inventory";
 
 interface InventoryCardStockProps {
   item: InventoryItem;

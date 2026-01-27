@@ -1,8 +1,23 @@
+import path from "path";
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+      "@components": path.resolve(__dirname, "src/components"),
+      "@contexts": path.resolve(__dirname, "src/contexts"),
+      "@hooks": path.resolve(__dirname, "src/hooks"),
+      "@i18n": path.resolve(__dirname, "src/i18n"),
+      "@locales": path.resolve(__dirname, "src/locales"),
+      "@pages": path.resolve(__dirname, "src/pages"),
+      "@supabaseClient": path.resolve(__dirname, "src/supabaseClient"),
+      "@test": path.resolve(__dirname, "src/test"),
+      "@utils": path.resolve(__dirname, "src/utils"),
+    },
+  },
   test: {
     // Use happy-dom for a lightweight DOM environment
     environment: "happy-dom",
@@ -13,8 +28,13 @@ export default defineConfig({
     // Include test files
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
 
-    // Exclude worker tests and node_modules
-    exclude: ["**/node_modules/**", "**/dist/**", "**/build/**"],
+    // Exclude worker tests (run with vitest.worker.config.ts) and node_modules
+    exclude: [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/build/**",
+      "src/worker/**",
+    ],
 
     // Enable globals like 'describe', 'it', 'expect'
     globals: true,
@@ -45,6 +65,9 @@ export default defineConfig({
         "**/mockData/**",
         "src/main.tsx",
         "src/worker/**",
+        ".wrangler/",
+        ".agent/",
+        "coverage/",
       ],
     },
   },

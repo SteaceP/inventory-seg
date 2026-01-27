@@ -1,10 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import AppearanceSection from "../AppearanceSection";
-import {
-  createMockTranslation,
-  createMockUserContext,
-} from "../../../test/mocks";
+import { createMockTranslation, createMockUserContext } from "@test/mocks";
 
 // Mock contexts using centralized utilities
 const mockToggleDarkMode = vi.fn();
@@ -18,11 +15,11 @@ const mockUser = createMockUserContext({
 
 const { t } = createMockTranslation();
 
-vi.mock("../../../contexts/UserContext", () => ({
+vi.mock("@contexts/UserContext", () => ({
   useUserContext: () => mockUser,
 }));
 
-vi.mock("../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 

@@ -5,7 +5,7 @@ import {
   FilterCenterFocus as ScanIcon,
   Print as PrintIcon,
 } from "@mui/icons-material";
-import { useTranslation } from "../../i18n";
+import { useTranslation } from "@/i18n";
 
 interface AppliancesHeaderProps {
   compactView: boolean;

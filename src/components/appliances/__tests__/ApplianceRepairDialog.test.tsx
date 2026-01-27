@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from "vitest";
 import ApplianceRepairDialog from "../ApplianceRepairDialog/ApplianceRepairDialog";
 
 // Mock translation
-vi.mock("../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
@@ -17,7 +17,7 @@ describe("ApplianceRepairDialog", () => {
     appliance: {
       id: "1",
       name: "Washer",
-    } as unknown as import("../../../types/appliances").Appliance,
+    } as unknown as import("@/types/appliances").Appliance,
     loading: false,
   };
 

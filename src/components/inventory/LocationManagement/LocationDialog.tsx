@@ -8,8 +8,8 @@ import {
   TextField,
   MenuItem,
 } from "@mui/material";
-import { useTranslation } from "../../../i18n";
-import type { MasterLocation } from "../../../types/inventory";
+import { useTranslation } from "@/i18n";
+import type { MasterLocation } from "@/types/inventory";
 
 interface LocationDialogProps {
   open: boolean;

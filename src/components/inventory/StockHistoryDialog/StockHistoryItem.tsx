@@ -7,12 +7,9 @@ import {
   Add as AddIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
-import { useTranslation } from "../../../i18n";
-import type { InventoryActivity } from "../../../types/activity";
-import {
-  getActivityNarrative,
-  getStockChange,
-} from "../../../utils/activityUtils";
+import { useTranslation } from "@/i18n";
+import type { InventoryActivity } from "@/types/activity";
+import { getActivityNarrative, getStockChange } from "@utils/activityUtils";
 
 interface StockHistoryItemProps {
   activity: InventoryActivity;

@@ -1,15 +1,15 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import StockAdjustmentDialog from "../index";
-import type { InventoryItem } from "../../../../types/inventory";
+import type { InventoryItem } from "@/types/inventory";
 
-vi.mock("../../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
 }));
 
-vi.mock("../../../../contexts/InventoryContext", () => ({
+vi.mock("@contexts/InventoryContext", () => ({
   useInventoryContext: () => ({
     locations: [
       { id: "loc-1", name: "Warehouse A" },

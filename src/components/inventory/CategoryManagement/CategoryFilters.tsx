@@ -1,8 +1,8 @@
 import React from "react";
 import { Box, Chip, useTheme, useMediaQuery, alpha } from "@mui/material";
 import { Category as CategoryIcon } from "@mui/icons-material";
-import { useTranslation } from "../../../i18n";
-import type { InventoryCategory } from "../../../types/inventory";
+import { useTranslation } from "@/i18n";
+import type { InventoryCategory } from "@/types/inventory";
 
 interface CategoryFiltersProps {
   categories: InventoryCategory[];

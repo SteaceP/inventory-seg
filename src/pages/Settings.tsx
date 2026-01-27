@@ -11,19 +11,19 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import { useTranslation } from "../i18n";
-import { supabase } from "../supabaseClient";
-import { useUserContext } from "../contexts/UserContext";
-import ProfileSection from "../components/settings/ProfileSection";
-import NotificationSection from "../components/settings/NotificationSection";
-import AppearanceSection from "../components/settings/AppearanceSection";
-import SecuritySection from "../components/settings/SecuritySection";
-import type { Language } from "../types/user";
+import { useTranslation } from "@/i18n";
+import { supabase } from "@/supabaseClient";
+import { useUserContext } from "@contexts/UserContext";
+import ProfileSection from "@components/settings/ProfileSection";
+import NotificationSection from "@components/settings/NotificationSection";
+import AppearanceSection from "@components/settings/AppearanceSection";
+import SecuritySection from "@components/settings/SecuritySection";
+import type { Language } from "@/types/user";
 import {
   validateImageFile,
   generateSecureFileName,
   getExtensionFromMimeType,
-} from "../utils/crypto";
+} from "@utils/crypto";
 
 const Settings: React.FC = () => {
   const [saveSuccess, setSaveSuccess] = useState(false);

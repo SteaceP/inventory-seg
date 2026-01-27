@@ -2,14 +2,11 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import CategoryFilters from "../CategoryFilters";
 import { ThemeProvider, createTheme } from "@mui/material";
-import {
-  createMockTranslation,
-  createMockCategory,
-} from "../../../../test/mocks";
+import { createMockTranslation, createMockCategory } from "@test/mocks";
 
 // Mock translation hook
 const { t } = createMockTranslation();
-vi.mock("../../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 

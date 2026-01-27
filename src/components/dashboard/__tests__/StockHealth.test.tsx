@@ -3,10 +3,7 @@ import { describe, it, expect, vi } from "vitest";
 import StockHealth from "../StockHealth";
 import { ThemeProvider, createTheme } from "@mui/material";
 
-import type {
-  InventoryItem,
-  InventoryCategory,
-} from "../../../types/inventory";
+import type { InventoryItem, InventoryCategory } from "@/types/inventory";
 
 // Mock data containers
 const mockItems: { current: Partial<InventoryItem>[] } = { current: [] };
@@ -15,18 +12,18 @@ const mockCategories: { current: Partial<InventoryCategory>[] } = {
 };
 const mockUserContext = { lowStockThreshold: 5 };
 
-vi.mock("../../../contexts/InventoryContext", () => ({
+vi.mock("@contexts/InventoryContext", () => ({
   useInventoryContext: () => ({
     items: mockItems.current as InventoryItem[],
     categories: mockCategories.current as InventoryCategory[],
   }),
 }));
 
-vi.mock("../../../contexts/UserContext", () => ({
+vi.mock("@contexts/UserContext", () => ({
   useUserContext: () => mockUserContext,
 }));
 
-vi.mock("../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),

@@ -12,9 +12,9 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
-import { useTranslation } from "../../../i18n";
-import type { Appliance, Repair, RepairPart } from "../../../types/appliances";
-import { generateSecureId } from "../../../utils/crypto";
+import { useTranslation } from "@/i18n";
+import type { Appliance, Repair, RepairPart } from "@/types/appliances";
+import { generateSecureId } from "@utils/crypto";
 import RepairPartItem from "./RepairPartItem";
 
 interface ApplianceRepairDialogProps {

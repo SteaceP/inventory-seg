@@ -10,8 +10,8 @@ import {
 import { LocationOn as LocationIcon } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
-import { useTranslation } from "../../../i18n";
-import type { InventoryItem } from "../../../types/inventory";
+import { useTranslation } from "@/i18n";
+import type { InventoryItem } from "@/types/inventory";
 import type { SelectedLocation } from "./types";
 
 const MotionBox = motion.create(Box);

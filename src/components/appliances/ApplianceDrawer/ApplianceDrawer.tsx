@@ -7,8 +7,8 @@ import {
   Inventory as InventoryIcon,
   Label as LabelIcon,
 } from "@mui/icons-material";
-import { useTranslation } from "../../../i18n";
-import type { Appliance, Repair } from "../../../types/appliances";
+import { useTranslation } from "@/i18n";
+import type { Appliance, Repair } from "@/types/appliances";
 import ApplianceDrawerHeader from "./ApplianceDrawerHeader";
 import ApplianceWarrantyCard from "./ApplianceWarrantyCard";
 import ApplianceDetailsGrid from "./ApplianceDetailsGrid";

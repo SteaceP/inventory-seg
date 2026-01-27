@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useErrorHandler } from "../hooks/useErrorHandler";
+import { useErrorHandler } from "@hooks/useErrorHandler";
 import {
   Box,
   Container,
@@ -25,11 +25,11 @@ import {
   Delete as DeleteIcon,
   Refresh as RefreshIcon,
 } from "@mui/icons-material";
-import { useTranslation } from "../i18n";
-import { supabase } from "../supabaseClient";
-import type { InventoryActivity } from "../types/activity";
+import { useTranslation } from "@/i18n";
+import { supabase } from "@/supabaseClient";
+import type { InventoryActivity } from "@/types/activity";
 import { alpha } from "@mui/material/styles";
-import { getActivityNarrative, getStockChange } from "../utils/activityUtils";
+import { getActivityNarrative, getStockChange } from "@utils/activityUtils";
 
 const InventoryActivityPage: React.FC = () => {
   const { t } = useTranslation();

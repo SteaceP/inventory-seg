@@ -25,7 +25,7 @@ vi.mock("@mui/material", async () => {
   };
 });
 
-import { useUserContext } from "../../contexts/UserContext";
+import { useUserContext } from "@contexts/UserContext";
 import type { Mock } from "vitest";
 
 describe("Layout Component", () => {

@@ -9,8 +9,8 @@ import {
   Box,
   CircularProgress,
 } from "@mui/material";
-import { useTranslation } from "../../../i18n";
-import type { Appliance, Repair } from "../../../types/appliances";
+import { useTranslation } from "@/i18n";
+import type { Appliance, Repair } from "@/types/appliances";
 
 import RepairItem from "../shared/RepairItem";
 

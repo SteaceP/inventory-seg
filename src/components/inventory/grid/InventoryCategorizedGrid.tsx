@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Box, Typography, Divider } from "@mui/material";
 import { Category as CategoryIcon } from "@mui/icons-material";
-import type { InventoryItem } from "../../../types/inventory";
-import { useTranslation } from "../../../i18n";
-import { useUserContext } from "../../../contexts/UserContext";
-import { useInventoryContext } from "../../../contexts/InventoryContext";
-import { useInventoryCategorization } from "../../../hooks/useInventoryCategorization";
+import type { InventoryItem } from "@/types/inventory";
+import { useTranslation } from "@/i18n";
+import { useUserContext } from "@contexts/UserContext";
+import { useInventoryContext } from "@contexts/InventoryContext";
+import { useInventoryCategorization } from "@hooks/useInventoryCategorization";
 import CategoryThresholdDialog from "../CategoryManagement/CategoryThresholdDialog";
 import CategorySection from "../CategoryManagement/CategorySection";
 

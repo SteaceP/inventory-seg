@@ -1,5 +1,5 @@
 import React from "react";
-import { useTranslation } from "../../../i18n";
+import { useTranslation } from "@/i18n";
 import {
   Dialog,
   DialogTitle,
@@ -15,10 +15,10 @@ import {
 import { Refresh as RefreshIcon } from "@mui/icons-material";
 import Barcode from "react-barcode";
 import type { BarcodeProps } from "react-barcode";
-import type { InventoryItem } from "../../../types/inventory";
+import type { InventoryItem } from "@/types/inventory";
 
-import { useUserContext } from "../../../contexts/UserContext";
-import { useInventoryContext } from "../../../contexts/InventoryContext";
+import { useUserContext } from "@contexts/UserContext";
+import { useInventoryContext } from "@contexts/InventoryContext";
 import ImageUploadField from "../shared/ImageUploadField";
 import StockLocationFields from "../shared/StockLocationFields";
 
@@ -60,7 +60,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
     (c) => c.name === formData.category
   )?.low_stock_threshold;
 
-  const effectiveBaseThreshold = categoryThreshold ?? globalThreshold;
+  const effectiveBaseThreshold = categoryThreshold ?? globalThreshold ?? 0;
 
   return (
     <Dialog

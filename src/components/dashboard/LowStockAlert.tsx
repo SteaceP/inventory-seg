@@ -14,7 +14,7 @@ import {
   ArrowForward as ArrowForwardIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "../../i18n";
+import { useTranslation } from "@/i18n";
 
 interface LowStockItem {
   id: string;

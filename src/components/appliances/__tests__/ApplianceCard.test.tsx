@@ -2,10 +2,10 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import ApplianceCard from "../ApplianceCard/ApplianceCard";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import type { Appliance } from "../../../types/appliances";
+import type { Appliance } from "@/types/appliances";
 
 // Mock translation
-vi.mock("../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({
     t: (key: string, options?: { days: number }) => {
       if (key === "appliances.warranty.expiringSoon" && options) {

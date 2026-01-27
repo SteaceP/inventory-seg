@@ -14,7 +14,7 @@ import {
   Exposure as ExposureIcon,
   History as HistoryIcon,
 } from "@mui/icons-material";
-import type { InventoryItem } from "../../../types/inventory";
+import type { InventoryItem } from "@/types/inventory";
 
 interface InventoryCardActionsProps {
   item: InventoryItem;

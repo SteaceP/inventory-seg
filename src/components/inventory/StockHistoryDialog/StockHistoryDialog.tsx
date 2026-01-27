@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useErrorHandler } from "../../../hooks/useErrorHandler";
+import { useErrorHandler } from "@hooks/useErrorHandler";
 import {
   Dialog,
   DialogTitle,
@@ -13,12 +13,9 @@ import {
   Divider,
 } from "@mui/material";
 import { Close as CloseIcon, Print as PrintIcon } from "@mui/icons-material";
-import { useTranslation } from "../../../i18n";
-import { supabase } from "../../../supabaseClient";
-import type {
-  InventoryActivity,
-  ActivityAction,
-} from "../../../types/activity";
+import { useTranslation } from "@/i18n";
+import { supabase } from "@/supabaseClient";
+import type { InventoryActivity, ActivityAction } from "@/types/activity";
 import StockHistoryItem from "./StockHistoryItem";
 
 interface StockHistoryDialogProps {

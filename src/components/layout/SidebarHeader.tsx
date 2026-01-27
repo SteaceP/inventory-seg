@@ -6,7 +6,7 @@ import {
   Close as CloseIcon,
 } from "@mui/icons-material";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTranslation } from "../../i18n";
+import { useTranslation } from "@/i18n";
 
 interface SidebarHeaderProps {
   collapsed: boolean;

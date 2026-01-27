@@ -1,8 +1,8 @@
 import React from "react";
 import { Box, Typography, Paper, Fade } from "@mui/material";
 import { LocationOn as LocationIcon } from "@mui/icons-material";
-import { useTranslation } from "../../../i18n";
-import type { InventoryItem } from "../../../types/inventory";
+import { useTranslation } from "@/i18n";
+import type { InventoryItem } from "@/types/inventory";
 import type { SelectedLocation } from "./types";
 
 interface AdjustmentQuickInfoProps {

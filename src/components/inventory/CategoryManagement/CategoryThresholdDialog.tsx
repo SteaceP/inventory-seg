@@ -8,7 +8,7 @@ import {
   Button,
   TextField,
 } from "@mui/material";
-import { useTranslation } from "../../../i18n";
+import { useTranslation } from "@/i18n";
 
 interface CategoryThresholdDialogProps {
   open: boolean;

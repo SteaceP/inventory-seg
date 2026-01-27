@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import Appliances from "../Appliances";
 import { BrowserRouter } from "react-router-dom";
-import type { Appliance } from "../../types/appliances";
+import type { Appliance } from "@/types/appliances";
 
 // Mock dependencies
 vi.mock("../../hooks/useErrorHandler", () => ({

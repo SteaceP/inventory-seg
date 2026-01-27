@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
-import type { InventoryItem } from "../../types/inventory";
-import { generateSecureId } from "../../utils/crypto";
+import type { InventoryItem } from "@/types/inventory";
+import { generateSecureId } from "@utils/crypto";
 
 export const useInventoryForm = (
   setEditingId?: (id: string | null) => void

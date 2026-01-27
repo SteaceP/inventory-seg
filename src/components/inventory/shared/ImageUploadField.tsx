@@ -4,7 +4,7 @@ import {
   AddPhotoAlternate as AddPhotoIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
-import { useTranslation } from "../../../i18n";
+import { useTranslation } from "@/i18n";
 
 interface ImageUploadFieldProps {
   imageUrl?: string;

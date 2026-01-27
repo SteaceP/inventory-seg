@@ -1,4 +1,4 @@
-import type { InventoryActivity } from "../types/activity";
+import type { InventoryActivity } from "@/types/activity";
 
 export const getStockChange = (changes: InventoryActivity["changes"]) => {
   const oldStock = (changes?.old_stock as number) ?? 0;

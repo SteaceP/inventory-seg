@@ -2,8 +2,8 @@
 import { vi } from "vitest";
 import { render } from "@testing-library/react";
 import { InventoryProvider, useInventoryContext } from "../InventoryContext";
-import { mockAlertContext, mockUserContext } from "../../test/mocks/contexts";
-import { mockSupabaseClient } from "../../test/mocks/supabase";
+import { mockAlertContext, mockUserContext } from "@test/mocks/contexts";
+import { mockSupabaseClient } from "@test/mocks/supabase";
 
 // 1. Mock external dependencies using async factories to access centralized mocks
 vi.mock("../AlertContext", async () => {

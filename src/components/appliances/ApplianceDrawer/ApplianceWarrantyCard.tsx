@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography, LinearProgress, Paper } from "@mui/material";
-import { useTranslation } from "../../../i18n";
-import type { Appliance } from "../../../types/appliances";
+import { useTranslation } from "@/i18n";
+import type { Appliance } from "@/types/appliances";
 
 interface ApplianceWarrantyCardProps {
   appliance: Appliance;

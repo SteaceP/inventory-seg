@@ -1,11 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import CategorySection from "../CategorySection";
-import type { InventoryItem } from "../../../../types/inventory";
-import {
-  createMockTranslation,
-  createMockInventoryItem,
-} from "../../../../test/mocks";
+import type { InventoryItem } from "@/types/inventory";
+import { createMockTranslation, createMockInventoryItem } from "@test/mocks";
 
 // Mock InventoryCard
 vi.mock("../../InventoryCard/InventoryCard", () => ({
@@ -16,7 +13,7 @@ vi.mock("../../InventoryCard/InventoryCard", () => ({
 
 // Mock i18n
 const { t } = createMockTranslation();
-vi.mock("../../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 

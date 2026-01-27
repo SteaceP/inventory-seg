@@ -1,12 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import InventoryGrid from "../InventoryGrid";
-import type { InventoryItem } from "../../../../types/inventory";
+import type { InventoryItem } from "@/types/inventory";
 import { ThemeProvider, createTheme } from "@mui/material";
-import {
-  createMockUserContext,
-  createMockInventoryItem,
-} from "../../../../test/mocks";
+import { createMockUserContext, createMockInventoryItem } from "@test/mocks";
 
 // Mock framer-motion
 vi.mock("framer-motion", () => ({
@@ -22,7 +19,7 @@ vi.mock("../../InventoryCard/InventoryCard", () => ({
 
 // Mock UserContext
 const mockUser = createMockUserContext({ compactView: false });
-vi.mock("../../../../contexts/UserContext", () => ({
+vi.mock("@contexts/UserContext", () => ({
   useUserContext: () => mockUser,
 }));
 

@@ -9,10 +9,10 @@ import {
   Divider,
 } from "@mui/material";
 import { motion } from "framer-motion";
-import type { InventoryItem } from "../../../types/inventory";
-import { useTranslation } from "../../../i18n";
-import { useUserContext } from "../../../contexts/UserContext";
-import { useInventoryContext } from "../../../contexts/InventoryContext";
+import type { InventoryItem } from "@/types/inventory";
+import { useTranslation } from "@/i18n";
+import { useUserContext } from "@contexts/UserContext";
+import { useInventoryContext } from "@contexts/InventoryContext";
 
 // Sub-components
 import InventoryCardMedia from "./InventoryCardMedia";

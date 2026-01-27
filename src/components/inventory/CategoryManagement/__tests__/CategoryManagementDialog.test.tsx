@@ -6,16 +6,16 @@ import {
   createMockTranslation,
   createMockInventoryContext,
   createMockCategory,
-} from "../../../../test/mocks";
+} from "@test/mocks";
 
 // Mock i18n
 const { t } = createMockTranslation();
-vi.mock("../../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 
 // Mock ErrorHandler
-vi.mock("../../../../hooks/useErrorHandler", () => ({
+vi.mock("@hooks/useErrorHandler", () => ({
   useErrorHandler: () => ({
     handleError: vi.fn(),
   }),
@@ -30,7 +30,7 @@ const { mockUpsert, mockInsert, mockDelete } = vi.hoisted(() => {
   };
 });
 
-vi.mock("../../../../supabaseClient", () => ({
+vi.mock("@supabaseClient", () => ({
   supabase: {
     from: vi.fn(() => ({
       upsert: mockUpsert,
@@ -50,7 +50,7 @@ const mockInventory = createMockInventoryContext({
   ],
 });
 
-vi.mock("../../../../contexts/InventoryContext", () => ({
+vi.mock("@contexts/InventoryContext", () => ({
   useInventoryContext: () => mockInventory,
 }));
 

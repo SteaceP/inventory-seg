@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
-import { useTranslation } from "../../../i18n";
-import { useErrorHandler } from "../../../hooks/useErrorHandler";
-import { supabase } from "../../../supabaseClient";
+import { useTranslation } from "@/i18n";
+import { useErrorHandler } from "@hooks/useErrorHandler";
+import { supabase } from "@/supabaseClient";
 import {
   validateImageFile,
   generateSecureFileName,
   getExtensionFromMimeType,
-} from "../../../utils/crypto";
+} from "@utils/crypto";
 
 interface ApplianceImageUploadProps {
   photoUrl: string | null | undefined;

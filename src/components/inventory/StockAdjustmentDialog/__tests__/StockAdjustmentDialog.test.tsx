@@ -4,14 +4,14 @@ import StockAdjustmentDialog from "../index";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 // Mock i18n
-vi.mock("../../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
 }));
 
 // Mock InventoryContext
-vi.mock("../../../../contexts/InventoryContext", () => ({
+vi.mock("@contexts/InventoryContext", () => ({
   useInventoryContext: () => ({
     locations: [{ name: "Warehouse" }, { name: "Store" }],
   }),

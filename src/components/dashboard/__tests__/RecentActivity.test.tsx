@@ -1,13 +1,13 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import RecentActivity from "../RecentActivity";
-import type { RecentActivityItem } from "../../../types/activity";
+import type { RecentActivityItem } from "@/types/activity";
 
 // Mock translation hook
 const mockT = vi.fn((key: string) => key);
 const mockLang = { value: "en" };
 
-vi.mock("../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({
     t: mockT,
     lang: mockLang.value,

@@ -6,8 +6,8 @@ import {
   Build as ServiceIcon,
   Verified as HealthyIcon,
 } from "@mui/icons-material";
-import { useTranslation } from "../../i18n";
-import type { Appliance } from "../../types/appliances";
+import { useTranslation } from "@/i18n";
+import type { Appliance } from "@/types/appliances";
 
 interface AppliancesStatsProps {
   appliances: Appliance[];

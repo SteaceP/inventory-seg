@@ -14,13 +14,13 @@ import {
   Category as CategoryIcon,
   History as HistoryIcon,
 } from "@mui/icons-material";
-import { useUserContext } from "../contexts/UserContext";
-import { useTranslation } from "../i18n";
-import { useInventoryContext } from "../contexts/InventoryContext";
-import QuickActions from "../components/dashboard/QuickActions";
-import StockHealth from "../components/dashboard/StockHealth";
-import { useErrorHandler } from "../hooks/useErrorHandler";
-import { supabase } from "../supabaseClient";
+import { useUserContext } from "@contexts/UserContext";
+import { useTranslation } from "@/i18n";
+import { useInventoryContext } from "@contexts/InventoryContext";
+import QuickActions from "@components/dashboard/QuickActions";
+import StockHealth from "@components/dashboard/StockHealth";
+import { useErrorHandler } from "@hooks/useErrorHandler";
+import { supabase } from "@/supabaseClient";
 
 interface StatCardProps {
   title: string;

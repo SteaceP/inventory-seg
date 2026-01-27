@@ -1,4 +1,4 @@
-import type { InventoryItem } from "../../../types/inventory";
+import type { InventoryItem } from "@/types/inventory";
 
 export type Mode = "menu" | "add" | "remove" | "selectLocation";
 

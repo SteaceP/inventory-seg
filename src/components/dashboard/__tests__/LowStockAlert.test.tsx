@@ -4,7 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import LowStockAlert from "../LowStockAlert";
 
 // Mock translation hook
-vi.mock("../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),

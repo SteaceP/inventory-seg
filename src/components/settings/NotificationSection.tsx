@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useErrorHandler } from "../../hooks/useErrorHandler";
-import { useUserContext } from "../../contexts/UserContext";
-import { useAlert } from "../../contexts/AlertContext";
+import { useErrorHandler } from "@hooks/useErrorHandler";
+import { useUserContext } from "@contexts/UserContext";
+import { useAlert } from "@contexts/AlertContext";
 import {
   Box,
   Paper,
@@ -12,8 +12,8 @@ import {
   Button,
 } from "@mui/material";
 import { Notifications as NotificationsIcon } from "@mui/icons-material";
-import { useTranslation } from "../../i18n";
-import { supabase } from "../../supabaseClient";
+import { useTranslation } from "@/i18n";
+import { supabase } from "@/supabaseClient";
 
 // The original NotificationSectionProps interface is no longer needed as props are managed internally or via context.
 // interface NotificationSectionProps {

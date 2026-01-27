@@ -2,30 +2,30 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import Inventory from "../Inventory";
 import { BrowserRouter } from "react-router-dom";
-import type { InventoryItem } from "../../types/inventory";
+import type { InventoryItem } from "@/types/inventory";
 
 // Mock dependencies
-vi.mock("../../hooks/useErrorHandler", () => ({
+vi.mock("@hooks/useErrorHandler", () => ({
   useErrorHandler: () => ({
     handleError: vi.fn(),
   }),
 }));
 
-vi.mock("../../contexts/UserContext", () => ({
+vi.mock("@contexts/UserContext", () => ({
   useUserContext: () => ({
     compactView: false,
     role: "admin",
   }),
 }));
 
-vi.mock("../../contexts/InventoryContext", () => ({
+vi.mock("@contexts/InventoryContext", () => ({
   useInventoryContext: () => ({
     items: [],
     categories: [],
   }),
 }));
 
-vi.mock("../../i18n", () => ({
+vi.mock("@/i18n", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
@@ -80,16 +80,16 @@ const mockPageProps = vi.hoisted(() => ({
   searchParams: new URLSearchParams(),
 }));
 
-vi.mock("../../hooks/useInventoryPage", () => ({
+vi.mock("@hooks/useInventoryPage", () => ({
   useInventoryPage: () => mockPageProps,
 }));
 
 // Mock child components to avoid deep rendering
-vi.mock("../../components/inventory/InventoryHeader", () => ({
+vi.mock("@components/inventory/grid/InventoryHeader", () => ({
   default: () => <div data-testid="inventory-header">Header</div>,
 }));
 
-vi.mock("../../components/inventory/InventoryCategorizedGrid", () => ({
+vi.mock("@components/inventory/grid/InventoryCategorizedGrid", () => ({
   default: ({ items }: { items: InventoryItem[] }) => (
     <div data-testid="inventory-grid">
       {items.map((i) => (
@@ -99,33 +99,48 @@ vi.mock("../../components/inventory/InventoryCategorizedGrid", () => ({
   ),
 }));
 
-vi.mock("../../components/inventory/InventoryStats", () => ({
+vi.mock("@components/inventory/stats/InventoryStats", () => ({
   default: () => <div data-testid="inventory-stats">Stats</div>,
 }));
 
-vi.mock("../../components/inventory/CategoryFilters", () => ({
+vi.mock("@components/inventory/CategoryManagement/CategoryFilters", () => ({
   default: () => <div data-testid="category-filters">Filters</div>,
 }));
 
-vi.mock("../../components/BarcodePrinter", () => ({
+vi.mock("@components/BarcodePrinter", () => ({
   default: () => null,
 }));
 
-vi.mock("../../components/inventory/InventoryDialog", () => ({
+vi.mock("@components/inventory/InventoryDialog/InventoryDialog", () => ({
   default: () => null,
 }));
 
-vi.mock("../../components/inventory/StockAdjustmentDialog/index", () => ({
+vi.mock("@components/inventory/StockAdjustmentDialog/index", () => ({
   default: () => null,
 }));
 
-vi.mock("../../components/inventory/StockHistoryDialog", () => ({
+vi.mock("@components/inventory/StockHistoryDialog/StockHistoryDialog", () => ({
   default: () => null,
 }));
 
-vi.mock("../../components/inventory/InventoryDrawer", () => ({
+vi.mock("@components/inventory/InventoryDrawer/InventoryDrawer", () => ({
   default: () => null,
 }));
+
+vi.mock("@components/ConfirmDialog", () => ({
+  default: () => null,
+}));
+
+vi.mock("@components/inventory/InventoryScanner/InventoryScanner", () => ({
+  default: () => null,
+}));
+
+vi.mock(
+  "@components/inventory/CategoryManagement/CategoryManagementDialog",
+  () => ({
+    default: () => null,
+  })
+);
 
 describe("Inventory Page", () => {
   const renderComponent = () => {
@@ -146,12 +161,6 @@ describe("Inventory Page", () => {
 
   it("shows loading state", () => {
     vi.mocked(mockPageProps).inventoryLoading = true;
-    // We need to re-mock or just spyOn the hook in a better way if we want to change return values per test
-    // But since we defined `mockPageProps` as a const outside, we can't easily change it safely between tests if parallel
-    // However, for this simple setup we can just try to override or use a fresh mock.
-    // Let's use a simpler approach: Re-render with mocked hook returning true.
-
-    // Actually, cleaning up mocks and re-implementing is better.
   });
 });
 
@@ -162,11 +171,6 @@ describe("Inventory Page Interactions", () => {
   });
 
   it("displays items passed from hook", () => {
-    // We can't easily change the mock return value of a top-level mocked hook in this scope without helper functions
-    // So we will rely on a basic render test.
-    // A better approach for testing pages that heavily rely on a single hook is to test that hook separately (which we already have tests for)
-    // and just verify the page component connects the pieces.
-
     render(
       <BrowserRouter>
         <Inventory />

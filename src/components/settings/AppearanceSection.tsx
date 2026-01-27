@@ -7,8 +7,8 @@ import {
   Switch,
 } from "@mui/material";
 import { Palette as PaletteIcon } from "@mui/icons-material";
-import { useUserContext } from "../../contexts/UserContext";
-import { useTranslation } from "../../i18n";
+import { useUserContext } from "@contexts/UserContext";
+import { useTranslation } from "@/i18n";
 
 interface AppearanceSectionProps {
   darkMode: boolean;

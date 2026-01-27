@@ -14,10 +14,10 @@ import {
   Divider,
 } from "@mui/material";
 import { Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
-import { useTranslation } from "../../../i18n";
-import { useInventoryContext } from "../../../contexts/InventoryContext";
-import { useErrorHandler } from "../../../hooks/useErrorHandler";
-import { supabase } from "../../../supabaseClient";
+import { useTranslation } from "@/i18n";
+import { useInventoryContext } from "@contexts/InventoryContext";
+import { useErrorHandler } from "@hooks/useErrorHandler";
+import { supabase } from "@/supabaseClient";
 
 interface CategoryManagementDialogProps {
   open: boolean;

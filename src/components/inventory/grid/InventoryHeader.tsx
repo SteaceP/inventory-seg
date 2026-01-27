@@ -15,7 +15,7 @@ import {
   Clear as ClearIcon,
   Category as CategoryIcon,
 } from "@mui/icons-material";
-import { useTranslation } from "../../../i18n";
+import { useTranslation } from "@/i18n";
 
 interface InventoryHeaderProps {
   isMobile: boolean;

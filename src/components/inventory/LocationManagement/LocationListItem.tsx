@@ -13,7 +13,7 @@ import {
   Folder as FolderIcon,
   LocationOn as LocationIcon,
 } from "@mui/icons-material";
-import type { MasterLocation } from "../../../types/inventory";
+import type { MasterLocation } from "@/types/inventory";
 
 interface LocationListItemProps {
   location: MasterLocation;

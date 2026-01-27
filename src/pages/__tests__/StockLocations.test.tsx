@@ -13,7 +13,7 @@ import {
   createMockTranslation,
   createMockInventoryContext,
   createMockLocation,
-} from "../../test/mocks";
+} from "@test/mocks";
 
 // Create mock data using factories
 const mockLocations = [

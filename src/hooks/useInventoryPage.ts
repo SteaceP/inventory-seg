@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useUserContext } from "../contexts/UserContext";
-import { useInventoryContext } from "../contexts/InventoryContext";
-import type { InventoryItem } from "../types/inventory";
+import { useUserContext } from "@contexts/UserContext";
+import { useInventoryContext } from "@contexts/InventoryContext";
+import type { InventoryItem } from "@/types/inventory";
 import { useInventoryFilter } from "./inventory/useInventoryFilter";
 import { useInventoryForm } from "./inventory/useInventoryForm";
 import { useInventoryActions } from "./inventory/useInventoryActions";

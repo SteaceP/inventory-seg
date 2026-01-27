@@ -4,14 +4,14 @@ import ApplianceDialog from "../ApplianceDialog/ApplianceDialog";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 // Mock Translation
-vi.mock("../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
 }));
 
 // Mock Error Handler
-vi.mock("../../../hooks/useErrorHandler", () => ({
+vi.mock("@hooks/useErrorHandler", () => ({
   useErrorHandler: () => ({
     handleError: vi.fn(),
   }),
@@ -30,7 +30,7 @@ const { mockFrom, mockUpload } = vi.hoisted(() => {
   return { mockFrom, mockUpload, mockGetPublicUrl };
 });
 
-vi.mock("../../../supabaseClient", () => ({
+vi.mock("@supabaseClient", () => ({
   supabase: {
     storage: {
       from: mockFrom,
@@ -39,7 +39,7 @@ vi.mock("../../../supabaseClient", () => ({
 }));
 
 // Mock Utils
-vi.mock("../../../utils/crypto", () => ({
+vi.mock("@utils/crypto", () => ({
   validateImageFile: vi.fn(),
   generateSecureFileName: vi.fn().mockReturnValue("secure-name.jpg"),
   generateSecureId: vi.fn().mockReturnValue("APP-12345"),

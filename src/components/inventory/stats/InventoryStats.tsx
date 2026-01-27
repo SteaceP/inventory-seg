@@ -5,8 +5,8 @@ import {
   Warning as WarningIcon,
   Error as ErrorIcon,
 } from "@mui/icons-material";
-import { useTranslation } from "../../../i18n";
-import type { InventoryItem } from "../../../types/inventory";
+import { useTranslation } from "@/i18n";
+import type { InventoryItem } from "@/types/inventory";
 
 interface InventoryStatsProps {
   items: InventoryItem[];

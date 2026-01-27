@@ -10,24 +10,24 @@ import {
   Tab,
   Divider,
 } from "@mui/material";
-import { useErrorHandler } from "../hooks/useErrorHandler";
-import { useUserContext } from "../contexts/UserContext";
-import { useTranslation } from "../i18n";
-import InventoryScanner from "../components/inventory/InventoryScanner/InventoryScanner";
-import BarcodePrinter from "../components/BarcodePrinter";
-import ConfirmDialog from "../components/ConfirmDialog";
+import { useErrorHandler } from "@hooks/useErrorHandler";
+import { useUserContext } from "@contexts/UserContext";
+import { useTranslation } from "@/i18n";
+import InventoryScanner from "@components/inventory/InventoryScanner/InventoryScanner";
+import BarcodePrinter from "@components/BarcodePrinter";
+import ConfirmDialog from "@components/ConfirmDialog";
 
 // Components
-import AppliancesHeader from "../components/appliances/AppliancesHeader";
-import ApplianceCard from "../components/appliances/ApplianceCard/ApplianceCard";
-import ApplianceDialog from "../components/appliances/ApplianceDialog/ApplianceDialog";
-import ApplianceRepairDialog from "../components/appliances/ApplianceRepairDialog/ApplianceRepairDialog";
-import ApplianceDrawer from "../components/appliances/ApplianceDrawer/ApplianceDrawer";
-import AppliancesStats from "../components/appliances/AppliancesStats";
+import AppliancesHeader from "@components/appliances/AppliancesHeader";
+import ApplianceCard from "@components/appliances/ApplianceCard/ApplianceCard";
+import ApplianceDialog from "@components/appliances/ApplianceDialog/ApplianceDialog";
+import ApplianceRepairDialog from "@components/appliances/ApplianceRepairDialog/ApplianceRepairDialog";
+import ApplianceDrawer from "@components/appliances/ApplianceDrawer/ApplianceDrawer";
+import AppliancesStats from "@components/appliances/AppliancesStats";
 
 // Types & Hooks
-import type { ApplianceStatus } from "../types/appliances";
-import { useApplianceManagement } from "../hooks/useApplianceManagement";
+import type { ApplianceStatus } from "@/types/appliances";
+import { useApplianceManagement } from "@hooks/useApplianceManagement";
 
 const Appliances: React.FC = () => {
   const { compactView } = useUserContext();

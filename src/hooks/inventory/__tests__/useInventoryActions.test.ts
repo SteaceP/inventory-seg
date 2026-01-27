@@ -2,13 +2,13 @@
 import { renderHook, act, cleanup } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { useInventoryActions } from "../useInventoryActions";
-import { supabase } from "../../../supabaseClient";
-import * as ActivityUtils from "../../../utils/activityUtils";
+import { supabase } from "@/supabaseClient";
+import * as ActivityUtils from "@utils/activityUtils";
 
-import type { InventoryItem } from "../../../types/inventory";
+import type { InventoryItem } from "@/types/inventory";
 
 // Mock Supabase
-vi.mock("../../../supabaseClient", () => {
+vi.mock("@supabaseClient", () => {
   const mockUpload = vi.fn();
   const mockGetPublicUrl = vi.fn();
   const mockUpdate = vi.fn();
@@ -55,7 +55,7 @@ const mockUpdateCategoryThreshold = vi.fn();
 const mockBroadcastInventoryChange = vi.fn();
 const mockT = vi.fn((key: string) => key);
 
-vi.mock("../../../contexts/AlertContext", () => ({
+vi.mock("@contexts/AlertContext", () => ({
   useAlert: () => ({ showError: mockShowError }),
 }));
 
@@ -63,7 +63,7 @@ vi.mock("../../useErrorHandler", () => ({
   useErrorHandler: () => ({ handleError: mockHandleError }),
 }));
 
-vi.mock("../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({ t: mockT }),
 }));
 
@@ -85,7 +85,7 @@ const mockItems: InventoryItem[] = [
 ];
 const mockCategories = [{ name: "Cat 1", low_stock_threshold: 5 }];
 
-vi.mock("../../../contexts/InventoryContext", () => ({
+vi.mock("@contexts/InventoryContext", () => ({
   useInventoryContext: () => ({
     items: mockItems,
     categories: mockCategories,
@@ -95,7 +95,7 @@ vi.mock("../../../contexts/InventoryContext", () => ({
   }),
 }));
 
-vi.mock("../../../contexts/UserContext", () => ({
+vi.mock("@contexts/UserContext", () => ({
   useUserContext: () => ({
     role: "admin",
     lowStockThreshold: 10,
@@ -103,11 +103,11 @@ vi.mock("../../../contexts/UserContext", () => ({
 }));
 
 // Mock Utils
-vi.mock("../../../utils/activityUtils", () => ({
+vi.mock("@utils/activityUtils", () => ({
   logActivity: vi.fn(),
 }));
 
-vi.mock("../../../utils/crypto", () => ({
+vi.mock("@utils/crypto", () => ({
   validateImageFile: vi.fn(),
   generateSecureFileName: vi.fn(() => "secure-file.jpg"),
   getExtensionFromMimeType: vi.fn(() => "jpg"),

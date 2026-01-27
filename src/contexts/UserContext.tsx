@@ -8,16 +8,16 @@ import React, {
   useMemo,
   useRef,
 } from "react";
-import { supabase } from "../supabaseClient";
-import { logInfo } from "../utils/errorReporting";
+import { supabase } from "@/supabaseClient";
+import { logInfo } from "@utils/errorReporting";
 import { useAlert } from "./AlertContext";
-import { useErrorHandler } from "../hooks/useErrorHandler";
+import { useErrorHandler } from "@hooks/useErrorHandler";
 import type {
   Language,
   UserProfile,
   UserContextType,
   UserSettingsRow,
-} from "../types/user";
+} from "@/types/user";
 import type { Session, PostgrestError } from "@supabase/supabase-js";
 
 export const UserContext = createContext<

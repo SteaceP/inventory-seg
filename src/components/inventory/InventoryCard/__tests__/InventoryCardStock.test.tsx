@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import InventoryCardStock from "../InventoryCardStock";
-import type { InventoryItem } from "../../../../types/inventory";
+import type { InventoryItem } from "@/types/inventory";
 
 const mockT = vi.fn((key: string, options?: Record<string, unknown>) => {
   if (key === "inventory.minThreshold" && options)

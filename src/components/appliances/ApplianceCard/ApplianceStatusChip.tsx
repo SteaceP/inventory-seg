@@ -5,7 +5,7 @@ import {
   CheckCircle as HealthyIcon,
   Error as BrokenIcon,
 } from "@mui/icons-material";
-import { useTranslation } from "../../../i18n";
+import { useTranslation } from "@/i18n";
 
 interface ApplianceStatusChipProps {
   status: "functional" | "needs_service" | "broken";

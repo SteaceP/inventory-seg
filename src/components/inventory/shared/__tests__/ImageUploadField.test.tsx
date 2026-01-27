@@ -3,10 +3,10 @@ import { describe, it, expect, vi } from "vitest";
 import ImageUploadField from "../ImageUploadField";
 
 // Mock translation
-import { createMockTranslation } from "../../../../test/mocks";
+import { createMockTranslation } from "@test/mocks";
 
 const { t } = createMockTranslation();
-vi.mock("../../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 

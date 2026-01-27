@@ -9,8 +9,8 @@ import {
 } from "@mui/material";
 import { Close as CloseIcon, ArrowBack as BackIcon } from "@mui/icons-material";
 import { AnimatePresence } from "framer-motion";
-import { useTranslation } from "../../../i18n";
-import { useInventoryContext } from "../../../contexts/InventoryContext";
+import { useTranslation } from "@/i18n";
+import { useInventoryContext } from "@contexts/InventoryContext";
 import type {
   StockAdjustmentDialogProps,
   Mode,

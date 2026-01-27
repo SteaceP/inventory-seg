@@ -1,7 +1,7 @@
 import { renderHook, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { useInventoryPage } from "../useInventoryPage";
-import type { InventoryItem } from "../../types/inventory";
+import type { InventoryItem } from "@/types/inventory";
 
 // Mock React Router
 const mockSetSearchParams = vi.fn();

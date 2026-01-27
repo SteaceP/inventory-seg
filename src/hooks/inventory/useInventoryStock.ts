@@ -1,11 +1,11 @@
-import { supabase } from "../../supabaseClient";
-import { useInventoryContext } from "../../contexts/InventoryContext";
-import { useUserContext } from "../../contexts/UserContext";
-import { useAlert } from "../../contexts/AlertContext";
-import { useTranslation } from "../../i18n";
+import { supabase } from "@/supabaseClient";
+import { useInventoryContext } from "@contexts/InventoryContext";
+import { useUserContext } from "@contexts/UserContext";
+import { useAlert } from "@contexts/AlertContext";
+import { useTranslation } from "@/i18n";
 import { useErrorHandler } from "../useErrorHandler";
-import { logActivity } from "../../utils/activityUtils";
-import type { InventoryItem } from "../../types/inventory";
+import { logActivity } from "@utils/activityUtils";
+import type { InventoryItem } from "@/types/inventory";
 
 export const useInventoryStock = () => {
   const { items, refreshInventory, broadcastInventoryChange, categories } =

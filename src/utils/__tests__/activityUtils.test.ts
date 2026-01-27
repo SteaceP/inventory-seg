@@ -4,7 +4,7 @@ import {
   getActivityNarrative,
   logActivity,
 } from "../activityUtils";
-import type { InventoryActivity } from "../../types/activity";
+import type { InventoryActivity } from "@/types/activity";
 
 describe("getStockChange", () => {
   it("should return null when stock has not changed", () => {

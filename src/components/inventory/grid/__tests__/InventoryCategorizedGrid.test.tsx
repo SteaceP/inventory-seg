@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import InventoryCategorizedGrid from "../InventoryCategorizedGrid";
-import type { InventoryItem } from "../../../../types/inventory";
+import type { InventoryItem } from "@/types/inventory";
 
 // Mock sub-components
 vi.mock("../../CategoryManagement/CategorySection", () => ({
@@ -26,16 +26,16 @@ import {
   createMockTranslation,
   createMockUserContext,
   createMockInventoryContext,
-} from "../../../../test/mocks";
+} from "@test/mocks";
 
 const { t } = createMockTranslation();
-vi.mock("../../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 
 // Mock UserContext
 const mockUserContext = createMockUserContext({ role: "admin" });
-vi.mock("../../../../contexts/UserContext", () => ({
+vi.mock("@contexts/UserContext", () => ({
   useUserContext: () => mockUserContext,
 }));
 
@@ -44,7 +44,7 @@ const mockInventoryContext = createMockInventoryContext({
   categories: [],
   updateCategoryThreshold: vi.fn(),
 });
-vi.mock("../../../../contexts/InventoryContext", () => ({
+vi.mock("@contexts/InventoryContext", () => ({
   useInventoryContext: () => mockInventoryContext,
 }));
 

@@ -12,8 +12,8 @@ import {
   Build as BuildIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
-import { useTranslation } from "../../../i18n";
-import type { Appliance } from "../../../types/appliances";
+import { useTranslation } from "@/i18n";
+import type { Appliance } from "@/types/appliances";
 
 interface ApplianceCardActionsProps {
   appliance: Appliance;

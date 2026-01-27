@@ -12,7 +12,7 @@ import {
   unsubscribeFromPush,
   checkPushSubscription,
 } from "../push-notifications";
-import { supabase } from "../../supabaseClient";
+import { supabase } from "@/supabaseClient";
 
 // Mock Supabase client
 vi.mock("../../supabaseClient", () => ({

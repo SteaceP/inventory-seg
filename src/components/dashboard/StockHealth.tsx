@@ -12,9 +12,9 @@ import {
   CheckCircle as HealthyIcon,
   Error as CrisisIcon,
 } from "@mui/icons-material";
-import { useTranslation } from "../../i18n";
-import { useInventoryContext } from "../../contexts/InventoryContext";
-import { useUserContext } from "../../contexts/UserContext";
+import { useTranslation } from "@/i18n";
+import { useInventoryContext } from "@contexts/InventoryContext";
+import { useUserContext } from "@contexts/UserContext";
 
 const StockHealth: React.FC = () => {
   const { t } = useTranslation();

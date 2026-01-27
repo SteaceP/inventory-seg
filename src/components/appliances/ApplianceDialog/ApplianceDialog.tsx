@@ -8,8 +8,8 @@ import {
   CircularProgress,
   Grid,
 } from "@mui/material";
-import { useTranslation } from "../../../i18n";
-import type { Appliance } from "../../../types/appliances";
+import { useTranslation } from "@/i18n";
+import type { Appliance } from "@/types/appliances";
 import ApplianceImageUpload from "./ApplianceImageUpload";
 import ApplianceMainFields from "./ApplianceMainFields";
 import ApplianceInfoFields from "./ApplianceInfoFields";

@@ -16,9 +16,9 @@ import {
   Settings as SettingsIcon,
 } from "@mui/icons-material";
 import { motion, AnimatePresence } from "framer-motion";
-import type { InventoryItem } from "../../../types/inventory";
+import type { InventoryItem } from "@/types/inventory";
 import InventoryCard from "../InventoryCard/InventoryCard";
-import { useTranslation } from "../../../i18n";
+import { useTranslation } from "@/i18n";
 
 interface CategorySectionProps {
   category: string;

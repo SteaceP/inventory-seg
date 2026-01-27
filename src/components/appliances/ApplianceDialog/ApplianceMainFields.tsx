@@ -7,9 +7,9 @@ import {
   IconButton,
 } from "@mui/material";
 import { Autorenew as AutoRenewIcon } from "@mui/icons-material";
-import { useTranslation } from "../../../i18n";
-import type { Appliance } from "../../../types/appliances";
-import { generateSecureId } from "../../../utils/crypto";
+import { useTranslation } from "@/i18n";
+import type { Appliance } from "@/types/appliances";
+import { generateSecureId } from "@utils/crypto";
 
 interface ApplianceMainFieldsProps {
   formData: Partial<Appliance>;

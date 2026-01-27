@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { useErrorHandler } from "../hooks/useErrorHandler";
+import { useErrorHandler } from "@hooks/useErrorHandler";
 import {
   Box,
   Container,
@@ -21,9 +21,9 @@ import {
   ToggleButtonGroup,
 } from "@mui/material";
 import { Print as PrintIcon } from "@mui/icons-material";
-import { useTranslation } from "../i18n";
-import { useInventoryContext } from "../contexts/InventoryContext";
-import { supabase } from "../supabaseClient";
+import { useTranslation } from "@/i18n";
+import { useInventoryContext } from "@contexts/InventoryContext";
+import { supabase } from "@/supabaseClient";
 
 const ReportsPage: React.FC = () => {
   const { t, lang } = useTranslation();

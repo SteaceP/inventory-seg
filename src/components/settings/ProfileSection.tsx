@@ -4,7 +4,7 @@ import {
   Person as PersonIcon,
   PhotoCamera as CameraIcon,
 } from "@mui/icons-material";
-import { useTranslation } from "../../i18n";
+import { useTranslation } from "@/i18n";
 
 interface ProfileSectionProps {
   displayName: string;

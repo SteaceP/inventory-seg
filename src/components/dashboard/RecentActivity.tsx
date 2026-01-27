@@ -13,9 +13,9 @@ import {
   Delete as DeleteIcon,
 } from "@mui/icons-material";
 
-import { useTranslation } from "../../i18n";
+import { useTranslation } from "@/i18n";
 
-import type { RecentActivityItem } from "../../types/activity";
+import type { RecentActivityItem } from "@/types/activity";
 
 interface RecentActivityProps {
   activities: RecentActivityItem[];

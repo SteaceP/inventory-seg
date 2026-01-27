@@ -14,6 +14,7 @@ export default defineConfig([
   globalIgnores([
     "dist",
     ".wrangler",
+    ".agent",
     "src/types/database.types.ts",
     "coverage",
   ]),

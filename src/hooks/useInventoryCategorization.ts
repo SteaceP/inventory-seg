@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import type { InventoryItem } from "../types/inventory";
-import { useTranslation } from "../i18n";
+import type { InventoryItem } from "@/types/inventory";
+import { useTranslation } from "@/i18n";
 
 export function useInventoryCategorization(items: InventoryItem[]) {
   const { t } = useTranslation();

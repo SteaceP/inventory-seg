@@ -3,7 +3,7 @@ import { Dialog, Box, IconButton, Typography, Button } from "@mui/material";
 import { Close as CloseIcon } from "@mui/icons-material";
 import { Html5Qrcode } from "html5-qrcode";
 import { motion } from "framer-motion";
-import { useTranslation } from "../../../i18n";
+import { useTranslation } from "@/i18n";
 
 interface InventoryScannerProps {
   open: boolean;

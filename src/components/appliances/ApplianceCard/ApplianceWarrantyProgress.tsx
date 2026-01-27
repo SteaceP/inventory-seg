@@ -6,8 +6,8 @@ import {
   alpha,
   useTheme,
 } from "@mui/material";
-import { useTranslation } from "../../../i18n";
-import type { Appliance } from "../../../types/appliances";
+import { useTranslation } from "@/i18n";
+import type { Appliance } from "@/types/appliances";
 
 interface ApplianceWarrantyProgressProps {
   appliance: Appliance;

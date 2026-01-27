@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from "vitest";
 import SidebarHeader from "../SidebarHeader";
 
 // Mock translation hook
-vi.mock("../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),

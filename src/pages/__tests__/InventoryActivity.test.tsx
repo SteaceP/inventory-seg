@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import InventoryActivityPage from "../InventoryActivity";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { createMockTranslation, createMockActivity } from "../../test/mocks";
+import { createMockTranslation, createMockActivity } from "@test/mocks";
 
 // Mock error handler
 const mockHandleError = vi.fn();

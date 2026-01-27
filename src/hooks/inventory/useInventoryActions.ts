@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { supabase } from "../../supabaseClient";
-import { useUserContext } from "../../contexts/UserContext";
-import { useInventoryContext } from "../../contexts/InventoryContext";
-import { useAlert } from "../../contexts/AlertContext";
-import { useTranslation } from "../../i18n";
+import { supabase } from "@/supabaseClient";
+import { useUserContext } from "@contexts/UserContext";
+import { useInventoryContext } from "@contexts/InventoryContext";
+import { useAlert } from "@contexts/AlertContext";
+import { useTranslation } from "@/i18n";
 import { useErrorHandler } from "../useErrorHandler";
-import { logActivity } from "../../utils/activityUtils";
-import type { InventoryItem } from "../../types/inventory";
+import { logActivity } from "@utils/activityUtils";
+import type { InventoryItem } from "@/types/inventory";
 import { useInventoryImage } from "./useInventoryImage";
 import { useInventoryStock } from "./useInventoryStock";
 

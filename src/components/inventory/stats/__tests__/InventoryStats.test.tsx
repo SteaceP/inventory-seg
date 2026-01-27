@@ -1,17 +1,17 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import InventoryStats from "../InventoryStats";
-import type { InventoryItem } from "../../../../types/inventory";
+import type { InventoryItem } from "@/types/inventory";
 import { ThemeProvider, createTheme } from "@mui/material";
 import {
   createMockTranslation,
   createMockInventoryItem,
   createMockCategory,
-} from "../../../../test/mocks";
+} from "@test/mocks";
 
 // Mock translation hook
 const { t } = createMockTranslation();
-vi.mock("../../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 

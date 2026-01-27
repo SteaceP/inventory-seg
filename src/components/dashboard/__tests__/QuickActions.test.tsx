@@ -6,7 +6,7 @@ import QuickActions from "../QuickActions";
 // Mock translation hook
 const mockT = vi.fn((key: string) => key);
 
-vi.mock("../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({
     t: mockT,
   }),
@@ -22,7 +22,7 @@ vi.mock("react-router-dom", async () => {
 });
 
 // Mock hooks
-vi.mock("../../../hooks/useScrollIndicators", () => ({
+vi.mock("@hooks/useScrollIndicators", () => ({
   useScrollIndicators: (isMobile: boolean) => ({
     showLeft: isMobile,
     showRight: isMobile,

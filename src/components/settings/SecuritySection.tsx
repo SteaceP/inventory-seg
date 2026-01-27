@@ -17,8 +17,8 @@ import {
   Visibility,
   VisibilityOff,
 } from "@mui/icons-material";
-import { useTranslation } from "../../i18n";
-import { useErrorHandler } from "../../hooks/useErrorHandler";
+import { useTranslation } from "@/i18n";
+import { useErrorHandler } from "@hooks/useErrorHandler";
 
 interface SecuritySectionProps {
   onSignOut: () => void;

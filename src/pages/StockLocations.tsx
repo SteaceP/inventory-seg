@@ -9,14 +9,14 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Add as AddIcon, Refresh as RefreshIcon } from "@mui/icons-material";
-import { useTranslation } from "../i18n";
-import { useInventoryContext } from "../contexts/InventoryContext";
-import { useAlert } from "../contexts/AlertContext";
-import { useErrorHandler } from "../hooks/useErrorHandler";
-import { supabase } from "../supabaseClient";
-import type { MasterLocation } from "../types/inventory";
-import LocationList from "../components/inventory/LocationManagement/LocationList";
-import LocationDialog from "../components/inventory/LocationManagement/LocationDialog";
+import { useTranslation } from "@/i18n";
+import { useInventoryContext } from "@contexts/InventoryContext";
+import { useAlert } from "@contexts/AlertContext";
+import { useErrorHandler } from "@hooks/useErrorHandler";
+import { supabase } from "@/supabaseClient";
+import type { MasterLocation } from "@/types/inventory";
+import LocationList from "@components/inventory/LocationManagement/LocationList";
+import LocationDialog from "@components/inventory/LocationManagement/LocationDialog";
 
 const StockLocationsPage: React.FC = () => {
   const { t } = useTranslation();

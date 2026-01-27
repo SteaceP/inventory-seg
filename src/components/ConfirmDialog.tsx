@@ -7,7 +7,7 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
-import { useTranslation } from "../i18n";
+import { useTranslation } from "@/i18n";
 
 interface ConfirmDialogProps {
   open: boolean;

@@ -6,7 +6,7 @@ import {
   createMockAlertContext,
   createMockTranslation,
   createMockUserContext,
-} from "../../../test/mocks";
+} from "@test/mocks";
 
 // Hoist mocks to avoid unbound-method lint errors
 const mocks = vi.hoisted(() => ({
@@ -19,29 +19,29 @@ const mockHandleError = vi.fn();
 const mockUser = createMockUserContext({ userId: "user-123" });
 const { t } = createMockTranslation();
 
-vi.mock("../../../contexts/AlertContext", () => ({
+vi.mock("@contexts/AlertContext", () => ({
   useAlert: () => mockAlert,
 }));
 
 // Mock useErrorHandler
-vi.mock("../../../hooks/useErrorHandler", () => ({
+vi.mock("@hooks/useErrorHandler", () => ({
   useErrorHandler: () => ({
     handleError: mockHandleError,
   }),
 }));
 
 // Mock UserContext
-vi.mock("../../../contexts/UserContext", () => ({
+vi.mock("@contexts/UserContext", () => ({
   useUserContext: () => mockUser,
 }));
 
 // Mock i18n
-vi.mock("../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 
 // Mock supabaseClient
-vi.mock("../../../supabaseClient", () => ({
+vi.mock("@supabaseClient", () => ({
   supabase: {
     auth: {
       getSession: mocks.getSession,

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import InventoryDrawer from "../InventoryDrawer";
-import type { InventoryItem } from "../../../../types/inventory";
+import type { InventoryItem } from "@/types/inventory";
 
 // Mock dependencies
 const mocks = vi.hoisted(() => {
@@ -20,14 +20,14 @@ import {
   createMockUserContext,
   createMockInventoryContext,
   createMockCategory,
-} from "../../../../test/mocks";
+} from "@test/mocks";
 
 const { t } = createMockTranslation();
-vi.mock("../../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 
-vi.mock("../../../../hooks/useErrorHandler", () => ({
+vi.mock("@hooks/useErrorHandler", () => ({
   useErrorHandler: () => ({
     handleError: mocks.handleError,
   }),
@@ -39,7 +39,7 @@ const mockInventoryContext = createMockInventoryContext({
     createMockCategory({ name: "Test Category", low_stock_threshold: 5 }),
   ],
 });
-vi.mock("../../../../contexts/InventoryContext", () => ({
+vi.mock("@contexts/InventoryContext", () => ({
   useInventoryContext: () => mockInventoryContext,
 }));
 
@@ -47,11 +47,11 @@ vi.mock("../../../../contexts/InventoryContext", () => ({
 const mockUserContext = createMockUserContext({
   lowStockThreshold: 10,
 });
-vi.mock("../../../../contexts/UserContext", () => ({
+vi.mock("@contexts/UserContext", () => ({
   useUserContext: () => mockUserContext,
 }));
 
-vi.mock("../../../../supabaseClient", () => ({
+vi.mock("@supabaseClient", () => ({
   supabase: {
     from: mocks.from,
   },

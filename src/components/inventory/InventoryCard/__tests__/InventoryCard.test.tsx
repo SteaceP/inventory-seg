@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import InventoryCard from "../InventoryCard";
-import type { InventoryItem } from "../../../../types/inventory";
+import type { InventoryItem } from "@/types/inventory";
 
 // Mock framer-motion to avoid animation issues in tests
 vi.mock("framer-motion", () => ({
@@ -23,7 +23,7 @@ const mockT = vi.fn((key: string, options?: Record<string, unknown>) => {
   return key;
 });
 
-vi.mock("../../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({
     t: mockT,
   }),
@@ -36,7 +36,7 @@ const mockUserContext = {
   compactView: false,
 };
 
-vi.mock("../../../../contexts/UserContext", () => ({
+vi.mock("@contexts/UserContext", () => ({
   useUserContext: () => mockUserContext,
 }));
 
@@ -45,7 +45,7 @@ const mockInventoryContext = {
   presence: {},
 };
 
-vi.mock("../../../../contexts/InventoryContext", () => ({
+vi.mock("@contexts/InventoryContext", () => ({
   useInventoryContext: () => mockInventoryContext,
 }));
 

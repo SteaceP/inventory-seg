@@ -11,8 +11,8 @@ import {
   AddCircleOutline as AddCircleIcon,
   RemoveCircleOutline as RemoveCircleIcon,
 } from "@mui/icons-material";
-import { useTranslation } from "../../../i18n";
-import type { InventoryItem } from "../../../types/inventory";
+import { useTranslation } from "@/i18n";
+import type { InventoryItem } from "@/types/inventory";
 
 interface StockLocationFieldsProps {
   stockLocations: InventoryItem["stock_locations"];

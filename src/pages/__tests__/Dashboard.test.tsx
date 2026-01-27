@@ -9,7 +9,7 @@ import {
   createMockInventoryContext,
   createMockInventoryItem,
   createMockCategory,
-} from "../../test/mocks";
+} from "@test/mocks";
 
 // Create test data using factories
 const mockInventoryItems = [

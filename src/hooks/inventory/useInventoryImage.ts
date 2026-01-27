@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { supabase } from "../../supabaseClient";
-import { useAlert } from "../../contexts/AlertContext";
-import { useTranslation } from "../../i18n";
+import { supabase } from "@/supabaseClient";
+import { useAlert } from "@contexts/AlertContext";
+import { useTranslation } from "@/i18n";
 import {
   validateImageFile,
   generateSecureFileName,
   getExtensionFromMimeType,
-} from "../../utils/crypto";
+} from "@utils/crypto";
 
-import type { InventoryItem } from "../../types/inventory";
+import type { InventoryItem } from "@/types/inventory";
 
 export const useInventoryImage = (
   setFormData: React.Dispatch<React.SetStateAction<Partial<InventoryItem>>>

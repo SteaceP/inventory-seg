@@ -1,6 +1,6 @@
 import { useCallback } from "react";
-import { useAlert } from "../contexts/AlertContext";
-import { reportError } from "../utils/errorReporting";
+import { useAlert } from "@contexts/AlertContext";
+import { reportError } from "@utils/errorReporting";
 
 /**
  * Custom hook that provides a unified way to handle errors in the frontend.

@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from "vitest";
 import UserProfile from "../UserProfile";
 
 // Mock translation hook
-vi.mock("../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),

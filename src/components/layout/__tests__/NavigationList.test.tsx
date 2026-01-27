@@ -2,17 +2,17 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import NavigationList from "../NavigationList";
-import { supabase } from "../../../supabaseClient";
+import { supabase } from "@/supabaseClient";
 
 // Mock translation hook
-vi.mock("../../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
 }));
 
 // Mock Supabase
-vi.mock("../../../supabaseClient", () => ({
+vi.mock("@supabaseClient", () => ({
   supabase: {
     auth: {
       signOut: vi.fn().mockResolvedValue({ error: null }),

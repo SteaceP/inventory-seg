@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import Signup from "../Signup";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { createMockTranslation, createMockUserContext } from "../../test/mocks";
+import { createMockTranslation, createMockUserContext } from "@test/mocks";
 
 // Mock Supabase
 const mockSignUp = vi.fn();

@@ -1,10 +1,10 @@
 import { renderHook, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useInventoryForm } from "../useInventoryForm";
-import type { InventoryItem } from "../../../types/inventory";
+import type { InventoryItem } from "@/types/inventory";
 
 // Mock crypto utils
-vi.mock("../../../utils/crypto", () => ({
+vi.mock("@utils/crypto", () => ({
   generateSecureId: vi.fn(() => "TEST-SKU"),
   generateSecureFileName: vi.fn(),
   validateImageFile: vi.fn(),

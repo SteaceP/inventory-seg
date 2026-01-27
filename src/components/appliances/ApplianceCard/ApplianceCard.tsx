@@ -9,7 +9,7 @@ import {
   alpha,
   useTheme,
 } from "@mui/material";
-import type { Appliance } from "../../../types/appliances";
+import type { Appliance } from "@/types/appliances";
 import ApplianceStatusChip from "./ApplianceStatusChip";
 import ApplianceWarrantyProgress from "./ApplianceWarrantyProgress";
 import ApplianceCardActions from "./ApplianceCardActions";
