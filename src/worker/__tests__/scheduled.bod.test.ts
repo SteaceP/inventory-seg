@@ -23,7 +23,7 @@ vi.mock("../errorReporting", () => ({
   reportError: vi.fn(),
 }));
 
-describe("handleScheduled - AI Suppliers (BOD, Staples, etc.)", () => {
+describe("handleScheduled - BOD Supplier", () => {
   let env: Env;
   let ctx: ReturnType<typeof createMockCtx>;
 
@@ -139,124 +139,5 @@ describe("handleScheduled - AI Suppliers (BOD, Staples, etc.)", () => {
 
     const webpush = await import("web-push");
     expect(webpush.default.sendNotification as Mock).not.toHaveBeenCalled();
-  });
-
-  it("should handle mixed suppliers correctly", async () => {
-    const amazonItem = {
-      id: "1",
-      name: "A",
-      category: "Other",
-      stock: 1,
-      low_stock_threshold: 5,
-      category_threshold: 5,
-      user_id: "u1",
-    };
-    const bodItem = {
-      id: "2",
-      name: "#B",
-      category: "Entretien",
-      stock: 1,
-      low_stock_threshold: 5,
-      category_threshold: 5,
-      user_id: "u1",
-    };
-
-    // 1. History
-    mockSql.mockResolvedValueOnce([]);
-    // 2. Current Items
-    mockSql.mockResolvedValueOnce([amazonItem, bodItem]);
-    // 3. Subscription (for Amazon notification)
-    mockSql.mockResolvedValueOnce([
-      { subscription: { endpoint: "test" }, user_id: "u1" },
-    ]);
-    // 4. Subscription (for BOD notification, IF triggered)
-    mockSql.mockResolvedValueOnce([
-      { subscription: { endpoint: "test" }, user_id: "u1" },
-    ]);
-
-    // Mock AI to say YES for BOD
-    (env.AI.run as Mock).mockResolvedValue({
-      response: JSON.stringify({ should_order: true, reason: "BOD Yes" }),
-    });
-
-    handleScheduled(
-      {
-        cron: "* * * * *",
-        type: "scheduled",
-        scheduledTime: Date.now(),
-      } as unknown as ScheduledEvent,
-      env,
-      ctx
-    );
-
-    // Await the promise passed to waitUntil
-    const work = ctx.waitUntil.mock.results[0].value as Promise<void>;
-    await work;
-
-    const webpush = await import("web-push");
-    // Amazon notification
-    expect(webpush.default.sendNotification as Mock).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.stringContaining("Amazon items (1)"),
-      expect.anything()
-    );
-    // BOD notification
-    expect(webpush.default.sendNotification as Mock).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.stringContaining("BOD Yes"),
-      expect.anything()
-    );
-  });
-
-  it("should handle Staples (Papeterie) correctly", async () => {
-    // Test the spelling fix
-    const staplesItem = {
-      id: "3",
-      name: "Paper",
-      category: "Papeterie", // Correct spelling
-      stock: 2,
-      low_stock_threshold: 5,
-      category_threshold: null,
-    };
-
-    mockSql.mockResolvedValueOnce([]); // History
-    mockSql.mockResolvedValueOnce([staplesItem]); // Items
-    mockSql.mockResolvedValueOnce([
-      { subscription: { endpoint: "test" }, user_id: "u1" },
-    ]); // Subs
-
-    // AI Yes
-    (env.AI.run as Mock).mockResolvedValue({
-      response: JSON.stringify({ should_order: true, reason: "Staples Yes" }),
-    });
-
-    handleScheduled(
-      {
-        cron: "* * * * *",
-        type: "scheduled",
-        scheduledTime: Date.now(),
-      } as unknown as ScheduledEvent,
-      env,
-      ctx
-    );
-
-    // Await the promise passed to waitUntil
-    const work = ctx.waitUntil.mock.results[0].value as Promise<void>;
-    await work;
-
-    // Verify prompt contains "Staples"
-    const aiRunSpy = env.AI.run as Mock;
-    expect(aiRunSpy).toHaveBeenCalledWith(
-      expect.anything(),
-      /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
-      {
-        messages: expect.arrayContaining([
-          expect.objectContaining({
-            content: expect.stringContaining("Supplier: Staples"),
-          }),
-        ]),
-      } as any
-      /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
-    );
   });
 });
