@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent } from "@test/test-utils";
 import CategorySection from "../CategorySection";
 import type { InventoryItem } from "@/types/inventory";
 import { createMockTranslation, createMockInventoryItem } from "@test/mocks";
@@ -16,15 +16,6 @@ const { t } = createMockTranslation();
 vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
-
-// Mock MUI useMediaQuery
-vi.mock("@mui/material", async () => {
-  const actual = await vi.importActual("@mui/material");
-  return {
-    ...actual,
-    useMediaQuery: () => false,
-  };
-});
 
 // Mock framer-motion
 vi.mock("framer-motion", () => ({

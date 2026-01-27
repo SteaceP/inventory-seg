@@ -1,5 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent } from "@test/test-utils";
 import Layout from "../Layout";
 import { MemoryRouter } from "react-router-dom";
 
@@ -14,16 +13,21 @@ vi.mock("@i18n", () => ({
   }),
 }));
 
-// Mock useMediaQuery
-const mockUseMediaQuery = vi.fn();
-vi.mock("@mui/material", async () => {
-  const actual = await vi.importActual("@mui/material");
-  return {
-    ...actual,
-    useMediaQuery: (query: unknown): boolean =>
-      Boolean(mockUseMediaQuery(query)),
-  };
-});
+const stubMatchMedia = (matches: boolean) => {
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn().mockImplementation((query: string) => ({
+      matches,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }))
+  );
+};
 
 import { useUserContext } from "@contexts/UserContext";
 import type { Mock } from "vitest";
@@ -39,7 +43,7 @@ describe("Layout Component", () => {
     vi.clearAllMocks();
     (useUserContext as unknown as Mock).mockReturnValue(mockUserContext);
     // Default to desktop
-    mockUseMediaQuery.mockReturnValue(false);
+    stubMatchMedia(false);
   });
 
   const renderLayout = (route = "/") => {
@@ -64,7 +68,7 @@ describe("Layout Component", () => {
 
   it("renders mobile layout correctly", () => {
     // Simulate mobile
-    mockUseMediaQuery.mockReturnValue(true);
+    stubMatchMedia(true);
     renderLayout();
 
     // Mobile app bar should be visible (implies hamburger menu)
@@ -88,7 +92,7 @@ describe("Layout Component", () => {
   });
 
   it("collapses sidebar on desktop when toggle is clicked", () => {
-    mockUseMediaQuery.mockReturnValue(false);
+    stubMatchMedia(false);
     renderLayout();
 
     // I need to know what SidebarHeader renders to click it.

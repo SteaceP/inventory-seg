@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent } from "@test/test-utils";
 import StockLocationFields from "../StockLocationFields";
 
 // Mock i18n
@@ -9,37 +9,6 @@ const { t } = createMockTranslation();
 vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
-
-// Mock MUI Autocomplete to behave simply
-vi.mock("@mui/material", async () => {
-  const actual = await vi.importActual("@mui/material");
-  return {
-    ...actual,
-    Autocomplete: ({
-      renderInput,
-      value,
-      onInputChange,
-    }: {
-      renderInput: (params: Record<string, unknown>) => React.ReactNode;
-      value: string;
-      onInputChange: (
-        event: React.ChangeEvent<HTMLInputElement>,
-        value: string
-      ) => void;
-    }) => {
-      return (
-        <div data-testid="autocomplete-mock">
-          {renderInput({})}
-          <input
-            data-testid="autocomplete-input-hidden"
-            value={value || ""}
-            onChange={(e) => onInputChange && onInputChange(e, e.target.value)}
-          />
-        </div>
-      );
-    },
-  };
-});
 
 describe("StockLocationFields", () => {
   const mockOnChange = vi.fn();

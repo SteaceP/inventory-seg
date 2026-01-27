@@ -187,7 +187,7 @@ export const setupSupabaseMock = (
 ) => {
   const client = customClient ?? mockSupabaseClient;
 
-  vi.mock("../../supabaseClient", () => ({
+  vi.doMock("../../supabaseClient", () => ({
     supabase: client.client,
   }));
 

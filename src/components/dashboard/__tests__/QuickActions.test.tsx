@@ -1,5 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { render, screen, fireEvent } from "@test/test-utils";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { BrowserRouter } from "react-router-dom";
 import QuickActions from "../QuickActions";
 
@@ -35,8 +35,29 @@ const renderWithRouter = (ui: React.ReactElement) => {
   return render(ui, { wrapper: BrowserRouter });
 };
 
+const stubMatchMedia = (matches: boolean) => {
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn().mockImplementation((query: string) => ({
+      matches,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }))
+  );
+};
+
 describe("QuickActions", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("renders all action cards correctly", () => {
+    stubMatchMedia(false);
     renderWithRouter(<QuickActions />);
 
     expect(screen.getByText("inventory.addButton")).toBeInTheDocument();
@@ -44,6 +65,7 @@ describe("QuickActions", () => {
   });
 
   it("navigates to correct routes when clicked", () => {
+    stubMatchMedia(false);
     renderWithRouter(<QuickActions />);
 
     fireEvent.click(screen.getByText("inventory.addButton"));
@@ -54,18 +76,7 @@ describe("QuickActions", () => {
   });
 
   it("hides title on small screens", () => {
-    // Mock useMediaQuery to return true
-    vi.mock("@mui/material", async () => {
-      const actual = await vi.importActual("@mui/material");
-      return {
-        ...actual,
-        useMediaQuery: () => true,
-        useTheme: () => ({
-          palette: { mode: "light" },
-          breakpoints: { down: () => true },
-        }),
-      };
-    });
+    stubMatchMedia(true);
 
     renderWithRouter(<QuickActions />);
     expect(

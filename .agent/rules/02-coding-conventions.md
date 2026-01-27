@@ -94,9 +94,16 @@ Implementation locations:
 
 ## Testing Guidelines
 
+### Material UI (MUI) Testing
+
+- **Requirement**: Use real MUI components in tests to ensure high fidelity and accessibility tree verification.
+- **Render Utility**: ALWAYS import `render`, `screen`, `fireEvent`, and `waitFor` from `@test/test-utils` (which provides the necessary `ThemeProvider`).
+- **Forbidden**: Do NOT mock `@mui/material` or its sub-components globally or locally in test files.
+- **Queries**: Prioritize querying by ARIA roles (`getByRole`), labels (`getByLabelText`), or text (`getByText`) to simulate real user interactions.
+
 ### Centralized Mocks
 
-- **Requirement**: ALWAYS use the centralized mock utilities in `src/test/mocks/` for:
+- **Requirement**: ALWAYS use the centralized mock utilities in `src/test/mocks/` for non-UI logic:
   - Contexts (`createMockUserContext`, `createMockInventoryContext`, etc.)
   - i18n (`createMockTranslation`)
   - Supabase/Database clients
