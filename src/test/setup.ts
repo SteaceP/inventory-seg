@@ -38,6 +38,7 @@ global.IntersectionObserver = class IntersectionObserver {
 Object.defineProperty(navigator, "onLine", {
   writable: true,
   value: true,
+  configurable: true,
 });
 
 // Suppress console errors in tests (optional, comment out if you want to see them)

@@ -166,8 +166,9 @@ describe("InventoryContext", () => {
     mocks.upsert.mockResolvedValue({ error: null });
 
     // Mock Navigator
-    Object.defineProperty(navigator, "onLine", {
-      value: true,
+    // Mock Navigator
+    Object.defineProperty(window, "navigator", {
+      value: { onLine: true },
       configurable: true,
     });
   });

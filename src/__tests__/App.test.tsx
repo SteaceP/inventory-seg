@@ -152,9 +152,9 @@ describe("App", () => {
       compactView: false,
     });
 
-    // Mock navigator.onLine
-    Object.defineProperty(navigator, "onLine", {
-      value: false,
+    // Mock navigator.onLine by replacing the navigator object
+    Object.defineProperty(window, "navigator", {
+      value: { onLine: false },
       configurable: true,
     });
 

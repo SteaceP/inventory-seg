@@ -91,3 +91,15 @@ Implementation locations:
 
 - **Strict Typing**: NEVER use the `any` type. Use `unknown`, proper interfaces, or generics instead.
 - **Type Exhaustiveness**: Ensure all switches/conditionals cover all possible types.
+
+## Testing Guidelines
+
+### Centralized Mocks
+
+- **Requirement**: ALWAYS use the centralized mock utilities in `src/test/mocks/` for:
+  - Contexts (`createMockUserContext`, `createMockInventoryContext`, etc.)
+  - i18n (`createMockTranslation`)
+  - Supabase/Database clients
+  - External browser APIs (Storage, Router)
+- **Forbidden**: Do NOT create manual, inline mocks for these services unless absolutely necessary for a specific edge case.
+- **Data Factories**: Use factories (`createMockInventoryItem`, `createMockCategory`, etc.) for generating test data instead of plain object literals.
