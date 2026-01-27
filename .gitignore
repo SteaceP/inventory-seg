@@ -1,4 +1,6 @@
+# ======================
 # Logs
+# ======================
 logs
 *.log
 npm-debug.log*
@@ -6,30 +8,42 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+
+# ======================
+# Build & Output
+# ======================
+dist
+coverage
 build_errors.txt
 lint_errors.json
 test_output.txt
 
+# ======================
+# Dependencies
+# ======================
 node_modules
-dist
-dist-ssr
-*.local
-node
-coverage/
-d1_schema.sql
+
+# ======================
+# Cloudflare
+# ======================
 .wrangler
 .dev.vars
 .wrangler.dev.vars*
-wrangler.json
+
+# ======================
+# Environment Variables
+# ======================
 .env
 .env.local
 .env.test
 .env.test.local
 .env.production
 .env.production.local
+.env.sentry-build-plugin
 
-
-# Editor directories and files
+# ======================
+# Editor & OS Files
+# ======================
 .idea
 .DS_Store
 *.suo
@@ -37,6 +51,3 @@ wrangler.json
 *.njsproj
 *.sln
 *.sw?
-
-# Sentry Config File
-.env.sentry-build-plugin
