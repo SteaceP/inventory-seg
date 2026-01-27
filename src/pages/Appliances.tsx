@@ -13,7 +13,7 @@ import {
 import { useErrorHandler } from "../hooks/useErrorHandler";
 import { useUserContext } from "../contexts/UserContext";
 import { useTranslation } from "../i18n";
-import InventoryScanner from "../components/inventory/InventoryScanner";
+import InventoryScanner from "../components/inventory/InventoryScanner/InventoryScanner";
 import BarcodePrinter from "../components/BarcodePrinter";
 import ConfirmDialog from "../components/ConfirmDialog";
 
@@ -226,7 +226,9 @@ const Appliances: React.FC = () => {
         open={dialogs.scanOpen}
         onClose={() => dialogs.setScanOpen(false)}
         onScanSuccess={actions.handleScanSuccess}
-        onError={(msg) => handleError(new Error(msg), t("inventory.scanError"))}
+        onError={(msg) =>
+          handleError(new Error(msg), t("inventory.scanError") || "Scan error")
+        }
       />
     </Box>
   );

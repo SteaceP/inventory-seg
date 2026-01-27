@@ -1,0 +1,41 @@
+import React from "react";
+import { AppBar, Toolbar, Typography, IconButton } from "@mui/material";
+import { Close as CloseIcon } from "@mui/icons-material";
+
+interface InventoryDrawerHeaderProps {
+  name: string;
+  onClose: () => void;
+}
+
+const InventoryDrawerHeader: React.FC<InventoryDrawerHeaderProps> = ({
+  name,
+  onClose,
+}) => {
+  return (
+    <AppBar
+      position="static"
+      color="transparent"
+      elevation={0}
+      sx={{
+        backdropFilter: "blur(20px)",
+        bgcolor: (theme) =>
+          theme.palette.mode === "dark"
+            ? "rgba(18, 18, 18, 0.8)"
+            : "rgba(255, 255, 255, 0.8)",
+        borderBottom: "1px solid",
+        borderColor: "divider",
+      }}
+    >
+      <Toolbar sx={{ justifyContent: "space-between" }}>
+        <Typography variant="h6" fontWeight="bold">
+          {name}
+        </Typography>
+        <IconButton onClick={onClose} edge="end">
+          <CloseIcon />
+        </IconButton>
+      </Toolbar>
+    </AppBar>
+  );
+};
+
+export default InventoryDrawerHeader;

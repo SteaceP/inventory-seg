@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import StockHistoryDialog from "../inventory/StockHistoryDialog";
+import StockHistoryDialog from "../inventory/StockHistoryDialog/StockHistoryDialog";
 
 // Mock dependencies
 vi.mock("../../hooks/useErrorHandler", () => ({

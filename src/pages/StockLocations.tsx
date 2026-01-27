@@ -15,8 +15,8 @@ import { useAlert } from "../contexts/AlertContext";
 import { useErrorHandler } from "../hooks/useErrorHandler";
 import { supabase } from "../supabaseClient";
 import type { MasterLocation } from "../types/inventory";
-import LocationList from "../components/inventory/LocationList";
-import LocationDialog from "../components/inventory/LocationDialog";
+import LocationList from "../components/inventory/LocationManagement/LocationList";
+import LocationDialog from "../components/inventory/LocationManagement/LocationDialog";
 
 const StockLocationsPage: React.FC = () => {
   const { t } = useTranslation();

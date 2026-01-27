@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import InventoryCard from "../../InventoryCard";
+import InventoryCard from "../InventoryCard";
 import type { InventoryItem } from "../../../../types/inventory";
 
 // Mock framer-motion to avoid animation issues in tests
