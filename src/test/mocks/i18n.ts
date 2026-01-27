@@ -21,7 +21,7 @@ export const mockI18n = {
  * Use this in test files that need i18n mocking
  */
 export const setupI18nMock = () => {
-  vi.mock("../../i18n", () => ({
+  vi.mock("@i18n", () => ({
     useTranslation: () => createMockTranslation(),
   }));
 };

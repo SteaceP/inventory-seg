@@ -3,7 +3,7 @@ import { renderHook, act } from "@testing-library/react";
 import { useInventoryCategorization } from "../useInventoryCategorization";
 import type { InventoryItem } from "@/types/inventory";
 
-vi.mock("../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),

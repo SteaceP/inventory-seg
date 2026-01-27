@@ -4,7 +4,7 @@ import { userEvent } from "@testing-library/user-event";
 import OfflineFallback from "../OfflineFallback";
 
 // Mock the i18n hook
-vi.mock("../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {

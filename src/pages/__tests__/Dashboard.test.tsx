@@ -53,25 +53,25 @@ const mockInventory = createMockInventoryContext({
 });
 const { t } = createMockTranslation();
 
-vi.mock("../../contexts/UserContext", () => ({
+vi.mock("@contexts/UserContext", () => ({
   useUserContext: () => mockUser,
 }));
 
-vi.mock("../../contexts/InventoryContext", () => ({
+vi.mock("@contexts/InventoryContext", () => ({
   useInventoryContext: () => mockInventory,
 }));
 
-vi.mock("../../hooks/useErrorHandler", () => ({
+vi.mock("@hooks/useErrorHandler", () => ({
   useErrorHandler: () => ({
     handleError: mockHandleError,
   }),
 }));
 
-vi.mock("../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 
-vi.mock("../../supabaseClient", () => ({
+vi.mock("@supabaseClient", () => ({
   supabase: {
     auth: {
       getSession: vi.fn().mockResolvedValue({
@@ -82,11 +82,11 @@ vi.mock("../../supabaseClient", () => ({
 }));
 
 // Mock child components to isolate Dashboard logic
-vi.mock("../../components/dashboard/QuickActions", () => ({
+vi.mock("@components/dashboard/QuickActions", () => ({
   default: () => <div data-testid="quick-actions">Quick Actions</div>,
 }));
 
-vi.mock("../../components/dashboard/StockHealth", () => ({
+vi.mock("@components/dashboard/StockHealth", () => ({
   default: () => <div data-testid="stock-health">Stock Health</div>,
 }));
 

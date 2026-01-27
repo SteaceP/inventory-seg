@@ -35,7 +35,7 @@ const mocks = vi.hoisted(() => {
 });
 
 // Mock dependencies
-vi.mock("../../hooks/useErrorHandler", () => ({
+vi.mock("@hooks/useErrorHandler", () => ({
   useErrorHandler: () => ({
     handleError: mocks.handleError,
   }),
@@ -48,7 +48,7 @@ vi.mock("../AlertContext", () => ({
   }),
 }));
 
-vi.mock("../../supabaseClient", () => ({
+vi.mock("@supabaseClient", () => ({
   supabase: {
     auth: {
       getSession: mocks.getSession,

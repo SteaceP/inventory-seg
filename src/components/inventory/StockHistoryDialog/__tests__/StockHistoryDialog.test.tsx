@@ -79,15 +79,19 @@ describe("StockHistoryDialog", () => {
     expect(screen.queryByText("inventory.history")).not.toBeInTheDocument();
   });
 
-  it("renders dialog title and item name", () => {
+  it("renders dialog title and item name", async () => {
     render(<StockHistoryDialog {...defaultProps} />);
-    expect(screen.getAllByText("inventory.history")[0]).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getAllByText("inventory.history")[0]).toBeInTheDocument();
+    });
   });
 
-  it("shows loading state", () => {
+  it("shows loading state", async () => {
     mockLimit.mockReturnValue(new Promise(() => {}));
     render(<StockHistoryDialog {...defaultProps} />);
-    expect(screen.getByRole("progressbar")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole("progressbar")).toBeInTheDocument();
+    });
   });
 
   it("shows empty state when no history", async () => {

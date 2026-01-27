@@ -6,7 +6,7 @@ import { createMockTranslation, createMockActivity } from "@test/mocks";
 
 // Mock error handler
 const mockHandleError = vi.fn();
-vi.mock("../../hooks/useErrorHandler", () => ({
+vi.mock("@hooks/useErrorHandler", () => ({
   useErrorHandler: () => ({
     handleError: mockHandleError,
   }),
@@ -14,13 +14,13 @@ vi.mock("../../hooks/useErrorHandler", () => ({
 
 // Mock i18n
 const { t } = createMockTranslation();
-vi.mock("../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 
 // Mock Supabase
 const mockGetSession = vi.fn();
-vi.mock("../../supabaseClient", () => ({
+vi.mock("@supabaseClient", () => ({
   supabase: {
     auth: {
       getSession: (...args: unknown[]) =>

@@ -7,7 +7,7 @@ import { createMockTranslation, createMockUserContext } from "@test/mocks";
 
 // Mock Supabase
 const mockSignInWithPassword = vi.fn();
-vi.mock("../../supabaseClient", () => ({
+vi.mock("@supabaseClient", () => ({
   supabase: {
     auth: {
       signInWithPassword: (...args: unknown[]) =>
@@ -23,13 +23,13 @@ const mockUser = createMockUserContext({
 });
 mockUser.setLanguage = mockSetLanguage;
 
-vi.mock("../../contexts/UserContext", () => ({
+vi.mock("@contexts/UserContext", () => ({
   useUserContext: () => mockUser,
 }));
 
 // Mock i18n
 const { t } = createMockTranslation();
-vi.mock("../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 

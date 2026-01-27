@@ -11,7 +11,7 @@ const mockUpsert = vi.fn();
 const mockGetUser = vi.fn();
 const mockSelect = vi.fn();
 
-vi.mock("../../contexts/UserContext", () => ({
+vi.mock("@contexts/UserContext", () => ({
   useUserContext: () => ({
     displayName: "Test User",
     avatarUrl: "https://example.com/avatar.jpg",
@@ -23,13 +23,13 @@ vi.mock("../../contexts/UserContext", () => ({
   }),
 }));
 
-vi.mock("../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
 }));
 
-vi.mock("../../supabaseClient", () => ({
+vi.mock("@supabaseClient", () => ({
   supabase: {
     auth: {
       getUser: (...args: unknown[]) => mockGetUser(...args) as Promise<unknown>,
@@ -55,25 +55,25 @@ vi.mock("../../supabaseClient", () => ({
   },
 }));
 
-vi.mock("../../utils/crypto", () => ({
+vi.mock("@utils/crypto", () => ({
   validateImageFile: vi.fn(),
   generateSecureFileName: () => "secure_filename.jpg",
   getExtensionFromMimeType: () => "jpg",
 }));
 
 // Mock child components
-vi.mock("../../components/settings/ProfileSection", () => ({
+vi.mock("@components/settings/ProfileSection", () => ({
   default: () => <div data-testid="profile-section">Profile Section</div>,
 }));
-vi.mock("../../components/settings/NotificationSection", () => ({
+vi.mock("@components/settings/NotificationSection", () => ({
   default: () => (
     <div data-testid="notification-section">Notification Section</div>
   ),
 }));
-vi.mock("../../components/settings/AppearanceSection", () => ({
+vi.mock("@components/settings/AppearanceSection", () => ({
   default: () => <div data-testid="appearance-section">Appearance Section</div>,
 }));
-vi.mock("../../components/settings/SecuritySection", () => ({
+vi.mock("@components/settings/SecuritySection", () => ({
   default: () => <div data-testid="security-section">Security Section</div>,
 }));
 

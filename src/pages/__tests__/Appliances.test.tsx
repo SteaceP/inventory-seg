@@ -5,37 +5,37 @@ import { BrowserRouter } from "react-router-dom";
 import type { Appliance } from "@/types/appliances";
 
 // Mock dependencies
-vi.mock("../../hooks/useErrorHandler", () => ({
+vi.mock("@hooks/useErrorHandler", () => ({
   useErrorHandler: () => ({
     handleError: vi.fn(),
   }),
 }));
 
-vi.mock("../../contexts/UserContext", () => ({
+vi.mock("@contexts/UserContext", () => ({
   useUserContext: () => ({
     compactView: false,
     role: "admin",
   }),
 }));
 
-vi.mock("../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
 }));
 
 // Mock components
-vi.mock("../../components/appliances/AppliancesHeader", () => ({
+vi.mock("@components/appliances/AppliancesHeader", () => ({
   default: () => <div data-testid="appliances-header">Header</div>,
 }));
 
-vi.mock("../../components/appliances/ApplianceCard", () => ({
+vi.mock("@components/appliances/ApplianceCard", () => ({
   default: ({ appliance }: { appliance: Appliance }) => (
     <div data-testid="appliance-card">{appliance.name}</div>
   ),
 }));
 
-vi.mock("../../components/appliances/AppliancesStats", () => ({
+vi.mock("@components/appliances/AppliancesStats", () => ({
   default: () => <div data-testid="appliances-stats">Stats</div>,
 }));
 
@@ -47,7 +47,7 @@ const mocks = vi.hoisted(() => ({
   getUser: vi.fn(),
 }));
 
-vi.mock("../../supabaseClient", () => ({
+vi.mock("@supabaseClient", () => ({
   supabase: {
     from: mocks.from,
     auth: {

@@ -46,21 +46,21 @@ const mockInventory = createMockInventoryContext({
 });
 const { t } = createMockTranslation();
 
-vi.mock("../../contexts/InventoryContext", () => ({
+vi.mock("@contexts/InventoryContext", () => ({
   useInventoryContext: () => mockInventory,
 }));
 
-vi.mock("../../contexts/AlertContext", () => ({
+vi.mock("@contexts/AlertContext", () => ({
   useAlert: () => mockAlert,
 }));
 
-vi.mock("../../hooks/useErrorHandler", () => ({
+vi.mock("@hooks/useErrorHandler", () => ({
   useErrorHandler: () => ({
     handleError: mockHandleError,
   }),
 }));
 
-vi.mock("../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 
@@ -70,7 +70,7 @@ const mockSupabaseUpdate = vi.fn();
 const mockSupabaseDelete = vi.fn();
 const mockSupabaseEq = vi.fn();
 
-vi.mock("../../supabaseClient", () => ({
+vi.mock("@supabaseClient", () => ({
   supabase: {
     from: (table: string) => {
       if (table === "inventory_locations") {

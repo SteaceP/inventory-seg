@@ -30,31 +30,31 @@ const mocks = vi.hoisted(() => {
 });
 
 // Mock Dependencies
-vi.mock("../../hooks/useErrorHandler", () => ({
+vi.mock("@hooks/useErrorHandler", () => ({
   useErrorHandler: () => ({
     handleError: mocks.handleError,
   }),
 }));
 
-vi.mock("../../contexts/UserContext", () => ({
+vi.mock("@contexts/UserContext", () => ({
   useUserContext: () => ({
     userId: mocks.userId,
   }),
 }));
 
-vi.mock("../../contexts/AlertContext", () => ({
+vi.mock("@contexts/AlertContext", () => ({
   useAlert: () => ({
     showInfo: mocks.showInfo,
   }),
 }));
 
-vi.mock("../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
 }));
 
-vi.mock("../../supabaseClient", () => ({
+vi.mock("@supabaseClient", () => ({
   supabase: {
     channel: mocks.channelFn,
     removeChannel: mocks.removeChannel,

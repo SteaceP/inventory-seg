@@ -20,14 +20,14 @@ vi.mock("../UserContext", async () => {
   };
 });
 
-vi.mock("../../i18n", () => ({
+vi.mock("@i18n", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
 }));
 
-vi.mock("../../supabaseClient", async () => {
-  const { mockSupabaseClient } = await import("../../test/mocks/supabase");
+vi.mock("@supabaseClient", async () => {
+  const { mockSupabaseClient } = await import("@test/mocks/supabase");
   return {
     supabase: mockSupabaseClient.client,
   };
