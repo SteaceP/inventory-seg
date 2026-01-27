@@ -7,36 +7,19 @@ import {
   Button,
   IconButton,
   CircularProgress,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  MenuItem,
-  List,
-  ListItem,
-  ListItemText,
-  useTheme,
-  alpha,
 } from "@mui/material";
-import {
-  Add as AddIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Refresh as RefreshIcon,
-  Folder as FolderIcon,
-  LocationOn as LocationIcon,
-} from "@mui/icons-material";
+import { Add as AddIcon, Refresh as RefreshIcon } from "@mui/icons-material";
 import { useTranslation } from "../i18n";
 import { useInventoryContext } from "../contexts/InventoryContext";
 import { useAlert } from "../contexts/AlertContext";
 import { useErrorHandler } from "../hooks/useErrorHandler";
 import { supabase } from "../supabaseClient";
 import type { MasterLocation } from "../types/inventory";
+import LocationList from "../components/inventory/LocationList";
+import LocationDialog from "../components/inventory/LocationDialog";
 
 const StockLocationsPage: React.FC = () => {
   const { t } = useTranslation();
-  const theme = useTheme();
   const { locations, refreshInventory: refreshLocations } =
     useInventoryContext();
   const { showError, showSuccess } = useAlert();
@@ -47,15 +30,7 @@ const StockLocationsPage: React.FC = () => {
     null
   );
 
-  // Form State
-  const [formData, setFormData] = useState({
-    name: "",
-    parent_id: "" as string | null,
-    description: "",
-  });
-
   const fetchLocations = async () => {
-    // This function is no longer used directly, but kept for reference if needed.
     try {
       setLoading(true);
       const { error } = await supabase
@@ -64,7 +39,7 @@ const StockLocationsPage: React.FC = () => {
         .order("name");
 
       if (error) throw error;
-      // setLocations(data || []); // No longer setting local state
+      await refreshLocations();
     } catch (err: unknown) {
       handleError(err, "Failed to fetch locations");
     } finally {
@@ -77,21 +52,7 @@ const StockLocationsPage: React.FC = () => {
   }, [refreshLocations]);
 
   const handleOpenDialog = (location?: MasterLocation) => {
-    if (location) {
-      setEditingLocation(location);
-      setFormData({
-        name: location.name,
-        parent_id: location.parent_id,
-        description: location.description || "",
-      });
-    } else {
-      setEditingLocation(null);
-      setFormData({
-        name: "",
-        parent_id: null,
-        description: "",
-      });
-    }
+    setEditingLocation(location || null);
     setOpenDialog(true);
   };
 
@@ -100,9 +61,11 @@ const StockLocationsPage: React.FC = () => {
     setEditingLocation(null);
   };
 
-  const handleSave = async () => {
-    if (!formData.name) return;
-
+  const handleSave = async (formData: {
+    name: string;
+    parent_id: string | null;
+    description: string;
+  }) => {
     try {
       setLoading(true);
       if (editingLocation) {
@@ -129,7 +92,6 @@ const StockLocationsPage: React.FC = () => {
       const error = err as { code?: string };
       if (error.code === "23505") {
         showError(t("inventory.locations.error.duplicate"));
-        // Still report to Sentry as it's a conflict we might want to track
         handleError(err);
       } else {
         handleError(err, t("inventory.locations.error.save"));
@@ -156,67 +118,6 @@ const StockLocationsPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  // Helper to build hierarchy
-  const buildHierarchy = (parentId: string | null = null, depth = 0) => {
-    return locations
-      .filter((l) => l.parent_id === parentId)
-      .map((location) => (
-        <React.Fragment key={location.id}>
-          <ListItem
-            sx={{
-              pl: 4 * depth + 2,
-              borderBottom: "1px solid",
-              borderColor: "divider",
-              "&:hover": { bgcolor: alpha(theme.palette.primary.main, 0.05) },
-            }}
-            secondaryAction={
-              <>
-                <IconButton
-                  onClick={() => handleOpenDialog(location)}
-                  size="small"
-                  sx={{ mr: 1 }}
-                >
-                  <EditIcon fontSize="small" />
-                </IconButton>
-                <IconButton
-                  onClick={() => {
-                    void handleDelete(location.id);
-                  }}
-                  size="small"
-                  color="error"
-                >
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
-              </>
-            }
-          >
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                mr: 2,
-                color: location.parent_id ? "text.secondary" : "primary.main",
-              }}
-            >
-              {location.parent_id ? (
-                <LocationIcon fontSize="small" />
-              ) : (
-                <FolderIcon />
-              )}
-            </Box>
-            <ListItemText
-              primary={location.name}
-              secondary={location.description}
-              primaryTypographyProps={{
-                fontWeight: location.parent_id ? "medium" : "bold",
-              }}
-            />
-          </ListItem>
-          {buildHierarchy(location.id, depth + 1)}
-        </React.Fragment>
-      ));
   };
 
   return (
@@ -264,86 +165,25 @@ const StockLocationsPage: React.FC = () => {
             </Typography>
           </Box>
         ) : (
-          <List disablePadding>{buildHierarchy(null)}</List>
+          <LocationList
+            locations={locations}
+            onEdit={handleOpenDialog}
+            onDelete={handleDelete}
+          />
         )}
       </Paper>
 
-      {/* Add/Edit Dialog */}
-      <Dialog
-        open={openDialog}
-        onClose={handleCloseDialog}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>
-          {editingLocation
-            ? t("inventory.locations.edit")
-            : t("inventory.locations.add")}
-        </DialogTitle>
-        <DialogContent
-          sx={{ pt: 2, display: "flex", flexDirection: "column", gap: 3 }}
-        >
-          <TextField
-            id="location-name"
-            name="name"
-            autoFocus
-            label={t("inventory.locations.name")}
-            fullWidth
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            placeholder="e.g. Warehouse A, Shelf 1"
-          />
-
-          <TextField
-            id="location-parent"
-            name="parent_id"
-            select
-            label={t("inventory.locations.parent")}
-            fullWidth
-            value={formData.parent_id || ""}
-            onChange={(e) =>
-              setFormData({ ...formData, parent_id: e.target.value || null })
-            }
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            {locations
-              .filter((l) => l.id !== editingLocation?.id) // Prevent self-referencing
-              .map((l) => (
-                <MenuItem key={l.id} value={l.id}>
-                  {l.name}
-                </MenuItem>
-              ))}
-          </TextField>
-
-          <TextField
-            id="location-description"
-            name="description"
-            label="Description"
-            fullWidth
-            multiline
-            rows={3}
-            value={formData.description}
-            onChange={(e) =>
-              setFormData({ ...formData, description: e.target.value })
-            }
-            placeholder="Optional description of this location..."
-          />
-        </DialogContent>
-        <DialogActions sx={{ p: 3 }}>
-          <Button onClick={handleCloseDialog}>{t("common.cancel")}</Button>
-          <Button
-            variant="contained"
-            onClick={() => {
-              void handleSave();
-            }}
-            disabled={!formData.name || loading}
-          >
-            {t("common.save")}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {openDialog && (
+        <LocationDialog
+          key={editingLocation?.id || "new"}
+          open={openDialog}
+          onClose={handleCloseDialog}
+          onSave={handleSave}
+          editingLocation={editingLocation}
+          locations={locations}
+          loading={loading}
+        />
+      )}
     </Container>
   );
 };
