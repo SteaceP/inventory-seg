@@ -3,9 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   handleActivityLogPost,
   handleActivityLogGet,
-  handleDashboardStats,
-  handleReportStats,
-} from "../routes";
+} from "../handlers/activity";
 import { createResponse } from "../helpers";
 import type { Env } from "../types";
 
@@ -43,7 +41,7 @@ vi.mock("../helpers", () => ({
   ),
 }));
 
-describe("Worker Routes", () => {
+describe("Activity Route Handlers", () => {
   let env: Env;
   let request: Request;
 
@@ -110,77 +108,6 @@ describe("Worker Routes", () => {
       );
       expect(createResponse).toHaveBeenCalledWith(
         expect.any(Array),
-        200,
-        env,
-        request
-      );
-    });
-  });
-
-  describe("handleDashboardStats", () => {
-    it("should calculate stock in/out", async () => {
-      request = {
-        url: "http://localhost/api/stats/dashboard",
-      } as unknown as Request;
-
-      const mockData = [
-        {
-          action: "created",
-          changes: JSON.stringify({ stock: 10 }),
-        },
-        {
-          action: "deleted",
-          changes: JSON.stringify({ stock: 5 }),
-        },
-      ];
-
-      (
-        env.DB.prepare("").bind("").all as unknown as ReturnType<typeof vi.fn>
-      ).mockResolvedValue({ results: mockData });
-
-      await handleDashboardStats(request, env);
-
-      expect(createResponse).toHaveBeenCalledWith(
-        { in: 10, out: 5 },
-        200,
-        env,
-        request
-      );
-    });
-  });
-
-  describe("handleReportStats", () => {
-    it("should aggregate removal stats", async () => {
-      request = {
-        url: "http://localhost/api/reports?startDate=2023-01-01&endDate=2023-02-01",
-      } as unknown as Request;
-
-      const mockData = [
-        {
-          item_name: "Item A",
-          changes: JSON.stringify({ old_stock: 10, stock: 5 }), // Removed 5
-        },
-        {
-          item_name: "Item A",
-          changes: JSON.stringify({ old_stock: 5, stock: 0 }), // Removed 5
-        },
-        {
-          item_name: "Item B",
-          changes: JSON.stringify({ old_stock: 20, stock: 19 }), // Removed 1
-        },
-      ];
-
-      (
-        env.DB.prepare("").bind("").all as unknown as ReturnType<typeof vi.fn>
-      ).mockResolvedValue({ results: mockData });
-
-      await handleReportStats(request, env);
-
-      expect(createResponse).toHaveBeenCalledWith(
-        [
-          { itemName: "Item A", total: 10 },
-          { itemName: "Item B", total: 1 },
-        ],
         200,
         env,
         request
