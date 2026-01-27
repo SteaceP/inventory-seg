@@ -22,23 +22,30 @@ vi.mock("../CategoryThresholdDialog", () => ({
   default: () => <div data-testid="threshold-dialog">Threshold Dialog</div>,
 }));
 
+import {
+  createMockTranslation,
+  createMockUserContext,
+  createMockInventoryContext,
+} from "../../../test/mocks";
+
+const { t } = createMockTranslation();
 vi.mock("../../../i18n", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: () => ({ t }),
 }));
 
+// Mock UserContext
+const mockUserContext = createMockUserContext({ role: "admin" });
 vi.mock("../../../contexts/UserContext", () => ({
-  useUserContext: () => ({
-    role: "admin",
-  }),
+  useUserContext: () => mockUserContext,
 }));
 
+// Mock InventoryContext
+const mockInventoryContext = createMockInventoryContext({
+  categories: [],
+  updateCategoryThreshold: vi.fn(),
+});
 vi.mock("../../../contexts/InventoryContext", () => ({
-  useInventoryContext: () => ({
-    categories: [],
-    updateCategoryThreshold: vi.fn(),
-  }),
+  useInventoryContext: () => mockInventoryContext,
 }));
 
 const createItem = (

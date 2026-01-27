@@ -3,10 +3,11 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import StockLocationFields from "../StockLocationFields";
 
 // Mock i18n
+import { createMockTranslation } from "../../../test/mocks";
+
+const { t } = createMockTranslation();
 vi.mock("../../../i18n", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: () => ({ t }),
 }));
 
 // Mock MUI Autocomplete to behave simply

@@ -4,10 +4,11 @@ import InventoryScanner from "../InventoryScanner";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 // Mock Translation
+import { createMockTranslation } from "../../../test/mocks";
+
+const { t } = createMockTranslation();
 vi.mock("../../../i18n", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: () => ({ t }),
 }));
 
 // Mock Html5Qrcode

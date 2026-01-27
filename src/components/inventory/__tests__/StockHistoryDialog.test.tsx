@@ -3,10 +3,11 @@ import { render, screen, waitFor } from "@testing-library/react";
 import StockHistoryDialog from "../StockHistoryDialog";
 
 // Mock dependencies
+import { createMockTranslation } from "../../../test/mocks";
+
+const { t } = createMockTranslation();
 vi.mock("../../../i18n", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: () => ({ t }),
 }));
 
 vi.mock("../../../hooks/useErrorHandler", () => ({

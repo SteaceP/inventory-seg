@@ -2,10 +2,12 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import CategoryThresholdDialog from "../CategoryThresholdDialog";
 
+import { createMockTranslation } from "../../../test/mocks";
+
+// Mock i18n
+const { t } = createMockTranslation();
 vi.mock("../../../i18n", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: () => ({ t }),
 }));
 
 describe("CategoryThresholdDialog", () => {

@@ -15,10 +15,16 @@ const mocks = vi.hoisted(() => {
   };
 });
 
+import {
+  createMockTranslation,
+  createMockUserContext,
+  createMockInventoryContext,
+  createMockCategory,
+} from "../../../test/mocks";
+
+const { t } = createMockTranslation();
 vi.mock("../../../i18n", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: () => ({ t }),
 }));
 
 vi.mock("../../../hooks/useErrorHandler", () => ({
@@ -27,16 +33,22 @@ vi.mock("../../../hooks/useErrorHandler", () => ({
   }),
 }));
 
+// Mock InventoryContext
+const mockInventoryContext = createMockInventoryContext({
+  categories: [
+    createMockCategory({ name: "Test Category", low_stock_threshold: 5 }),
+  ],
+});
 vi.mock("../../../contexts/InventoryContext", () => ({
-  useInventoryContext: () => ({
-    categories: [{ name: "Test Category", low_stock_threshold: 5 }],
-  }),
+  useInventoryContext: () => mockInventoryContext,
 }));
 
+// Mock UserContext
+const mockUserContext = createMockUserContext({
+  lowStockThreshold: 10,
+});
 vi.mock("../../../contexts/UserContext", () => ({
-  useUserContext: () => ({
-    lowStockThreshold: 10,
-  }),
+  useUserContext: () => mockUserContext,
 }));
 
 vi.mock("../../../supabaseClient", () => ({
