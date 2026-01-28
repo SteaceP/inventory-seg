@@ -17,7 +17,7 @@ import {
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "@/i18n";
-import ActionCard from "./ActionCard";
+import ActionCard from "../ActionCard/ActionCard";
 import { useScrollIndicators } from "@hooks/useScrollIndicators";
 
 const QuickActions: React.FC = () => {

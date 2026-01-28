@@ -17,8 +17,8 @@ import {
 import { useUserContext } from "@contexts/UserContext";
 import { useTranslation } from "@/i18n";
 import { useInventoryContext } from "@contexts/InventoryContext";
-import QuickActions from "@components/dashboard/QuickActions";
-import StockHealth from "@components/dashboard/StockHealth";
+import QuickActions from "@components/dashboard/QuickActions/QuickActions";
+import StockHealth from "@components/dashboard/StockHealth/StockHealth";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { supabase } from "@/supabaseClient";
 

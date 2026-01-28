@@ -82,11 +82,11 @@ vi.mock("@supabaseClient", () => ({
 }));
 
 // Mock child components to isolate Dashboard logic
-vi.mock("@components/dashboard/QuickActions", () => ({
+vi.mock("@components/dashboard/QuickActions/QuickActions", () => ({
   default: () => <div data-testid="quick-actions">Quick Actions</div>,
 }));
 
-vi.mock("@components/dashboard/StockHealth", () => ({
+vi.mock("@components/dashboard/StockHealth/StockHealth", () => ({
   default: () => <div data-testid="stock-health">Stock Health</div>,
 }));
 
