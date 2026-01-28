@@ -1,7 +1,9 @@
+import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import Dashboard from "../Dashboard";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+
 import { MemoryRouter } from "react-router-dom";
 import {
   createMockTranslation,
@@ -92,22 +94,19 @@ vi.mock("@components/dashboard/StockHealth/StockHealth", () => ({
 
 // Mock global fetch
 const mockFetch = vi.fn();
-global.fetch = mockFetch;
+globalThis.fetch = mockFetch;
 
 // Mock matchMedia
-Object.defineProperty(window, "matchMedia", {
-  writable: true,
-  value: vi.fn().mockImplementation((query: string) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })),
-});
+globalThis.matchMedia = vi.fn().mockImplementation((query: string) => ({
+  matches: false,
+  media: query,
+  onchange: null,
+  addListener: vi.fn(),
+  removeListener: vi.fn(),
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
+  dispatchEvent: vi.fn(),
+}));
 
 const renderWithProviders = (ui: React.ReactElement) => {
   const theme = createTheme();
@@ -163,10 +162,11 @@ describe("Dashboard Page", () => {
     renderWithProviders(<Dashboard />);
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(mockFetch).toHaveBeenCalledWith(
         "/api/activity/dashboard-stats",
         expect.any(Object)
       );
+
       // Display format: "+10 / -5"
       expect(screen.getByText("+10 / -5")).toBeInTheDocument();
     });

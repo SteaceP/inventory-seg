@@ -275,8 +275,9 @@ describe("getActivityNarrative", () => {
 });
 
 describe("logActivity", () => {
+  const mockFetch = vi.fn();
   beforeEach(() => {
-    global.fetch = vi.fn();
+    globalThis.fetch = mockFetch;
   });
 
   afterEach(() => {
@@ -296,7 +297,7 @@ describe("logActivity", () => {
 
     await logActivity(activity, session, handleError);
 
-    expect(global.fetch).toHaveBeenCalledWith("/api/activity", {
+    expect(mockFetch).toHaveBeenCalledWith("/api/activity", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -304,12 +305,14 @@ describe("logActivity", () => {
       },
       body: JSON.stringify(activity),
     });
+
     expect(handleError).not.toHaveBeenCalled();
   });
 
   it("should handle error during fetch", async () => {
     const error = new Error("Network error");
-    vi.mocked(global.fetch).mockRejectedValueOnce(error);
+    mockFetch.mockRejectedValueOnce(error);
+
     const handleError = vi.fn();
 
     const mockActivity = {

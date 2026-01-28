@@ -211,7 +211,7 @@ describe("StockLocationsPage", () => {
   });
 
   it("deletes a location", async () => {
-    // Mock confirm
+    // Spy on the global mock we created in setup.ts
     const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
 
     renderWithTheme(<StockLocationsPage />);

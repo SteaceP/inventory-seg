@@ -46,10 +46,17 @@ export default defineConfig([
     settings: {
       "import/resolver": {
         typescript: {
-          project: ["./tsconfig.json"],
+          project: ["./tsconfig.json", "./tsconfig.node.json"],
         },
       },
     },
   },
   prettierRecommended,
+  {
+    files: ["vitest.worker.config.ts"],
+    rules: {
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+    },
+  },
 ]);

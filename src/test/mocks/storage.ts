@@ -48,7 +48,7 @@ export const createMockFileReader = () => {
 };
 
 export const setupFileReaderMock = () => {
-  global.FileReader = vi
+  globalThis.FileReader = vi
     .fn()
     .mockImplementation(() =>
       createMockFileReader()

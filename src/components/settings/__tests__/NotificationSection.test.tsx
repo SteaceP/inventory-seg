@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  cleanup,
+} from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import NotificationSection from "../NotificationSection";
 import type { Session } from "@supabase/supabase-js";
@@ -50,9 +56,13 @@ vi.mock("@supabaseClient", () => ({
 }));
 
 describe("NotificationSection", () => {
+  let mockFetch: ReturnType<typeof vi.fn>;
+
   beforeEach(() => {
     vi.clearAllMocks();
-    global.fetch = vi.fn();
+    cleanup();
+    mockFetch = vi.fn();
+    globalThis.fetch = mockFetch as unknown as typeof fetch;
   });
 
   it("should render notification titles and switches", () => {
@@ -115,7 +125,7 @@ describe("NotificationSection", () => {
       data: { session: { access_token: "fake-token" } as unknown as Session },
       error: null,
     });
-    vi.mocked(global.fetch).mockResolvedValue({
+    mockFetch.mockResolvedValue({
       ok: true,
     } as Response);
 
@@ -125,10 +135,11 @@ describe("NotificationSection", () => {
     fireEvent.click(button);
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(mockFetch).toHaveBeenCalledWith(
         "/api/send-test-push",
         expect.any(Object)
       );
+
       expect(mockAlert.showSuccess).toHaveBeenCalledWith(
         "notifications.testMobileSuccess"
       );
@@ -141,7 +152,7 @@ describe("NotificationSection", () => {
       error: null,
     });
     const errorMsg = "API Error";
-    vi.mocked(global.fetch).mockResolvedValue({
+    mockFetch.mockResolvedValue({
       ok: false,
       text: () => Promise.resolve(errorMsg),
     } as Response);

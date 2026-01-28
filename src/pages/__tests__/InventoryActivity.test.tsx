@@ -1,7 +1,9 @@
+import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import InventoryActivityPage from "../InventoryActivity";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+
 import { createMockTranslation, createMockActivity } from "@test/mocks";
 
 // Mock error handler
@@ -19,12 +21,18 @@ vi.mock("@i18n", () => ({
 }));
 
 // Mock Supabase
-const mockGetSession = vi.fn();
+const { mockGetSession } = vi.hoisted(() => ({
+  mockGetSession: vi.fn(),
+}));
+
 vi.mock("@supabaseClient", () => ({
   supabase: {
     auth: {
-      getSession: (...args: unknown[]) =>
-        mockGetSession(...args) as Promise<unknown>,
+      getSession: () =>
+        mockGetSession() as Promise<{
+          data: { session: unknown };
+          error: unknown;
+        }>,
     },
     from: () => ({
       select: () => ({
@@ -35,17 +43,21 @@ vi.mock("@supabaseClient", () => ({
 }));
 
 const mockFetch = vi.fn();
-global.fetch = mockFetch;
+globalThis.fetch = mockFetch;
 
 // Mock IntersectionObserver
 const mockObserve = vi.fn();
 const mockDisconnect = vi.fn();
-window.IntersectionObserver = vi.fn().mockImplementation(() => ({
-  observe: mockObserve,
-  disconnect: mockDisconnect,
-  unobserve: vi.fn(),
-  takeRecords: vi.fn(),
-}));
+
+class MockIntersectionObserver {
+  observe = mockObserve;
+  disconnect = mockDisconnect;
+  unobserve = vi.fn();
+  takeRecords = vi.fn();
+}
+
+window.IntersectionObserver =
+  MockIntersectionObserver as unknown as typeof IntersectionObserver;
 
 const renderWithProviders = (ui: React.ReactElement) => {
   const theme = createTheme();
@@ -73,6 +85,7 @@ describe("InventoryActivity Page", () => {
     vi.clearAllMocks();
     mockGetSession.mockResolvedValue({
       data: { session: { access_token: "fake-token" } },
+      error: null,
     });
     mockFetch.mockResolvedValue({
       ok: true,
@@ -100,11 +113,12 @@ describe("InventoryActivity Page", () => {
     renderWithProviders(<InventoryActivityPage />);
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(globalThis.fetch).toHaveBeenCalledWith(
         expect.stringContaining("/api/activity?"),
         expect.any(Object)
       );
       expect(screen.getByText("Drill")).toBeInTheDocument();
+
       expect(screen.getByText("Hammer")).toBeInTheDocument();
     });
   });
@@ -131,7 +145,7 @@ describe("InventoryActivity Page", () => {
     fireEvent.change(searchInput, { target: { value: "Drill" } });
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(globalThis.fetch).toHaveBeenCalledWith(
         expect.stringContaining("searchTerm=Drill"),
         expect.any(Object)
       );

@@ -67,6 +67,6 @@ export const setupFetchMock = (defaultResponse?: unknown) => {
   if (defaultResponse !== undefined) {
     mockFetch.mockResolvedValue(createMockFetchResponse(defaultResponse));
   }
-  global.fetch = mockFetch;
+  globalThis.fetch = mockFetch;
   return mockFetch;
 };

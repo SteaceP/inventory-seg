@@ -1,5 +1,12 @@
 /* eslint-disable @typescript-eslint/unbound-method */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/require-await */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+
 import { renderHook, act, cleanup } from "@testing-library/react";
+
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { useInventoryActions } from "../useInventoryActions";
 import { supabase } from "@/supabaseClient";
@@ -129,19 +136,24 @@ describe("useInventoryActions", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     cleanup();
-    global.fetch = vi.fn();
+    globalThis.fetch = vi.fn() as unknown as typeof fetch;
 
     // Default Supabase Auth Mocks
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    vi.mocked(supabase.auth.getUser).mockImplementation(
+      async () => ({}) as any
+    );
+    vi.mocked(supabase.auth.getSession).mockImplementation(
+      async () => ({}) as any
+    );
+
     vi.mocked(supabase.auth.getUser).mockResolvedValue({
-      data: { user: { id: "u1", email: "test@example.com" } },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      data: { user: { id: "u1", email: "test@example.com" } as any },
+      error: null,
+    });
     vi.mocked(supabase.auth.getSession).mockResolvedValue({
-      data: { session: { access_token: "token" } },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any);
+      data: { session: { access_token: "token" } as any },
+      error: null,
+    });
   });
 
   afterEach(() => {
@@ -156,11 +168,10 @@ describe("useInventoryActions", () => {
     const mockGetPublicUrl = vi
       .fn()
       .mockReturnValue({ data: { publicUrl: "http://url.com" } });
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
     vi.mocked(supabase.storage.from).mockReturnValue({
       upload: mockUpload,
       getPublicUrl: mockGetPublicUrl,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
     const file = new File(["content"], "test.png", { type: "image/png" });
@@ -173,12 +184,9 @@ describe("useInventoryActions", () => {
     });
 
     expect(mockUpload).toHaveBeenCalled();
-    expect(mockSetFormData).toHaveBeenCalled(); // Should update with new URL
-    // Actually setFormData is called with a callback closure, hard to check exact arg value without complex matcher
-    // But we check it was called.
+    expect(mockSetFormData).toHaveBeenCalled();
   });
 
-  // Tests for handleStockSave
   it("should handleStockSave success", async () => {
     const { result } = renderHook(() => useInventoryActions(defaultProps));
 
@@ -186,7 +194,6 @@ describe("useInventoryActions", () => {
     const mockUpdate = vi
       .fn()
       .mockReturnValue({ eq: vi.fn().mockResolvedValue({ error: null }) });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(supabase.from).mockReturnValue({ update: mockUpdate } as any);
 
     await act(async () => {
@@ -200,7 +207,6 @@ describe("useInventoryActions", () => {
     expect(mockBroadcastInventoryChange).toHaveBeenCalled();
   });
 
-  // Test for handleDeleteConfirm
   it("should delete item successfully", async () => {
     const { result } = renderHook(() => useInventoryActions(defaultProps));
 
@@ -208,7 +214,6 @@ describe("useInventoryActions", () => {
     const mockDelete = vi
       .fn()
       .mockReturnValue({ eq: vi.fn().mockResolvedValue({ error: null }) });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(supabase.from).mockReturnValue({ delete: mockDelete } as any);
 
     act(() => {
@@ -225,7 +230,6 @@ describe("useInventoryActions", () => {
     expect(result.current.deleteConfirmOpen).toBe(false);
   });
 
-  // Test for handleSave (Create)
   it("should create new item successfully", async () => {
     const { result } = renderHook(() =>
       useInventoryActions({
@@ -243,7 +247,6 @@ describe("useInventoryActions", () => {
     const mockInsert = vi
       .fn()
       .mockReturnValue({ select: vi.fn().mockReturnValue(mockSelectChain) });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(supabase.from).mockReturnValue({ insert: mockInsert } as any);
 
     await act(async () => {
@@ -251,11 +254,10 @@ describe("useInventoryActions", () => {
     });
 
     expect(mockInsert).toHaveBeenCalled();
-    expect(ActivityUtils.logActivity).toHaveBeenCalled(); // Created activity
+    expect(ActivityUtils.logActivity).toHaveBeenCalled();
     expect(mockSetOpen).toHaveBeenCalledWith(false);
   });
 
-  // Test for handleSave (Update)
   it("should update existing item successfully", async () => {
     const editingItem = mockItems[0];
     const { result } = renderHook(() =>
@@ -274,7 +276,6 @@ describe("useInventoryActions", () => {
     vi.mocked(supabase.from).mockReturnValue({
       update: mockUpdate,
       delete: vi.fn().mockReturnValue({ eq: vi.fn() }),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
     await act(async () => {
@@ -284,7 +285,7 @@ describe("useInventoryActions", () => {
     expect(mockUpdate).toHaveBeenCalledWith(
       expect.objectContaining({ name: "Updated Name" })
     );
-    expect(ActivityUtils.logActivity).toHaveBeenCalled(); // Updated activity
+    expect(ActivityUtils.logActivity).toHaveBeenCalled();
     expect(mockSetOpen).toHaveBeenCalledWith(false);
   });
 });

@@ -15,16 +15,12 @@ import {
 import { supabase } from "@/supabaseClient";
 
 // Mock Supabase client
-vi.mock("../../supabaseClient", () => ({
+vi.mock("@supabaseClient", () => ({
   supabase: {
     auth: {
       getUser: vi.fn(),
     },
-    from: vi.fn(() => ({
-      upsert: vi.fn(),
-      delete: vi.fn(),
-      match: vi.fn(),
-    })),
+    from: vi.fn(),
   },
 }));
 
@@ -53,7 +49,7 @@ describe("push-notifications", () => {
 
     // Mock window and navigator
     vi.stubGlobal("window", {
-      atob: (str: string) => Buffer.from(str, "base64").toString("binary"),
+      atob: (str: string) => atob(str),
       PushManager: {},
     });
 
@@ -66,6 +62,7 @@ describe("push-notifications", () => {
     // Default Supabase mock implementation
     (supabase.auth.getUser as Mock).mockResolvedValue({
       data: { user: { id: "user-123" } },
+      error: null,
     });
     (supabase.from as Mock).mockReturnValue({
       upsert: vi.fn().mockResolvedValue({ error: null }),
