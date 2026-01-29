@@ -20,7 +20,7 @@ import { useTranslation } from "@/i18n";
 import { useAlert } from "./AlertContext";
 import { useUserContext } from "./UserContext";
 
-export const InventoryContext = createContext<InventoryContextType | undefined>(
+const InventoryContext = createContext<InventoryContextType | undefined>(
   undefined
 );
 

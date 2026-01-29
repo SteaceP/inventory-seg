@@ -7,7 +7,7 @@ import {
 } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/i18n";
-import { useErrorHandler } from "@/hooks/useErrorHandler";
+import { useErrorHandler } from "@hooks/useErrorHandler";
 
 interface ChatInputProps {
   input: string;

@@ -20,7 +20,7 @@ import type {
 } from "@/types/user";
 import type { Session, PostgrestError } from "@supabase/supabase-js";
 
-export const UserContext = createContext<
+const UserContext = createContext<
   (UserContextType & { session: Session | null }) | undefined
 >(undefined);
 

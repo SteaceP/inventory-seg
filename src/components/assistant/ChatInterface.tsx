@@ -15,8 +15,8 @@ import {
 import { AnimatePresence } from "framer-motion";
 import { useUserContext } from "@contexts/UserContext";
 import { useTranslation } from "@/i18n";
-import { useErrorHandler } from "@/hooks/useErrorHandler";
-import { usePerformance } from "@/hooks/usePerformance";
+import { useErrorHandler } from "@hooks/useErrorHandler";
+import { usePerformance } from "@hooks/usePerformance";
 
 // Sub-components
 import ChatMessage from "./ChatMessage";
