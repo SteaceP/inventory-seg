@@ -7,7 +7,6 @@
       "@components/*": ["src/components/*"],
       "@contexts/*": ["src/contexts/*"],
       "@hooks/*": ["src/hooks/*"],
-      "@i18n": ["src/i18n"],
       "@locales/*": ["src/locales/*"],
       "@pages/*": ["src/pages/*"],
       "@supabaseClient": ["src/supabaseClient"],

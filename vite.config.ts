@@ -12,7 +12,6 @@ export default defineConfig({
       "@components": path.resolve(__dirname, "src/components"),
       "@contexts": path.resolve(__dirname, "src/contexts"),
       "@hooks": path.resolve(__dirname, "src/hooks"),
-      "@i18n": path.resolve(__dirname, "src/i18n"),
       "@locales": path.resolve(__dirname, "src/locales"),
       "@pages": path.resolve(__dirname, "src/pages"),
       "@supabaseClient": path.resolve(__dirname, "src/supabaseClient"),
