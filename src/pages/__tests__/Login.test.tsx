@@ -1,9 +1,13 @@
+import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@test/test-utils";
 import Login from "../Login";
-import { BrowserRouter } from "react-router-dom";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { createMockTranslation, createMockUserContext } from "@test/mocks";
+import {
+  createMockTranslation,
+  createMockUserContext,
+  createMockErrorHandler,
+  createMockPerformance,
+} from "@test/mocks";
 
 // Mock Supabase
 const mockSignInWithPassword = vi.fn();
@@ -33,26 +37,61 @@ vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 
+// Mock hooks
+const { handleError } = createMockErrorHandler();
+const { measureOperation } = createMockPerformance();
+
+vi.mock("@hooks/useErrorHandler", () => ({
+  useErrorHandler: () => ({ handleError }),
+}));
+
+vi.mock("@hooks/usePerformance", () => ({
+  usePerformance: () => ({ measureOperation }),
+}));
+
 // Mock router
 const mockNavigate = vi.fn();
-const mockLocation = { state: null };
-vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual("react-router-dom");
+vi.mock("react-router-dom", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("react-router-dom")>();
   return {
     ...actual,
     useNavigate: () => mockNavigate,
-    useLocation: () => mockLocation,
+    useLocation: () => ({ state: {} }),
   };
 });
 
-const renderWithProviders = (ui: React.ReactElement) => {
-  const theme = createTheme();
-  return render(
-    <ThemeProvider theme={theme}>
-      <BrowserRouter>{ui}</BrowserRouter>
-    </ThemeProvider>
-  );
-};
+// Mock framer-motion to avoid animation issues in tests
+vi.mock("framer-motion", () => ({
+  motion: {
+    div: ({ children, ...props }: React.ComponentProps<"div">) => (
+      <div {...props}>{children}</div>
+    ),
+  },
+}));
+
+// Mock Turnstile
+vi.mock("@marsidev/react-turnstile", () => ({
+  Turnstile: ({
+    onSuccess,
+    ref,
+  }: {
+    onSuccess: (token: string) => void;
+    ref?: React.Ref<{ reset: () => void }>;
+  }) => {
+    React.useImperativeHandle(ref, () => ({
+      reset: vi.fn(),
+    }));
+    return (
+      <button
+        type="button"
+        data-testid="turnstile-mock"
+        onClick={() => onSuccess("test-token")}
+      >
+        Mock Turnstile
+      </button>
+    );
+  },
+}));
 
 describe("Login Page", () => {
   beforeEach(() => {
@@ -60,7 +99,7 @@ describe("Login Page", () => {
   });
 
   it("renders login form correctly", () => {
-    renderWithProviders(<Login />);
+    render(<Login />);
 
     expect(screen.getByLabelText(/login.email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/login.password/i)).toBeInTheDocument();
@@ -70,7 +109,7 @@ describe("Login Page", () => {
   });
 
   it("updates input fields", () => {
-    renderWithProviders(<Login />);
+    render(<Login />);
 
     const emailInput = screen.getByLabelText(/login.email/i);
     const passwordInput = screen.getByLabelText(/login.password/i);
@@ -84,7 +123,7 @@ describe("Login Page", () => {
 
   it("handles successful login", async () => {
     mockSignInWithPassword.mockResolvedValueOnce({ error: null });
-    renderWithProviders(<Login />);
+    render(<Login />);
 
     fireEvent.change(screen.getByLabelText(/login.email/i), {
       target: { value: "test@example.com" },
@@ -96,9 +135,17 @@ describe("Login Page", () => {
     fireEvent.click(screen.getByRole("button", { name: /login.signIn/i }));
 
     await waitFor(() => {
+      expect(measureOperation).toHaveBeenCalledWith(
+        "auth.login",
+        "Sign In with Password",
+        expect.any(Function)
+      );
       expect(mockSignInWithPassword).toHaveBeenCalledWith({
         email: "test@example.com",
         password: "password123",
+        options: {
+          captchaToken: undefined,
+        },
       });
     });
 
@@ -107,31 +154,61 @@ describe("Login Page", () => {
     });
   });
 
-  it("handles failed login", async () => {
-    mockSignInWithPassword.mockResolvedValueOnce({
-      error: { message: "Invalid credentials" },
-    });
-
-    renderWithProviders(<Login />);
+  it("handles successful login with captcha", async () => {
+    mockSignInWithPassword.mockResolvedValueOnce({ error: null });
+    render(<Login />);
 
     fireEvent.change(screen.getByLabelText(/login.email/i), {
       target: { value: "test@example.com" },
     });
     fireEvent.change(screen.getByLabelText(/login.password/i), {
-      target: { value: "wrongpass" },
+      target: { value: "password123" },
+    });
+
+    // Simulate Turnstile success
+    fireEvent.click(screen.getByTestId("turnstile-mock"));
+
+    fireEvent.click(screen.getByRole("button", { name: /login.signIn/i }));
+
+    await waitFor(() => {
+      expect(mockSignInWithPassword).toHaveBeenCalledWith({
+        email: "test@example.com",
+        password: "password123",
+        options: {
+          captchaToken: "test-token",
+        },
+      });
+    });
+  });
+
+  it("handles failed login", async () => {
+    const error = { message: "Invalid credentials" };
+    mockSignInWithPassword.mockResolvedValueOnce({
+      error,
+    });
+
+    render(<Login />);
+
+    fireEvent.change(screen.getByLabelText(/login.email/i), {
+      target: { value: "test@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText(/login.password/i), {
+      target: { value: "password123" },
     });
 
     fireEvent.click(screen.getByRole("button", { name: /login.signIn/i }));
 
     await waitFor(() => {
-      expect(screen.getByText("Invalid credentials")).toBeInTheDocument();
+      expect(handleError).toHaveBeenCalledWith(
+        error,
+        "errors.login",
+        expect.any(Object)
+      );
     });
-
-    expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it("toggles password visibility", () => {
-    renderWithProviders(<Login />);
+    render(<Login />);
 
     const passwordInput = screen.getByLabelText(/login.password/i);
     const toggleButton = screen.getByLabelText(
@@ -154,7 +231,7 @@ describe("Login Page", () => {
   });
 
   it("changes language", () => {
-    renderWithProviders(<Login />);
+    render(<Login />);
 
     const frButton = screen.getByRole("button", { name: /FR/i });
     fireEvent.click(frButton);

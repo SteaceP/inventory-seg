@@ -6,7 +6,6 @@ import {
   TextField,
   Button,
   Container,
-  Alert,
   IconButton,
   InputAdornment,
   ToggleButton,
@@ -20,6 +19,9 @@ import { useUserContext } from "@contexts/UserContext";
 import { supabase } from "@/supabaseClient";
 import { useNavigate, useLocation, Link as RouterLink } from "react-router-dom";
 import type { Language } from "@/types/user";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
+import { useErrorHandler } from "@hooks/useErrorHandler";
+import { usePerformance } from "@hooks/usePerformance";
 
 interface LocationState {
   from?: {
@@ -31,29 +33,59 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
   const { language, setLanguage } = useUserContext();
+  const { handleError } = useErrorHandler();
+  const { measureOperation } = usePerformance();
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const turnstileRef = React.useRef<TurnstileInstance>(null);
+
+  const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY as string;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      await measureOperation(
+        "auth.login",
+        "Sign In with Password",
+        async () => {
+          const { error: signInError } = await supabase.auth.signInWithPassword(
+            {
+              email,
+              password,
+              options: {
+                captchaToken: captchaToken ?? undefined,
+              },
+            }
+          );
 
-    if (error) {
-      setError(error.message);
+          if (signInError) {
+            console.error("[Login] Auth error details:", {
+              message: signInError.message,
+              status: signInError.status,
+              email,
+            });
+            throw signInError;
+          }
+
+          const from = (location.state as LocationState)?.from?.pathname || "/";
+          void navigate(from, { replace: true });
+        }
+      );
+    } catch (err) {
+      handleError(err, t("errors.login") || "Login failed", {
+        email,
+        hasCaptcha: !!captchaToken,
+      });
+      turnstileRef.current?.reset();
+      setCaptchaToken(null);
+    } finally {
       setLoading(false);
-    } else {
-      const from = (location.state as LocationState)?.from?.pathname || "/";
-      void navigate(from, { replace: true });
     }
   };
 
@@ -110,15 +142,6 @@ const Login: React.FC = () => {
               </Typography>
             </Box>
 
-            {error && (
-              <Alert
-                severity="error"
-                sx={{ width: "100%", mb: 3, borderRadius: "8px" }}
-              >
-                {error}
-              </Alert>
-            )}
-
             <Box
               component="form"
               onSubmit={(e) => {
@@ -167,6 +190,23 @@ const Login: React.FC = () => {
                 }}
                 sx={{ mb: 3 }}
               />
+
+              <Box sx={{ mb: 3, display: "flex", justifyContent: "center" }}>
+                <Turnstile
+                  ref={turnstileRef}
+                  siteKey={siteKey}
+                  onSuccess={(token) => setCaptchaToken(token)}
+                  onError={() => {
+                    setCaptchaToken(null);
+                    handleError(
+                      new Error("CAPTCHA Error"),
+                      t("common.captchaError") || "CAPTCHA failed"
+                    );
+                  }}
+                  onExpire={() => setCaptchaToken(null)}
+                />
+              </Box>
+
               <Button
                 type="submit"
                 fullWidth

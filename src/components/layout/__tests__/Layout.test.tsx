@@ -50,7 +50,8 @@ describe("Layout Component", () => {
     return render(
       <MemoryRouter initialEntries={[route]}>
         <Layout />
-      </MemoryRouter>
+      </MemoryRouter>,
+      { includeRouter: false }
     );
   };
 

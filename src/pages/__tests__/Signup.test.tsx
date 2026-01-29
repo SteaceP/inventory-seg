@@ -1,11 +1,13 @@
+import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@test/test-utils";
 import Signup from "../Signup";
-import { BrowserRouter } from "react-router-dom";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { createMockTranslation, createMockUserContext } from "@test/mocks";
-
-// Mock Supabase
+import {
+  createMockTranslation,
+  createMockUserContext,
+  createMockErrorHandler,
+  createMockPerformance,
+} from "@test/mocks";
 const mockSignUp = vi.fn();
 vi.mock("@supabaseClient", () => ({
   supabase: {
@@ -32,13 +34,26 @@ vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 
+// Mock hooks
+const { handleError } = createMockErrorHandler();
+const { measureOperation } = createMockPerformance();
+
+vi.mock("@hooks/useErrorHandler", () => ({
+  useErrorHandler: () => ({ handleError }),
+}));
+
+vi.mock("@hooks/usePerformance", () => ({
+  usePerformance: () => ({ measureOperation }),
+}));
+
 // Mock router
 const mockNavigate = vi.fn();
-vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual("react-router-dom");
+vi.mock("react-router-dom", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("react-router-dom")>();
   return {
     ...actual,
     useNavigate: () => mockNavigate,
+    useLocation: () => ({ state: {} }),
   };
 });
 
@@ -51,14 +66,29 @@ vi.mock("framer-motion", () => ({
   },
 }));
 
-const renderWithProviders = (ui: React.ReactElement) => {
-  const theme = createTheme();
-  return render(
-    <ThemeProvider theme={theme}>
-      <BrowserRouter>{ui}</BrowserRouter>
-    </ThemeProvider>
-  );
-};
+// Mock Turnstile
+vi.mock("@marsidev/react-turnstile", () => ({
+  Turnstile: ({
+    onSuccess,
+    ref,
+  }: {
+    onSuccess: (token: string) => void;
+    ref?: React.Ref<{ reset: () => void }>;
+  }) => {
+    React.useImperativeHandle(ref, () => ({
+      reset: vi.fn(),
+    }));
+    return (
+      <button
+        type="button"
+        data-testid="turnstile-mock"
+        onClick={() => onSuccess("test-token")}
+      >
+        Mock Turnstile
+      </button>
+    );
+  },
+}));
 
 describe("Signup Page", () => {
   beforeEach(() => {
@@ -66,7 +96,7 @@ describe("Signup Page", () => {
   });
 
   it("renders signup form correctly", () => {
-    renderWithProviders(<Signup />);
+    render(<Signup />);
 
     expect(screen.getByLabelText(/signup.displayName/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/signup.email/i)).toBeInTheDocument();
@@ -77,7 +107,7 @@ describe("Signup Page", () => {
   });
 
   it("updates input fields", () => {
-    renderWithProviders(<Signup />);
+    render(<Signup />);
 
     const nameInput = screen.getByLabelText(/signup.displayName/i);
     const emailInput = screen.getByLabelText(/signup.email/i);
@@ -93,7 +123,7 @@ describe("Signup Page", () => {
   });
 
   it("validates email domain", async () => {
-    renderWithProviders(<Signup />);
+    render(<Signup />);
 
     fireEvent.change(screen.getByLabelText(/signup.displayName/i), {
       target: { value: "John Doe" },
@@ -110,7 +140,11 @@ describe("Signup Page", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/signup.invalidDomain/i)).toBeInTheDocument();
+      expect(handleError).toHaveBeenCalledWith(
+        expect.any(Error),
+        "signup.invalidDomain",
+        expect.any(Object)
+      );
     });
 
     expect(mockSignUp).not.toHaveBeenCalled();
@@ -118,7 +152,7 @@ describe("Signup Page", () => {
 
   it("handles successful signup", async () => {
     mockSignUp.mockResolvedValueOnce({ error: null });
-    renderWithProviders(<Signup />);
+    render(<Signup />);
 
     fireEvent.change(screen.getByLabelText(/signup.displayName/i), {
       target: { value: "John Doe" },
@@ -135,10 +169,16 @@ describe("Signup Page", () => {
     );
 
     await waitFor(() => {
+      expect(measureOperation).toHaveBeenCalledWith(
+        "auth.signup",
+        "Sign Up with Password",
+        expect.any(Function)
+      );
       expect(mockSignUp).toHaveBeenCalledWith({
         email: "test@s-e-g.ca",
         password: "password123",
         options: {
+          captchaToken: undefined,
           data: {
             display_name: "John Doe",
             lang: expect.any(String) as string,
@@ -157,11 +197,12 @@ describe("Signup Page", () => {
   });
 
   it("handles signup error", async () => {
+    const error = { message: "User already registered" };
     mockSignUp.mockResolvedValueOnce({
-      error: { message: "User already registered" },
+      error,
     });
 
-    renderWithProviders(<Signup />);
+    render(<Signup />);
 
     fireEvent.change(screen.getByLabelText(/signup.displayName/i), {
       target: { value: "John Doe" },
@@ -178,12 +219,16 @@ describe("Signup Page", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("User already registered")).toBeInTheDocument();
+      expect(handleError).toHaveBeenCalledWith(
+        error,
+        "errors.signup",
+        expect.any(Object)
+      );
     });
   });
 
   it("toggles password visibility", () => {
-    renderWithProviders(<Signup />);
+    render(<Signup />);
 
     const passwordInput = screen.getByLabelText(/signup.password/i);
     const toggleButton = screen.getByLabelText(
@@ -206,7 +251,7 @@ describe("Signup Page", () => {
   });
 
   it("changes language", () => {
-    renderWithProviders(<Signup />);
+    render(<Signup />);
 
     const frButton = screen.getByRole("button", { name: /FR/i });
     fireEvent.click(frButton);

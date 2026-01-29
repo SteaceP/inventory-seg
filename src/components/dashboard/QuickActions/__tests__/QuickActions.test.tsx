@@ -32,7 +32,7 @@ vi.mock("@hooks/useScrollIndicators", () => ({
 }));
 
 const renderWithRouter = (ui: React.ReactElement) => {
-  return render(ui, { wrapper: BrowserRouter });
+  return render(ui, { wrapper: BrowserRouter, includeRouter: false });
 };
 
 const stubMatchMedia = (matches: boolean) => {

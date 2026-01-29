@@ -1,6 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import React from "react";
+import { render, screen, waitFor } from "@test/test-utils";
 import App from "../App";
+import {
+  createMockAlertContext,
+  createMockInventoryContext,
+} from "@test/mocks";
 
 // Mock react-router-dom to use MemoryRouter instead of BrowserRouter (which App uses)
 vi.mock("react-router-dom", async () => {
@@ -84,14 +89,14 @@ vi.mock("../contexts/AlertContext", () => ({
   AlertProvider: ({ children }: { children: React.ReactNode }) => (
     <>{children}</>
   ),
-  useAlert: vi.fn(),
+  useAlert: () => createMockAlertContext(),
 }));
 
 vi.mock("../contexts/InventoryContext", () => ({
   InventoryProvider: ({ children }: { children: React.ReactNode }) => (
     <>{children}</>
   ),
-  useInventoryContext: vi.fn(),
+  useInventoryContext: () => createMockInventoryContext(),
 }));
 
 describe("App", () => {
@@ -107,7 +112,7 @@ describe("App", () => {
       compactView: false,
     });
 
-    render(<App />);
+    render(<App />, { includeRouter: false });
     // Check for loading indicator
     // The loading screen has "Logo" alt text
     expect(screen.getByAltText("Logo")).toBeInTheDocument();
@@ -122,7 +127,7 @@ describe("App", () => {
     });
 
     // We need to wait for lazy load of Login page
-    render(<App />);
+    render(<App />, { includeRouter: false });
 
     await waitFor(() => {
       expect(screen.getByText("Login Page")).toBeInTheDocument();
@@ -137,7 +142,7 @@ describe("App", () => {
       compactView: false,
     });
 
-    render(<App />);
+    render(<App />, { includeRouter: false });
 
     await waitFor(() => {
       expect(screen.getByText("Dashboard Page")).toBeInTheDocument();
@@ -158,7 +163,7 @@ describe("App", () => {
       configurable: true,
     });
 
-    render(<App />);
+    render(<App />, { includeRouter: false });
 
     await waitFor(() => {
       expect(screen.getByText("common.offlineMessage")).toBeInTheDocument();

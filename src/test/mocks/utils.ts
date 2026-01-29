@@ -15,6 +15,21 @@ export const createMockErrorHandler = (overrides?: {
 
 export const mockErrorHandler = createMockErrorHandler();
 
+// Performance mock
+export const createMockPerformance = (overrides?: {
+  measureOperation?: ReturnType<typeof vi.fn>;
+}) => {
+  return {
+    measureOperation:
+      overrides?.measureOperation ??
+      vi.fn((_op: string, _name: string, callback: () => unknown) =>
+        callback()
+      ),
+  };
+};
+
+export const mockPerformance = createMockPerformance();
+
 // Activity logging mock
 export const mockLogActivity = vi.fn();
 

@@ -20,47 +20,77 @@ import { useUserContext } from "@contexts/UserContext";
 import { supabase } from "@/supabaseClient";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import type { Language } from "@/types/user";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
+import { useErrorHandler } from "@hooks/useErrorHandler";
+import { usePerformance } from "@hooks/usePerformance";
 
 const Signup: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { language, setLanguage } = useUserContext();
+  const { handleError } = useErrorHandler();
+  const { measureOperation } = usePerformance();
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const turnstileRef = React.useRef<TurnstileInstance>(null);
+
+  const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY as string;
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
 
     // Domain validation
     if (!email.toLowerCase().endsWith("@s-e-g.ca")) {
-      setError(t("signup.invalidDomain"));
+      handleError(new Error("Invalid domain"), t("signup.invalidDomain"), {
+        email,
+      });
       setLoading(false);
       return;
     }
 
-    const { error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          display_name: displayName,
-          lang: localStorage.getItem("language") || "en",
-        },
-      },
-    });
+    try {
+      await measureOperation(
+        "auth.signup",
+        "Sign Up with Password",
+        async () => {
+          const { error: signUpError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              captchaToken: captchaToken ?? undefined,
+              data: {
+                display_name: displayName,
+                lang: localStorage.getItem("language") || "en",
+              },
+            },
+          });
 
-    if (signUpError) {
-      setError(signUpError.message);
-      setLoading(false);
-    } else {
-      setSuccess(true);
+          if (signUpError) {
+            console.error("[Signup] Auth error details:", {
+              message: signUpError.message,
+              status: signUpError.status,
+              email,
+            });
+            throw signUpError;
+          }
+
+          setSuccess(true);
+        }
+      );
+    } catch (err) {
+      handleError(err, t("errors.signup") || "Sign up failed", {
+        email,
+        hasCaptcha: !!captchaToken,
+      });
+      turnstileRef.current?.reset();
+      setCaptchaToken(null);
+    } finally {
       setLoading(false);
     }
   };
@@ -169,15 +199,6 @@ const Signup: React.FC = () => {
               </Typography>
             </Box>
 
-            {error && (
-              <Alert
-                severity="error"
-                sx={{ width: "100%", mb: 3, borderRadius: "8px" }}
-              >
-                {error}
-              </Alert>
-            )}
-
             <Box
               component="form"
               onSubmit={(e) => {
@@ -238,6 +259,23 @@ const Signup: React.FC = () => {
                 }}
                 sx={{ mb: 3 }}
               />
+
+              <Box sx={{ mb: 3, display: "flex", justifyContent: "center" }}>
+                <Turnstile
+                  ref={turnstileRef}
+                  siteKey={siteKey}
+                  onSuccess={(token) => setCaptchaToken(token)}
+                  onError={() => {
+                    setCaptchaToken(null);
+                    handleError(
+                      new Error("CAPTCHA Error"),
+                      t("common.captchaError") || "CAPTCHA failed"
+                    );
+                  }}
+                  onExpire={() => setCaptchaToken(null)}
+                />
+              </Box>
+
               <Button
                 type="submit"
                 fullWidth

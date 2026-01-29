@@ -3,6 +3,9 @@ import React, { type ReactElement } from "react";
 import { render, type RenderOptions } from "@testing-library/react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
+import { AlertProvider } from "@/contexts/AlertContext";
+import { MemoryRouter } from "react-router-dom";
+
 /**
  * Custom theme for tests if needed, otherwise uses default
  */
@@ -15,20 +18,54 @@ const theme = createTheme({
 });
 
 /**
+ * Custom render options
+ */
+export interface CustomRenderOptions extends RenderOptions {
+  includeRouter?: boolean;
+  includeAlerts?: boolean;
+}
+
+/**
  * AllTheProviders wrapper component
  */
-const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
-  return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
+const AllTheProviders = ({
+  children,
+  includeRouter = true,
+  includeAlerts = true,
+}: {
+  children: React.ReactNode;
+  includeRouter?: boolean;
+  includeAlerts?: boolean;
+}) => {
+  let content = children;
+
+  if (includeRouter) {
+    content = <MemoryRouter>{content}</MemoryRouter>;
+  }
+
+  if (includeAlerts) {
+    content = <AlertProvider>{content}</AlertProvider>;
+  }
+
+  return <ThemeProvider theme={theme}>{content}</ThemeProvider>;
 };
 
 /**
  * Custom render function that includes providers
  */
-const customRender = (ui: ReactElement, options?: RenderOptions) => {
-  const { wrapper: UserWrapper, ...renderOptions } = options || {};
+const customRender = (ui: ReactElement, options?: CustomRenderOptions) => {
+  const {
+    wrapper: UserWrapper,
+    includeRouter = true,
+    includeAlerts = true,
+    ...renderOptions
+  } = options || {};
 
   const CombinedWrapper = ({ children }: { children: React.ReactNode }) => (
-    <AllTheProviders>
+    <AllTheProviders
+      includeRouter={includeRouter}
+      includeAlerts={includeAlerts}
+    >
       {UserWrapper ? <UserWrapper>{children}</UserWrapper> : children}
     </AllTheProviders>
   );
