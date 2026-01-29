@@ -34,6 +34,7 @@ trigger: always_on
 - **UserContext**: For user profile and authentication
 - **AlertContext**: For global notifications and alerts
 - **Error Handling**: Use `useErrorHandler` hook for centralized error reporting to Sentry and MUI alerts
+- **Performance Monitoring**: Use `usePerformance` hook for creating custom Sentry spans to measure operation timing
 
 ### Navigation
 

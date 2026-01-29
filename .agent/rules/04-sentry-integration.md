@@ -13,29 +13,31 @@ Use this in try catch blocks or areas where exceptions are expected
 
 Spans should be created for meaningful actions within an applications like button clicks, API calls, and function calls
 Ensure you are creating custom spans with meaningful names and operations
-Use the `Sentry.startSpan` function to create a span
+Use the `usePerformance` hook's `measureOperation` function to create a span.
 Child spans can exist within a parent span
 
 ## Custom Span instrumentation in component actions
 
 ```javascript
 function TestComponent() {
+  const { measureOperation } = usePerformance();
+
   const handleTestButtonClick = () => {
     // Create a transaction/span to measure performance
-    Sentry.startSpan(
-      {
-        op: "ui.click",
-        name: "Test Button Click",
-      },
-      (span) => {
+    measureOperation(
+      "ui.click",
+      "Test Button Click",
+      async (span) => {
         const value = "some config";
         const metric = "some metric";
 
         // Metrics can be added to the span
-        span.setAttribute("config", value);
-        span.setAttribute("metric", metric);
+        if (span) {
+          span.setAttribute("config", value);
+          span.setAttribute("metric", metric);
+        }
 
-        doSomething();
+        await doSomething();
       },
     );
   };
@@ -52,11 +54,11 @@ function TestComponent() {
 
 ```javascript
 async function fetchUserData(userId) {
-  return Sentry.startSpan(
-    {
-      op: "http.client",
-      name: `GET /api/users/${userId}`,
-    },
+  const { measureOperation } = usePerformance();
+
+  return measureOperation(
+    "http.client",
+    `GET /api/users/${userId}`,
     async () => {
       const response = await fetch(`/api/users/${userId}`);
       const data = await response.json();
@@ -119,4 +121,5 @@ logger.fatal("Database connection pool exhausted", {
   database: "users",
   activeConnections: 100,
 });
+
 ```
