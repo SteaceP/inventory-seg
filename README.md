@@ -40,8 +40,8 @@ Une application de gestion d'inventaire pour La Société Emmanuel-Grégoire, en
 
 ### Prérequis
 
-- [Node.js](https://nodejs.org/) (v18 ou ultérieur recommandé)
-- [npm](https://www.npmjs.com/) ou [yarn](https://yarnpkg.com/)
+- [Node.js](https://nodejs.org/) (v24 ou ultérieur recommandé)
+- [pnpm](https://pnpm.io/)
 - Un compte et un projet [Supabase](https://supabase.com/).
 
 ### Instructions d'installation
@@ -56,7 +56,7 @@ Une application de gestion d'inventaire pour La Société Emmanuel-Grégoire, en
 2. Installer les dépendances :
 
    ```bash
-   npm install
+   pnpm install
    ```
 
 3. Configurer les variables d'environnement :
@@ -86,7 +86,7 @@ Une application de gestion d'inventaire pour La Société Emmanuel-Grégoire, en
 5. Exécuter localement :
 
    ```bash
-   npm run dev
+   pnpm run dev
    ```
 
 ## 🚀 Déploiement
@@ -98,26 +98,26 @@ Cette application est conçue pour être déployée sur Cloudflare Pages avec un
 1. **Construire l'application :**
 
    ```bash
-   npm run build
+   pnpm run build
    ```
 
 2. **Définir les secrets du Cloudflare Worker** (NE JAMAIS les commettre dans le contrôle de version) :
 
    ```bash
-   npx wrangler secret put SUPABASE_SECRET_KEY
-   npx wrangler secret put VAPID_PRIVATE_KEY
-   npx wrangler secret put BREVO_API_KEY
+   pnpm dlx wrangler secret put SUPABASE_SECRET_KEY
+   pnpm dlx wrangler secret put VAPID_PRIVATE_KEY
+   pnpm dlx wrangler secret put BREVO_API_KEY
    ```
 
 3. **Déployer le Worker :**
 
    ```bash
-   npx wrangler deploy
+   pnpm dlx wrangler deploy
    ```
 
 4. **Déployer sur Cloudflare Pages :**
    - Connectez votre repo GitHub à Cloudflare Pages
-   - Définissez la commande de construction : `npm run build`
+   - Définissez la commande de construction : `pnpm run build`
    - Définissez le répertoire de sortie : `dist`
    - Ajoutez les variables d'environnement (variables VITE_* uniquement)
 

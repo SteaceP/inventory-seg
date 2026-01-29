@@ -8,6 +8,7 @@ trigger: always_on
 
 - **Framework**: React 19 with TypeScript
 - **Build Tool**: Vite
+- **Package Manager**: pnpm
 - **UI Library**: Material UI (MUI) v7
 - **Animation**: Framer Motion
 - **Styling**: MUI System (`sx` prop), CSS Modules/Vanilla CSS

@@ -9,34 +9,40 @@ This project uses Vitest for testing both frontend (React) and worker (Cloudflar
 ## Quick Start
 
 ### Run All Tests
+
 ```bash
 // turbo
-npm run test:all
+pnpm run test:all
 ```
 
 ### Watch Mode (Frontend)
+
 ```bash
-npm test
+pnpm test
 ```
+
 
 ## Frontend Tests
 
 Frontend tests cover React components, hooks, contexts, and utilities.
 
 ### Run Frontend Tests Once
+
 ```bash
 // turbo
-npm run test:run
+pnpm run test:run
 ```
 
 ### Run Frontend Tests in Watch Mode
+
 ```bash
-npm test
+pnpm test
 ```
 
 ### Run with Coverage
+
 ```bash
-npm run test:coverage
+pnpm run test:coverage
 ```
 
 Coverage reports are generated in the `coverage/` directory.
@@ -46,15 +52,18 @@ Coverage reports are generated in the `coverage/` directory.
 Worker tests run in a Cloudflare Workers environment using `@cloudflare/vitest-pool-workers`.
 
 ### Run Worker Tests Once
+
 ```bash
 // turbo
-npm run test:worker:run
+pnpm run test:worker:run
 ```
 
 ### Run Worker Tests in Watch Mode
+
 ```bash
-npm run test:worker
+pnpm run test:worker
 ```
+
 
 ## Test File Patterns
 
@@ -144,7 +153,7 @@ vi.mock('../supabaseClient', () => ({
 Tests should run before deployment:
 
 ```bash
-npm run test:all && npm run build
+pnpm run test:all && pnpm run build
 ```
 
 The `test:all` script runs both frontend and worker tests sequentially.

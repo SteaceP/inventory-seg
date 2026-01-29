@@ -21,9 +21,9 @@ supabase link --project-ref <votre-id-de-projet>
 
 | Commande | Script | Description |
 | :--- | :--- | :--- |
-| `npm run supabase:start` | `supabase start` | Démarre tous les services Supabase locaux via Docker. |
-| `npm run supabase:stop` | `supabase stop` | Arrête tous les services Supabase locaux. |
-| `npm run supabase:gen-types` | `supabase gen types...` | Génère les types TypeScript pour votre schéma de base de données. |
+| `pnpm run supabase:start` | `supabase start` | Démarre tous les services Supabase locaux via Docker. |
+| `pnpm run supabase:stop` | `supabase stop` | Arrête tous les services Supabase locaux. |
+| `pnpm run supabase:gen-types` | `supabase gen types...` | Génère les types TypeScript pour votre schéma de base de données. |
 | `supabase db diff` | - | Génère un nouveau fichier de migration basé sur les changements locaux. |
 | `supabase db reset` | - | Réinitialise la base de données locale à l'état actuel des migrations. |
 
@@ -31,8 +31,8 @@ supabase link --project-ref <votre-id-de-projet>
 
 Après avoir apporté des modifications à votre schéma de base de données (ex: via des migrations), vous devez régénérer les types TypeScript :
 
-1. Assurez-vous que Supabase est en cours d'exécution : `npm run supabase:start`
-2. Lancez la génération de types : `npm run supabase:gen-types`
+1. Assurez-vous que Supabase est en cours d'exécution : `pnpm run supabase:start`
+2. Lancez la génération de types : `pnpm run supabase:gen-types`
 3. Les types seront mis à jour dans `src/types/database.types.ts`.
 
 ## Architecture Realtime

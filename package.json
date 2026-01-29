@@ -12,10 +12,10 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "preview": "npm run build && vite preview",
+    "preview": "pnpm run build && vite preview",
     "generate-vapid": "web-push generate-vapid-keys",
     "worker:tail": "wrangler tail",
-    "deploy": "npm run build && wrangler deploy --env production",
+    "deploy": "pnpm run build && wrangler deploy --env production",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:gen-types": "supabase gen types typescript --local > src/types/database.types.ts",
@@ -24,7 +24,7 @@
     "test:worker": "vitest --config vitest.worker.config.ts",
     "test:worker:run": "vitest run --config vitest.worker.config.ts",
     "test:coverage": "vitest run --coverage",
-    "test:all": "npm run test:run && npm run test:worker:run"
+    "test:all": "pnpm run test:run && pnpm run test:worker:run"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
