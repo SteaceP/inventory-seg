@@ -39,7 +39,7 @@
 		"enabled": true
 	},
 	"ai": {
-		"binding": "AI"
+		"binding": "AI_SERVICE"
 	},
 	"env": {
 		"dev": {

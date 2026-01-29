@@ -227,7 +227,7 @@ async function analyzeAndNotify(
     `;
 
   try {
-    const response = await env.AI.run("@cf/meta/llama-3-8b-instruct", {
+    const response = await env.AI_SERVICE.run("@cf/meta/llama-3-8b-instruct", {
       messages: [{ role: "user", content: prompt }],
     });
 

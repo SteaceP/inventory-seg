@@ -6,6 +6,7 @@ const fr = {
   "menu.locations": "Emplacements",
   "menu.reports": "Rapports",
   "menu.appliances": "Appareils",
+  "menu.assistant": "Assistant IA",
   "menu.settings": "Paramètres",
   "settings.title": "Paramètres",
   "settings.description": "Gérez vos paramètres de compte et préférences",
@@ -109,6 +110,7 @@ const fr = {
   // Common
   "common.all": "Tout",
   "common.cancel": "Annuler",
+  "common.clear": "Effacer la discussion",
   "common.confirm": "Confirmer",
   "common.save": "Enregistrer",
   "common.saving": "Enregistrement...",
@@ -331,9 +333,23 @@ const fr = {
   "reports.summary": "Mouvement mensuel vers {{location}}",
   "reports.monthly": "Mensuel",
   "reports.annual": "Annuel",
-  "reports.year": "Sélectionner l'année",
+  "reports.year": "Sélectionner une année",
   "reports.allLocations": "Tous les emplacements",
   "inventory.reports": "Rapports",
+  "assistant.title": "Assistant IA",
+  "assistant.description":
+    "Posez des questions sur l'inventaire, les appareils ou la maintenance.",
+  "assistant.welcome": "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
+  "assistant.placeholder": "Demandez à Emmanuel...",
+  "assistant.error": "Désolé, j'ai rencontré une erreur. Veuillez réessayer.",
+  "assistant.processError": "Je suis désolé, je n'ai pas pu traiter cela.",
+  "assistant.errors.generic": "Une erreur de saisie vocale s'est produite.",
+  "assistant.errors.audio_capture":
+    "Aucun microphone détecté. Veuillez vérifier vos paramètres système.",
+  "assistant.errors.permission_denied":
+    "Permission microphone refusée. Veuillez autoriser l'accès.",
+  "assistant.errors.network": "Connexion réseau requise pour la saisie vocale.",
+  "assistant.errors.no_speech": "Aucune parole détectée. Veuillez réessayer.",
 };
 
 export default fr;

@@ -6,6 +6,7 @@ const en = {
   "menu.locations": "Locations",
   "menu.reports": "Reports",
   "menu.appliances": "Appliances",
+  "menu.assistant": "AI Assistant",
   "menu.settings": "Settings",
   "settings.title": "Settings",
   "settings.description": "Manage your account settings and preferences",
@@ -106,6 +107,7 @@ const en = {
   // Common
   "common.all": "All",
   "common.cancel": "Cancel",
+  "common.clear": "Clear chat",
   "common.confirm": "Confirm",
   "common.save": "Save",
   "common.saving": "Saving...",
@@ -326,6 +328,20 @@ const en = {
   "reports.year": "Select Year",
   "reports.allLocations": "All Locations",
   "inventory.reports": "Reports",
+  "assistant.title": "AI Assistant",
+  "assistant.description":
+    "Ask questions about inventory, appliances, or maintenance.",
+  "assistant.welcome": "Hello! How can I help you today?",
+  "assistant.placeholder": "Ask Emmanuel...",
+  "assistant.error": "Sorry, I encountered an error. Please try again.",
+  "assistant.processError": "I'm sorry, I couldn't process that.",
+  "assistant.errors.generic": "Voice input error occurred.",
+  "assistant.errors.audio_capture":
+    "No microphone found. Please check your system settings.",
+  "assistant.errors.permission_denied":
+    "Microphone permission denied. Please allow access.",
+  "assistant.errors.network": "Network connection required for voice input.",
+  "assistant.errors.no_speech": "No speech detected. Please try again.",
 };
 
 export default en;

@@ -8,6 +8,7 @@ import {
   handleReportStats,
   handleTestPush,
   handleLowStockAlert,
+  handleAssistantChat,
 } from "./worker/routes";
 import type { Env } from "./worker/types";
 
@@ -48,7 +49,7 @@ export default Sentry.withSentry(
 
       // Route API requests to handlers
       if (url.pathname === "/api/activity" && request.method === "POST") {
-        return handleActivityLogPost(request, instrumentedEnv);
+        return handleActivityLogPost(request, env);
       }
 
       if (url.pathname === "/api/activity" && request.method === "GET") {
@@ -78,6 +79,10 @@ export default Sentry.withSentry(
         request.method === "POST"
       ) {
         return handleLowStockAlert(request, instrumentedEnv);
+      }
+
+      if (url.pathname === "/api/assistant/chat" && request.method === "POST") {
+        return handleAssistantChat(request, env);
       }
 
       // For non-API routes, return null to let the Vite plugin's

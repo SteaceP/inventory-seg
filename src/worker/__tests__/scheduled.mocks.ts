@@ -28,7 +28,7 @@ export const createMockEnv = (): Env =>
     SENTRY_DSN: "mock-dsn",
     HYPERDRIVE: { connectionString: "postgres://mock" },
     DB: {} as D1Database,
-    AI: {
+    AI_SERVICE: {
       run: vi.fn(),
     } as unknown as Ai,
   }) as unknown as Env;

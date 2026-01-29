@@ -6,6 +6,7 @@ const ar = {
   "menu.locations": "المواقع",
   "menu.reports": "التقارير",
   "menu.appliances": "الأجهزة",
+  "menu.assistant": "مساعد ذكاء اصطناعي",
   "menu.settings": "الإعدادات",
   "settings.title": "إعدادات",
   "settings.description": "إدارة إعدادات حسابك وتفضيلاتك",
@@ -104,6 +105,7 @@ const ar = {
   // Common
   "common.all": "الكل",
   "common.cancel": "إلغاء",
+  "common.clear": "مسح المحادثة",
   "common.confirm": "تأكيد",
   "common.save": "حفظ",
   "common.saving": "جاري الحفظ...",
@@ -322,6 +324,20 @@ const ar = {
   "reports.year": "اختر السنة",
   "reports.allLocations": "جميع المواقع",
   "inventory.reports": "التقارير",
+  "assistant.title": "مساعد ذكاء اصطناعي",
+  "assistant.description": "اطرح أسئلة حول المخزون أو الأجهزة أو الصيانة.",
+  "assistant.welcome": "مرحباً! كيف يمكنني مساعدتك اليوم؟",
+  "assistant.placeholder": "اسأل إيمانويل...",
+  "assistant.error": "عذراً، حدث خطأ. يرجى المحاولة مرة أخرى.",
+  "assistant.processError": "عذراً، لم أتمكن من معالجة ذلك.",
+  "assistant.errors.generic": "حدث خطأ في الإدخال الصوتي.",
+  "assistant.errors.audio_capture":
+    "لم يتم العثور على ميكروفون. يرجى التحقق من إعدادات النظام.",
+  "assistant.errors.permission_denied":
+    "تم رفض إذن الميكروفون. يرجى السماح بالوصول.",
+  "assistant.errors.network": "اتصال الشبكة مطلوب لإدخال الصوت.",
+  "assistant.errors.no_speech":
+    "لم يتم اكتشاف أي كلام. يرجى المحاولة مرة أخرى.",
 };
 
 export default ar;

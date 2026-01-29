@@ -66,7 +66,7 @@ describe("handleScheduled - Base Flow", () => {
     // Should fetch history and current items
     expect(mockSql).toHaveBeenCalledTimes(2);
     // Should NOT call AI
-    const aiRunSpy = env.AI.run as Mock;
+    const aiRunSpy = env.AI_SERVICE.run as Mock;
     expect(aiRunSpy).not.toHaveBeenCalled();
     // Should NOT send notifications
     const webpush = await import("web-push");

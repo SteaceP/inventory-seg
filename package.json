@@ -9,13 +9,12 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "complete-check": "pnpm run format && pnpm run lint && pnpm run test:all && pnpm run build",
+    "vitest-ui": "vitest --ui --coverage.enabled=true --coverage.provider=v8 --coverage.reporter=html --coverage.reporter=lcov",
+    "deploy": "pnpm run build && wrangler deploy --env production",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
     "preview": "pnpm run build && vite preview",
-    "generate-vapid": "web-push generate-vapid-keys",
-    "worker:tail": "wrangler tail",
-    "deploy": "pnpm run build && wrangler deploy --env production",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:gen-types": "supabase gen types typescript --local > src/types/database.types.ts",
@@ -24,7 +23,10 @@
     "test:worker": "vitest --config vitest.worker.config.ts",
     "test:worker:run": "vitest run --config vitest.worker.config.ts",
     "test:coverage": "vitest run --coverage",
-    "test:all": "pnpm run test:run && pnpm run test:worker:run"
+    "format:check": "prettier --check .",
+    "test:all": "pnpm run test:run && pnpm run test:worker:run",
+    "worker:tail": "wrangler tail",
+    "generate-vapid": "web-push generate-vapid-keys"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -36,6 +38,7 @@
     "@sentry/vite-plugin": "^4.8.0",
     "@supabase/supabase-js": "^2.93.2",
     "@types/web-push": "^3.6.4",
+    "@vitest/ui": "3.2.4",
     "framer-motion": "^12.29.2",
     "html5-qrcode": "^2.3.8",
     "postgres": "^3.4.8",

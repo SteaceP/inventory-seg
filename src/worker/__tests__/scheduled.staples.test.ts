@@ -52,7 +52,7 @@ describe("handleScheduled - Staples Supplier", () => {
     ]); // Subs
 
     // AI Yes
-    (env.AI.run as Mock).mockResolvedValue({
+    (env.AI_SERVICE.run as Mock).mockResolvedValue({
       response: JSON.stringify({ should_order: true, reason: "Staples Yes" }),
     });
 
@@ -71,7 +71,7 @@ describe("handleScheduled - Staples Supplier", () => {
     await work;
 
     // Verify prompt contains "Staples"
-    const aiRunSpy = env.AI.run as Mock;
+    const aiRunSpy = env.AI_SERVICE.run as Mock;
     expect(aiRunSpy).toHaveBeenCalledWith(
       expect.anything(),
       /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */

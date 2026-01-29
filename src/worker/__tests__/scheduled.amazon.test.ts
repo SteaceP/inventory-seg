@@ -67,7 +67,7 @@ describe("handleScheduled - Amazon Supplier", () => {
     const work = ctx.waitUntil.mock.results[0].value as Promise<void>;
     await work;
 
-    const aiRunSpy = env.AI.run as Mock;
+    const aiRunSpy = env.AI_SERVICE.run as Mock;
     expect(aiRunSpy).not.toHaveBeenCalled(); // Amazon skips AI
 
     const webpush = await import("web-push");

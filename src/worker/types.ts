@@ -15,7 +15,7 @@ export interface Env {
   SENTRY_DSN: string;
   HYPERDRIVE: { connectionString: string };
   DB: D1Database;
-  AI: Ai;
+  AI_SERVICE: Ai;
 }
 
 export interface RequestBody {

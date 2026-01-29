@@ -68,7 +68,7 @@ describe("handleScheduled - BOD Supplier", () => {
     const aiResponse = {
       response: JSON.stringify({ should_order: true, reason: "Order now" }),
     };
-    (env.AI.run as Mock).mockResolvedValue(aiResponse);
+    (env.AI_SERVICE.run as Mock).mockResolvedValue(aiResponse);
 
     handleScheduled(
       {
@@ -84,7 +84,7 @@ describe("handleScheduled - BOD Supplier", () => {
     const work = ctx.waitUntil.mock.results[0].value as Promise<void>;
     await work;
 
-    const aiRunSpy = env.AI.run as Mock;
+    const aiRunSpy = env.AI_SERVICE.run as Mock;
     expect(aiRunSpy).toHaveBeenCalledWith(
       "@cf/meta/llama-3-8b-instruct",
       expect.anything()
@@ -118,7 +118,7 @@ describe("handleScheduled - BOD Supplier", () => {
     const aiResponse = {
       response: JSON.stringify({ should_order: false, reason: "Wait more" }),
     };
-    (env.AI.run as Mock).mockResolvedValue(aiResponse);
+    (env.AI_SERVICE.run as Mock).mockResolvedValue(aiResponse);
 
     handleScheduled(
       {
@@ -134,7 +134,7 @@ describe("handleScheduled - BOD Supplier", () => {
     const work = ctx.waitUntil.mock.results[0].value as Promise<void>;
     await work;
 
-    const aiRunSpy = env.AI.run as Mock;
+    const aiRunSpy = env.AI_SERVICE.run as Mock;
     expect(aiRunSpy).toHaveBeenCalled();
 
     const webpush = await import("web-push");

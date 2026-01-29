@@ -24,6 +24,7 @@ import SidebarHeader from "./SidebarHeader/SidebarHeader";
 import UserProfile from "./UserProfile/UserProfile";
 import NavigationList from "./NavigationList/NavigationList";
 import MobileAppBar from "./MobileAppBar/MobileAppBar";
+import AssistantFAB from "../assistant/AssistantFAB";
 
 const Layout: React.FC = () => {
   const location = useLocation();
@@ -205,6 +206,7 @@ const Layout: React.FC = () => {
       >
         <Outlet />
       </Box>
+      <AssistantFAB />
     </Box>
   );
 };

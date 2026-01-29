@@ -67,7 +67,7 @@ describe("handleScheduled - Mixed Suppliers", () => {
     ]);
 
     // Mock AI to say YES for BOD
-    (env.AI.run as Mock).mockResolvedValue({
+    (env.AI_SERVICE.run as Mock).mockResolvedValue({
       response: JSON.stringify({ should_order: true, reason: "BOD Yes" }),
     });
 
