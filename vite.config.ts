@@ -31,6 +31,10 @@ export default defineConfig({
       org: "coderage",
       project: "seg-inv-frontend",
     }),
+    sentryVitePlugin({
+      org: "coderage",
+      project: "seg-inv-backend",
+    }),
   ],
   build: {
     rollupOptions: {
