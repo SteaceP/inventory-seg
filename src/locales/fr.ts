@@ -77,6 +77,8 @@ const fr = {
   "errors.updateCategory": "Échec de la mise à jour du seuil de la catégorie.",
   "errors.deleteCategory": "Échec de la suppression de la catégorie.",
   "errors.login": "Courriel ou mot de passe invalide.",
+  "errors.captcha_verification_failed":
+    "La vérification CAPTCHA a échoué. Veuillez vous assurer que votre clé de site et votre clé secrète sont correctement configurées dans les tableaux de bord Cloudflare et Supabase.",
 
   // Login
   "login.title": "Connexion",

@@ -63,7 +63,8 @@ const Signup: React.FC = () => {
             email,
             password,
             options: {
-              captchaToken: captchaToken ?? undefined,
+              // In development, sending undefined allows requests to proceed if the server permits
+              captchaToken: captchaToken || undefined,
               data: {
                 display_name: displayName,
                 lang: localStorage.getItem("language") || "en",
@@ -83,10 +84,11 @@ const Signup: React.FC = () => {
           setSuccess(true);
         }
       );
-    } catch (err) {
+    } catch (err: unknown) {
       handleError(err, t("errors.signup") || "Sign up failed", {
         email,
         hasCaptcha: !!captchaToken,
+        isDev: import.meta.env.DEV,
       });
       turnstileRef.current?.reset();
       setCaptchaToken(null);

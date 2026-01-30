@@ -59,7 +59,8 @@ const Login: React.FC = () => {
               email,
               password,
               options: {
-                captchaToken: captchaToken ?? undefined,
+                // In development, sending undefined allows requests to proceed if the server permits
+                captchaToken: captchaToken || undefined,
               },
             }
           );
@@ -77,10 +78,11 @@ const Login: React.FC = () => {
           void navigate(from, { replace: true });
         }
       );
-    } catch (err) {
+    } catch (err: unknown) {
       handleError(err, t("errors.login") || "Login failed", {
         email,
         hasCaptcha: !!captchaToken,
+        isDev: import.meta.env.DEV,
       });
       turnstileRef.current?.reset();
       setCaptchaToken(null);

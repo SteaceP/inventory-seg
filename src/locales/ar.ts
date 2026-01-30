@@ -73,6 +73,8 @@ const ar = {
   "errors.updateCategory": "فشل في تحديث حد الفئة.",
   "errors.deleteCategory": "فشل في حذف الفئة.",
   "errors.login": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+  "errors.captcha_verification_failed":
+    "فشل التحقق من كابتشا. يرجى التأكد من تكوين مفتاح الموقع والمفتاح السري بشكل صحيح في كل من لوحتي معلومات Cloudflare و Supabase.",
 
   // Login
   "login.title": "تسجيل الدخول",

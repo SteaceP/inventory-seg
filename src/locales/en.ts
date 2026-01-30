@@ -72,6 +72,8 @@ const en = {
   "errors.updateCategory": "Failed to update category threshold.",
   "errors.deleteCategory": "Failed to delete category.",
   "errors.login": "Invalid email or password.",
+  "errors.captcha_verification_failed":
+    "CAPTCHA verification failed. Please ensure your Site Key and Secret Key are correctly configured in both Cloudflare and Supabase dashboards.",
 
   // Login
   "login.title": "Sign in",

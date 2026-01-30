@@ -14,6 +14,13 @@ vi.mock("../../utils/errorReporting", () => ({
   reportError: vi.fn(),
 }));
 
+vi.mock("@/i18n", () => ({
+  useTranslation: vi.fn(() => ({
+    t: vi.fn((key: string) => key),
+    lang: "en",
+  })),
+}));
+
 describe("useErrorHandler", () => {
   const mockAlert = createMockAlertContext();
 
@@ -58,5 +65,16 @@ describe("useErrorHandler", () => {
     result.current.handleError(error);
 
     expect(mockAlert.showError).not.toHaveBeenCalled();
+  });
+
+  it("automatically detects and localizes captcha verification failure", () => {
+    const { result } = renderHook(() => useErrorHandler());
+    const error = new Error("captcha verification process failed");
+
+    result.current.handleError(error);
+
+    expect(mockAlert.showError).toHaveBeenCalledWith(
+      "errors.captcha_verification_failed"
+    );
   });
 });
