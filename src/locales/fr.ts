@@ -78,7 +78,7 @@ const fr = {
   "errors.deleteCategory": "Échec de la suppression de la catégorie.",
   "errors.login": "Courriel ou mot de passe invalide.",
   "errors.captcha_verification_failed":
-    "La vérification CAPTCHA a échoué. Veuillez vous assurer que votre clé de site et votre clé secrète sont correctement configurées dans les tableaux de bord Cloudflare et Supabase.",
+    "La vérification CAPTCHA a échoué. Veuillez rafraîchir la page et réessayer.",
   "errors.unexpected":
     "Une erreur inattendue est survenue. Veuillez réessayer.",
   "errors.network": "Erreur réseau. Veuillez vérifier votre connexion.",

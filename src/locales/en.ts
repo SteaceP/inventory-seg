@@ -73,7 +73,7 @@ const en = {
   "errors.deleteCategory": "Failed to delete category.",
   "errors.login": "Invalid email or password.",
   "errors.captcha_verification_failed":
-    "CAPTCHA verification failed. Please ensure your Site Key and Secret Key are correctly configured in both Cloudflare and Supabase dashboards.",
+    "CAPTCHA verification failed. Please refresh the page and try again.",
   "errors.unexpected": "An unexpected error occurred. Please try again.",
   "errors.network": "Network error. Please check your connection.",
   "errors.unauthorized": "You do not have permission to perform this action.",

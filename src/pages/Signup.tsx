@@ -36,12 +36,14 @@ const Signup: React.FC = () => {
   const { language, setLanguage } = useUserContext();
   const { handleError } = useErrorHandler();
   const { measureOperation } = usePerformance();
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | undefined>(
+    undefined
+  );
   const turnstileRef = React.useRef<TurnstileInstance>(null);
 
   const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY as string;
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
@@ -64,7 +66,7 @@ const Signup: React.FC = () => {
             password,
             options: {
               // In development, sending undefined allows requests to proceed if the server permits
-              captchaToken: captchaToken || undefined,
+              captchaToken,
               data: {
                 display_name: displayName,
                 lang: localStorage.getItem("language") || "en",
@@ -91,7 +93,7 @@ const Signup: React.FC = () => {
         isDev: import.meta.env.DEV,
       });
       turnstileRef.current?.reset();
-      setCaptchaToken(null);
+      setCaptchaToken(undefined);
     } finally {
       setLoading(false);
     }
@@ -268,13 +270,13 @@ const Signup: React.FC = () => {
                   siteKey={siteKey}
                   onSuccess={(token) => setCaptchaToken(token)}
                   onError={() => {
-                    setCaptchaToken(null);
+                    setCaptchaToken(undefined);
                     handleError(
                       new Error("CAPTCHA Error"),
                       t("common.captchaError") || "CAPTCHA failed"
                     );
                   }}
-                  onExpire={() => setCaptchaToken(null)}
+                  onExpire={() => setCaptchaToken(undefined)}
                 />
               </Box>
 
@@ -282,7 +284,7 @@ const Signup: React.FC = () => {
                 type="submit"
                 fullWidth
                 variant="contained"
-                disabled={loading}
+                disabled={loading || (!captchaToken && !import.meta.env.DEV)}
                 sx={{
                   py: 1.5,
                   fontSize: "1rem",

@@ -40,12 +40,14 @@ const Login: React.FC = () => {
   const { language, setLanguage } = useUserContext();
   const { handleError } = useErrorHandler();
   const { measureOperation } = usePerformance();
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | undefined>(
+    undefined
+  );
   const turnstileRef = React.useRef<TurnstileInstance>(null);
 
   const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY as string;
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
@@ -60,7 +62,7 @@ const Login: React.FC = () => {
               password,
               options: {
                 // In development, sending undefined allows requests to proceed if the server permits
-                captchaToken: captchaToken || undefined,
+                captchaToken,
               },
             }
           );
@@ -85,7 +87,7 @@ const Login: React.FC = () => {
         isDev: import.meta.env.DEV,
       });
       turnstileRef.current?.reset();
-      setCaptchaToken(null);
+      setCaptchaToken(undefined);
     } finally {
       setLoading(false);
     }
@@ -199,13 +201,13 @@ const Login: React.FC = () => {
                   siteKey={siteKey}
                   onSuccess={(token) => setCaptchaToken(token)}
                   onError={() => {
-                    setCaptchaToken(null);
+                    setCaptchaToken(undefined);
                     handleError(
                       new Error("CAPTCHA Error"),
                       t("common.captchaError") || "CAPTCHA failed"
                     );
                   }}
-                  onExpire={() => setCaptchaToken(null)}
+                  onExpire={() => setCaptchaToken(undefined)}
                 />
               </Box>
 
@@ -213,7 +215,7 @@ const Login: React.FC = () => {
                 type="submit"
                 fullWidth
                 variant="contained"
-                disabled={loading}
+                disabled={loading || (!captchaToken && !import.meta.env.DEV)}
                 sx={{
                   py: 1.5,
                   fontSize: "1rem",
