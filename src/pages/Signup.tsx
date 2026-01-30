@@ -24,6 +24,18 @@ import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { usePerformance } from "@hooks/usePerformance";
 
+// Cloudflare Turnstile Site Key
+// In development, we use the "Always Pass" test key if the environment variable is missing
+const TURNSTILE_SITE_KEY =
+  (import.meta.env.VITE_TURNSTILE_SITE_KEY as string) ||
+  "1x00000000000000000000AA";
+
+if (!TURNSTILE_SITE_KEY) {
+  console.warn(
+    "[Turnstile] Warning: VITE_TURNSTILE_SITE_KEY is not defined. Falling back to test key."
+  );
+}
+
 const Signup: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,9 +52,6 @@ const Signup: React.FC = () => {
     undefined
   );
   const turnstileRef = React.useRef<TurnstileInstance>(null);
-
-  const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY as string;
-
   const handleSignup = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -266,8 +275,9 @@ const Signup: React.FC = () => {
 
               <Box sx={{ mb: 3, display: "flex", justifyContent: "center" }}>
                 <Turnstile
+                  key={TURNSTILE_SITE_KEY}
                   ref={turnstileRef}
-                  siteKey={siteKey}
+                  siteKey={TURNSTILE_SITE_KEY}
                   onSuccess={(token) => setCaptchaToken(token)}
                   onError={() => {
                     setCaptchaToken(undefined);
