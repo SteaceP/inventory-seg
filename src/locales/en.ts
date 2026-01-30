@@ -71,6 +71,7 @@ const en = {
   "errors.addCategory": "Failed to add category.",
   "errors.updateCategory": "Failed to update category threshold.",
   "errors.deleteCategory": "Failed to delete category.",
+  "errors.login": "Invalid email or password.",
 
   // Login
   "login.title": "Sign in",

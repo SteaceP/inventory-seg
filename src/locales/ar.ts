@@ -72,6 +72,7 @@ const ar = {
   "errors.addCategory": "فشل في إضافة الفئة.",
   "errors.updateCategory": "فشل في تحديث حد الفئة.",
   "errors.deleteCategory": "فشل في حذف الفئة.",
+  "errors.login": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
 
   // Login
   "login.title": "تسجيل الدخول",

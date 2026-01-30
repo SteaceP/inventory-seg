@@ -76,6 +76,7 @@ const fr = {
   "errors.addCategory": "Échec de l'ajout de la catégorie.",
   "errors.updateCategory": "Échec de la mise à jour du seuil de la catégorie.",
   "errors.deleteCategory": "Échec de la suppression de la catégorie.",
+  "errors.login": "Courriel ou mot de passe invalide.",
 
   // Login
   "login.title": "Connexion",
