@@ -22,7 +22,7 @@ const StockLocationsPage: React.FC = () => {
   const { t } = useTranslation();
   const { locations, refreshInventory: refreshLocations } =
     useInventoryContext();
-  const { showError, showSuccess } = useAlert();
+  const { showSuccess } = useAlert();
   const { handleError } = useErrorHandler();
   const [loading, setLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -89,13 +89,7 @@ const StockLocationsPage: React.FC = () => {
           : t("inventory.locations.success.add")
       );
     } catch (err) {
-      const error = err as { code?: string };
-      if (error.code === "23505") {
-        showError(t("inventory.locations.error.duplicate"));
-        handleError(err);
-      } else {
-        handleError(err, t("inventory.locations.error.save"));
-      }
+      handleError(err, t("inventory.locations.error.save"));
     } finally {
       setLoading(false);
     }

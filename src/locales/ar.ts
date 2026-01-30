@@ -75,6 +75,9 @@ const ar = {
   "errors.login": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
   "errors.captcha_verification_failed":
     "فشل التحقق من كابتشا. يرجى التأكد من تكوين مفتاح الموقع والمفتاح السري بشكل صحيح في كل من لوحتي معلومات Cloudflare و Supabase.",
+  "errors.unexpected": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
+  "errors.network": "خطأ في الشبكة. يرجى التحقق من اتصالك.",
+  "errors.unauthorized": "ليس لديك الإذن للقيام بهذا الإجراء.",
 
   // Login
   "login.title": "تسجيل الدخول",

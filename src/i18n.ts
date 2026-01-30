@@ -1,5 +1,5 @@
-import { useUserContext } from "./contexts/UserContext";
-import { useCallback } from "react";
+import { UserContext } from "./contexts/UserContext";
+import { useCallback, use } from "react";
 
 import ar from "./locales/ar";
 import fr from "./locales/fr";
@@ -14,7 +14,8 @@ const translations: Record<Lang, Record<string, string>> = {
 };
 
 export function useTranslation() {
-  const { language } = useUserContext();
+  const context = use(UserContext);
+  const language = context?.language || "fr";
   const t = useCallback(
     (
       key: string,

@@ -4,6 +4,7 @@ import { useErrorHandler } from "../useErrorHandler";
 import { useAlert } from "@contexts/AlertContext";
 import { reportError } from "@utils/errorReporting";
 import { createMockAlertContext } from "@test/mocks";
+import * as Sentry from "@sentry/react";
 
 // Mock dependencies
 vi.mock("../../contexts/AlertContext", () => ({
@@ -19,6 +20,11 @@ vi.mock("@/i18n", () => ({
     t: vi.fn((key: string) => key),
     lang: "en",
   })),
+}));
+
+vi.mock("@sentry/react", () => ({
+  addBreadcrumb: vi.fn(),
+  captureException: vi.fn(),
 }));
 
 describe("useErrorHandler", () => {
@@ -58,13 +64,13 @@ describe("useErrorHandler", () => {
     expect(mockAlert.showError).toHaveBeenCalledWith(message);
   });
 
-  it("does not show user alert when message is undefined", () => {
+  it("shows fallback error alert when message is undefined", () => {
     const { result } = renderHook(() => useErrorHandler());
     const error = new Error("Test error");
 
     result.current.handleError(error);
 
-    expect(mockAlert.showError).not.toHaveBeenCalled();
+    expect(mockAlert.showError).toHaveBeenCalledWith("errors.unexpected");
   });
 
   it("automatically detects and localizes captcha verification failure", () => {
@@ -76,5 +82,56 @@ describe("useErrorHandler", () => {
     expect(mockAlert.showError).toHaveBeenCalledWith(
       "errors.captcha_verification_failed"
     );
+  });
+
+  it("adds Sentry breadcrumbs before reporting", () => {
+    const { result } = renderHook(() => useErrorHandler());
+    const error = new Error("Test error");
+    const userMessage = "Custom UI message";
+
+    result.current.handleError(error, userMessage);
+
+    expect(Sentry.addBreadcrumb).toHaveBeenCalledWith(
+      expect.objectContaining({
+        category: "error.handler",
+        message: userMessage,
+      })
+    );
+  });
+
+  it("detects network errors", () => {
+    const { result } = renderHook(() => useErrorHandler());
+    const error = new Error("Failed to fetch");
+
+    result.current.handleError(error);
+
+    expect(mockAlert.showError).toHaveBeenCalledWith("errors.network");
+  });
+
+  it("detects Supabase unique constraint errors", () => {
+    const { result } = renderHook(() => useErrorHandler());
+    const error = { code: "23505", message: "duplicate key" };
+
+    result.current.handleError(error);
+
+    expect(mockAlert.showError).toHaveBeenCalledWith("errors.duplicateSku");
+  });
+
+  it("detects Supabase RLS errors", () => {
+    const { result } = renderHook(() => useErrorHandler());
+    const error = { code: "42501", message: "permission denied" };
+
+    result.current.handleError(error);
+
+    expect(mockAlert.showError).toHaveBeenCalledWith("errors.unauthorized");
+  });
+
+  it("falls back to generic error message", () => {
+    const { result } = renderHook(() => useErrorHandler());
+    const error = new Error("Some random error");
+
+    result.current.handleError(error);
+
+    expect(mockAlert.showError).toHaveBeenCalledWith("errors.unexpected");
   });
 });
