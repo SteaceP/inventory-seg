@@ -113,11 +113,12 @@ const Signup: React.FC = () => {
       <Container maxWidth="xs">
         <Box
           sx={{
-            minHeight: "100vh",
+            height: "100dvh",
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
+            overflow: "hidden",
           }}
         >
           <Paper
@@ -163,11 +164,12 @@ const Signup: React.FC = () => {
     <Container maxWidth="xs">
       <Box
         sx={{
-          minHeight: "100vh",
+          height: "100dvh",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
+          overflow: "hidden",
         }}
       >
         <motion.div
