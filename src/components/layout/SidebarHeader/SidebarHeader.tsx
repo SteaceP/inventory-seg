@@ -30,7 +30,7 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({
       sx={{
         display: "flex",
         alignItems: "center",
-        justify: collapsed && !isMobile ? "center" : "space-between",
+        justifyContent: collapsed && !isMobile ? "center" : "space-between",
         px: collapsed && !isMobile ? 0 : 2,
         minHeight: compactView ? "48px !important" : "64px !important",
       }}

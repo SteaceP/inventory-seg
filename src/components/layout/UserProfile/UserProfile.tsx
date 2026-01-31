@@ -28,9 +28,10 @@ const UserProfile: React.FC<UserProfileProps> = ({
   return (
     <Box
       sx={{
-        px: 2,
+        px: collapsed && !isMobile ? 0 : 2,
         py: compactView ? 1.5 : 2,
         display: "flex",
+        justifyContent: collapsed && !isMobile ? "center" : "flex-start",
         alignItems: "center",
         gap: 2,
         overflow: "hidden",
