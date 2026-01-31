@@ -83,4 +83,30 @@ describe("AppearanceSection", () => {
     expect(defaultProps.onCompactViewChange).toHaveBeenCalledWith(true);
     expect(mockToggleCompactView).toHaveBeenCalledWith(true);
   });
+
+  it("should update localStorage and dispatch event when assistant toggle is clicked", () => {
+    const dispatchEventSpy = vi.spyOn(window, "dispatchEvent");
+    const setItemSpy = vi.spyOn(Storage.prototype, "setItem");
+
+    render(<AppearanceSection {...defaultProps} />);
+
+    // The name of the switch includes " (Show Button)" concatenated
+    const assistantSwitch = screen.getByRole("switch", {
+      name: /menu.assistant/i,
+    });
+
+    fireEvent.click(assistantSwitch);
+
+    // It starts initialized from localStorage (default true if not "false")
+    // Use click to toggle state. If it was true, it becomes false.
+    // However, verification depends on initial state.
+    // Let's assume default is "true" (since "assistant-fab-visible" !== "false")
+    // Clicking should make it false.
+
+    expect(setItemSpy).toHaveBeenCalled();
+    expect(dispatchEventSpy).toHaveBeenCalledWith(expect.any(Event));
+    expect(dispatchEventSpy.mock.calls[0][0].type).toBe(
+      "assistant-visibility-change"
+    );
+  });
 });

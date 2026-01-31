@@ -25,6 +25,9 @@ export {
 // Re-export all of supabase
 export * from "./supabase";
 
+// Re-export all of framer-motion
+export * from "./framer-motion";
+
 // Re-export all of storage
 export * from "./storage";
 

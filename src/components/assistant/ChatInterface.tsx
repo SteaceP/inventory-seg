@@ -11,6 +11,7 @@ import {
 import {
   SmartToy as RobotIcon,
   DeleteOutline as DeleteIcon,
+  Close as CloseIcon,
 } from "@mui/icons-material";
 import { AnimatePresence } from "framer-motion";
 import { useUserContext } from "@contexts/UserContext";
@@ -29,7 +30,11 @@ interface Message {
   content: string;
 }
 
-const ChatInterface: React.FC = () => {
+interface ChatInterfaceProps {
+  onClose?: () => void;
+}
+
+const ChatInterface: React.FC<ChatInterfaceProps> = ({ onClose }) => {
   const [messages, setMessages] = useState<Message[]>(() => {
     try {
       const saved = localStorage.getItem("emmanuel-chat-history");
@@ -137,51 +142,91 @@ const ChatInterface: React.FC = () => {
         display: "flex",
         flexDirection: "column",
         bgcolor: "background.default",
+        overflow: "hidden",
       }}
     >
       <Box
         sx={{
           p: 2,
-          pr: 10, // Make room for both buttons
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
           borderBottom: "1px solid",
           borderColor: "divider",
+          gap: 1,
         }}
       >
-        <Typography variant="h6" fontWeight="bold" color="primary">
-          {t("assistant.title")}
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          {t("assistant.description")}
-        </Typography>
-      </Box>
+        <Box sx={{ minWidth: 0, flex: 1 }}>
+          <Typography
+            variant="h6"
+            fontWeight="bold"
+            color="primary"
+            noWrap
+            sx={{ fontSize: { xs: "1.1rem", sm: "1.25rem" } }}
+          >
+            {t("assistant.title")}
+          </Typography>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            noWrap
+            display="block"
+          >
+            {t("assistant.description")}
+          </Typography>
+        </Box>
 
-      {/* Clear Chat Button - Positioned next to Close Button */}
-      <Tooltip title={t("common.clear") || "Clear Chat"}>
-        <IconButton
-          onClick={handleClearChat}
-          size="medium" // Match default IconButton size
-          sx={{
-            position: "absolute",
-            top: 12,
-            right: 56, // 12px (close button right) + 40px (button width) + 4px (gap)
-            zIndex: 1,
-            color: "text.secondary",
-            bgcolor: (theme) =>
-              theme.palette.mode === "dark"
-                ? "rgba(255,255,255,0.05)"
-                : "rgba(0,0,0,0.05)",
-            "&:hover": {
-              bgcolor: (theme) =>
-                theme.palette.mode === "dark"
-                  ? "rgba(255,255,255,0.1)"
-                  : "rgba(0,0,0,0.1)",
-              color: "error.main",
-            },
-          }}
-        >
-          <DeleteIcon fontSize="small" />
-        </IconButton>
-      </Tooltip>
+        <Box sx={{ display: "flex", gap: 0.5, flexShrink: 0 }}>
+          {/* Clear Chat Button */}
+          <Tooltip title={t("common.clear") || "Clear Chat"}>
+            <IconButton
+              onClick={handleClearChat}
+              size="small"
+              sx={{
+                color: "text.secondary",
+                bgcolor: (theme) =>
+                  theme.palette.mode === "dark"
+                    ? "rgba(255,255,255,0.05)"
+                    : "rgba(0,0,0,0.05)",
+                "&:hover": {
+                  bgcolor: (theme) =>
+                    theme.palette.mode === "dark"
+                      ? "rgba(255,255,255,0.1)"
+                      : "rgba(0,0,0,0.1)",
+                  color: "error.main",
+                },
+              }}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+
+          {/* Close Button */}
+          {onClose && (
+            <Tooltip title={t("common.close") || "Close"}>
+              <IconButton
+                onClick={onClose}
+                size="small"
+                sx={{
+                  color: "text.secondary",
+                  bgcolor: (theme) =>
+                    theme.palette.mode === "dark"
+                      ? "rgba(255,255,255,0.05)"
+                      : "rgba(0,0,0,0.05)",
+                  "&:hover": {
+                    bgcolor: (theme) =>
+                      theme.palette.mode === "dark"
+                        ? "rgba(255,255,255,0.1)"
+                        : "rgba(0,0,0,0.1)",
+                  },
+                }}
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
+        </Box>
+      </Box>
 
       <Box
         ref={scrollRef}

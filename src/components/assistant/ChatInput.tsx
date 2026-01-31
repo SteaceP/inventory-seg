@@ -156,7 +156,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
   return (
     <Box
       sx={{
-        p: 2,
+        p: { xs: 1.5, sm: 2 },
+        pb: { xs: 4, sm: 2 }, // Extra padding for mobile home bar
         bgcolor: "background.paper",
         borderTop: "1px solid",
         borderColor: "divider",

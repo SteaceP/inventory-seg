@@ -25,6 +25,15 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
 }) => {
   const { toggleDarkMode, toggleCompactView } = useUserContext();
   const { t } = useTranslation();
+  const [assistantEnabled, setAssistantEnabled] = React.useState(() => {
+    return localStorage.getItem("assistant-fab-visible") !== "false";
+  });
+
+  const handleAssistantToggle = (enabled: boolean) => {
+    setAssistantEnabled(enabled);
+    localStorage.setItem("assistant-fab-visible", enabled ? "true" : "false");
+    window.dispatchEvent(new Event("assistant-visibility-change"));
+  };
 
   const handleThemeToggle = (enabled: boolean) => {
     onDarkModeChange(enabled);
@@ -79,6 +88,17 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
             />
           }
           label={t("appearance.compactView")}
+        />
+        <FormControlLabel
+          control={
+            <Switch
+              id="assistant-toggle"
+              checked={assistantEnabled}
+              onChange={(e) => handleAssistantToggle(e.target.checked)}
+              color="primary"
+            />
+          }
+          label={t("menu.assistant") + " (Show Button)"}
         />
       </Box>
     </Paper>
