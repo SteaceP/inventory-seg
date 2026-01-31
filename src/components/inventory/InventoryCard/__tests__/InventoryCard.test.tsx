@@ -3,19 +3,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import InventoryCard from "../InventoryCard";
 import type { InventoryItem } from "@/types/inventory";
 
-// Mock framer-motion to avoid animation issues in tests
-vi.mock("framer-motion", () => ({
-  motion: {
-    div: ({
-      children,
-      ...props
-    }: {
-      children: React.ReactNode;
-      [key: string]: unknown;
-    }) => <div {...props}>{children}</div>,
-  },
-}));
-
 // Mock hooks
 const mockT = vi.fn((key: string, options?: Record<string, unknown>) => {
   if (key === "inventory.minThreshold" && options)

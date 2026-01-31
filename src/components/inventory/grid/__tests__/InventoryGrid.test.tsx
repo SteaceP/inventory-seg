@@ -6,9 +6,6 @@ import { ThemeProvider, createTheme } from "@mui/material";
 import { createMockUserContext, createMockInventoryItem } from "@test/mocks";
 
 // Mock framer-motion
-vi.mock("framer-motion", () => ({
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => children,
-}));
 
 // Mock InventoryCard to simplify testing
 vi.mock("../../InventoryCard/InventoryCard", () => ({

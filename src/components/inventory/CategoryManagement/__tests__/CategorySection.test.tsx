@@ -18,16 +18,6 @@ vi.mock("@i18n", () => ({
 }));
 
 // Mock framer-motion
-vi.mock("framer-motion", () => ({
-  motion: {
-    div: ({ children, ...props }: { children: React.ReactNode }) => (
-      <div {...props}>{children}</div>
-    ),
-  },
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  ),
-}));
 
 // Helper function using factory
 const createItem = (id: string, name: string): InventoryItem =>

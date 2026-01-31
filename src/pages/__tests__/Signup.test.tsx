@@ -57,15 +57,6 @@ vi.mock("react-router-dom", async (importOriginal) => {
   };
 });
 
-// Mock framer-motion to avoid animation issues in tests
-vi.mock("framer-motion", () => ({
-  motion: {
-    div: ({ children, ...props }: React.ComponentProps<"div">) => (
-      <div {...props}>{children}</div>
-    ),
-  },
-}));
-
 // Mock Turnstile
 vi.mock("@marsidev/react-turnstile", () => ({
   Turnstile: ({
