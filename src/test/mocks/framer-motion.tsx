@@ -49,6 +49,9 @@ export const setupFramerMotionMock = (): void => {
           <Component
             data-testid={`motion-mock-${tag}`}
             data-drag={drag ? "true" : undefined}
+            data-drag-constraints={
+              _dragConstraints ? JSON.stringify(_dragConstraints) : undefined
+            }
             {...props}
           >
             {children}

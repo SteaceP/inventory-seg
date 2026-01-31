@@ -101,4 +101,41 @@ describe("AssistantFAB", () => {
     const wrapper = screen.getByTestId("motion-mock-div");
     expect(wrapper).toHaveAttribute("data-drag", "true");
   });
+
+  it("should update drag constraints on window resize", () => {
+    render(<AssistantFAB />);
+    const wrapper = screen.getByTestId("motion-mock-div");
+
+    // Helper to resize window
+    const resizeWindow = (width: number, height: number) => {
+      window.innerWidth = width;
+      window.innerHeight = height;
+      act(() => {
+        window.dispatchEvent(new Event("resize"));
+      });
+    };
+
+    // Test Mobile (<600)
+    resizeWindow(375, 667);
+    expect(wrapper).toHaveAttribute(
+      "data-drag-constraints",
+      JSON.stringify({ left: -300, right: 0, top: -600, bottom: 0 })
+    );
+
+    // Test Tablet (600-1200)
+    resizeWindow(768, 1024);
+    // 768 * 0.75 = 576, 1024 * 0.75 = 768
+    expect(wrapper).toHaveAttribute(
+      "data-drag-constraints",
+      JSON.stringify({ left: -576, right: 0, top: -768, bottom: 0 })
+    );
+
+    // Test Desktop (>1200)
+    resizeWindow(1440, 900);
+    // 1440 - 150 = 1290, 900 - 150 = 750
+    expect(wrapper).toHaveAttribute(
+      "data-drag-constraints",
+      JSON.stringify({ left: -1290, right: 0, top: -750, bottom: 0 })
+    );
+  });
 });
