@@ -197,10 +197,12 @@ describe("Signup Page", () => {
   });
 
   it("handles signup error", async () => {
-    const error = { message: "User already registered" };
+    const error = { message: "User already registered", status: 422 };
     mockSignUp.mockResolvedValueOnce({
       error,
     });
+
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     render(<Signup />);
 
@@ -225,6 +227,17 @@ describe("Signup Page", () => {
         expect.any(Object)
       );
     });
+
+    expect(consoleSpy).toHaveBeenCalledWith(
+      "[Signup] Auth error details:",
+      expect.objectContaining({
+        message: "User already registered",
+        status: 422,
+        email: "test@s-e-g.ca",
+      })
+    );
+
+    consoleSpy.mockRestore();
   });
 
   it("toggles password visibility", () => {

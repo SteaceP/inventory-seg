@@ -182,10 +182,12 @@ describe("Login Page", () => {
   });
 
   it("handles failed login", async () => {
-    const error = { message: "Invalid credentials" };
+    const error = { message: "Invalid credentials", status: 400 };
     mockSignInWithPassword.mockResolvedValueOnce({
       error,
     });
+
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     render(<Login />);
 
@@ -205,6 +207,17 @@ describe("Login Page", () => {
         expect.any(Object)
       );
     });
+
+    expect(consoleSpy).toHaveBeenCalledWith(
+      "[Login] Auth error details:",
+      expect.objectContaining({
+        message: "Invalid credentials",
+        status: 400,
+        email: "test@example.com",
+      })
+    );
+
+    consoleSpy.mockRestore();
   });
 
   it("toggles password visibility", () => {
