@@ -45,7 +45,7 @@ export default defineConfig({
           "mui-icons": ["@mui/icons-material"],
           "supabase-vendor": ["@supabase/supabase-js"],
           "sentry-vendor": ["@sentry/react"],
-          "scanner-vendor": ["html5-qrcode"],
+          "scanner-vendor": ["@zxing/library"],
           "framer-vendor": ["framer-motion"],
         },
       },

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Dialog, Box, IconButton, Typography, Button } from "@mui/material";
 import { Close as CloseIcon } from "@mui/icons-material";
-import { Html5Qrcode } from "html5-qrcode";
+import { BrowserMultiFormatReader, NotFoundException } from "@zxing/library";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/i18n";
 
@@ -19,7 +19,8 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
   onError,
 }) => {
   const { t } = useTranslation();
-  const scannerRef = useRef<Html5Qrcode | null>(null);
+  const codeReaderRef = useRef<BrowserMultiFormatReader | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const onScanSuccessRef = useRef(onScanSuccess);
 
   useEffect(() => {
@@ -28,56 +29,48 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
 
   useEffect(() => {
     if (!open) {
-      if (scannerRef.current) {
-        const scanner = scannerRef.current;
-        scannerRef.current = null;
-        if (scanner.isScanning) {
-          scanner.stop().catch(() => {});
-        }
+      if (codeReaderRef.current) {
+        codeReaderRef.current.reset();
+        codeReaderRef.current = null;
       }
       return;
     }
 
-    if (scannerRef.current) return;
+    if (codeReaderRef.current) return;
 
     const initScanner = async () => {
       try {
-        const html5QrCode = new Html5Qrcode("reader");
-        scannerRef.current = html5QrCode;
+        const codeReader = new BrowserMultiFormatReader();
+        codeReaderRef.current = codeReader;
 
-        const config = {
-          fps: 20,
-          qrbox: (viewfinderWidth: number) => {
-            // Optimize for barcodes: wider than it is tall
-            const width = Math.floor(viewfinderWidth * 0.85);
-            const height = Math.floor(viewfinderWidth * 0.45);
-            return { width, height };
-          },
-          aspectRatio: 1.777778, // 16:9 aspect ratio
-          disableFlip: true,
-          experimentalFeatures: {
-            useBarCodeDetectorIfSupported: true,
-          },
-        };
+        const videoInputDevices = await codeReader.listVideoInputDevices();
+        if (videoInputDevices.length === 0) {
+          throw new Error("No camera found");
+        }
 
-        await html5QrCode.start(
-          { facingMode: "environment" },
-          config,
-          (decodedText) => {
-            html5QrCode
-              .stop()
-              .then(() => {
-                scannerRef.current = null;
-                onScanSuccessRef.current(decodedText);
-              })
-              .catch(() => {
-                scannerRef.current = null;
-                onScanSuccessRef.current(decodedText);
-              });
-          },
-          () => {}
+        // Prefer environment (back) camera
+        const selectedDevice =
+          videoInputDevices.find((device) =>
+            device.label.toLowerCase().includes("back")
+          ) || videoInputDevices[0];
+
+        await codeReader.decodeFromVideoDevice(
+          selectedDevice.deviceId,
+          videoRef.current,
+          (result, err) => {
+            if (result) {
+              codeReader.reset();
+              codeReaderRef.current = null;
+              onScanSuccessRef.current(result.getText());
+            }
+            if (err && !(err instanceof NotFoundException)) {
+              // Only report serious errors, not "not found" which triggers every frame
+              console.error(err);
+            }
+          }
         );
-      } catch {
+      } catch (err) {
+        console.error("Scanner Error:", err);
         onError(t("inventory.scanner.cameraError"));
         onClose();
       }
@@ -87,7 +80,13 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
       void initScanner();
     }, 300);
 
-    return () => clearTimeout(timeoutId);
+    return () => {
+      clearTimeout(timeoutId);
+      if (codeReaderRef.current) {
+        codeReaderRef.current.reset();
+        codeReaderRef.current = null;
+      }
+    };
   }, [open, onClose, onError, t]);
 
   return (
@@ -150,7 +149,15 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
             borderColor: "divider",
           }}
         >
-          <Box id="reader" sx={{ width: "100%", height: "100%" }} />
+          <Box
+            component="video"
+            ref={videoRef}
+            sx={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
+          />
 
           {/* Custom Scanner Overlay */}
           <Box
