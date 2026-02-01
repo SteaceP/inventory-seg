@@ -23,8 +23,11 @@ import { useErrorHandler } from "@hooks/useErrorHandler";
 import { supabase } from "@/supabaseClient";
 import InventoryScanner from "@components/inventory/InventoryScanner/InventoryScanner";
 import ApplianceDialog from "@components/appliances/ApplianceDialog/ApplianceDialog";
+import InventoryDialog from "@components/inventory/InventoryDialog/InventoryDialog";
 import { useNavigate } from "react-router-dom";
 import type { Appliance } from "@/types/appliances";
+import { useInventoryForm } from "@hooks/inventory/useInventoryForm";
+import { useInventoryActions } from "@hooks/inventory/useInventoryActions";
 
 interface StatCardProps {
   title: string;
@@ -162,7 +165,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => {
 
 const Dashboard: React.FC = () => {
   const { handleError } = useErrorHandler();
-  const { lowStockThreshold } = useUserContext();
+  const { role, lowStockThreshold } = useUserContext();
   const [dailyStats, setDailyStats] = useState({ in: 0, out: 0 });
   const { t } = useTranslation();
   const { items, categories: contextCategories } = useInventoryContext();
@@ -172,6 +175,29 @@ const Dashboard: React.FC = () => {
   const [scanOpen, setScanOpen] = useState(false);
   const [addApplianceOpen, setAddApplianceOpen] = useState(false);
   const [isSavingAppliance, setIsSavingAppliance] = useState(false);
+
+  // Inventory logic
+  const {
+    open: inventoryOpen,
+    setOpen: setInventoryOpen,
+    formData: inventoryFormData,
+    setFormData: setInventoryFormData,
+    handleOpen: handleOpenInventory,
+    handleClose: handleCloseInventory,
+    generateSKU,
+  } = useInventoryForm();
+
+  const {
+    handleSave,
+    actionLoading: inventorySaving,
+    handleImageUpload,
+  } = useInventoryActions({
+    formData: inventoryFormData,
+    setFormData: setInventoryFormData,
+    editingItem: null,
+    setOpen: setInventoryOpen,
+    setEditingId: () => {},
+  });
 
   const stats = useMemo(() => {
     const totalItems = items.length;
@@ -264,6 +290,14 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const getBarcodeFormat = (sku: string) => {
+    const cleanSku = sku.trim();
+    if (/^\d{12}$/.test(cleanSku)) return "UPC" as const;
+    if (/^\d{13}$/.test(cleanSku)) return "EAN13" as const;
+    if (/^\d{8}$/.test(cleanSku)) return "EAN8" as const;
+    return "CODE128" as const;
+  };
+
   return (
     <Box sx={{ p: { xs: 2, sm: 3 }, maxWidth: "1600px", mx: "auto" }}>
       <Box sx={{ mb: { xs: 2, sm: 4 } }}>
@@ -281,6 +315,7 @@ const Dashboard: React.FC = () => {
           <QuickActions
             onScanClick={() => setScanOpen(true)}
             onAddApplianceClick={() => setAddApplianceOpen(true)}
+            onAddInventoryClick={() => handleOpenInventory()}
           />
         </Box>
       )}
@@ -334,6 +369,7 @@ const Dashboard: React.FC = () => {
           <QuickActions
             onScanClick={() => setScanOpen(true)}
             onAddApplianceClick={() => setAddApplianceOpen(true)}
+            onAddInventoryClick={() => handleOpenInventory()}
           />
         </Box>
       )}
@@ -355,6 +391,27 @@ const Dashboard: React.FC = () => {
         onClose={() => setAddApplianceOpen(false)}
         onSave={(newApp) => void handleSaveAppliance(newApp)}
         loading={isSavingAppliance}
+      />
+
+      <InventoryDialog
+        open={inventoryOpen}
+        editingItem={null}
+        formData={inventoryFormData}
+        isMobile={isMobile}
+        onClose={handleCloseInventory}
+        onSave={() => {
+          void handleSave().then(() => {
+            setTimeout(() => {
+              void navigate("/inventory");
+            }, 500);
+          });
+        }}
+        onFormDataChange={setInventoryFormData}
+        onGenerateSKU={generateSKU}
+        onImageUpload={handleImageUpload}
+        getBarcodeFormat={getBarcodeFormat}
+        role={role}
+        loading={inventorySaving}
       />
     </Box>
   );
