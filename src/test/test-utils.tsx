@@ -1,21 +1,25 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { type ReactElement } from "react";
-import { render, type RenderOptions } from "@testing-library/react";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import {
+  render,
+  type RenderOptions,
+  act,
+  cleanup,
+  fireEvent,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
+import { ThemeProvider } from "@mui/material/styles";
 
 import { AlertProvider } from "@/contexts/AlertContext";
 import { MemoryRouter } from "react-router-dom";
+import { getTheme } from "../theme";
 
 /**
- * Custom theme for tests if needed, otherwise uses default
+ * Custom theme for tests using the actual theme generation logic
  */
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#027d6f",
-    },
-  },
-});
+const theme = getTheme("light");
 
 /**
  * Custom render options
@@ -82,7 +86,7 @@ export {
   waitFor,
   within,
   type RenderOptions as RTLRenderOptions,
-} from "@testing-library/react";
+};
 
 // Override render method
 export { customRender as render };

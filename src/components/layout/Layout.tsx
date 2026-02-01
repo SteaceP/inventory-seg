@@ -156,10 +156,10 @@ const Layout: React.FC = () => {
               "& .MuiDrawer-paper": {
                 boxSizing: "border-box",
                 width: drawerWidth,
-                bgcolor: "background.paper",
+                bgcolor: "sidebar.background",
                 borderRight: "1px solid",
-                borderColor: "divider",
-                color: "text.primary",
+                borderColor: "sidebar.border",
+                color: "sidebar.text",
               },
             }}
           >
@@ -173,14 +173,11 @@ const Layout: React.FC = () => {
               "& .MuiDrawer-paper": {
                 boxSizing: "border-box",
                 width: currentDrawerWidth,
-                background: (theme) =>
-                  theme.palette.mode === "dark"
-                    ? "rgba(22, 27, 34, 0.8)"
-                    : "#ffffff",
+                background: (theme) => theme.palette.sidebar.background,
                 backdropFilter: "blur(10px)",
                 borderRight: "1px solid",
-                borderColor: "divider",
-                color: "text.primary",
+                borderColor: "sidebar.border",
+                color: "sidebar.text",
                 transition: "width 0.2s ease-in-out",
                 overflowX: "hidden",
               },

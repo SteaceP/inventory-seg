@@ -71,6 +71,10 @@ export const createMockInventoryContext = (overrides?: {
   locations?: MasterLocation[];
   loading?: boolean;
   error?: string | null;
+  presence?: Record<
+    string,
+    { userId: string; displayName: string; editingId: string }
+  >;
   refreshInventory?: ReturnType<typeof vi.fn>;
   updateCategoryThreshold?: ReturnType<typeof vi.fn>;
   broadcastInventoryChange?: ReturnType<typeof vi.fn>;
@@ -82,6 +86,7 @@ export const createMockInventoryContext = (overrides?: {
     locations: overrides?.locations ?? [],
     loading: overrides?.loading ?? false,
     error: overrides?.error ?? null,
+    presence: overrides?.presence ?? {},
     refreshInventory: overrides?.refreshInventory ?? vi.fn(),
     updateCategoryThreshold: overrides?.updateCategoryThreshold ?? vi.fn(),
     broadcastInventoryChange: overrides?.broadcastInventoryChange ?? vi.fn(),

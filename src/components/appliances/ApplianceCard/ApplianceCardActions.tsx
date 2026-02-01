@@ -62,6 +62,7 @@ const ApplianceCardActions: React.FC<ApplianceCardActionsProps> = ({
         size="small"
         color="primary"
         onClick={() => onAddRepair(appliance)}
+        aria-label={t("appliances.addRepair")}
         sx={{
           bgcolor: alpha(theme.palette.primary.main, 0.1),
           "&:hover": { bgcolor: alpha(theme.palette.primary.main, 0.2) },
@@ -73,6 +74,7 @@ const ApplianceCardActions: React.FC<ApplianceCardActionsProps> = ({
         size="small"
         color="error"
         onClick={() => onDelete(appliance.id)}
+        aria-label={t("appliances.delete")}
         sx={{
           bgcolor: alpha(theme.palette.error.main, 0.05),
           "&:hover": { bgcolor: alpha(theme.palette.error.main, 0.15) },

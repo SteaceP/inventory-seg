@@ -26,6 +26,24 @@ const ActionCard: React.FC<ActionCardProps> = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  // Helper to resolve nested palette colors (e.g., "status.success")
+  const resolveColor = (path: string) => {
+    const parts = path.split(".");
+    /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
+    let current: any = theme.palette;
+    for (const part of parts) {
+      if (current[part]) {
+        current = current[part];
+      } else {
+        return path; // Fallback to path itself (e.g. if it's a hex)
+      }
+    }
+    return typeof current === "string" ? current : path;
+    /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access */
+  };
+
+  const resolvedColor = resolveColor(color);
+
   return (
     <Paper
       elevation={0}
@@ -37,11 +55,11 @@ const ActionCard: React.FC<ActionCardProps> = ({
         position: "relative",
         overflow: "hidden",
         border: "1px solid",
-        borderColor: alpha(color, 0.1),
+        borderColor: alpha(resolvedColor, 0.1),
         bgcolor:
           theme.palette.mode === "dark"
-            ? alpha(color, 0.05)
-            : alpha(color, 0.02),
+            ? alpha(resolvedColor, 0.05)
+            : alpha(resolvedColor, 0.02),
         transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
         display: "flex",
         flexDirection: "column",
@@ -50,12 +68,12 @@ const ActionCard: React.FC<ActionCardProps> = ({
         minHeight: isMobile ? "100px" : "auto",
         "&:hover": {
           transform: "translateY(-4px)",
-          boxShadow: `0 12px 24px -10px ${alpha(color, 0.4)}`,
-          borderColor: alpha(color, 0.3),
-          bgcolor: alpha(color, 0.08),
+          boxShadow: `0 12px 24px -10px ${alpha(resolvedColor, 0.4)}`,
+          borderColor: alpha(resolvedColor, 0.3),
+          bgcolor: alpha(resolvedColor, 0.08),
           "& .action-icon": {
             transform: "scale(1.1) rotate(5deg)",
-            color: color,
+            color: resolvedColor,
           },
         },
       }}
@@ -69,8 +87,8 @@ const ActionCard: React.FC<ActionCardProps> = ({
           width: isMobile ? 36 : 48,
           height: isMobile ? 36 : 48,
           borderRadius: isMobile ? "8px" : "12px",
-          bgcolor: alpha(color, 0.1),
-          color: alpha(color, 0.8),
+          bgcolor: alpha(resolvedColor, 0.1),
+          color: alpha(resolvedColor, 0.8),
           transition: "all 0.3s ease",
           mb: isMobile ? 0.5 : 1,
           "& svg": {
@@ -104,11 +122,11 @@ const ActionCard: React.FC<ActionCardProps> = ({
       <Box
         sx={{
           position: "absolute",
-          top: -15,
-          right: -15,
+          top: 45,
+          right: 40,
           opacity: 0.05,
           transform: isMobile ? "scale(2)" : "scale(3)",
-          color: color,
+          color: resolvedColor,
           pointerEvents: "none",
         }}
       >

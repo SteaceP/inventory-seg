@@ -166,7 +166,7 @@ describe("App", () => {
     render(<App />, { includeRouter: false });
 
     await waitFor(() => {
-      expect(screen.getByText("common.offlineMessage")).toBeInTheDocument();
+      expect(screen.getByText("common.offline")).toBeInTheDocument();
     });
   });
 });

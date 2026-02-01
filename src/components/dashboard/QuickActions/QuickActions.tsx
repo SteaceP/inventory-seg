@@ -37,28 +37,28 @@ const QuickActions: React.FC = () => {
       title: t("inventory.addButton"),
       description: t("dashboard.actions.inventoryDesc"),
       icon: <AddIcon fontSize="large" />,
-      color: "#027d6f",
+      color: "status.success",
       onClick: () => navigate("/inventory?action=add"),
     },
     {
       title: t("inventory.scan"),
       description: t("dashboard.actions.scanDesc"),
       icon: <ScanIcon fontSize="large" />,
-      color: "#1a748b",
+      color: "brand.secondary",
       onClick: () => navigate("/inventory?action=scan"),
     },
     {
       title: t("appliances.addAppliance") || t("appliances.add"),
       description: t("dashboard.actions.applianceDesc"),
       icon: <RepairIcon fontSize="large" />,
-      color: "#0969da",
+      color: "status.info",
       onClick: () => navigate("/appliances?action=add"),
     },
     {
       title: t("inventory.reports") || t("menu.reports"),
       description: t("dashboard.actions.reportDesc"),
       icon: <ReportIcon fontSize="large" />,
-      color: "#d29922",
+      color: "status.warning",
       onClick: () => navigate("/inventory/reports"),
     },
   ];
@@ -135,6 +135,9 @@ const QuickActions: React.FC = () => {
                   alignItems: "center",
                   justifyContent: "center",
                   animation: "pulse 2s ease-in-out infinite",
+                  cursor: "pointer",
+                  pointerEvents: "auto",
+                  "&:active": { transform: "scale(0.95)" },
                   "@keyframes pulse": {
                     "0%, 100%": {
                       opacity: 0.3,
@@ -152,6 +155,14 @@ const QuickActions: React.FC = () => {
                     fontSize: "1.25rem",
                     color: "primary.main",
                     opacity: 0.7,
+                  }}
+                  onClick={() => {
+                    if (scrollRef.current) {
+                      scrollRef.current.scrollBy({
+                        left: -200,
+                        behavior: "smooth",
+                      });
+                    }
                   }}
                 />
               </Box>
@@ -186,6 +197,9 @@ const QuickActions: React.FC = () => {
                   alignItems: "center",
                   justifyContent: "center",
                   animation: "pulse 2s ease-in-out infinite",
+                  cursor: "pointer",
+                  pointerEvents: "auto",
+                  "&:active": { transform: "scale(0.95)" },
                   "@keyframes pulse": {
                     "0%, 100%": {
                       opacity: 0.3,
@@ -203,6 +217,14 @@ const QuickActions: React.FC = () => {
                     fontSize: "1.25rem",
                     color: "primary.main",
                     opacity: 0.7,
+                  }}
+                  onClick={() => {
+                    if (scrollRef.current) {
+                      scrollRef.current.scrollBy({
+                        left: 200,
+                        behavior: "smooth",
+                      });
+                    }
                   }}
                 />
               </Box>

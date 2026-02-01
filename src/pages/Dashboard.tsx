@@ -33,6 +33,24 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => {
   const { compactView } = useUserContext();
   const theme = useTheme();
 
+  // Helper to resolve nested palette colors (e.g., "status.success")
+  const resolveColor = (path: string) => {
+    const parts = path.split(".");
+    /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
+    let current: any = theme.palette;
+    for (const part of parts) {
+      if (current[part]) {
+        current = current[part];
+      } else {
+        return path; // Fallback to path itself (e.g. if it's a hex)
+      }
+    }
+    return typeof current === "string" ? current : path;
+    /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access */
+  };
+
+  const resolvedColor = resolveColor(color);
+
   return (
     <Paper
       elevation={0}
@@ -40,11 +58,11 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => {
         p: { xs: 1.5, sm: 2.5 },
         borderRadius: 4,
         border: "1px solid",
-        borderColor: alpha(color, 0.2),
+        borderColor: alpha(resolvedColor, 0.2),
         bgcolor:
           theme.palette.mode === "dark"
-            ? alpha(color, 0.05)
-            : alpha(color, 0.02),
+            ? alpha(resolvedColor, 0.05)
+            : alpha(resolvedColor, 0.02),
         width: "100%",
         height: "100%",
         display: "flex",
@@ -57,19 +75,20 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => {
         transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
         "&:hover": {
           transform: "translateY(-4px)",
-          boxShadow: `0 8px 24px -10px ${alpha(color, 0.3)}`,
-          borderColor: alpha(color, 0.4),
+          boxShadow: `0 8px 24px -10px ${alpha(resolvedColor, 0.3)}`,
+          borderColor: alpha(resolvedColor, 0.4),
         },
       }}
     >
       <Box
         sx={{
           position: "absolute",
-          top: -10,
-          right: -10,
+          top: 30,
+          right: 25,
           opacity: 0.05,
           transform: "scale(2.5)",
-          color: color,
+          color: resolvedColor,
+          pointerEvents: "none",
         }}
       >
         {icon}
@@ -93,8 +112,8 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => {
             justifyContent: "center",
             p: { xs: 0.5, sm: 0.75 },
             borderRadius: "8px",
-            bgcolor: alpha(color, 0.1),
-            color: color,
+            bgcolor: alpha(resolvedColor, 0.1),
+            color: resolvedColor,
             minWidth: "fit-content",
             "& svg": { fontSize: { xs: 16, sm: 20 } },
             "& img": { width: { xs: 16, sm: 20 }, height: { xs: 16, sm: 20 } },
@@ -121,7 +140,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => {
         variant={compactView ? "h6" : "h4"}
         fontWeight="900"
         sx={{
-          color: color,
+          color: resolvedColor,
           letterSpacing: "-0.02em",
           position: "relative",
           zIndex: 1,
@@ -228,7 +247,7 @@ const Dashboard: React.FC = () => {
             title={t("dashboard.totalItems")}
             value={stats.totalItems.toLocaleString()}
             icon={<InventoryIcon />}
-            color="#027d6f"
+            color="status.success"
           />
         </Grid>
         <Grid size={{ xs: 6, sm: 6, md: 3 }}>
@@ -236,7 +255,7 @@ const Dashboard: React.FC = () => {
             title={t("dashboard.lowStockItems")}
             value={stats.lowStockItems.length}
             icon={<WarningIcon />}
-            color="#d29922"
+            color="status.warning"
           />
         </Grid>
         <Grid size={{ xs: 6, sm: 6, md: 3 }}>
@@ -244,7 +263,7 @@ const Dashboard: React.FC = () => {
             title={t("dashboard.topCategory")}
             value={stats.topCategory}
             icon={<CategoryIcon />}
-            color="#0969da"
+            color="status.info"
           />
         </Grid>
         <Grid size={{ xs: 6, sm: 6, md: 3 }}>
@@ -252,7 +271,7 @@ const Dashboard: React.FC = () => {
             title={t("dashboard.movements")}
             value={`+${dailyStats.in} / -${dailyStats.out}`}
             icon={<HistoryIcon />}
-            color="#1a748b"
+            color="brand.secondary"
           />
         </Grid>
       </Grid>

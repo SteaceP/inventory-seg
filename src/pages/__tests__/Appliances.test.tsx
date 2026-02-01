@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@test/test-utils";
 import Appliances from "../Appliances";
-import { BrowserRouter } from "react-router-dom";
 import type { Appliance } from "@/types/appliances";
 
 // Mock dependencies
@@ -77,11 +76,7 @@ describe("Appliances Page", () => {
   });
 
   const renderComponent = () => {
-    render(
-      <BrowserRouter>
-        <Appliances />
-      </BrowserRouter>
-    );
+    render(<Appliances />);
   };
 
   it("renders headers and stats", async () => {

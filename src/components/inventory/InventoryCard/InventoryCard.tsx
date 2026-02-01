@@ -75,23 +75,20 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
         sx={{
           borderRadius: 4,
           border: "1px solid",
-          borderColor: isSelected ? "primary.main" : "divider",
+          borderColor: isSelected ? "brand.primary" : "sidebar.border",
           transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
           overflow: "hidden",
           position: "relative",
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          background:
-            theme.palette.mode === "dark"
-              ? alpha(theme.palette.background.paper, 0.6)
-              : theme.palette.background.paper,
+          background: (theme) => theme.palette.sidebar.background,
           backdropFilter: "blur(10px)",
           cursor: "pointer",
           "&:hover": {
             transform: "translateY(-4px)",
-            boxShadow: `0 12px 24px -10px ${alpha(theme.palette.common.black, 0.3)}`,
-            borderColor: "primary.main",
+            boxShadow: `0 12px 24px -10px ${alpha(theme.palette.brand.primary, 0.3)}`,
+            borderColor: "brand.primary",
             "& .card-image": {
               transform: "scale(1.05)",
             },
@@ -165,7 +162,7 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
               <Box
                 component="span"
                 sx={{
-                  color: "primary.main",
+                  color: "brand.primary",
                   fontWeight: "bold",
                   fontSize: "1.1rem",
                 }}

@@ -1,10 +1,8 @@
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@test/test-utils";
 import Dashboard from "../Dashboard";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
 
-import { MemoryRouter } from "react-router-dom";
 import {
   createMockTranslation,
   createMockUserContext,
@@ -108,15 +106,6 @@ globalThis.matchMedia = vi.fn().mockImplementation((query: string) => ({
   dispatchEvent: vi.fn(),
 }));
 
-const renderWithProviders = (ui: React.ReactElement) => {
-  const theme = createTheme();
-  return render(
-    <ThemeProvider theme={theme}>
-      <MemoryRouter>{ui}</MemoryRouter>
-    </ThemeProvider>
-  );
-};
-
 describe("Dashboard Page", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -127,7 +116,7 @@ describe("Dashboard Page", () => {
   });
 
   it("renders dashboard title and welcome message", async () => {
-    renderWithProviders(<Dashboard />);
+    render(<Dashboard />);
     expect(screen.getByText("dashboard.title")).toBeInTheDocument();
     expect(screen.getByText("dashboard.welcome")).toBeInTheDocument();
 
@@ -138,14 +127,13 @@ describe("Dashboard Page", () => {
   });
 
   it("calculates and displays stats correctly", async () => {
-    renderWithProviders(<Dashboard />);
+    render(<Dashboard />);
 
     // Total Items: 3
     expect(screen.getByText("3")).toBeInTheDocument();
     expect(screen.getByText("dashboard.totalItems")).toBeInTheDocument();
 
     // Low Stock Items: 1 (Item 2 has stock 2, threshold 5)
-    // Item 1 has stock 10, threshold 5. Item 3 has stock 20, threshold 5.
     expect(screen.getByText("1")).toBeInTheDocument();
     expect(screen.getByText("dashboard.lowStockItems")).toBeInTheDocument();
 
@@ -159,7 +147,7 @@ describe("Dashboard Page", () => {
   });
 
   it("fetches and displays daily stats", async () => {
-    renderWithProviders(<Dashboard />);
+    render(<Dashboard />);
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith(
@@ -176,7 +164,7 @@ describe("Dashboard Page", () => {
     const error = new Error("Failed to fetch");
     mockFetch.mockRejectedValueOnce(error);
 
-    renderWithProviders(<Dashboard />);
+    render(<Dashboard />);
 
     await waitFor(() => {
       expect(mockHandleError).toHaveBeenCalledWith(
@@ -187,7 +175,7 @@ describe("Dashboard Page", () => {
   });
 
   it("renders child components", async () => {
-    renderWithProviders(<Dashboard />);
+    render(<Dashboard />);
 
     expect(screen.getByTestId("stock-health")).toBeInTheDocument();
     expect(screen.getAllByTestId("quick-actions")[0]).toBeInTheDocument();

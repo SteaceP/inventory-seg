@@ -7,7 +7,6 @@ import {
   Checkbox,
   CardMedia,
   alpha,
-  useTheme,
 } from "@mui/material";
 import type { Appliance } from "@/types/appliances";
 import ApplianceStatusChip from "./ApplianceStatusChip";
@@ -33,30 +32,26 @@ const ApplianceCard: React.FC<ApplianceCardProps> = ({
   onAddRepair,
   onDelete,
 }) => {
-  const theme = useTheme();
-
   return (
     <Card
       elevation={0}
       sx={{
         borderRadius: 4,
         border: "1px solid",
-        borderColor: selected ? "primary.main" : "divider",
+        borderColor: selected ? "brand.primary" : "sidebar.border",
         transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
         overflow: "hidden",
         position: "relative",
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        background:
-          theme.palette.mode === "dark"
-            ? alpha(theme.palette.background.paper, 0.6)
-            : theme.palette.background.paper,
+        background: (theme) => theme.palette.sidebar.background,
         backdropFilter: "blur(10px)",
         "&:hover": {
           transform: "translateY(-4px)",
-          boxShadow: `0 12px 24px -10px ${alpha(theme.palette.common.black, 0.3)}`,
-          borderColor: "primary.main",
+          boxShadow: (theme) =>
+            `0 12px 24px -10px ${alpha(theme.palette.brand.primary, 0.3)}`,
+          borderColor: "brand.primary",
           "& .hero-image": {
             transform: "scale(1.05)",
           },
@@ -72,9 +67,9 @@ const ApplianceCard: React.FC<ApplianceCardProps> = ({
             top: 12,
             right: 12,
             zIndex: 2,
-            bgcolor: alpha(theme.palette.background.paper, 0.8),
+            bgcolor: (theme) => alpha(theme.palette.sidebar.background, 0.8),
             backdropFilter: "blur(4px)",
-            "&:hover": { bgcolor: theme.palette.background.paper },
+            "&:hover": { bgcolor: "sidebar.background" },
             borderRadius: 1,
             p: 0.5,
           }}

@@ -1,0 +1,70 @@
+{
+  "brand.primary": {
+    "light": "#027d6f",
+    "dark": "#027d6f"
+  },
+  "brand.secondary": {
+    "light": "#1a748b",
+    "dark": "#1a748b"
+  },
+  "sidebar.background": {
+    "light": "#ffffff",
+    "dark": "rgba(22, 27, 34, 0.8)"
+  },
+  "sidebar.border": {
+    "light": "rgba(0, 0, 0, 0.12)",
+    "dark": "rgba(255, 255, 255, 0.12)"
+  },
+  "sidebar.text": {
+    "light": "#1F2328",
+    "dark": "#c9d1d9"
+  },
+  "navigation.itemActiveText": {
+    "light": "#027d6f",
+    "dark": "#027d6f"
+  },
+  "navigation.itemActiveBackground": {
+    "light": "rgba(2, 125, 111, 0.08)",
+    "dark": "rgba(2, 125, 111, 0.15)"
+  },
+  "status.success": {
+    "light": "#027d6f",
+    "dark": "#027d6f"
+  },
+  "status.warning": {
+    "light": "#d29922",
+    "dark": "#d29922"
+  },
+  "status.info": {
+    "light": "#0969da",
+    "dark": "#0969da"
+  },
+  "status.error": {
+    "light": "#cf222e",
+    "dark": "#f85149"
+  },
+  "assistant.fabBackground": {
+    "light": "#027d6f",
+    "dark": "#027d6f"
+  },
+  "assistant.fabHover": {
+    "light": "#026d61",
+    "dark": "#026d61"
+  },
+  "assistant.sparkle": {
+    "light": "#ffffff",
+    "dark": "#ffffff"
+  },
+  "assistant.drawerBackground": {
+    "light": "#ffffff",
+    "dark": "#161b22"
+  },
+  "assistant.drawerBorder": {
+    "light": "rgba(0, 0, 0, 0.12)",
+    "dark": "rgba(255, 255, 255, 0.12)"
+  },
+  "dashboard.cardBorder": {
+    "light": "rgba(0, 0, 0, 0.1)",
+    "dark": "rgba(255, 255, 255, 0.1)"
+  }
+}

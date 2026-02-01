@@ -125,13 +125,15 @@ const AssistantFAB: React.FC = () => {
             >
               <Tooltip title={t("menu.assistant")} placement="left">
                 <Fab
-                  color="primary"
                   aria-label="assistant"
                   onClick={() => setOpen(true)}
                   size={isMobile ? "small" : "medium"}
                   sx={{
+                    bgcolor: "assistant.fabBackground",
+                    color: "assistant.sparkle",
                     boxShadow: theme.shadows[6],
                     "&:hover": {
+                      bgcolor: "assistant.fabHover",
                       boxShadow: theme.shadows[10],
                     },
                   }}
@@ -139,7 +141,10 @@ const AssistantFAB: React.FC = () => {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <SparklesIcon fontSize={isMobile ? "small" : "medium"} />
+                  <SparklesIcon
+                    fontSize={isMobile ? "small" : "medium"}
+                    sx={{ color: "inherit" }}
+                  />
                 </Fab>
               </Tooltip>
             </motion.div>

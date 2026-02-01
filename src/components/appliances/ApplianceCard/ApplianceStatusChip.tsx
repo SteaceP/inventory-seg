@@ -22,19 +22,19 @@ const ApplianceStatusChip: React.FC<ApplianceStatusChipProps> = ({
       case "needs_service":
         return {
           label: t("appliances.status.needsService") || "Needs Service",
-          color: theme.palette.warning.main,
+          color: theme.palette.status.warning,
           icon: <WarningIcon sx={{ fontSize: 16 }} />,
         };
       case "broken":
         return {
           label: t("appliances.status.broken") || "Broken",
-          color: theme.palette.error.main,
+          color: theme.palette.status.error,
           icon: <BrokenIcon sx={{ fontSize: 16 }} />,
         };
       default:
         return {
           label: t("appliances.status.functional") || "Functional",
-          color: theme.palette.primary.main,
+          color: theme.palette.status.success,
           icon: <HealthyIcon sx={{ fontSize: 16 }} />,
         };
     }

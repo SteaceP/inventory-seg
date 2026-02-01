@@ -67,10 +67,11 @@ const NavigationList: React.FC<NavigationListProps> = ({
                 py: compactView ? 0.5 : 1,
                 justifyContent: collapsed && !isMobile ? "center" : "initial",
                 "&.Mui-selected": {
-                  bgcolor: "rgba(2, 125, 111, 0.1)",
-                  color: "primary.main",
+                  bgcolor: "navigation.itemActiveBackground",
+                  color: "navigation.itemActiveText",
                   "&:hover": {
-                    bgcolor: "rgba(2, 125, 111, 0.2)",
+                    bgcolor: "navigation.itemActiveBackground",
+                    opacity: 0.9,
                   },
                 },
               }}
@@ -79,7 +80,7 @@ const NavigationList: React.FC<NavigationListProps> = ({
                 sx={{
                   color:
                     location.pathname === item.path
-                      ? "primary.main"
+                      ? "navigation.itemActiveText"
                       : "text.secondary",
                   opacity: location.pathname === item.path ? 1 : 0.7,
                   minWidth: 0,

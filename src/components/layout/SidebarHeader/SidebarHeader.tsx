@@ -61,8 +61,7 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({
             component="div"
             noWrap
             sx={{
-              fontWeight: "bold",
-              color: "primary.main",
+              color: "brand.primary",
               lineHeight: 1.2,
               minWidth: 0,
             }}
@@ -79,13 +78,13 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({
         }
         data-testid="close-menu-button"
         sx={{
-          color: "primary.main",
+          color: "brand.primary",
           flexShrink: 0,
           width: compactView ? 32 : 40,
           height: compactView ? 32 : 40,
           p: 0,
           m: 0,
-          "&:hover": { bgcolor: "rgba(2, 125, 111, 0.08)" },
+          "&:hover": { bgcolor: "navigation.itemActiveBackground" },
         }}
       >
         <AnimatePresence mode="wait">

@@ -41,9 +41,9 @@ const StockHealth: React.FC = () => {
   }, [items, lowStockThreshold, contextCategories]);
 
   const getColor = (score: number) => {
-    if (score > 80) return "#027d6f";
-    if (score > 50) return "#d29922";
-    return "#d1242f";
+    if (score > 80) return theme.palette.status.success;
+    if (score > 50) return theme.palette.status.warning;
+    return theme.palette.status.error;
   };
 
   const statusColor = getColor(health);
@@ -166,12 +166,12 @@ const StockHealth: React.FC = () => {
       <Box
         sx={{
           position: "absolute",
-          top: -20,
-          right: -20,
+          top: -5,
+          right: -5,
           width: isMobile ? 100 : 140,
           height: isMobile ? 100 : 140,
           borderRadius: "50%",
-          background: `radial-gradient(circle, ${alpha(statusColor, 0.1)} 0%, transparent 70%)`,
+          background: `radial-gradient(circle, ${alpha(statusColor, 0.08)} 0%, transparent 70%)`,
           zIndex: 0,
         }}
       />
