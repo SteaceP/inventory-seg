@@ -22,7 +22,9 @@ import StockHealth from "@components/dashboard/StockHealth/StockHealth";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { supabase } from "@/supabaseClient";
 import InventoryScanner from "@components/inventory/InventoryScanner/InventoryScanner";
+import ApplianceDialog from "@components/appliances/ApplianceDialog/ApplianceDialog";
 import { useNavigate } from "react-router-dom";
+import type { Appliance } from "@/types/appliances";
 
 interface StatCardProps {
   title: string;
@@ -168,6 +170,8 @@ const Dashboard: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
   const [scanOpen, setScanOpen] = useState(false);
+  const [addApplianceOpen, setAddApplianceOpen] = useState(false);
+  const [isSavingAppliance, setIsSavingAppliance] = useState(false);
 
   const stats = useMemo(() => {
     const totalItems = items.length;
@@ -223,6 +227,43 @@ const Dashboard: React.FC = () => {
     void fetchDashboardData();
   }, [t, handleError]);
 
+  const handleSaveAppliance = async (newAppliance: Partial<Appliance>) => {
+    try {
+      setIsSavingAppliance(true);
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        handleError(new Error("User not logged in"), t("errors.noUser"));
+        return;
+      }
+
+      if (!newAppliance.name) {
+        handleError(new Error("Name is required"), t("errors.nameRequired"));
+        return;
+      }
+
+      const { error } = await supabase.from("appliances").insert([
+        {
+          ...newAppliance,
+          name: newAppliance.name,
+          user_id: user.id,
+        } as import("@/types/database.types").Database["public"]["Tables"]["appliances"]["Insert"],
+      ]);
+
+      if (error) {
+        handleError(error, t("errors.createAppliance"));
+      } else {
+        setAddApplianceOpen(false);
+        void navigate("/appliances");
+      }
+    } catch (err: unknown) {
+      handleError(err, t("errors.createAppliance"));
+    } finally {
+      setIsSavingAppliance(false);
+    }
+  };
+
   return (
     <Box sx={{ p: { xs: 2, sm: 3 }, maxWidth: "1600px", mx: "auto" }}>
       <Box sx={{ mb: { xs: 2, sm: 4 } }}>
@@ -237,7 +278,10 @@ const Dashboard: React.FC = () => {
       {/* QuickActions - Show at top on mobile for better accessibility */}
       {isMobile && (
         <Box sx={{ mb: 3 }}>
-          <QuickActions onScanClick={() => setScanOpen(true)} />
+          <QuickActions
+            onScanClick={() => setScanOpen(true)}
+            onAddApplianceClick={() => setAddApplianceOpen(true)}
+          />
         </Box>
       )}
 
@@ -287,7 +331,10 @@ const Dashboard: React.FC = () => {
       {/* QuickActions - Show at bottom on desktop/tablet */}
       {!isMobile && (
         <Box sx={{ mt: 4 }}>
-          <QuickActions onScanClick={() => setScanOpen(true)} />
+          <QuickActions
+            onScanClick={() => setScanOpen(true)}
+            onAddApplianceClick={() => setAddApplianceOpen(true)}
+          />
         </Box>
       )}
 
@@ -301,6 +348,13 @@ const Dashboard: React.FC = () => {
           );
         }}
         onError={(msg) => handleError(new Error(msg), msg)}
+      />
+
+      <ApplianceDialog
+        open={addApplianceOpen}
+        onClose={() => setAddApplianceOpen(false)}
+        onSave={(newApp) => void handleSaveAppliance(newApp)}
+        loading={isSavingAppliance}
       />
     </Box>
   );

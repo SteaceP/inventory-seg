@@ -22,9 +22,13 @@ import { useScrollIndicators } from "@hooks/useScrollIndicators";
 
 interface QuickActionsProps {
   onScanClick?: () => void;
+  onAddApplianceClick?: () => void;
 }
 
-const QuickActions: React.FC<QuickActionsProps> = ({ onScanClick }) => {
+const QuickActions: React.FC<QuickActionsProps> = ({
+  onScanClick,
+  onAddApplianceClick,
+}) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const theme = useTheme();
@@ -56,7 +60,8 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onScanClick }) => {
       description: t("dashboard.actions.applianceDesc"),
       icon: <RepairIcon fontSize="large" />,
       color: "status.info",
-      onClick: () => navigate("/appliances?action=add"),
+      onClick:
+        onAddApplianceClick || (() => navigate("/appliances?action=add")),
     },
     {
       title: t("inventory.reports") || t("menu.reports"),
