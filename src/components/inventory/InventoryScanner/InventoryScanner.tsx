@@ -47,7 +47,14 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
 
         const config = {
           fps: 20,
-          qrbox: { width: 300, height: 150 },
+          qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
+            const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+            const qrboxSize = Math.floor(minEdge * 0.6);
+            return {
+              width: qrboxSize,
+              height: qrboxSize,
+            };
+          },
           aspectRatio: 1.0,
         };
 
@@ -102,7 +109,9 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
         },
       }}
     >
-      <Box sx={{ p: 3, textAlign: "center", position: "relative" }}>
+      <Box
+        sx={{ p: { xs: 2, sm: 3 }, textAlign: "center", position: "relative" }}
+      >
         <IconButton
           onClick={onClose}
           sx={{
@@ -124,8 +133,10 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
         <Box
           sx={{
             position: "relative",
-            width: "300px",
-            height: "300px",
+            width: "100%",
+            maxWidth: "300px",
+            aspectRatio: "1/1",
+            height: "auto",
             margin: "0 auto",
             borderRadius: "16px",
             overflow: "hidden",
