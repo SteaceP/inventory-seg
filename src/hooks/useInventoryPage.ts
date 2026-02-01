@@ -81,26 +81,6 @@ export const useInventoryPage = () => {
 
   // --- Page Specific Logic ---
 
-  // Deep Linking
-  useEffect(() => {
-    // Handle deep-linked actions
-    const action = searchParams.get("action");
-    if (action === "add") {
-      baseHandleOpen(); // Open empty form
-      // Clear action from URL
-      const newParams = new URLSearchParams(searchParams);
-      newParams.delete("action");
-      setSearchParams(newParams, { replace: true });
-    } else if (action === "scan") {
-      // eslint-disable-next-line
-      setScanOpen(true);
-      // Clear action from URL
-      const newParams = new URLSearchParams(searchParams);
-      newParams.delete("action");
-      setSearchParams(newParams, { replace: true });
-    }
-  }, [searchParams, setSearchParams, baseHandleOpen]);
-
   // Extended Handlers
   const handleOpen = useCallback(
     (item?: InventoryItem) => {
@@ -113,6 +93,49 @@ export const useInventoryPage = () => {
     },
     [baseHandleOpen]
   );
+
+  const handleScanSuccess = useCallback(
+    (decodedText: string) => {
+      setScanOpen(false);
+      const item = items.find((i) => i.sku === decodedText);
+      if (item) {
+        handleOpen(item);
+      } else {
+        // Open form with pre-filled SKU
+        baseHandleOpen();
+        setFormData((prev) => ({ ...prev, sku: decodedText }));
+      }
+    },
+    [items, handleOpen, baseHandleOpen, setFormData]
+  );
+
+  // Deep Linking
+  useEffect(() => {
+    // Handle deep-linked actions
+    const action = searchParams.get("action");
+    if (action === "add") {
+      setTimeout(() => baseHandleOpen(), 0); // Open empty form
+      // Clear action from URL
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete("action");
+      setSearchParams(newParams, { replace: true });
+    } else if (action === "scan") {
+      setTimeout(() => setScanOpen(true), 0);
+      // Clear action from URL
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete("action");
+      setSearchParams(newParams, { replace: true });
+    }
+
+    const scanResult = searchParams.get("scanResult");
+    if (scanResult) {
+      setTimeout(() => handleScanSuccess(scanResult), 0);
+      // Clear scanResult from URL
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete("scanResult");
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams, baseHandleOpen, handleScanSuccess]);
 
   // Wrapper to handle closing drawer before opening edit dialog
   const handleEdit = useCallback(
@@ -166,18 +189,6 @@ export const useInventoryPage = () => {
       recipient,
       destination_location
     );
-  };
-
-  const handleScanSuccess = (decodedText: string) => {
-    setScanOpen(false);
-    const item = items.find((i) => i.sku === decodedText);
-    if (item) {
-      handleOpen(item);
-    } else {
-      // Open form with pre-filled SKU
-      baseHandleOpen();
-      setFormData((prev) => ({ ...prev, sku: decodedText }));
-    }
   };
 
   const toggleItem = (id: string, checked: boolean) => {

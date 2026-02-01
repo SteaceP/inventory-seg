@@ -20,7 +20,11 @@ import { useTranslation } from "@/i18n";
 import ActionCard from "../ActionCard/ActionCard";
 import { useScrollIndicators } from "@hooks/useScrollIndicators";
 
-const QuickActions: React.FC = () => {
+interface QuickActionsProps {
+  onScanClick?: () => void;
+}
+
+const QuickActions: React.FC<QuickActionsProps> = ({ onScanClick }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const theme = useTheme();
@@ -45,7 +49,7 @@ const QuickActions: React.FC = () => {
       description: t("dashboard.actions.scanDesc"),
       icon: <ScanIcon fontSize="large" />,
       color: "brand.secondary",
-      onClick: () => navigate("/inventory?action=scan"),
+      onClick: onScanClick || (() => navigate("/inventory?action=scan")),
     },
     {
       title: t("appliances.addAppliance") || t("appliances.add"),

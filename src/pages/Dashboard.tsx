@@ -21,6 +21,8 @@ import QuickActions from "@components/dashboard/QuickActions/QuickActions";
 import StockHealth from "@components/dashboard/StockHealth/StockHealth";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { supabase } from "@/supabaseClient";
+import InventoryScanner from "@components/inventory/InventoryScanner/InventoryScanner";
+import { useNavigate } from "react-router-dom";
 
 interface StatCardProps {
   title: string;
@@ -164,6 +166,8 @@ const Dashboard: React.FC = () => {
   const { items, categories: contextCategories } = useInventoryContext();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const navigate = useNavigate();
+  const [scanOpen, setScanOpen] = useState(false);
 
   const stats = useMemo(() => {
     const totalItems = items.length;
@@ -233,7 +237,7 @@ const Dashboard: React.FC = () => {
       {/* QuickActions - Show at top on mobile for better accessibility */}
       {isMobile && (
         <Box sx={{ mb: 3 }}>
-          <QuickActions />
+          <QuickActions onScanClick={() => setScanOpen(true)} />
         </Box>
       )}
 
@@ -283,9 +287,21 @@ const Dashboard: React.FC = () => {
       {/* QuickActions - Show at bottom on desktop/tablet */}
       {!isMobile && (
         <Box sx={{ mt: 4 }}>
-          <QuickActions />
+          <QuickActions onScanClick={() => setScanOpen(true)} />
         </Box>
       )}
+
+      <InventoryScanner
+        open={scanOpen}
+        onClose={() => setScanOpen(false)}
+        onScanSuccess={(decodedText) => {
+          setScanOpen(false);
+          void navigate(
+            `/inventory?scanResult=${encodeURIComponent(decodedText)}`
+          );
+        }}
+        onError={(msg) => handleError(new Error(msg), msg)}
+      />
     </Box>
   );
 };
