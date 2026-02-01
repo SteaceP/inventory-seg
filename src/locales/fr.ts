@@ -122,6 +122,9 @@ const fr = {
   "common.confirm": "Confirmer",
   "common.save": "Enregistrer",
   "common.saving": "Enregistrement...",
+  "common.success": "Succès",
+  "common.done": "Terminé",
+  "common.viewList": "Voir la liste",
   "common.selectAll": "Tout sélectionner",
   "common.add": "Ajouter",
   "common.close": "Fermer",
@@ -287,6 +290,19 @@ const fr = {
   "inventory.scanner.instructions": "Positionnez le code-barres dans le cadre",
   "inventory.scanner.cameraError":
     "Impossible de démarrer la caméra. Vérifiez les permissions.",
+  "inventory.scanner.notFound.title": "Article non trouvé",
+  "inventory.scanner.notFound.message":
+    "L'article avec le SKU {sku} n'a pas été trouvé dans l'inventaire.",
+  "inventory.scanner.notFound.rescanHint":
+    "Si cet article devrait être dans l'inventaire, essayez de le scanner à nouveau. Sinon, vous pouvez l'ajouter comme nouvel article.",
+  "inventory.scanner.notFound.addButton": "Ajouter l'article",
+  "inventory.scanner.success.item":
+    "L'article d'inventaire a été enregistré avec succès.",
+  "inventory.scanner.success.appliance":
+    "L'appareil a été enregistré avec succès.",
+  "inventory.scanner.success.nextAction": "Que souhaitez-vous faire ensuite ?",
+  "inventory.scanner.success.addAnother.item": "Ajouter un autre article",
+  "inventory.scanner.success.addAnother.appliance": "Ajouter un autre appareil",
   "table.image": "Image",
   "table.name": "Nom",
   "table.category": "Catégorie",

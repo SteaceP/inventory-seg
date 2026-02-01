@@ -117,6 +117,9 @@ const en = {
   "common.confirm": "Confirm",
   "common.save": "Save",
   "common.saving": "Saving...",
+  "common.success": "Success",
+  "common.done": "Done",
+  "common.viewList": "View List",
   "common.selectAll": "Select All",
   "common.add": "Add",
   "common.close": "Close",
@@ -279,6 +282,19 @@ const en = {
   "inventory.scanner.instructions": "Position the barcode within the frame",
   "inventory.scanner.cameraError":
     "Unable to start camera. Please check camera permissions.",
+  "inventory.scanner.notFound.title": "Item Not Found",
+  "inventory.scanner.notFound.message":
+    "Item with SKU {sku} was not found in the inventory.",
+  "inventory.scanner.notFound.rescanHint":
+    "If this item should be in inventory, try rescanning it. Otherwise, you can add it as a new item.",
+  "inventory.scanner.notFound.addButton": "Add Item",
+  "inventory.scanner.success.item":
+    "Inventory item has been saved successfully.",
+  "inventory.scanner.success.appliance":
+    "Appliance has been saved successfully.",
+  "inventory.scanner.success.nextAction": "What would you like to do next?",
+  "inventory.scanner.success.addAnother.item": "Add Another Item",
+  "inventory.scanner.success.addAnother.appliance": "Add Another Appliance",
   "table.image": "Image",
   "table.name": "Name",
   "table.category": "Category",

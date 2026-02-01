@@ -115,6 +115,9 @@ const ar = {
   "common.confirm": "تأكيد",
   "common.save": "حفظ",
   "common.saving": "جاري الحفظ...",
+  "common.success": "نجاح",
+  "common.done": "تم",
+  "common.viewList": "عرض القائمة",
   "common.selectAll": "تحديد الكل",
   "common.add": "إضافة",
   "common.close": "إغلاق",
@@ -276,6 +279,17 @@ const ar = {
   "inventory.scanner.instructions": "ضع الرمز الشريطي داخل الإطار",
   "inventory.scanner.cameraError":
     "تعذر بدء الكاميرا. يرجى التحقق من الأذونات.",
+  "inventory.scanner.notFound.title": "لم يتم العثور على العنصر",
+  "inventory.scanner.notFound.message":
+    "لم يتم العثور على العنصر ذي الرمز {sku} في المخزون.",
+  "inventory.scanner.notFound.rescanHint":
+    "إذا كان هذا العنصر موجودًا في المخزون، فحاول مسحه مرة أخرى. وإلا، يمكنك إضافته كعنصر جديد.",
+  "inventory.scanner.notFound.addButton": "إضافة العنصر",
+  "inventory.scanner.success.item": "تم حفظ عنصر المخزون بنجاح.",
+  "inventory.scanner.success.appliance": "تم حفظ الجهاز بنجاح.",
+  "inventory.scanner.success.nextAction": "ماذا تريد أن تفعل بعد ذلك؟",
+  "inventory.scanner.success.addAnother.item": "إضافة عنصر آخر",
+  "inventory.scanner.success.addAnother.appliance": "إضافة جهاز آخر",
   "table.image": "الصورة",
   "table.name": "الاسم",
   "table.category": "الفئة",

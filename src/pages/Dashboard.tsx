@@ -7,12 +7,19 @@ import {
   Paper,
   Grid,
   useMediaQuery,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
 } from "@mui/material";
 import {
   Inventory as InventoryIcon,
   Warning as WarningIcon,
   Category as CategoryIcon,
   History as HistoryIcon,
+  CheckCircle as SuccessIcon,
 } from "@mui/icons-material";
 import { useUserContext } from "@contexts/UserContext";
 import { useTranslation } from "@/i18n";
@@ -176,6 +183,14 @@ const Dashboard: React.FC = () => {
   const [addApplianceOpen, setAddApplianceOpen] = useState(false);
   const [isSavingAppliance, setIsSavingAppliance] = useState(false);
 
+  // Success/Not Found Dialogs
+  const [successDialogOpen, setSuccessDialogOpen] = useState(false);
+  const [successType, setSuccessType] = useState<"item" | "appliance" | null>(
+    null
+  );
+  const [itemNotFoundOpen, setItemNotFoundOpen] = useState(false);
+  const [scannedBarcode, setScannedBarcode] = useState<string | null>(null);
+
   // Inventory logic
   const {
     open: inventoryOpen,
@@ -281,7 +296,8 @@ const Dashboard: React.FC = () => {
         handleError(error, t("errors.createAppliance"));
       } else {
         setAddApplianceOpen(false);
-        void navigate("/appliances");
+        setSuccessType("appliance");
+        setSuccessDialogOpen(true);
       }
     } catch (err: unknown) {
       handleError(err, t("errors.createAppliance"));
@@ -379,9 +395,15 @@ const Dashboard: React.FC = () => {
         onClose={() => setScanOpen(false)}
         onScanSuccess={(decodedText) => {
           setScanOpen(false);
-          void navigate(
-            `/inventory?scanResult=${encodeURIComponent(decodedText)}`
-          );
+          const existingItem = items.find((i) => i.sku === decodedText);
+          if (existingItem) {
+            void navigate(
+              `/inventory?scanResult=${encodeURIComponent(decodedText)}`
+            );
+          } else {
+            setScannedBarcode(decodedText);
+            setItemNotFoundOpen(true);
+          }
         }}
         onError={(msg) => handleError(new Error(msg), msg)}
       />
@@ -402,17 +424,106 @@ const Dashboard: React.FC = () => {
         onSave={() => {
           void handleSave().then(() => {
             setTimeout(() => {
-              void navigate("/inventory");
+              setSuccessType("item");
+              setSuccessDialogOpen(true);
             }, 500);
           });
         }}
         onFormDataChange={setInventoryFormData}
         onGenerateSKU={generateSKU}
-        onImageUpload={handleImageUpload}
+        onImageUpload={(e) => void handleImageUpload(e)}
         getBarcodeFormat={getBarcodeFormat}
         role={role}
         loading={inventorySaving}
       />
+
+      {/* Success Dialog */}
+      <Dialog
+        open={successDialogOpen}
+        onClose={() => setSuccessDialogOpen(false)}
+      >
+        <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <SuccessIcon color="success" />
+          {t("common.success")}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {successType === "item"
+              ? t("inventory.scanner.success.item")
+              : t("inventory.scanner.success.appliance")}{" "}
+            {t("inventory.scanner.success.nextAction")}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setSuccessDialogOpen(false)}>
+            {t("common.done")}
+          </Button>
+          <Button
+            onClick={() => {
+              setSuccessDialogOpen(false);
+              if (successType === "item") {
+                handleOpenInventory();
+              } else {
+                setAddApplianceOpen(true);
+              }
+            }}
+          >
+            {successType === "item"
+              ? "Add Another Item"
+              : "Add Another Appliance"}
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              setSuccessDialogOpen(false);
+              void navigate(
+                successType === "item" ? "/inventory" : "/appliances"
+              );
+            }}
+          >
+            {t("common.viewList")}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Item Not Found Dialog */}
+      <Dialog
+        open={itemNotFoundOpen}
+        onClose={() => setItemNotFoundOpen(false)}
+      >
+        <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <WarningIcon color="warning" />
+          {t("inventory.scanner.notFound.title")}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {t("inventory.scanner.notFound.message", {
+              sku: scannedBarcode || "",
+            })}
+          </DialogContentText>
+          <DialogContentText sx={{ mt: 1.5, fontSize: "0.875rem" }}>
+            {t("inventory.scanner.notFound.rescanHint")}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setItemNotFoundOpen(false)}>
+            {t("common.cancel")}
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              setItemNotFoundOpen(false);
+              handleOpenInventory();
+              setInventoryFormData((prev) => ({
+                ...prev,
+                sku: scannedBarcode || "",
+              }));
+            }}
+          >
+            {t("inventory.scanner.notFound.addButton")}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

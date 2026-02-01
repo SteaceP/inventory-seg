@@ -47,15 +47,17 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
 
         const config = {
           fps: 20,
-          qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
-            const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-            const qrboxSize = Math.floor(minEdge * 0.6);
-            return {
-              width: qrboxSize,
-              height: qrboxSize,
-            };
+          qrbox: (viewfinderWidth: number) => {
+            // Optimize for barcodes: wider than it is tall
+            const width = Math.floor(viewfinderWidth * 0.85);
+            const height = Math.floor(viewfinderWidth * 0.45);
+            return { width, height };
           },
-          aspectRatio: 1.0,
+          aspectRatio: 1.777778, // 16:9 aspect ratio
+          disableFlip: true,
+          experimentalFeatures: {
+            useBarCodeDetectorIfSupported: true,
+          },
         };
 
         await html5QrCode.start(
@@ -134,11 +136,11 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
           sx={{
             position: "relative",
             width: "100%",
-            maxWidth: "300px",
-            aspectRatio: "1/1",
+            maxWidth: "320px",
+            aspectRatio: "16/9",
             height: "auto",
             margin: "0 auto",
-            borderRadius: "16px",
+            borderRadius: "12px",
             overflow: "hidden",
             boxShadow: (theme) =>
               theme.palette.mode === "dark"
@@ -168,8 +170,8 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
             <Box
               sx={{
                 position: "absolute",
-                top: 20,
-                left: 20,
+                top: "28%",
+                left: "8%",
                 width: 30,
                 height: 30,
                 borderLeft: "4px solid",
@@ -181,8 +183,8 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
             <Box
               sx={{
                 position: "absolute",
-                top: 20,
-                right: 20,
+                top: "28%",
+                right: "8%",
                 width: 30,
                 height: 30,
                 borderRight: "4px solid",
@@ -194,8 +196,8 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
             <Box
               sx={{
                 position: "absolute",
-                bottom: 20,
-                left: 20,
+                bottom: "28%",
+                left: "8%",
                 width: 30,
                 height: 30,
                 borderLeft: "4px solid",
@@ -207,8 +209,8 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
             <Box
               sx={{
                 position: "absolute",
-                bottom: 20,
-                right: 20,
+                bottom: "28%",
+                right: "8%",
                 width: 30,
                 height: 30,
                 borderRight: "4px solid",
@@ -220,8 +222,8 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
 
             {/* Pulsing Scan Line */}
             <motion.div
-              initial={{ top: "15%" }}
-              animate={{ top: "85%" }}
+              initial={{ top: "30%" }}
+              animate={{ top: "70%" }}
               transition={{
                 duration: 2,
                 repeat: Infinity,
@@ -237,18 +239,6 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
                   "linear-gradient(90deg, transparent, #027d6f, transparent)",
                 boxShadow: "0 0 15px #027d6f",
                 zIndex: 10,
-              }}
-            />
-
-            {/* Semi-transparent Backdrop Mask */}
-            <Box
-              sx={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                border: "40px solid rgba(13, 17, 23, 0.4)",
               }}
             />
           </Box>
