@@ -44,7 +44,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onClose }) => {
   const { measureOperation } = usePerformance();
   const { handleError } = useErrorHandler();
   const [loading, setLoading] = useState(false);
-  const { avatarUrl } = useUserContext();
+  const { avatarUrl, session } = useUserContext();
   const { t, lang } = useTranslation();
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -81,11 +81,17 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onClose }) => {
         "assistant.chat",
         "Send Message to Assistant",
         async () => {
+          const headers: Record<string, string> = {
+            "Content-Type": "application/json",
+          };
+
+          if (session?.access_token) {
+            headers["Authorization"] = `Bearer ${session.access_token}`;
+          }
+
           const response = await fetch("/api/assistant/chat", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers,
             body: JSON.stringify({
               messages: newMessages,
               language: lang,
