@@ -48,3 +48,13 @@ trigger: always_on
 - **Supported Languages**:
   - English (en)
   - French (fr)
+
+## Development Tools
+
+- **MCP Servers**:
+  - **Supabase**: Use `supabase-mcp-server` for database interactions, migrations, and schema inspection.
+  - **MUI**: Use `mui-mcp` server to answer any MUI questions:
+    1. Call `useMuiDocs` to fetch docs for the relevant package.
+    2. Call `fetchDocs` for additional docs using ONLY URLs from the returned content.
+    3. Repeat until all relevant docs are fetched.
+    4. Use the fetched content to answer the question.
