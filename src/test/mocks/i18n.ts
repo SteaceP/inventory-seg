@@ -24,4 +24,7 @@ export const setupI18nMock = () => {
   vi.mock("@i18n", () => ({
     useTranslation: () => createMockTranslation(),
   }));
+  vi.mock("@/i18n", () => ({
+    useTranslation: () => createMockTranslation(),
+  }));
 };

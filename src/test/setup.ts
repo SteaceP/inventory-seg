@@ -6,6 +6,8 @@ import { setupFramerMotionMock } from "./mocks/framer-motion";
 
 setupFramerMotionMock();
 
+setupFramerMotionMock();
+
 /**
  * Global test setup
  * This file runs before every test file

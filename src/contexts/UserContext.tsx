@@ -143,8 +143,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     [handleError]
   );
 
-  // ... (useEffect for SW message skipped) ...
-
   useEffect(() => {
     let isMounted = true;
 
