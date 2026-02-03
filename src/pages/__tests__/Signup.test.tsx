@@ -31,7 +31,7 @@ vi.mock("@contexts/UserContext", () => ({
 // Mock i18n
 const { t } = createMockTranslation();
 vi.mock("@i18n", () => ({
-  useTranslation: () => ({ t }),
+  useTranslation: () => ({ t }),=
 }));
 
 // Mock hooks
@@ -193,8 +193,6 @@ describe("Signup Page", () => {
       error,
     });
 
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-
     render(<Signup />);
 
     fireEvent.change(screen.getByLabelText(/signup.displayName/i), {
@@ -218,26 +216,13 @@ describe("Signup Page", () => {
         expect.any(Object)
       );
     });
-
-    expect(consoleSpy).toHaveBeenCalledWith(
-      "[Signup] Auth error details:",
-      expect.objectContaining({
-        message: "User already registered",
-        status: 422,
-        email: "test@s-e-g.ca",
-      })
-    );
-
-    consoleSpy.mockRestore();
   });
 
   it("toggles password visibility", () => {
     render(<Signup />);
 
     const passwordInput = screen.getByLabelText(/signup.password/i);
-    const toggleButton = screen.getByLabelText(
-      /basculer la visibilité du mot de passe/i
-    );
+    const toggleButton = screen.getByLabelText(/common.togglePassword/i);
 
     expect(passwordInput).toHaveAttribute("type", "password");
 

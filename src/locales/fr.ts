@@ -135,6 +135,7 @@ const fr = {
   "common.retry": "Réessayer",
   "common.details": "Détails",
   "common.years": "Ans",
+  "common.togglePassword": "Basculer la visibilité du mot de passe",
 
   // Appearance
   "appearance.title": "Apparence",

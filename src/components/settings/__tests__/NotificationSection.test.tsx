@@ -17,6 +17,31 @@ import {
 // Hoist mocks to avoid unbound-method lint errors
 const mocks = vi.hoisted(() => ({
   getSession: vi.fn(),
+  subscribeToPush: vi.fn(),
+  unsubscribeFromPush: vi.fn(),
+  checkPushSubscription: vi.fn(),
+  supabaseFrom: vi.fn(() => {
+    const chain: {
+      select: ReturnType<typeof vi.fn>;
+      eq: ReturnType<typeof vi.fn>;
+      single: ReturnType<typeof vi.fn>;
+      update: ReturnType<typeof vi.fn>;
+    } = {} as never;
+
+    chain.select = vi.fn().mockReturnValue(chain);
+    chain.eq = vi.fn().mockResolvedValue({ error: null });
+    chain.single = vi.fn().mockResolvedValue({
+      data: {
+        notifications: false,
+        email_alerts: false,
+        low_stock_threshold: 10,
+      },
+      error: null,
+    });
+    chain.update = vi.fn().mockReturnValue(chain);
+
+    return chain;
+  }),
 }));
 
 // Mock contexts using centralized utilities
@@ -46,12 +71,20 @@ vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 
+// Mock push-notifications utilities
+vi.mock("@/utils/push-notifications", () => ({
+  subscribeToPush: mocks.subscribeToPush,
+  unsubscribeFromPush: mocks.unsubscribeFromPush,
+  checkPushSubscription: mocks.checkPushSubscription,
+}));
+
 // Mock supabaseClient
 vi.mock("@supabaseClient", () => ({
   supabase: {
     auth: {
       getSession: mocks.getSession,
     },
+    from: mocks.supabaseFrom,
   },
 }));
 
@@ -63,6 +96,11 @@ describe("NotificationSection", () => {
     cleanup();
     mockFetch = vi.fn();
     globalThis.fetch = mockFetch as unknown as typeof fetch;
+
+    // Default push notification mock implementations
+    mocks.subscribeToPush.mockResolvedValue(undefined);
+    mocks.unsubscribeFromPush.mockResolvedValue(undefined);
+    mocks.checkPushSubscription.mockResolvedValue(false);
   });
 
   it("should render notification titles and switches", () => {
@@ -73,19 +111,38 @@ describe("NotificationSection", () => {
     expect(screen.getByText(/notifications.emailAlerts/i)).toBeInTheDocument();
   });
 
-  it("should toggle push notifications", () => {
+  it("should toggle push notifications", async () => {
     render(<NotificationSection />);
 
     const pushSwitch = screen.getByRole("switch", {
       name: /notifications.pushEnabled/i,
     });
-    expect(pushSwitch).not.toBeChecked();
+
+    // Initial state should be unchecked
+    await waitFor(() => {
+      expect(pushSwitch).not.toBeChecked();
+    });
 
     fireEvent.click(pushSwitch);
-    expect(pushSwitch).toBeChecked();
+
+    // Wait for push mock to be called
+    await waitFor(
+      () => {
+        expect(mocks.subscribeToPush).toHaveBeenCalled();
+      },
+      { timeout: 2000 }
+    );
+
+    // Wait for state update
+    await waitFor(
+      () => {
+        expect(pushSwitch).toBeChecked();
+      },
+      { timeout: 2000 }
+    );
   });
 
-  it("should show/hide threshold field when email alerts are toggled", () => {
+  it("should show/hide threshold field when email alerts are toggled", async () => {
     render(<NotificationSection />);
 
     expect(
@@ -97,27 +154,36 @@ describe("NotificationSection", () => {
     });
     fireEvent.click(emailSwitch);
 
-    expect(
-      screen.getByLabelText(/notifications.lowStockThreshold/i)
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByLabelText(/notifications.lowStockThreshold/i)
+      ).toBeInTheDocument();
+    });
 
     fireEvent.click(emailSwitch);
-    expect(
-      screen.queryByLabelText(/notifications.lowStockThreshold/i)
-    ).not.toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(
+        screen.queryByLabelText(/notifications.lowStockThreshold/i)
+      ).not.toBeInTheDocument();
+    });
   });
 
-  it("should change threshold value", () => {
+  it("should change threshold value", async () => {
     render(<NotificationSection />);
 
     fireEvent.click(
       screen.getByRole("switch", { name: /notifications.emailAlerts/i })
     );
 
-    const input = screen.getByLabelText(/notifications.lowStockThreshold/i);
+    const input = await screen.findByLabelText(
+      /notifications.lowStockThreshold/i
+    );
     fireEvent.change(input, { target: { value: "15" } });
 
-    expect(input).toHaveValue(15);
+    await waitFor(() => {
+      expect(input).toHaveValue(15);
+    });
   });
 
   it("should handle successful test notification", async () => {

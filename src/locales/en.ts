@@ -130,6 +130,7 @@ const en = {
   "common.retry": "Retry",
   "common.details": "Details",
   "common.years": "Years",
+  "common.togglePassword": "Toggle password visibility",
 
   // Appearance
   "appearance.compactView": "Compact View",

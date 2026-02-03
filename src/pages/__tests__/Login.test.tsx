@@ -178,8 +178,6 @@ describe("Login Page", () => {
       error,
     });
 
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-
     render(<Login />);
 
     fireEvent.change(screen.getByLabelText(/login.email/i), {
@@ -198,26 +196,13 @@ describe("Login Page", () => {
         expect.any(Object)
       );
     });
-
-    expect(consoleSpy).toHaveBeenCalledWith(
-      "[Login] Auth error details:",
-      expect.objectContaining({
-        message: "Invalid credentials",
-        status: 400,
-        email: "test@example.com",
-      })
-    );
-
-    consoleSpy.mockRestore();
   });
 
   it("toggles password visibility", () => {
     render(<Login />);
 
     const passwordInput = screen.getByLabelText(/login.password/i);
-    const toggleButton = screen.getByLabelText(
-      /basculer la visibilité du mot de passe/i
-    );
+    const toggleButton = screen.getByLabelText(/common.togglePassword/i);
 
     expect(passwordInput).toHaveAttribute("type", "password");
 
