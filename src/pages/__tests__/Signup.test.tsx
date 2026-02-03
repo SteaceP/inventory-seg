@@ -31,7 +31,7 @@ vi.mock("@contexts/UserContext", () => ({
 // Mock i18n
 const { t } = createMockTranslation();
 vi.mock("@i18n", () => ({
-  useTranslation: () => ({ t }),=
+  useTranslation: () => ({ t }),
 }));
 
 // Mock hooks
