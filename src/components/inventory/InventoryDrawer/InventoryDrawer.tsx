@@ -1,22 +1,6 @@
 import React from "react";
 import { useInventoryContext } from "@contexts/InventoryContext";
 import { useUserContext } from "@contexts/UserContext";
-import {
-  Drawer,
-  Box,
-  Typography,
-  Chip,
-  Button,
-  Paper,
-  Stack,
-} from "@mui/material";
-import {
-  Inventory as InventoryIcon,
-  Label as LabelIcon,
-  History as HistoryIcon,
-  Add as AddIcon,
-  Description as NotesIcon,
-} from "@mui/icons-material";
 import { useTranslation } from "@/i18n";
 import type { InventoryItem } from "@/types/inventory";
 import InventoryActivityLog from "../shared/InventoryActivityLog";
@@ -24,6 +8,19 @@ import InventoryDrawerHeader from "./InventoryDrawerHeader";
 import InventoryDrawerDetails from "./InventoryDrawerDetails";
 import InventoryDrawerLocations from "./InventoryDrawerLocations";
 import InventoryDrawerActions from "./InventoryDrawerActions";
+
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
+import Stack from "@mui/material/Stack";
+import Drawer from "@mui/material/Drawer";
+import AddIcon from "@mui/icons-material/Add";
+import HistoryIcon from "@mui/icons-material/History";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import LabelIcon from "@mui/icons-material/Label";
+import NotesIcon from "@mui/icons-material/Description";
 
 interface InventoryDrawerProps {
   open: boolean;

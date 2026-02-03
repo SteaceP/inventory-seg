@@ -1,7 +1,10 @@
 import React from "react";
-import { Box, Avatar, Typography } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "@/i18n";
+
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Avatar from "@mui/material/Avatar";
 
 interface UserProfileProps {
   displayName: string | null;

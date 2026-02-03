@@ -1,9 +1,14 @@
 import React, { useEffect, useRef } from "react";
-import { Dialog, Box, IconButton, Typography, Button } from "@mui/material";
-import { Close as CloseIcon } from "@mui/icons-material";
 import { BrowserMultiFormatReader, NotFoundException } from "@zxing/library";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/i18n";
+
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface InventoryScannerProps {
   open: boolean;

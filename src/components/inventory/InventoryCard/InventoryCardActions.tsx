@@ -1,20 +1,16 @@
 import React from "react";
-import {
-  Box,
-  CardActions,
-  Button,
-  Stack,
-  IconButton,
-  alpha,
-  useTheme,
-} from "@mui/material";
-import {
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Exposure as ExposureIcon,
-  History as HistoryIcon,
-} from "@mui/icons-material";
 import type { InventoryItem } from "@/types/inventory";
+
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import { useTheme, alpha } from "@mui/material/styles";
+import IconButton from "@mui/material/IconButton";
+import CardActions from "@mui/material/CardActions";
+import Stack from "@mui/material/Stack";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ExposureIcon from "@mui/icons-material/Exposure";
+import HistoryIcon from "@mui/icons-material/History";
 
 interface InventoryCardActionsProps {
   item: InventoryItem;

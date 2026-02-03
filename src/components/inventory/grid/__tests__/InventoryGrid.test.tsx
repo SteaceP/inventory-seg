@@ -2,8 +2,8 @@ import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import InventoryGrid from "../InventoryGrid";
 import type { InventoryItem } from "@/types/inventory";
-import { ThemeProvider, createTheme } from "@mui/material";
 import { createMockUserContext, createMockInventoryItem } from "@test/mocks";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 // Mock framer-motion
 

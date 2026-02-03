@@ -1,15 +1,14 @@
 import React from "react";
-import {
-  Grid,
-  TextField,
-  MenuItem,
-  InputAdornment,
-  IconButton,
-} from "@mui/material";
-import { Autorenew as AutoRenewIcon } from "@mui/icons-material";
 import { useTranslation } from "@/i18n";
 import type { Appliance } from "@/types/appliances";
 import { generateSecureId } from "@utils/crypto";
+
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import MenuItem from "@mui/material/MenuItem";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import AutoRenewIcon from "@mui/icons-material/Autorenew";
 
 interface ApplianceMainFieldsProps {
   formData: Partial<Appliance>;

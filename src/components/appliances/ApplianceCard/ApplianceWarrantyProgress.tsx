@@ -1,13 +1,11 @@
 import React from "react";
-import {
-  Box,
-  Typography,
-  LinearProgress,
-  alpha,
-  useTheme,
-} from "@mui/material";
 import { useTranslation } from "@/i18n";
 import type { Appliance } from "@/types/appliances";
+
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import { useTheme, alpha } from "@mui/material/styles";
+import LinearProgress from "@mui/material/LinearProgress";
 
 interface ApplianceWarrantyProgressProps {
   appliance: Appliance;

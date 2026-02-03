@@ -1,7 +1,9 @@
 import React from "react";
-import { Grid, Typography } from "@mui/material";
-import { Inventory as InventoryIcon } from "@mui/icons-material";
 import { useTranslation } from "@/i18n";
+
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import InventoryIcon from "@mui/icons-material/Inventory";
 
 interface InventoryDrawerDetailsProps {
   effectiveThreshold: number;

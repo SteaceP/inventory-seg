@@ -1,7 +1,8 @@
 import React from "react";
-import { List } from "@mui/material";
 import type { MasterLocation } from "@/types/inventory";
 import LocationListItem from "./LocationListItem";
+
+import List from "@mui/material/List";
 
 interface LocationListProps {
   locations: MasterLocation[];

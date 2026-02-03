@@ -1,20 +1,4 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Drawer,
-  Divider,
-  useMediaQuery,
-  useTheme,
-  CssBaseline,
-} from "@mui/material";
-import {
-  Dashboard as DashboardIcon,
-  Settings as SettingsIcon,
-  Kitchen as AppliancesIcon,
-  History as ActivityIcon,
-  LocationOn as LocationIcon,
-  Assessment as AssessmentIcon,
-} from "@mui/icons-material";
 import { useLocation, Outlet } from "react-router-dom";
 import { useUserContext } from "@contexts/UserContext";
 import { useTranslation } from "@/i18n";
@@ -25,6 +9,19 @@ import UserProfile from "./UserProfile/UserProfile";
 import NavigationList from "./NavigationList/NavigationList";
 import MobileAppBar from "./MobileAppBar/MobileAppBar";
 import AssistantFAB from "../assistant/AssistantFAB";
+
+import { useTheme } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Drawer from "@mui/material/Drawer";
+import Divider from "@mui/material/Divider";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import CssBaseline from "@mui/material/CssBaseline";
+import ApplianceIcon from "@mui/icons-material/Kitchen";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import SettingsIcon from "@mui/icons-material/Settings";
+import ActivityIcon from "@mui/icons-material/History";
+import LocationIcon from "@mui/icons-material/LocationOn";
+import AssessmentIcon from "@mui/icons-material/Assessment";
 
 const Layout: React.FC = () => {
   const location = useLocation();
@@ -74,7 +71,7 @@ const Layout: React.FC = () => {
     },
     {
       text: t("menu.appliances"),
-      icon: <AppliancesIcon />,
+      icon: <ApplianceIcon />,
       path: "/appliances",
     },
     { text: t("menu.settings"), icon: <SettingsIcon />, path: "/settings" },

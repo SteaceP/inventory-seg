@@ -1,22 +1,22 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useErrorHandler } from "@hooks/useErrorHandler";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Box,
-  Button,
-  Typography,
-  IconButton,
-  CircularProgress,
-  Divider,
-} from "@mui/material";
-import { Close as CloseIcon, Print as PrintIcon } from "@mui/icons-material";
 import { useTranslation } from "@/i18n";
 import { supabase } from "@/supabaseClient";
 import type { InventoryActivity, ActivityAction } from "@/types/activity";
 import StockHistoryItem from "./StockHistoryItem";
+
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import IconButton from "@mui/material/IconButton";
+import DialogActions from "@mui/material/DialogActions";
+import CircularProgress from "@mui/material/CircularProgress";
+import Divider from "@mui/material/Divider";
+import CloseIcon from "@mui/icons-material/Close";
+import PrintIcon from "@mui/icons-material/Print";
 
 interface StockHistoryDialogProps {
   open: boolean;

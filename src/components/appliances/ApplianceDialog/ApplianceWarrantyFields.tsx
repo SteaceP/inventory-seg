@@ -1,7 +1,9 @@
 import React from "react";
-import { Grid, TextField } from "@mui/material";
 import { useTranslation } from "@/i18n";
 import type { Appliance } from "@/types/appliances";
+
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
 
 interface ApplianceWarrantyFieldsProps {
   formData: Partial<Appliance>;

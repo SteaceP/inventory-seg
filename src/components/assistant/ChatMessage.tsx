@@ -1,10 +1,13 @@
 import React from "react";
-import { Box, Paper, Avatar, Typography, useTheme } from "@mui/material";
-import {
-  SmartToy as RobotIcon,
-  Person as PersonIcon,
-} from "@mui/icons-material";
 import { motion } from "framer-motion";
+
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import { useTheme } from "@mui/material/styles";
+import Avatar from "@mui/material/Avatar";
+import RobotIcon from "@mui/icons-material/SmartToy";
+import PersonIcon from "@mui/icons-material/Person";
 
 interface Message {
   id: string;

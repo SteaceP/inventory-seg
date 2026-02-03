@@ -1,12 +1,9 @@
 import React from "react";
-import {
-  Paper,
-  Typography,
-  Box,
-  alpha,
-  useTheme,
-  useMediaQuery,
-} from "@mui/material";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import { useTheme, alpha } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 export interface ActionCardProps {
   title: string;

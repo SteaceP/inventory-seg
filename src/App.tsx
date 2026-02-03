@@ -9,13 +9,6 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
-import {
-  ThemeProvider,
-  CssBaseline,
-  Box,
-  CircularProgress,
-} from "@mui/material";
-import { WifiOff as WifiOffIcon } from "@mui/icons-material";
 import Layout from "./components/layout/Layout";
 import { useTranslation } from "./i18n";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -180,6 +173,12 @@ const AppContent = () => {
 };
 
 import { AnimatePresence, motion } from "framer-motion";
+
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import WifiOffIcon from "@mui/icons-material/WifiOff";
 
 const App = () => {
   return (

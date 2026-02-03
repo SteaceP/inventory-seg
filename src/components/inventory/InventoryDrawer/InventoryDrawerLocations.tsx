@@ -1,8 +1,12 @@
 import React from "react";
-import { Box, Typography, Stack, LinearProgress } from "@mui/material";
-import { LocationOn as LocationIcon } from "@mui/icons-material";
 import { useTranslation } from "@/i18n";
 import type { InventoryItem } from "@/types/inventory";
+
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import LinearProgress from "@mui/material/LinearProgress";
+import LocationIcon from "@mui/icons-material/LocationOn";
 
 interface InventoryDrawerLocationsProps {
   item: InventoryItem;

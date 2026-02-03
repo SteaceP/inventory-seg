@@ -1,19 +1,15 @@
 import React from "react";
-import {
-  CardActions,
-  Button,
-  Box,
-  IconButton,
-  alpha,
-  useTheme,
-} from "@mui/material";
-import {
-  History as HistoryIcon,
-  Build as BuildIcon,
-  Delete as DeleteIcon,
-} from "@mui/icons-material";
 import { useTranslation } from "@/i18n";
 import type { Appliance } from "@/types/appliances";
+
+import Box from "@mui/material/Box";
+import { useTheme, alpha } from "@mui/material/styles";
+import Button from "@mui/material/Button";
+import CardActions from "@mui/material/CardActions";
+import IconButton from "@mui/material/IconButton";
+import HistoryIcon from "@mui/icons-material/History";
+import BuildIcon from "@mui/icons-material/Build";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface ApplianceCardActionsProps {
   appliance: Appliance;

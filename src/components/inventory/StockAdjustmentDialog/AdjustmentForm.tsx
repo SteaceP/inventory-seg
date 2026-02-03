@@ -1,21 +1,21 @@
 import React from "react";
-import {
-  Box,
-  Typography,
-  Paper,
-  Fade,
-  TextField,
-  Autocomplete,
-  Button,
-  CircularProgress,
-} from "@mui/material";
-import { Person as PersonIcon, Map as MapIcon } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
 import { useTranslation } from "@/i18n";
 import type { InventoryItem } from "@/types/inventory";
 import type { SelectedLocation } from "./types";
 import AdjustmentKeypad from "./AdjustmentKeypad";
+
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
+import Fade from "@mui/material/Fade";
+import PersonIcon from "@mui/icons-material/Person";
+import MapIcon from "@mui/icons-material/Map";
 
 const MotionBox = motion.create(Box);
 

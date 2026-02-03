@@ -1,23 +1,23 @@
 import React, { useState } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  TextField,
-  IconButton,
-  Box,
-  Divider,
-} from "@mui/material";
-import { Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
 import { useTranslation } from "@/i18n";
 import { useInventoryContext } from "@contexts/InventoryContext";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { supabase } from "@/supabaseClient";
+
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import TextField from "@mui/material/TextField";
+import IconButton from "@mui/material/IconButton";
+import Divider from "@mui/material/Divider";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface CategoryManagementDialogProps {
   open: boolean;

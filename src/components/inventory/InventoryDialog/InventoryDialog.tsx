@@ -1,18 +1,5 @@
 import React from "react";
 import { useTranslation } from "@/i18n";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Box,
-  TextField,
-  Button,
-  IconButton,
-  Tooltip,
-  Autocomplete,
-} from "@mui/material";
-import { Refresh as RefreshIcon } from "@mui/icons-material";
 import Barcode from "react-barcode";
 import type { BarcodeProps } from "react-barcode";
 import type { InventoryItem } from "@/types/inventory";
@@ -21,6 +8,18 @@ import { useUserContext } from "@contexts/UserContext";
 import { useInventoryContext } from "@contexts/InventoryContext";
 import ImageUploadField from "../shared/ImageUploadField";
 import StockLocationFields from "../shared/StockLocationFields";
+
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import TextField from "@mui/material/TextField";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import Autocomplete from "@mui/material/Autocomplete";
+import RefreshIcon from "@mui/icons-material/Refresh";
 
 interface InventoryDialogProps {
   open: boolean;

@@ -1,7 +1,10 @@
 import React from "react";
-import { Box, Typography, Button } from "@mui/material";
-import { ErrorOutline as ErrorIcon } from "@mui/icons-material";
 import * as Sentry from "@sentry/react";
+
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import ErrorIcon from "@mui/icons-material/ErrorOutline";
 
 interface Props {
   children: React.ReactNode;

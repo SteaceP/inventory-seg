@@ -1,26 +1,4 @@
 import React, { useState, useEffect, useMemo } from "react";
-import {
-  Box,
-  Typography,
-  useTheme,
-  alpha,
-  Paper,
-  Grid,
-  useMediaQuery,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Button,
-} from "@mui/material";
-import {
-  Inventory as InventoryIcon,
-  Warning as WarningIcon,
-  Category as CategoryIcon,
-  History as HistoryIcon,
-  CheckCircle as SuccessIcon,
-} from "@mui/icons-material";
 import { useUserContext } from "@contexts/UserContext";
 import { useTranslation } from "@/i18n";
 import { useInventoryContext } from "@contexts/InventoryContext";
@@ -35,6 +13,24 @@ import { useNavigate } from "react-router-dom";
 import type { Appliance } from "@/types/appliances";
 import { useInventoryForm } from "@hooks/inventory/useInventoryForm";
 import { useInventoryActions } from "@hooks/inventory/useInventoryActions";
+
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import { useTheme, alpha } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Paper from "@mui/material/Paper";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import WarningIcon from "@mui/icons-material/Warning";
+import CategoryIcon from "@mui/icons-material/Category";
+import HistoryIcon from "@mui/icons-material/History";
+import SuccessIcon from "@mui/icons-material/CheckCircle";
 
 interface StatCardProps {
   title: string;

@@ -1,20 +1,17 @@
 import React from "react";
-import {
-  Paper,
-  Typography,
-  List,
-  ListItem,
-  ListItemText,
-  Box,
-  Button,
-  Chip,
-} from "@mui/material";
-import {
-  Warning as WarningIcon,
-  ArrowForward as ArrowForwardIcon,
-} from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "@/i18n";
+
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
+import WarningIcon from "@mui/icons-material/Warning";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 interface LowStockItem {
   id: string;

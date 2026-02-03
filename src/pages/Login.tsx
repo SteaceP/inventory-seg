@@ -1,18 +1,4 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Container,
-  IconButton,
-  InputAdornment,
-  ToggleButton,
-  ToggleButtonGroup,
-  Link,
-} from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/i18n";
 import { useUserContext } from "@contexts/UserContext";
@@ -22,6 +8,20 @@ import type { Language } from "@/types/user";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { usePerformance } from "@hooks/usePerformance";
+
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import IconButton from "@mui/material/IconButton";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import Link from "@mui/material/Link";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 interface LocationState {
   from?: {

@@ -1,6 +1,7 @@
 import React from "react";
-import { Grid, Button } from "@mui/material";
-import { Backspace as BackspaceIcon } from "@mui/icons-material";
+import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
+import BackspaceIcon from "@mui/icons-material/Backspace";
 
 interface AdjustmentKeypadProps {
   onDigit: (digit: string) => void;

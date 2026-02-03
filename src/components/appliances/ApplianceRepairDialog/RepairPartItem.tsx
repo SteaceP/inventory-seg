@@ -1,8 +1,11 @@
 import React from "react";
-import { Box, TextField, IconButton } from "@mui/material";
-import { Delete as DeleteIcon } from "@mui/icons-material";
 import { useTranslation } from "@/i18n";
 import type { RepairPart } from "@/types/appliances";
+
+import TextField from "@mui/material/TextField";
+import IconButton from "@mui/material/IconButton";
+import Box from "@mui/material/Box";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface RepairPartItemProps {
   part: RepairPart;

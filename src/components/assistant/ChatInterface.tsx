@@ -1,18 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  Box,
-  Typography,
-  Paper,
-  Avatar,
-  CircularProgress,
-  IconButton,
-  Tooltip,
-} from "@mui/material";
-import {
-  SmartToy as RobotIcon,
-  DeleteOutline as DeleteIcon,
-  Close as CloseIcon,
-} from "@mui/icons-material";
 import { AnimatePresence } from "framer-motion";
 import { useUserContext } from "@contexts/UserContext";
 import { useTranslation } from "@/i18n";
@@ -23,6 +9,17 @@ import { usePerformance } from "@hooks/usePerformance";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import WelcomeView from "./WelcomeView";
+
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import Avatar from "@mui/material/Avatar";
+import CircularProgress from "@mui/material/CircularProgress";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import RobotIcon from "@mui/icons-material/SmartToy";
+import DeleteIcon from "@mui/icons-material/DeleteOutline";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface Message {
   id: string;

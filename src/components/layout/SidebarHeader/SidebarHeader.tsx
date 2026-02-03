@@ -1,12 +1,14 @@
 import React from "react";
-import { Box, Typography, IconButton, Toolbar } from "@mui/material";
-import {
-  ChevronLeft as ChevronLeftIcon,
-  Menu as MenuIcon,
-  Close as CloseIcon,
-} from "@mui/icons-material";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "@/i18n";
+
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import Toolbar from "@mui/material/Toolbar";
+import CloseIcon from "@mui/icons-material/Close";
+import MenuIcon from "@mui/icons-material/Menu";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 
 interface SidebarHeaderProps {
   collapsed: boolean;

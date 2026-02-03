@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Box, TextField, InputAdornment } from "@mui/material";
-import { Search as SearchIcon } from "@mui/icons-material";
 import { useTranslation } from "@/i18n";
+
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
 
 interface InventorySearchProps {
   value: string;

@@ -1,12 +1,15 @@
 import React from "react";
-import { Grid, Paper, Typography, Box, alpha, useTheme } from "@mui/material";
-import {
-  Inventory as InventoryIcon,
-  Warning as WarningIcon,
-  Error as ErrorIcon,
-} from "@mui/icons-material";
 import { useTranslation } from "@/i18n";
 import type { InventoryItem } from "@/types/inventory";
+
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import { useTheme, alpha } from "@mui/material/styles";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import WarningIcon from "@mui/icons-material/Warning";
+import ErrorIcon from "@mui/icons-material/Error";
 
 interface InventoryStatsProps {
   items: InventoryItem[];

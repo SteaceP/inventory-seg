@@ -2,12 +2,12 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import InventoryStats from "../InventoryStats";
 import type { InventoryItem } from "@/types/inventory";
-import { ThemeProvider, createTheme } from "@mui/material";
 import {
   createMockTranslation,
   createMockInventoryItem,
   createMockCategory,
 } from "@test/mocks";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 // Mock translation hook
 const { t } = createMockTranslation();

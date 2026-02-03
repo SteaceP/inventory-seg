@@ -1,13 +1,4 @@
 import React from "react";
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  alpha,
-  useTheme,
-  Divider,
-} from "@mui/material";
 import { motion } from "framer-motion";
 import type { InventoryItem } from "@/types/inventory";
 import { useTranslation } from "@/i18n";
@@ -18,6 +9,13 @@ import { useInventoryContext } from "@contexts/InventoryContext";
 import InventoryCardMedia from "./InventoryCardMedia";
 import InventoryCardStock from "./InventoryCardStock";
 import InventoryCardActions from "./InventoryCardActions";
+
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import { useTheme, alpha } from "@mui/material/styles";
+import Divider from "@mui/material/Divider";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
 
 interface InventoryCardProps {
   item: InventoryItem;

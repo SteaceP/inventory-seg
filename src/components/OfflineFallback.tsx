@@ -1,10 +1,12 @@
 import React from "react";
-import { Box, Typography, Button, Paper } from "@mui/material";
-import {
-  WifiOff as WifiOffIcon,
-  Refresh as RefreshIcon,
-} from "@mui/icons-material";
 import { useTranslation } from "@/i18n";
+
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Paper from "@mui/material/Paper";
+import WifiOffIcon from "@mui/icons-material/WifiOff";
+import RefreshIcon from "@mui/icons-material/Refresh";
 
 const OfflineFallback: React.FC = () => {
   const { t } = useTranslation();

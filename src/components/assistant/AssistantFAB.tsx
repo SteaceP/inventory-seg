@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
-import {
-  Fab,
-  Drawer,
-  Box,
-  Tooltip,
-  useTheme,
-  useMediaQuery,
-} from "@mui/material";
-import { AutoAwesome as SparklesIcon } from "@mui/icons-material";
 import { motion, AnimatePresence } from "framer-motion";
 import ChatInterface from "./ChatInterface";
 import { useTranslation } from "@/i18n";
+
+import { useTheme } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Tooltip from "@mui/material/Tooltip";
+import Drawer from "@mui/material/Drawer";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Fab from "@mui/material/Fab";
+import SparklesIcon from "@mui/icons-material/AutoAwesome";
 
 const AssistantFAB: React.FC = () => {
   const [open, setOpen] = useState(false);

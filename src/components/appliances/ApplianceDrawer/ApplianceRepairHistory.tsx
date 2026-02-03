@@ -1,14 +1,17 @@
 import React from "react";
-import { Box, Typography, Button, Paper, Stack } from "@mui/material";
-import {
-  Add as AddIcon,
-  Assignment as HistoryIcon,
-  Build as BuildIcon,
-} from "@mui/icons-material";
 import { useTranslation } from "@/i18n";
 import type { Appliance, Repair } from "@/types/appliances";
 
 import RepairItem from "../shared/RepairItem";
+
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import AddIcon from "@mui/icons-material/Add";
+import HistoryIcon from "@mui/icons-material/Assignment";
+import BuildIcon from "@mui/icons-material/Build";
 
 interface ApplianceRepairHistoryProps {
   appliance: Appliance;

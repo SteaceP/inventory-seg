@@ -1,10 +1,13 @@
 import React from "react";
-import { Box, Paper, Typography, Avatar, TextField } from "@mui/material";
-import {
-  Person as PersonIcon,
-  PhotoCamera as CameraIcon,
-} from "@mui/icons-material";
 import { useTranslation } from "@/i18n";
+
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import Avatar from "@mui/material/Avatar";
+import TextField from "@mui/material/TextField";
+import PersonIcon from "@mui/icons-material/Person";
+import CameraIcon from "@mui/icons-material/PhotoCamera";
 
 interface ProfileSectionProps {
   displayName: string;

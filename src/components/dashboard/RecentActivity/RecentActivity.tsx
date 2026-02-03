@@ -1,21 +1,18 @@
 import React from "react";
-import {
-  Paper,
-  Typography,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-} from "@mui/material";
-import {
-  Add as AddIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-} from "@mui/icons-material";
 
 import { useTranslation } from "@/i18n";
 
 import type { RecentActivityItem } from "@/types/activity";
+
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface RecentActivityProps {
   activities: RecentActivityItem[];

@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import { Box, Typography, Divider } from "@mui/material";
-import { Category as CategoryIcon } from "@mui/icons-material";
 import type { InventoryItem } from "@/types/inventory";
 import { useTranslation } from "@/i18n";
 import { useUserContext } from "@contexts/UserContext";
@@ -8,6 +6,11 @@ import { useInventoryContext } from "@contexts/InventoryContext";
 import { useInventoryCategorization } from "@hooks/useInventoryCategorization";
 import CategoryThresholdDialog from "../CategoryManagement/CategoryThresholdDialog";
 import CategorySection from "../CategoryManagement/CategorySection";
+
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import CategoryIcon from "@mui/icons-material/Category";
 
 interface InventoryCategorizedGridProps {
   items: InventoryItem[];

@@ -1,14 +1,4 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Container,
-  Typography,
-  Paper,
-  Button,
-  IconButton,
-  CircularProgress,
-} from "@mui/material";
-import { Add as AddIcon, Refresh as RefreshIcon } from "@mui/icons-material";
 import { useTranslation } from "@/i18n";
 import { useInventoryContext } from "@contexts/InventoryContext";
 import { useAlert } from "@contexts/AlertContext";
@@ -17,6 +7,16 @@ import { supabase } from "@/supabaseClient";
 import type { MasterLocation } from "@/types/inventory";
 import LocationList from "@components/inventory/LocationManagement/LocationList";
 import LocationDialog from "@components/inventory/LocationManagement/LocationDialog";
+
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import IconButton from "@mui/material/IconButton";
+import AddIcon from "@mui/icons-material/Add";
+import RefreshIcon from "@mui/icons-material/Refresh";
 
 const StockLocationsPage: React.FC = () => {
   const { t } = useTranslation();

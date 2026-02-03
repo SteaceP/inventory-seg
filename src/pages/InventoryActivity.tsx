@@ -1,35 +1,31 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useErrorHandler } from "@hooks/useErrorHandler";
-import {
-  Box,
-  Container,
-  Typography,
-  Paper,
-  Chip,
-  IconButton,
-  CircularProgress,
-  TextField,
-  InputAdornment,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  useTheme,
-} from "@mui/material";
-import {
-  Search as SearchIcon,
-  TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon,
-  Edit as EditIcon,
-  Add as AddIcon,
-  Delete as DeleteIcon,
-  Refresh as RefreshIcon,
-} from "@mui/icons-material";
 import { useTranslation } from "@/i18n";
 import { supabase } from "@/supabaseClient";
 import type { InventoryActivity } from "@/types/activity";
-import { alpha } from "@mui/material/styles";
 import { getActivityNarrative, getStockChange } from "@utils/activityUtils";
+
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import Typography from "@mui/material/Typography";
+import { useTheme, alpha } from "@mui/material/styles";
+import Paper from "@mui/material/Paper";
+import Container from "@mui/material/Container";
+import Chip from "@mui/material/Chip";
+import IconButton from "@mui/material/IconButton";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import SearchIcon from "@mui/icons-material/Search";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import TrendingDownIcon from "@mui/icons-material/TrendingDown";
+import EditIcon from "@mui/icons-material/Edit";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import RefreshIcon from "@mui/icons-material/Refresh";
 
 const InventoryActivityPage: React.FC = () => {
   const { t } = useTranslation();

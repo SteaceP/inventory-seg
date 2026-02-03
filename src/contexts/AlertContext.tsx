@@ -7,8 +7,12 @@ import React, {
   useMemo,
   type ReactNode,
 } from "react";
-import { Snackbar, Alert, Slide, type AlertProps } from "@mui/material";
+import type { AlertProps } from "@mui/material/Alert";
 import type { SlideProps } from "@mui/material/Slide";
+
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import Slide from "@mui/material/Slide";
 
 interface AlertContextType {
   showSuccess: (message: string) => void;

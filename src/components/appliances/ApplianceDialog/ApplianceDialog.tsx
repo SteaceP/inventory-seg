@@ -1,19 +1,18 @@
 import React, { useState } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  CircularProgress,
-  Grid,
-} from "@mui/material";
 import { useTranslation } from "@/i18n";
 import type { Appliance } from "@/types/appliances";
 import ApplianceImageUpload from "./ApplianceImageUpload";
 import ApplianceMainFields from "./ApplianceMainFields";
 import ApplianceInfoFields from "./ApplianceInfoFields";
 import ApplianceWarrantyFields from "./ApplianceWarrantyFields";
+
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import Grid from "@mui/material/Grid";
 
 interface ApplianceDialogProps {
   open: boolean;

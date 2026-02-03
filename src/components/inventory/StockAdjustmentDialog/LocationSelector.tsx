@@ -1,18 +1,17 @@
 import React from "react";
-import {
-  Box,
-  Typography,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-} from "@mui/material";
-import { LocationOn as LocationIcon } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
 import { useTranslation } from "@/i18n";
 import type { InventoryItem } from "@/types/inventory";
 import type { SelectedLocation } from "./types";
+
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
+import LocationIcon from "@mui/icons-material/LocationOn";
 
 const MotionBox = motion.create(Box);
 

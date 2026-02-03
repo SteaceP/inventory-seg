@@ -1,24 +1,20 @@
 import React from "react";
-import {
-  Box,
-  Typography,
-  Grid,
-  Paper,
-  IconButton,
-  Tooltip,
-  useTheme,
-  useMediaQuery,
-  alpha,
-} from "@mui/material";
-import {
-  Category as CategoryIcon,
-  ChevronRight as ChevronRightIcon,
-  Settings as SettingsIcon,
-} from "@mui/icons-material";
 import { motion, AnimatePresence } from "framer-motion";
 import type { InventoryItem } from "@/types/inventory";
 import InventoryCard from "../InventoryCard/InventoryCard";
 import { useTranslation } from "@/i18n";
+
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import { useTheme, alpha } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import IconButton from "@mui/material/IconButton";
+import Grid from "@mui/material/Grid";
+import Tooltip from "@mui/material/Tooltip";
+import CategoryIcon from "@mui/icons-material/Category";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 interface CategorySectionProps {
   category: string;

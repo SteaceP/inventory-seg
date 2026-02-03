@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import { ThemeProvider, createTheme } from "@mui/material";
 import MobileAppBar from "../MobileAppBar";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 // Mock translation hook
 vi.mock("@i18n", () => ({

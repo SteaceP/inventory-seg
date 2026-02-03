@@ -1,24 +1,20 @@
 import React from "react";
-import {
-  Grid,
-  Typography,
-  Box,
-  alpha,
-  useTheme,
-  useMediaQuery,
-} from "@mui/material";
-import {
-  AddBox as AddIcon,
-  QrCodeScanner as ScanIcon,
-  HomeRepairService as RepairIcon,
-  Assessment as ReportIcon,
-  ChevronRight as ChevronRightIcon,
-  ChevronLeft as ChevronLeftIcon,
-} from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "@/i18n";
 import ActionCard from "../ActionCard/ActionCard";
 import { useScrollIndicators } from "@hooks/useScrollIndicators";
+
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import { useTheme, alpha } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import AddIcon from "@mui/icons-material/Add";
+import ScanIcon from "@mui/icons-material/QrCodeScanner";
+import RepairIcon from "@mui/icons-material/HomeRepairService";
+import ReportIcon from "@mui/icons-material/Assessment";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 
 interface QuickActionsProps {
   onScanClick?: () => void;
@@ -82,7 +78,6 @@ const QuickActions: React.FC<QuickActionsProps> = ({
           {t("dashboard.quickActions")}
         </Typography>
       )}
-
       {isMobile ? (
         // Mobile: Horizontal scrollable carousel with dynamic scroll hints
         <Box sx={{ position: "relative" }}>
@@ -117,7 +112,6 @@ const QuickActions: React.FC<QuickActionsProps> = ({
               </Box>
             ))}
           </Box>
-
           {/* Left scroll indicator - shows when scrolled right */}
           {showLeftIndicator && (
             <Box
@@ -179,7 +173,6 @@ const QuickActions: React.FC<QuickActionsProps> = ({
               </Box>
             </Box>
           )}
-
           {/* Right scroll indicator - shows when more content to the right */}
           {showRightIndicator && (
             <Box

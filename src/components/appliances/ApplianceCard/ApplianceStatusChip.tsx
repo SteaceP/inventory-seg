@@ -1,11 +1,11 @@
 import React from "react";
-import { Chip, alpha, useTheme } from "@mui/material";
-import {
-  Warning as WarningIcon,
-  CheckCircle as HealthyIcon,
-  Error as BrokenIcon,
-} from "@mui/icons-material";
 import { useTranslation } from "@/i18n";
+
+import Chip from "@mui/material/Chip";
+import { useTheme, alpha } from "@mui/material/styles";
+import WarningIcon from "@mui/icons-material/Warning";
+import HealthyIcon from "@mui/icons-material/CheckCircle";
+import BrokenIcon from "@mui/icons-material/Error";
 
 interface ApplianceStatusChipProps {
   status: "functional" | "needs_service" | "broken";

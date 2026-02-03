@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Grid, Box } from "@mui/material";
 import { AnimatePresence } from "framer-motion";
 import type { InventoryItem } from "@/types/inventory";
 import InventoryCard from "../InventoryCard/InventoryCard";
 import { useUserContext } from "@contexts/UserContext";
+
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
 
 interface InventoryGridProps {
   items: InventoryItem[];

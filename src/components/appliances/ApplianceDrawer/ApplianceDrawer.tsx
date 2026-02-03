@@ -1,12 +1,4 @@
 import React from "react";
-import { Drawer, Box, Chip, Paper, Stack } from "@mui/material";
-import {
-  CheckCircle as CheckCircleIcon,
-  Error as ErrorIcon,
-  Warning as WarningIcon,
-  Inventory as InventoryIcon,
-  Label as LabelIcon,
-} from "@mui/icons-material";
 import { useTranslation } from "@/i18n";
 import type { Appliance, Repair } from "@/types/appliances";
 import ApplianceDrawerHeader from "./ApplianceDrawerHeader";
@@ -14,6 +6,17 @@ import ApplianceWarrantyCard from "./ApplianceWarrantyCard";
 import ApplianceDetailsGrid from "./ApplianceDetailsGrid";
 import ApplianceRepairHistory from "./ApplianceRepairHistory";
 import ApplianceActionButtons from "./ApplianceActionButtons";
+
+import Box from "@mui/material/Box";
+import Drawer from "@mui/material/Drawer";
+import Chip from "@mui/material/Chip";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ErrorIcon from "@mui/icons-material/Error";
+import WarningIcon from "@mui/icons-material/Warning";
+import LabelIcon from "@mui/icons-material/Label";
 
 interface ApplianceDrawerProps {
   open: boolean;

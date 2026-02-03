@@ -1,16 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Typography,
-  Box,
-  Button,
-  Alert,
-  Snackbar,
-  Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from "@mui/material";
 import { useTranslation } from "@/i18n";
 import { supabase } from "@/supabaseClient";
 import { useUserContext } from "@contexts/UserContext";
@@ -24,6 +12,17 @@ import {
   generateSecureFileName,
   getExtensionFromMimeType,
 } from "@utils/crypto";
+
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
 
 const Settings: React.FC = () => {
   const [saveSuccess, setSaveSuccess] = useState(false);

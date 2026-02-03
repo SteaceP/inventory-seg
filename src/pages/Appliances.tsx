@@ -1,15 +1,4 @@
 import React from "react";
-import {
-  Box,
-  CircularProgress,
-  Grid,
-  Checkbox,
-  FormControlLabel,
-  Typography,
-  Tabs,
-  Tab,
-  Divider,
-} from "@mui/material";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { useUserContext } from "@contexts/UserContext";
 import { useTranslation } from "@/i18n";
@@ -28,6 +17,16 @@ import AppliancesStats from "@components/appliances/AppliancesStats";
 // Types & Hooks
 import type { ApplianceStatus } from "@/types/appliances";
 import { useApplianceManagement } from "@hooks/useApplianceManagement";
+
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import Grid from "@mui/material/Grid";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Typography from "@mui/material/Typography";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Divider from "@mui/material/Divider";
 
 const Appliances: React.FC = () => {
   const { compactView } = useUserContext();

@@ -1,20 +1,16 @@
 import React from "react";
-import {
-  Box,
-  Paper,
-  Typography,
-  alpha,
-  CircularProgress,
-  useTheme,
-  useMediaQuery,
-} from "@mui/material";
-import {
-  CheckCircle as HealthyIcon,
-  Error as CrisisIcon,
-} from "@mui/icons-material";
 import { useTranslation } from "@/i18n";
 import { useInventoryContext } from "@contexts/InventoryContext";
 import { useUserContext } from "@contexts/UserContext";
+
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import { useTheme, alpha } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import HealthyIcon from "@mui/icons-material/CheckCircle";
+import CrisisIcon from "@mui/icons-material/Error";
 
 const StockHealth: React.FC = () => {
   const { t } = useTranslation();

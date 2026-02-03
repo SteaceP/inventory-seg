@@ -1,21 +1,18 @@
 import React from "react";
-import {
-  Typography,
-  Box,
-  Button,
-  TextField,
-  InputAdornment,
-  IconButton,
-} from "@mui/material";
-import {
-  Add as AddIcon,
-  QrCodeScanner as ScanIcon,
-  Print as PrintIcon,
-  Search as SearchIcon,
-  Clear as ClearIcon,
-  Category as CategoryIcon,
-} from "@mui/icons-material";
 import { useTranslation } from "@/i18n";
+
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import PrintIcon from "@mui/icons-material/Print";
+import AddIcon from "@mui/icons-material/Add";
+import CategoryIcon from "@mui/icons-material/Category";
+import SearchIcon from "@mui/icons-material/Search";
+import ScanIcon from "@mui/icons-material/QrCodeScanner";
+import ClearIcon from "@mui/icons-material/Clear";
 
 interface InventoryHeaderProps {
   isMobile: boolean;

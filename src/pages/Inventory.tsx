@@ -1,5 +1,4 @@
 import React from "react";
-import { Box, CircularProgress, useTheme, useMediaQuery } from "@mui/material";
 import { useTranslation } from "@/i18n";
 import BarcodePrinter from "@components/BarcodePrinter";
 import InventoryHeader from "@components/inventory/grid/InventoryHeader";
@@ -17,6 +16,11 @@ import { useInventoryContext } from "@contexts/InventoryContext";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { useInventoryPage } from "@hooks/useInventoryPage";
 import { useUserContext } from "@contexts/UserContext";
+
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const Inventory: React.FC = () => {
   const {

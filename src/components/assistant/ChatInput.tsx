@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Box, TextField, IconButton, Tooltip } from "@mui/material";
-import {
-  Send as SendIcon,
-  Mic as MicIcon,
-  Stop as StopIcon,
-} from "@mui/icons-material";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/i18n";
 import { useErrorHandler } from "@hooks/useErrorHandler";
+
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import TextField from "@mui/material/TextField";
+import SendIcon from "@mui/icons-material/Send";
+import MicIcon from "@mui/icons-material/Mic";
+import StopIcon from "@mui/icons-material/Stop";
 
 interface ChatInputProps {
   input: string;

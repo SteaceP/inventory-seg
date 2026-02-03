@@ -1,29 +1,28 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useErrorHandler } from "@hooks/useErrorHandler";
-import {
-  Box,
-  Container,
-  Typography,
-  Paper,
-  Grid,
-  TextField,
-  Autocomplete,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  CircularProgress,
-  Divider,
-  ToggleButton,
-  ToggleButtonGroup,
-} from "@mui/material";
-import { Print as PrintIcon } from "@mui/icons-material";
 import { useTranslation } from "@/i18n";
 import { useInventoryContext } from "@contexts/InventoryContext";
 import { supabase } from "@/supabaseClient";
+
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import Paper from "@mui/material/Paper";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import TextField from "@mui/material/TextField";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import Autocomplete from "@mui/material/Autocomplete";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import PrintIcon from "@mui/icons-material/Print";
 
 const ReportsPage: React.FC = () => {
   const { t, lang } = useTranslation();

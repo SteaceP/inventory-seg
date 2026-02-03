@@ -1,6 +1,9 @@
 import React from "react";
-import { AppBar, Toolbar, Typography, IconButton } from "@mui/material";
-import { Close as CloseIcon } from "@mui/icons-material";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface InventoryDrawerHeaderProps {
   name: string;

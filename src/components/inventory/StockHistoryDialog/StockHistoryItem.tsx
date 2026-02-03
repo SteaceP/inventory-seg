@@ -1,15 +1,17 @@
 import React from "react";
-import { Box, Typography, Paper, Chip } from "@mui/material";
-import {
-  TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon,
-  Edit as EditIcon,
-  Add as AddIcon,
-  Delete as DeleteIcon,
-} from "@mui/icons-material";
 import { useTranslation } from "@/i18n";
 import type { InventoryActivity } from "@/types/activity";
 import { getActivityNarrative, getStockChange } from "@utils/activityUtils";
+
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import Chip from "@mui/material/Chip";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import TrendingDownIcon from "@mui/icons-material/TrendingDown";
+import EditIcon from "@mui/icons-material/Edit";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface StockHistoryItemProps {
   activity: InventoryActivity;

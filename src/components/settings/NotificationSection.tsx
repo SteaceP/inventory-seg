@@ -2,29 +2,17 @@ import React, { useState, useEffect } from "react";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { useUserContext } from "@contexts/UserContext";
 import { useAlert } from "@contexts/AlertContext";
-import {
-  Box,
-  Paper,
-  Typography,
-  FormControlLabel,
-  Switch,
-  TextField,
-  Button,
-} from "@mui/material";
-import { Notifications as NotificationsIcon } from "@mui/icons-material";
 import { useTranslation } from "@/i18n";
 import { supabase } from "@/supabaseClient";
 
-// The original NotificationSectionProps interface is no longer needed as props are managed internally or via context.
-// interface NotificationSectionProps {
-//   userId: string | null;
-//   emailAlerts: boolean;
-//   lowStockThreshold: number;
-//   pushEnabled: boolean;
-//   onEmailAlertsChange: (enabled: boolean) => void;
-//   onThresholdChange: (threshold: number) => void;
-//   onPushToggle: (enabled: boolean) => void;
-// }
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 
 const NotificationSection: React.FC = () => {
   const { t } = useTranslation();

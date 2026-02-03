@@ -1,7 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Barcode from "react-barcode";
-import { Box, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 
 interface PrintItem {
   name: string;
