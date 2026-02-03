@@ -44,6 +44,9 @@ export default defineConfig({
       brotliSize: true,
     }),
   ],
+  optimizeDeps: {
+    include: ["@emotion/react", "@emotion/styled", "@mui/material/Tooltip"],
+  },
   build: {
     rollupOptions: {
       output: {
