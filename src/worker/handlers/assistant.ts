@@ -1,5 +1,6 @@
 import postgres from "postgres";
 import { getSecurityHeaders } from "../helpers";
+import { reportError } from "../errorReporting";
 import { getUser } from "../auth";
 import type { Env } from "../types";
 
@@ -154,7 +155,7 @@ export async function handleAssistantChat(
           );
         }
       } catch (toolError) {
-        console.error("Tool execution error:", toolError);
+        reportError(toolError, { context: "Tool execution" });
         finalResponse = finalResponse.replace(
           toolCallMatch[0],
           `\n\n(Error adding item: ${toolError instanceof Error ? toolError.message : "Internal error"})`

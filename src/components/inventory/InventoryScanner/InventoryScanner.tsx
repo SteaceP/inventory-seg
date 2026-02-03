@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import type { BrowserMultiFormatReader } from "@zxing/library";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/i18n";
+import { reportError } from "@utils/errorReporting";
 
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
@@ -81,12 +82,12 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
             }
             if (err && !(err instanceof NotFoundException)) {
               // Only report serious errors, not "not found" which triggers every frame
-              console.error(err);
+              reportError(err);
             }
           }
         );
       } catch (err) {
-        console.error("Scanner Error:", err);
+        reportError(err, { context: "Scanner Error" });
         setIsLoading(false);
         onError(t("inventory.scanner.cameraError"));
         onClose();

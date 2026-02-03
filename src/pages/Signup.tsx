@@ -8,6 +8,7 @@ import type { Language } from "@/types/user";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { usePerformance } from "@hooks/usePerformance";
+import { logInfo } from "@utils/errorReporting";
 
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -31,7 +32,7 @@ const TURNSTILE_SITE_KEY =
   "1x00000000000000000000AA";
 
 if (!TURNSTILE_SITE_KEY) {
-  console.warn(
+  logInfo(
     "[Turnstile] Warning: VITE_TURNSTILE_SITE_KEY is not defined. Falling back to test key."
   );
 }
@@ -84,11 +85,6 @@ const Signup: React.FC = () => {
           });
 
           if (signUpError) {
-            console.error("[Signup] Auth error details:", {
-              message: signUpError.message,
-              status: signUpError.status,
-              email,
-            });
             throw signUpError;
           }
 

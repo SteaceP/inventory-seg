@@ -1,6 +1,6 @@
 import webpush from "web-push";
 import postgres from "postgres";
-import { reportError } from "../errorReporting";
+import { reportError, logInfo } from "../errorReporting";
 import type { Env, PushSubscriptionRow } from "../types";
 
 export interface PushOptions {
@@ -17,12 +17,12 @@ export async function broadcastPush(
   env: Env
 ): Promise<void> {
   if (!env.HYPERDRIVE) {
-    console.warn("HYPERDRIVE is missing, skipping push notification.");
+    logInfo("HYPERDRIVE is missing, skipping push notification.");
     return;
   }
 
   if (!env.VAPID_PUBLIC_KEY || !env.VAPID_PRIVATE_KEY) {
-    console.warn("VAPID keys missing, skipping push notification.");
+    logInfo("VAPID keys missing, skipping push notification.");
     return;
   }
 

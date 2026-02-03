@@ -1,4 +1,5 @@
 import type { Env } from "../types";
+import { logInfo } from "../errorReporting";
 
 export interface EmailOptions {
   to: string;
@@ -11,7 +12,7 @@ export async function sendEmail(
   env: Env
 ): Promise<void> {
   if (!env.BREVO_API_KEY) {
-    console.warn("BREVO_API_KEY is missing, skipping email.");
+    logInfo("BREVO_API_KEY is missing, skipping email.");
     return;
   }
 

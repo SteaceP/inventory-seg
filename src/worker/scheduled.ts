@@ -53,7 +53,7 @@ async function processScheduledTask(env: Env) {
 
   try {
     if (!env.HYPERDRIVE) {
-      console.error("Hyperdrive not configured");
+      reportError(new Error("Hyperdrive not configured"));
       return;
     }
 
@@ -242,14 +242,16 @@ async function analyzeAndNotify(
         reason: string;
       };
     } catch {
-      console.log("AI Parse Fail", aiResponse.response);
+      reportError(new Error("AI Parse Fail"), {
+        response: aiResponse.response,
+      });
     }
 
     if (result.should_order) {
       await sendNotification(supplier, env, sql, result.reason);
     }
   } catch (e) {
-    console.error("AI Analysis failed", e);
+    reportError(e, { context: "AI Analysis" });
   }
 }
 
@@ -301,7 +303,7 @@ async function sendNotification(
             if (status === 410 || status === 404) {
               // cleanup
               void sql`DELETE FROM push_subscriptions WHERE id = ${sub.id}`.catch(
-                console.error
+                (e: unknown) => reportError(e)
               );
             }
           })
@@ -310,6 +312,6 @@ async function sendNotification(
 
     // Also Send Email? (Optional, skipping for brevity unless requested, consistent with existing low stock alert)
   } catch (err) {
-    console.error("Notification failed", err);
+    reportError(err, { context: "Notification failed" });
   }
 }
