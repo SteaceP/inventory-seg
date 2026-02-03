@@ -10,7 +10,7 @@ vi.mock("@/i18n", () => ({
 }));
 
 import LocationDialog from "../LocationDialog";
-import { createMockLocation } from "../../../../test/mocks/factories";
+import { createMockLocation } from "@test/mocks/factories";
 import type { MasterLocation } from "@/types/inventory";
 
 describe("LocationDialog", () => {

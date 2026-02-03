@@ -11,7 +11,7 @@ vi.mock("@/i18n", () => ({
 }));
 
 // Mock supabaseClient
-import { mockSupabaseClient as mockClient } from "../../../test/mocks/supabase";
+import { mockSupabaseClient as mockClient } from "@test/mocks/supabase";
 vi.mock("@/supabaseClient", () => ({
   supabase: mockClient.client,
 }));

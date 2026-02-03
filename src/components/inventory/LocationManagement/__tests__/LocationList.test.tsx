@@ -1,7 +1,7 @@
 import { vi, describe, it, expect } from "vitest";
 import { render, screen } from "@test/test-utils";
 import LocationList from "../LocationList";
-import { createMockLocation } from "../../../../test/mocks/factories";
+import { createMockLocation } from "@test/mocks/factories";
 
 describe("LocationList", () => {
   const mockOnEdit = vi.fn();

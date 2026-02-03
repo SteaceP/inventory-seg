@@ -1,11 +1,11 @@
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import { mockSupabaseClient } from "../../../test/mocks/supabase";
+import { mockSupabaseClient } from "@test/mocks/supabase";
 import {
   createMockAlertContext,
   createMockInventoryContext,
   createMockUserContext,
-} from "../../../test/mocks/contexts";
+} from "@test/mocks/contexts";
 
 // Mock contexts
 const mockAlert = createMockAlertContext();
