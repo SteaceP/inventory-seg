@@ -1,13 +1,14 @@
-const STATIC_CACHE_NAME = "inventory-seg-static-v11";
-const IMAGE_CACHE_NAME = "inventory-seg-images-v11";
-const API_CACHE_NAME = "inventory-seg-api-v11";
-const FONT_CACHE_NAME = "inventory-seg-fonts-v11";
+const STATIC_CACHE_NAME = "inventory-seg-static-v12";
+const IMAGE_CACHE_NAME = "inventory-seg-images-v12";
+const API_CACHE_NAME = "inventory-seg-api-v12";
+const FONT_CACHE_NAME = "inventory-seg-fonts-v12";
 
 const ASSETS_TO_CACHE = [
   "/",
   "/index.html",
   "/manifest.webmanifest",
   "/icons/icon.svg",
+  "/icons/icon_maskable.svg",
 ];
 
 const SUPABASE_IMAGE_URL_SIGNATURE =
@@ -215,8 +216,8 @@ self.addEventListener("push", (event) => {
 
     const options = {
       body: data.body,
-      icon: data.icon || "/icons/icon.png", // Corrected extension
-      badge: data.badge || "/icons/icon.png",
+      icon: data.icon || "/icons/icon.svg",
+      badge: data.badge || "/icons/icon.svg",
       vibrate: data.vibrate || [200, 100, 200],
       data: { url }, // Validated URL
       tag: data.tag || "inventory-alert",
