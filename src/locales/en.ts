@@ -146,6 +146,15 @@ const en = {
   "notifications.pushEnabled": "Enable Push Notifications on this device",
   "notifications.emailAlerts": "Email alerts for low stock",
   "notifications.lowStockThreshold": "Low stock threshold",
+  "settings.notifications.fetchError": "Failed to load notification settings.",
+  "settings.notifications.updateError":
+    "Failed to update settings. Please try again.",
+  "settings.notifications.emailAlertsUpdated":
+    "Email alerts setting updated successfully!",
+  "settings.notifications.thresholdUpdated":
+    "Low stock threshold updated successfully!",
+  "settings.notifications.pushUpdated":
+    "Push notification setting updated successfully!",
 
   // Appliances
   "appliances.title": "Appliances",

@@ -20,31 +20,95 @@ const NotificationSection: React.FC = () => {
   const { showError, showSuccess } = useAlert();
   const { handleError } = useErrorHandler();
 
-  // State for notification settings, assuming they are now managed internally
+  // State for notification settings
   const [emailAlerts, setEmailAlerts] = useState(false);
   const [lowStockThreshold, setLowStockThreshold] = useState(0);
   const [pushEnabled, setPushEnabled] = useState(false);
 
-  // Placeholder for fetching initial settings or handling changes
+  // Fetch initial settings from backend
   useEffect(() => {
-    // In a real application, you would fetch these settings from a backend
-    // or user preferences and update the state here.
-    // For now, we'll just set some defaults or leave them as initial useState values.
-  }, [userId]);
+    const fetchSettings = async () => {
+      if (!userId) return;
 
-  const handleEmailAlertsChange = (enabled: boolean) => {
+      try {
+        const { data, error } = await supabase
+          .from("user_settings")
+          .select("notifications, email_alerts, low_stock_threshold")
+          .eq("user_id", userId)
+          .single();
+
+        if (error) throw error;
+
+        if (data) {
+          setPushEnabled(data.notifications ?? false);
+          setEmailAlerts(data.email_alerts ?? false);
+          setLowStockThreshold(data.low_stock_threshold ?? 0);
+        }
+      } catch (err) {
+        handleError(err, t("settings.notifications.fetchError"));
+      }
+    };
+
+    void fetchSettings();
+  }, [userId, handleError, t]);
+
+  const handleEmailAlertsChange = async (enabled: boolean) => {
+    if (!userId) return;
+
     setEmailAlerts(enabled);
-    // Call API to update setting
+
+    try {
+      const { error } = await supabase
+        .from("user_settings")
+        .update({ email_alerts: enabled })
+        .eq("user_id", userId);
+
+      if (error) throw error;
+
+      showSuccess(t("settings.notifications.emailAlertsUpdated"));
+    } catch (err) {
+      setEmailAlerts(!enabled); // Revert on error
+      handleError(err, t("settings.notifications.updateError"));
+    }
   };
 
-  const handleThresholdChange = (threshold: number) => {
+  const handleThresholdChange = async (threshold: number) => {
+    if (!userId) return;
+
     setLowStockThreshold(threshold);
-    // Call API to update setting
+
+    try {
+      const { error } = await supabase
+        .from("user_settings")
+        .update({ low_stock_threshold: threshold })
+        .eq("user_id", userId);
+
+      if (error) throw error;
+
+      showSuccess(t("settings.notifications.thresholdUpdated"));
+    } catch (err) {
+      handleError(err, t("settings.notifications.updateError"));
+    }
   };
 
-  const handlePushToggle = (enabled: boolean) => {
+  const handlePushToggle = async (enabled: boolean) => {
+    if (!userId) return;
+
     setPushEnabled(enabled);
-    // Call API to update setting
+
+    try {
+      const { error } = await supabase
+        .from("user_settings")
+        .update({ notifications: enabled })
+        .eq("user_id", userId);
+
+      if (error) throw error;
+
+      showSuccess(t("settings.notifications.pushUpdated"));
+    } catch (err) {
+      setPushEnabled(!enabled); // Revert on error
+      handleError(err, t("settings.notifications.updateError"));
+    }
   };
 
   const handleTestNotification = async () => {
@@ -75,7 +139,7 @@ const NotificationSection: React.FC = () => {
         throw new Error(await response.text());
       }
 
-      showSuccess(t("notifications.testMobileSuccess")); // Show success message
+      showSuccess(t("notifications.testMobileSuccess"));
     } catch (err) {
       handleError(err, t("settings.notifications.testError"));
     }
@@ -108,7 +172,7 @@ const NotificationSection: React.FC = () => {
               id="push-notifications"
               name="pushEnabled"
               checked={pushEnabled}
-              onChange={(e) => handlePushToggle(e.target.checked)}
+              onChange={(e) => void handlePushToggle(e.target.checked)}
               color="primary"
             />
           }
@@ -138,7 +202,7 @@ const NotificationSection: React.FC = () => {
               id="email-alerts"
               name="emailAlerts"
               checked={emailAlerts}
-              onChange={(e) => handleEmailAlertsChange(e.target.checked)}
+              onChange={(e) => void handleEmailAlertsChange(e.target.checked)}
               color="primary"
             />
           }
@@ -153,7 +217,7 @@ const NotificationSection: React.FC = () => {
             fullWidth
             value={lowStockThreshold}
             onChange={(e) =>
-              handleThresholdChange(parseInt(e.target.value) || 0)
+              void handleThresholdChange(parseInt(e.target.value) || 0)
             }
             sx={{
               mt: 2,

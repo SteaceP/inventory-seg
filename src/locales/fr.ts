@@ -154,6 +154,16 @@ const fr = {
     "Activer les notifications push sur cet appareil",
   "notifications.emailAlerts": "Alertes courriel pour stock bas",
   "notifications.lowStockThreshold": "Seuil de stock bas",
+  "settings.notifications.fetchError":
+    "Échec du chargement des paramètres de notification.",
+  "settings.notifications.updateError":
+    "Échec de la mise à jour des paramètres. Veuillez réessayer.",
+  "settings.notifications.emailAlertsUpdated":
+    "Paramètre d'alertes courriel mis à jour avec succès !",
+  "settings.notifications.thresholdUpdated":
+    "Seuil de stock bas mis à jour avec succès !",
+  "settings.notifications.pushUpdated":
+    "Paramètre de notifications push mis à jour avec succès !",
 
   // Appliances
   "appliances.title": "Appareils",
