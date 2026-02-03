@@ -132,8 +132,8 @@ Stores web push notification subscriptions.
 ␊- **Dashboard** (`/`) - Overview with stats, low stock alerts, and recent activity
 ␊- **Inventory** (`/inventory`) - Categorized grid view with filters and search
 ␊- **Appliances** (`/appliances`) - Household appliance tracking with repair history
-␊- **Stock Locations** (`/stock-locations`) - Master location management with hierarchy
-␊- **Inventory Activity** (`/inventory-activity`) - Audit log of all inventory changes
+␊- **Stock Locations** (`/inventory/locations`) - Master location management with hierarchy
+- **Inventory Activity** (`/inventory/activity`) - Audit log of all inventory changes
 ␊- **Reports** (`/reports`) - Monthly/yearly reports with export capabilities
 ␊- **Settings** (`/settings`) - User profile, preferences, and notification settings
 ␊- **Login** (`/login`) - Authentication page
@@ -144,12 +144,12 @@ Stores web push notification subscriptions.
 ␊### Recent Major Features
 
 ␊#### Multi-Location Stock Tracking
-␊- Implemented `inventory_stock_locations` table with master locations
-␊- Added hierarchical location system (Warehouse → Shelf → Bin)
-␊- UI for managing stock across locations in `StockLocations` page
-␊- Total stock maintained via database triggers
+- Implemented `inventory_stock_locations` table with master locations
+- Added hierarchical location system (Warehouse → Shelf → Bin)
+- UI for managing stock across locations in `StockLocations` page
+- Total stock maintained via database triggers
 
-␊#### Barcode & SKU Management
+#### Barcode & SKU Management
 ␊- Barcode generation using `react-barcode`
 ␊- QR code scanning with `html5-qrcode`
 ␊- Printable barcode labels via `BarcodePrinter` component

@@ -168,9 +168,9 @@ const AppContent = () => {
             <Route index element={<Dashboard />} />
             <Route path="inventory" element={<Inventory />} />
             <Route path="inventory/reports" element={<Reports />} />
-            <Route path="inventory-activity" element={<InventoryActivity />} />
+            <Route path="inventory/activity" element={<InventoryActivity />} />
             <Route path="appliances" element={<Appliances />} />
-            <Route path="stock-locations" element={<StockLocations />} />
+            <Route path="inventory/locations" element={<StockLocations />} />
             <Route path="settings" element={<Settings />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
