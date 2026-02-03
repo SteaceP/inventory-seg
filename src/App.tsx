@@ -20,7 +20,6 @@ import Layout from "./components/layout/Layout";
 import { useTranslation } from "./i18n";
 import ErrorBoundary from "./components/ErrorBoundary";
 import RealtimeNotifications from "./components/RealtimeNotifications";
-import "./App.css";
 
 import { getTheme } from "./theme";
 

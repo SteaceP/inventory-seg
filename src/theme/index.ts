@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material/styles";
+import { createTheme, alpha } from "@mui/material/styles";
 import { getCustomPalette } from "./colorSystem";
 
 declare module "@mui/material/styles" {
@@ -104,6 +104,46 @@ export const getTheme = (mode: "light" | "dark") => {
       borderRadius: 4,
     },
     components: {
+      MuiCssBaseline: {
+        styleOverrides: (theme) => ({
+          html: {
+            width: "100%",
+            height: "100%",
+            overflowX: "hidden",
+          },
+          body: {
+            margin: 0,
+            width: "100%",
+            minHeight: "100vh",
+            overflowX: "hidden",
+            backgroundImage: `
+              radial-gradient(
+                circle at top right,
+                ${alpha(theme.palette.primary.main, 0.05)},
+                transparent 400px
+              ),
+              radial-gradient(
+                circle at bottom left,
+                ${alpha(theme.palette.secondary.main, 0.05)},
+                transparent 400px
+              )
+            `,
+            backgroundRepeat: "no-repeat",
+            backgroundAttachment: "fixed",
+          },
+          "#root": {
+            width: "100%",
+            height: "100%",
+            maxWidth: "100vw",
+            overflowX: "hidden",
+          },
+          img: {
+            display: "block",
+            maxWidth: "100%",
+            height: "auto",
+          },
+        }),
+      },
       MuiButton: {
         styleOverrides: {
           root: {
