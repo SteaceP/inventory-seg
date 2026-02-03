@@ -1,4 +1,5 @@
 import path from "path";
+import fs from "fs";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
@@ -6,7 +7,39 @@ import { cloudflare } from "@cloudflare/vite-plugin";
 import { visualizer } from "rollup-plugin-visualizer";
 
 // https://vite.dev/config/
+const getCloudflareHeaders = () => {
+  try {
+    const headersPath = path.resolve(__dirname, "public/_headers");
+    if (!fs.existsSync(headersPath)) return {};
+
+    const content = fs.readFileSync(headersPath, "utf-8");
+    const headers: Record<string, string> = {};
+
+    content.split("\n").forEach((line) => {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith("#") || trimmed.startsWith("/*"))
+        return;
+
+      const colonIndex = trimmed.indexOf(":");
+      if (colonIndex > -1) {
+        const key = trimmed.slice(0, colonIndex).trim();
+        const value = trimmed.slice(colonIndex + 1).trim();
+        headers[key] = value;
+      }
+    });
+
+    return headers;
+  } catch (e) {
+    console.warn("Failed to read public/_headers", e);
+    return {};
+  }
+};
+
 export default defineConfig({
+  server: {
+    cors: true,
+    headers: getCloudflareHeaders(),
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
@@ -86,5 +119,6 @@ export default defineConfig({
 
     // Minify for production
     minify: "terser",
+    target: "es2015",
   },
 });
