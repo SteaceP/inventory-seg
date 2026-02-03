@@ -1,39 +1,45 @@
-# Politique de sécurité
+<p align="center">
+  <b>English</b> | 
+  <a href="SECURITY.fr.md">Français</a> | 
+  <a href="SECURITY.ar.md">العربية</a>
+</p>
 
-## Versions prises en charge
+# Security Policy
 
-Actuellement, seule la dernière version du système de gestion d'inventaire bénéficie de mises à jour de sécurité.
+## Supported Versions
 
-| Version | Prise en charge |
+Currently, only the latest version of the inventory management system receives security updates.
+
+| Version | Supported |
 | --- | --- |
-| Dernière | :white_check_mark: |
+| Latest | :white_check_mark: |
 | < 1.0.0 | :x: |
 
-## Signalement d'une vulnérabilité
+## Reporting a Vulnerability
 
-Nous prenons la sécurité de ce projet au sérieux. Si vous pensez avoir trouvé une vulnérabilité de sécurité, veuillez nous la signaler de manière responsable.
+We take the security of this project seriously. If you believe you have found a security vulnerability, please report it to us responsibly.
 
-**Veuillez ne pas signaler de vulnérabilités de sécurité via les issues publiques de GitHub.**
+**Please do not report security vulnerabilities via public GitHub issues.**
 
-Veuillez plutôt suivre ces étapes :
+Instead, please follow these steps:
 
-1. Contactez le mainteneur via les informations de contact fournies dans son profil GitHub.
-2. Fournissez une description détaillée de la vulnérabilité et les étapes pour la reproduire.
+1. Contact the maintainer via the contact information provided in their GitHub profile.
+2. Provide a detailed description of the vulnerability and the steps to reproduce it.
 
-Nous accuserons réception de votre rapport dans les 48 heures et travaillerons avec vous pour résoudre le problème rapidement.
+We will acknowledge receipt of your report within 48 hours and work with you to resolve the issue promptly.
 
-## Politique de divulgation
+## Disclosure Policy
 
-- Nous n'engagerons pas de poursuites judiciaires contre les personnes qui découvrent et signalent des vulnérabilités de manière responsable.
-- Nous vous demandons de nous accorder un délai raisonnable pour corriger le problème avant de le divulguer publiquement.
-- Nous informerons les utilisateurs des correctifs de sécurité critiques via les notes de version.
+- We will not pursue legal action against individuals who discover and report vulnerabilities responsibly.
+- We ask that you give us reasonable time to fix the issue before disclosing it publicly.
+- We will notify users of critical security patches through release notes.
 
-## Bonnes pratiques de sécurité
+## Security Best Practices
 
-En plus des mesures intégrées, nous recommandons aux administrateurs de :
+In addition to the built-in measures, we recommend that administrators:
 
-1. **Raccourcir l'expiration des JWT** : Dans le tableau de bord Supabase, réglez l'expiration des jetons à une valeur courte (ex: 1 heure) pour limiter les risques en cas de vol de session.
-2. **Utiliser le 2FA** : Activez l'authentification à deux facteurs pour tous les comptes administratifs.
-3. **Réviser les politiques RLS** : Assurez-vous que les politiques Row Level Security (RLS) sont toujours activées et restrictives.
+1. **Shorten JWT Expiration**: In the Supabase dashboard, set token expiration to a short value (e.g., 1 hour) to limit risks in case of session theft.
+2. **Use 2FA**: Enable two-factor authentication for all administrative accounts.
+3. **Review RLS Policies**: Ensure Row Level Security (RLS) policies are always enabled and restrictive.
 
-Merci d'aider à maintenir la sécurité de ce projet !
+Thank you for helping keep this project secure!
