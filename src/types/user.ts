@@ -1,6 +1,6 @@
 import type { Database } from "./database.types";
 
-export type Language = "fr" | "en" | "ar";
+export type Language = "fr" | "en";
 
 export type UserSettingsRow =
   Database["public"]["Tables"]["user_settings"]["Row"];

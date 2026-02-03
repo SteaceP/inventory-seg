@@ -65,7 +65,7 @@ User profile and application preferences.
 ␊- `display_name` (TEXT)
 ␊- `dark_mode` (BOOLEAN)
 ␊- `compact_view` (BOOLEAN)
-␊- `language` (TEXT) - en, fr, or ar
+␊- `language` (TEXT) - en or fr
 ␊- `role` (TEXT)
 ␊- `avatar_url` (TEXT)
 ␊- `notifications` (BOOLEAN)

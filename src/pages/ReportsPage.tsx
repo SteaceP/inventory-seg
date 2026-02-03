@@ -119,7 +119,7 @@ const ReportsPage: React.FC = () => {
   const monthOptions = useMemo(() => {
     const options: { value: string; label: string }[] = [];
     const now = new Date();
-    const locale = lang === "ar" ? "ar-EG" : lang === "fr" ? "fr-FR" : "en-US";
+    const locale = lang === "fr" ? "fr-FR" : "en-US";
 
     for (let i = 0; i < 24; i++) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);

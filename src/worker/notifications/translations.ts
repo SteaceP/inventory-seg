@@ -22,17 +22,6 @@ export const translations: Record<string, Record<string, string>> = {
     emailFooter:
       "Veuillez vous connecter à votre tableau de bord d'inventaire pour vous réapprovisionner.",
   },
-  ar: {
-    subject: "تنبيه انخفاض المخزون: {itemName}",
-    title: "تنبيه انخفاض المخزون",
-    body: 'المنتج "{itemName}" وصل إلى {currentStock} وحدة.',
-    emailTitle: "تنبيه انخفاض المخزون",
-    emailIntro:
-      "المنتج التالي انخفض عن الحد المسموح به <strong>{threshold}</strong>:",
-    emailItem: "المنتج:",
-    emailStock: "المخزون الحالي:",
-    emailFooter: "يرجى تسجيل الدخول إلى لوحة التحكم لإعادة التعبئة.",
-  },
 };
 
 export function getTranslation(

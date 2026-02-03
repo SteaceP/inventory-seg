@@ -262,7 +262,6 @@ const Settings: React.FC = () => {
               >
                 <MenuItem value={"fr"}>{t("lang.fr")}</MenuItem>
                 <MenuItem value={"en"}>{t("lang.en")}</MenuItem>
-                <MenuItem value={"ar"}>{t("lang.ar")}</MenuItem>
               </Select>
             </FormControl>
           </Box>

@@ -143,7 +143,7 @@ export async function handleLowStockAlert(
           itemName: sanitizedItemName,
         }),
         htmlContent: `
-          <div style="font-family: sans-serif; padding: 20px; color: #333; direction: ${language === "ar" ? "rtl" : "ltr"};">
+          <div style="font-family: sans-serif; padding: 20px; color: #333;">
             <h2 style="color: #d32f2f;">${getTranslation(language, "emailTitle")}</h2>
             <p>${getTranslation(language, "emailIntro", { threshold: sanitizedThreshold })}</p>
             <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">

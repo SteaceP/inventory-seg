@@ -48,4 +48,3 @@ trigger: always_on
 - **Supported Languages**:
   - English (en)
   - French (fr)
-  - Arabic (ar)

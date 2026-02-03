@@ -1,7 +1,6 @@
 <p align="center">
   <b>English</b> | 
-  <a href="README.fr.md">Français</a> | 
-  <a href="README.ar.md">العربية</a>
+  <a href="README.fr.md">Français</a>
 </p>
 
 # SEG Inventory

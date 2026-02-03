@@ -356,7 +356,6 @@ const Signup: React.FC = () => {
               >
                 <ToggleButton value="fr">FR</ToggleButton>
                 <ToggleButton value="en">EN</ToggleButton>
-                <ToggleButton value="ar">AR</ToggleButton>
               </ToggleButtonGroup>
             </Box>
           </Paper>

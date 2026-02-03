@@ -1,14 +1,12 @@
 import { UserContext } from "./contexts/UserContext";
 import { useCallback, use } from "react";
 
-import ar from "./locales/ar";
 import fr from "./locales/fr";
 import en from "./locales/en";
 
-type Lang = "fr" | "en" | "ar";
+type Lang = "fr" | "en";
 
 const translations: Record<Lang, Record<string, string>> = {
-  ar,
   fr,
   en,
 };
