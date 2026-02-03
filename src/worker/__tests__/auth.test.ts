@@ -1,12 +1,22 @@
 // @vitest-environment node
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import type { Ai } from "@cloudflare/workers-types";
 import { verifyAuth } from "../auth";
 
 describe("worker/auth", () => {
   const mockEnv = {
     SUPABASE_URL: "https://example.supabase.co",
     SUPABASE_SECRET_KEY: "secret-key",
-  };
+    BREVO_API_KEY: "test-key",
+    BREVO_SENDER_EMAIL: "test@example.com",
+    VAPID_PUBLIC_KEY: "test-public-key",
+    VAPID_PRIVATE_KEY: "test-private-key",
+    SENTRY_DSN: "https://test@sentry.io/123",
+    fetch: global.fetch,
+    HYPERDRIVE: { connectionString: "test" },
+    DB: {} as D1Database,
+    AI_SERVICE: {} as Ai,
+  } as const;
 
   beforeEach(() => {
     // Mock global fetch

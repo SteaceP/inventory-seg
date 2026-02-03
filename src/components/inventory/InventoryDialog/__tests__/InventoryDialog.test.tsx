@@ -21,7 +21,8 @@ vi.mock("@components/inventory/shared/StockLocationFields", () => ({
   ),
 }));
 
-vi.mock("react-barcode", () => ({
+// Mock LazyBarcode instead of react-barcode directly
+vi.mock("@components/inventory/shared/LazyBarcode", () => ({
   default: ({ value }: { value: string }) => (
     <div data-testid="barcode">{value}</div>
   ),

@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from "react";
-import { BrowserMultiFormatReader, NotFoundException } from "@zxing/library";
+import React, { useEffect, useRef, useState } from "react";
+import type { BrowserMultiFormatReader } from "@zxing/library";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/i18n";
 
@@ -8,6 +8,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import IconButton from "@mui/material/IconButton";
+import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
 
 interface InventoryScannerProps {
@@ -27,6 +28,7 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
   const codeReaderRef = useRef<BrowserMultiFormatReader | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const onScanSuccessRef = useRef(onScanSuccess);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     onScanSuccessRef.current = onScanSuccess;
@@ -38,6 +40,7 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
         codeReaderRef.current.reset();
         codeReaderRef.current = null;
       }
+      setIsLoading(false);
       return;
     }
 
@@ -45,6 +48,12 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
 
     const initScanner = async () => {
       try {
+        setIsLoading(true);
+
+        // Lazy load the scanner library (390 kB) only when needed
+        const { BrowserMultiFormatReader, NotFoundException } =
+          await import("@zxing/library");
+
         const codeReader = new BrowserMultiFormatReader();
         codeReaderRef.current = codeReader;
 
@@ -58,6 +67,8 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
           videoInputDevices.find((device) =>
             device.label.toLowerCase().includes("back")
           ) || videoInputDevices[0];
+
+        setIsLoading(false);
 
         await codeReader.decodeFromVideoDevice(
           selectedDevice.deviceId,
@@ -76,6 +87,7 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
         );
       } catch (err) {
         console.error("Scanner Error:", err);
+        setIsLoading(false);
         onError(t("inventory.scanner.cameraError"));
         onClose();
       }
@@ -163,6 +175,26 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
               objectFit: "cover",
             }}
           />
+
+          {/* Loading overlay */}
+          {isLoading && (
+            <Box
+              sx={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                bgcolor: "rgba(0,0,0,0.7)",
+                zIndex: 20,
+              }}
+            >
+              <CircularProgress size={40} />
+            </Box>
+          )}
 
           {/* Custom Scanner Overlay */}
           <Box

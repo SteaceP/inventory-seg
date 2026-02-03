@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import Barcode from "react-barcode";
+import LazyBarcode from "./inventory/shared/LazyBarcode";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
@@ -96,14 +96,9 @@ const BarcodePrinter: React.FC<BarcodePrinterProps> = ({ items }) => {
             <Box
               sx={{ display: "flex", justifyContent: "center", width: "100%" }}
             >
-              <Barcode
+              <LazyBarcode
                 value={item.sku || "N/A"}
                 format={getBarcodeFormat(item.sku)}
-                width={2.0}
-                height={50}
-                fontSize={12}
-                background="#ffffff"
-                margin={10}
               />
             </Box>
           </Box>

@@ -1,8 +1,8 @@
 import React from "react";
 import { useTranslation } from "@/i18n";
-import Barcode from "react-barcode";
 import type { BarcodeProps } from "react-barcode";
 import type { InventoryItem } from "@/types/inventory";
+import LazyBarcode from "../shared/LazyBarcode";
 
 import { useUserContext } from "@contexts/UserContext";
 import { useInventoryContext } from "@contexts/InventoryContext";
@@ -228,14 +228,9 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                 borderRadius: "8px",
               }}
             >
-              <Barcode
+              <LazyBarcode
                 value={formData.sku}
                 format={getBarcodeFormat(formData.sku)}
-                width={2.0}
-                height={50}
-                fontSize={14}
-                background="#ffffff"
-                margin={10}
               />
             </Box>
           )}

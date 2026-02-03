@@ -2,8 +2,8 @@ import { render } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import BarcodePrinter from "../BarcodePrinter";
 
-// Mock react-barcode
-vi.mock("react-barcode", () => ({
+// Mock LazyBarcode instead of react-barcode
+vi.mock("../inventory/shared/LazyBarcode", () => ({
   default: ({ value, format }: { value: string; format: string }) => (
     <div data-testid="barcode" data-value={value} data-format={format}>
       Barcode: {value} ({format})
