@@ -164,6 +164,12 @@ const fr = {
     "Seuil de stock bas mis à jour avec succès !",
   "settings.notifications.pushUpdated":
     "Paramètre de notifications push mis à jour avec succès !",
+  "notifications.notSupported":
+    "Les notifications push ne sont pas supportées sur ce navigateur.",
+  "notifications.configError":
+    "Notifications push non configurées. Veuillez contacter le support.",
+  "notifications.permissionDenied":
+    "Permission refusée. Veuillez autoriser les notifications dans les paramètres de votre navigateur.",
 
   // Appliances
   "appliances.title": "Appareils",

@@ -155,6 +155,12 @@ const en = {
     "Low stock threshold updated successfully!",
   "settings.notifications.pushUpdated":
     "Push notification setting updated successfully!",
+  "notifications.notSupported":
+    "Push notifications are not supported on this browser.",
+  "notifications.configError":
+    "Push notifications not configured. Please contact support.",
+  "notifications.permissionDenied":
+    "Permission denied. Please allow notifications in your browser settings.",
 
   // Appliances
   "appliances.title": "Appliances",

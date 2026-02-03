@@ -4,6 +4,11 @@ import { useUserContext } from "@contexts/UserContext";
 import { useAlert } from "@contexts/AlertContext";
 import { useTranslation } from "@/i18n";
 import { supabase } from "@/supabaseClient";
+import {
+  subscribeToPush,
+  unsubscribeFromPush,
+  checkPushSubscription,
+} from "@/utils/push-notifications";
 
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -25,7 +30,7 @@ const NotificationSection: React.FC = () => {
   const [lowStockThreshold, setLowStockThreshold] = useState(0);
   const [pushEnabled, setPushEnabled] = useState(false);
 
-  // Fetch initial settings from backend
+  // Fetch initial settings from backend and check push subscription
   useEffect(() => {
     const fetchSettings = async () => {
       if (!userId) return;
@@ -40,7 +45,22 @@ const NotificationSection: React.FC = () => {
         if (error) throw error;
 
         if (data) {
-          setPushEnabled(data.notifications ?? false);
+          // Check actual browser subscription state
+          const hasPushSubscription = await checkPushSubscription();
+
+          // Sync database with browser state if they differ
+          if (data.notifications && !hasPushSubscription) {
+            // Database says enabled but browser has no subscription
+            // Update database to match reality
+            await supabase
+              .from("user_settings")
+              .update({ notifications: false })
+              .eq("user_id", userId);
+            setPushEnabled(false);
+          } else {
+            setPushEnabled(data.notifications ?? false);
+          }
+
           setEmailAlerts(data.email_alerts ?? false);
           setLowStockThreshold(data.low_stock_threshold ?? 0);
         }
@@ -94,26 +114,64 @@ const NotificationSection: React.FC = () => {
   const handlePushToggle = async (enabled: boolean) => {
     if (!userId) return;
 
-    setPushEnabled(enabled);
-
     try {
-      const { error } = await supabase
-        .from("user_settings")
-        .update({ notifications: enabled })
-        .eq("user_id", userId);
+      if (enabled) {
+        // Subscribe to push notifications
+        try {
+          await subscribeToPush();
 
-      if (error) throw error;
+          // Update database after successful subscription
+          const { error } = await supabase
+            .from("user_settings")
+            .update({ notifications: true })
+            .eq("user_id", userId);
 
-      showSuccess(t("settings.notifications.pushUpdated"));
+          if (error) throw error;
+
+          setPushEnabled(true);
+          showSuccess(t("settings.notifications.pushUpdated"));
+        } catch (subError) {
+          // Handle permission denial or subscription failure
+          const errorMessage = (subError as Error).message;
+          if (errorMessage.includes("not supported")) {
+            showError(t("notifications.notSupported"));
+          } else if (errorMessage.includes("VAPID")) {
+            showError(t("notifications.configError"));
+          } else {
+            showError(t("notifications.permissionDenied"));
+          }
+          setPushEnabled(false);
+          throw subError;
+        }
+      } else {
+        // Unsubscribe from push notifications
+        await unsubscribeFromPush();
+
+        // Update database after successful unsubscription
+        const { error } = await supabase
+          .from("user_settings")
+          .update({ notifications: false })
+          .eq("user_id", userId);
+
+        if (error) throw error;
+
+        setPushEnabled(false);
+        showSuccess(t("settings.notifications.pushUpdated"));
+      }
     } catch (err) {
-      setPushEnabled(!enabled); // Revert on error
-      handleError(err, t("settings.notifications.updateError"));
+      // General error handling (already handled specific errors above for subscribe)
+      if (enabled) {
+        setPushEnabled(false);
+      } else {
+        // For unsubscribe errors, log them
+        handleError(err, t("settings.notifications.updateError"));
+      }
     }
   };
 
   const handleTestNotification = async () => {
     if (!userId) {
-      showError(t("notifications.testErrorNoUser")); // Example error for no user
+      showError(t("notifications.testErrorNoUser"));
       return;
     }
 
