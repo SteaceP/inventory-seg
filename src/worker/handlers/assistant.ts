@@ -36,7 +36,6 @@ export async function handleAssistantChat(
     const languageMap: Record<string, string> = {
       fr: "French",
       en: "English",
-      ar: "Arabic",
     };
     const language = languageMap[languageCode] || "English";
 

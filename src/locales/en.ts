@@ -16,7 +16,6 @@ const en = {
   "settings.language": "Language",
   "lang.fr": "Français",
   "lang.en": "English",
-  "lang.ar": "Arabic",
   "settings.avatarUploadError": "Avatar upload failed. Please try again.",
   "recentActivity.title": "Recent Activity",
   "recentActivity.none": "No recent activity",

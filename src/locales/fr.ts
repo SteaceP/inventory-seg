@@ -17,7 +17,6 @@ const fr = {
   "settings.language": "Langue",
   "lang.fr": "Français",
   "lang.en": "English",
-  "lang.ar": "Arabic",
   "settings.avatarUploadError":
     "Échec de l'upload de l'avatar. Veuillez réessayer.",
   "recentActivity.title": "Activité Récente",

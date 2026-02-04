@@ -56,6 +56,7 @@ export default defineConfig({
     // Coverage configuration
     coverage: {
       provider: "v8",
+      clean: true,
       reporter: ["text", "json", "html"],
       exclude: [
         "node_modules/",
@@ -68,6 +69,7 @@ export default defineConfig({
         ".wrangler/",
         ".agent/",
         "coverage/",
+        ".vscode/",
       ],
     },
   },

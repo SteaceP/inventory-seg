@@ -23,7 +23,7 @@ An inventory management application for La Société Emmanuel-Grégoire, entirel
   - Monthly and annual stock usage reports.
   - PDF/Print export for physical audits.
 - **⚡ Real-time Updates**: Instant synchronization across devices via Supabase Realtime.
-- **🌍 Multilingual Support**: Full support for English, French, and Arabic.
+- **🌍 Multilingual Support**: Full support for English and French.
 - **🎨 Customization**:
   - Dark and light modes.
   - Compact view for high-density information.
