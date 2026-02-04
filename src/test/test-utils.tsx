@@ -11,6 +11,7 @@ import {
   within,
 } from "@testing-library/react";
 import { ThemeProvider } from "@mui/material/styles";
+import { HelmetProvider } from "react-helmet-async";
 
 import { AlertProvider } from "@/contexts/AlertContext";
 import { MemoryRouter } from "react-router-dom";
@@ -45,7 +46,11 @@ const AllTheProviders = ({
     content = <AlertProvider>{content}</AlertProvider>;
   }
 
-  return <ThemeProvider theme={theme}>{content}</ThemeProvider>;
+  return (
+    <HelmetProvider>
+      <ThemeProvider theme={theme}>{content}</ThemeProvider>
+    </HelmetProvider>
+  );
 };
 
 /**

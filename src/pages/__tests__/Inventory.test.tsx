@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen } from "@test/test-utils";
 import Inventory from "../Inventory";
-import { BrowserRouter } from "react-router-dom";
 import type { InventoryItem } from "@/types/inventory";
 
 // Mock dependencies
@@ -144,11 +143,7 @@ vi.mock(
 
 describe("Inventory Page", () => {
   const renderComponent = () => {
-    render(
-      <BrowserRouter>
-        <Inventory />
-      </BrowserRouter>
-    );
+    render(<Inventory />);
   };
 
   it("renders main components", () => {
@@ -171,11 +166,7 @@ describe("Inventory Page Interactions", () => {
   });
 
   it("displays items passed from hook", () => {
-    render(
-      <BrowserRouter>
-        <Inventory />
-      </BrowserRouter>
-    );
+    render(<Inventory />);
 
     expect(screen.getByTestId("inventory-grid")).toBeInTheDocument();
   });
