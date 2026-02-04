@@ -1,6 +1,6 @@
 import path from "path";
 import fs from "fs";
-import react from "@vitejs/plugin-react";
+import react from "@vitejs/plugin-react-swc";
 import { checker } from "vite-plugin-checker";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { defineConfig } from "vite";
