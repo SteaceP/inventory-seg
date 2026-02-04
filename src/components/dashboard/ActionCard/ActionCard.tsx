@@ -5,13 +5,7 @@ import Paper from "@mui/material/Paper";
 import { useTheme, alpha } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-export interface ActionCardProps {
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  color: string;
-  onClick: () => void;
-}
+import type { ActionCardProps } from "@/types/ui";
 
 const ActionCard: React.FC<ActionCardProps> = ({
   title,
@@ -39,7 +33,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
     /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access */
   };
 
-  const resolvedColor = resolveColor(color);
+  const resolvedColor = resolveColor(color || "primary.main");
 
   return (
     <Paper

@@ -47,3 +47,38 @@ export interface ActivityLog {
     [key: string]: unknown;
   };
 }
+
+export type StockAdjustmentMode = "menu" | "add" | "remove" | "selectLocation";
+
+export interface StockAdjustmentDialogProps {
+  open: boolean;
+  item: InventoryItem | null;
+  isMobile: boolean;
+  onClose: () => void;
+  onSave: (
+    itemId: string,
+    newStock: number,
+    location?: string,
+    actionType?: "add" | "remove",
+    parentLocation?: string,
+    recipient?: string,
+    destination_location?: string
+  ) => void;
+  loading?: boolean;
+}
+
+export interface SelectedLocation {
+  location: string;
+  quantity: number;
+  parent_location?: string;
+}
+
+export interface PrintItem {
+  name: string;
+  sku: string;
+  category: string;
+}
+
+export interface BarcodePrinterProps {
+  items: PrintItem[];
+}

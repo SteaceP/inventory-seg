@@ -2,34 +2,12 @@ import postgres from "postgres";
 import { getSecurityHeaders } from "../helpers";
 import { reportError } from "../errorReporting";
 import { getUser } from "../auth";
-import type { Env } from "../types";
-
-interface Message {
-  role: string;
-  content: string;
-}
-
-interface ChatRequest {
-  messages: Message[];
-  language?: string;
-}
-
-interface ProductParams {
-  name: string;
-  category?: string;
-  stock?: number;
-  unit_cost?: number;
-  notes?: string;
-}
-
-interface ApplianceParams {
-  name: string;
-  brand?: string;
-  model?: string;
-  type?: string;
-  location?: string;
-  notes?: string;
-}
+import type {
+  Env,
+  WorkerChatRequest as ChatRequest,
+  ProductParams,
+  ApplianceParams,
+} from "../types";
 
 export async function handleAssistantChat(
   request: Request,

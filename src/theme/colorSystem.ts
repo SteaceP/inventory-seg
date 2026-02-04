@@ -1,13 +1,5 @@
+import type { ThemeMode, ColorCollection } from "@/types/theme";
 import colors from "./colors.json";
-
-export type ThemeMode = "light" | "dark";
-
-export interface ColorDefinition {
-  light: string;
-  dark: string;
-}
-
-export type ColorCollection = Record<string, ColorDefinition>;
 
 /**
  * Generates an object structure for MUI palette based on dots in keys.

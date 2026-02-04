@@ -9,16 +9,7 @@ import Avatar from "@mui/material/Avatar";
 import RobotIcon from "@mui/icons-material/SmartToy";
 import PersonIcon from "@mui/icons-material/Person";
 
-interface Message {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-}
-
-interface ChatMessageProps {
-  message: Message;
-  avatarUrl?: string;
-}
+import type { ChatMessageProps } from "@/types/assistant";
 
 const ChatMessage: React.FC<ChatMessageProps> = ({ message, avatarUrl }) => {
   const theme = useTheme();
@@ -42,7 +33,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, avatarUrl }) => {
         }}
       >
         <Avatar
-          src={message.role === "user" ? avatarUrl : undefined}
+          src={message.role === "user" ? (avatarUrl ?? undefined) : undefined}
           sx={{
             width: 32,
             height: 32,

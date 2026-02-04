@@ -14,12 +14,7 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Slide from "@mui/material/Slide";
 
-interface AlertContextType {
-  showSuccess: (message: string) => void;
-  showError: (message: string) => void;
-  showInfo: (message: string) => void;
-  showWarning: (message: string) => void;
-}
+import type { AlertContextType } from "@/types/alert";
 
 const AlertContext = createContext<AlertContextType | undefined>(undefined);
 

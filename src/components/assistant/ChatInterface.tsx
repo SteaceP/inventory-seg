@@ -21,15 +21,7 @@ import RobotIcon from "@mui/icons-material/SmartToy";
 import DeleteIcon from "@mui/icons-material/DeleteOutline";
 import CloseIcon from "@mui/icons-material/Close";
 
-interface Message {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-}
-
-interface ChatInterfaceProps {
-  onClose?: () => void;
-}
+import type { Message, ChatInterfaceProps } from "@/types/assistant";
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ onClose }) => {
   const [messages, setMessages] = useState<Message[]>(() => {

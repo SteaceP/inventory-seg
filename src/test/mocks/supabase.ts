@@ -9,11 +9,6 @@ import { vi, type Mock } from "vitest";
  * Note: Type safety is intentionally relaxed here to create flexible mocks
  */
 
-export interface MockSupabaseResponse<T> {
-  data: T | null;
-  error: { message: string } | null;
-}
-
 export const createMockSupabaseClient = () => {
   // Auth mocks
   const mockGetUser = vi.fn();

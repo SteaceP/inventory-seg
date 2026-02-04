@@ -11,5 +11,5 @@
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["src/worker.ts", "src/worker/**/*"]
+  "include": ["src/worker.ts", "src/worker/**/*", "src/types/**/*"]
 }

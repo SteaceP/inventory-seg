@@ -21,13 +21,7 @@ import { getTheme } from "../theme";
  */
 const theme = getTheme("light");
 
-/**
- * Custom render options
- */
-export interface CustomRenderOptions extends RenderOptions {
-  includeRouter?: boolean;
-  includeAlerts?: boolean;
-}
+import type { CustomRenderOptions } from "@/types/testing";
 
 /**
  * AllTheProviders wrapper component
