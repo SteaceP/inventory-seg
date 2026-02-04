@@ -9,6 +9,8 @@ import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { usePerformance } from "@hooks/usePerformance";
 import { logInfo } from "@utils/errorReporting";
+import TwoFactorVerification from "@/components/auth/TwoFactorVerification";
+import type { AuthMFAChallengeResponse } from "@supabase/supabase-js";
 
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -47,6 +49,10 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [mfaRequired, setMfaRequired] = useState(false);
+  const [mfaChallengeId, setMfaChallengeId] = useState<string | null>(null);
+  const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
+  const [mfaError, setMfaError] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
@@ -60,29 +66,53 @@ const Login: React.FC = () => {
   const handleLogin = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+    setMfaError(null);
 
     try {
       await measureOperation(
         "auth.login",
         "Sign In with Password",
         async () => {
-          const { error: signInError } = await supabase.auth.signInWithPassword(
-            {
+          const { data, error: signInError } =
+            await supabase.auth.signInWithPassword({
               email,
               password,
               options: {
                 // In development, sending undefined allows requests to proceed if the server permits
                 captchaToken,
               },
-            }
-          );
+            });
 
           if (signInError) {
+            // Check if MFA is required
+            if (signInError.message === "MFA challenge required") {
+              // Get MFA factors
+              const { data: factorsData } =
+                await supabase.auth.mfa.listFactors();
+              if (factorsData?.totp && factorsData.totp.length > 0) {
+                const factor = factorsData.totp[0];
+                const challengeResponse: AuthMFAChallengeResponse =
+                  await supabase.auth.mfa.challenge({
+                    factorId: factor.id,
+                  });
+                if (challengeResponse.data) {
+                  setMfaChallengeId(challengeResponse.data.id);
+                  setMfaFactorId(factor.id);
+                  setMfaRequired(true);
+                  setLoading(false);
+                  return;
+                }
+              }
+            }
             throw signInError;
           }
 
-          const from = (location.state as LocationState)?.from?.pathname || "/";
-          void navigate(from, { replace: true });
+          // If no MFA required, navigate to app
+          if (data?.session) {
+            const from =
+              (location.state as LocationState)?.from?.pathname || "/";
+            void navigate(from, { replace: true });
+          }
         }
       );
     } catch (err: unknown) {
@@ -94,7 +124,34 @@ const Login: React.FC = () => {
       turnstileRef.current?.reset();
       setCaptchaToken(undefined);
     } finally {
-      setLoading(false);
+      if (!mfaRequired) {
+        setLoading(false);
+      }
+    }
+  };
+
+  const handleMfaVerify = async (code: string) => {
+    if (!mfaChallengeId || !mfaFactorId) return;
+
+    try {
+      const { data, error } = await supabase.auth.mfa.verify({
+        factorId: mfaFactorId,
+        challengeId: mfaChallengeId,
+        code,
+      });
+
+      if (error) {
+        setMfaError(t("mfa.codeInvalid") || "Invalid verification code");
+        throw error;
+      }
+
+      if (data) {
+        const from = (location.state as LocationState)?.from?.pathname || "/";
+        void navigate(from, { replace: true });
+      }
+    } catch (err: unknown) {
+      // Error already set in state for UI feedback
+      console.error("MFA verification error:", err);
     }
   };
 
@@ -159,79 +216,99 @@ const Login: React.FC = () => {
               }}
               sx={{ width: "100%" }}
             >
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label={t("login.email")}
-                name="email"
-                autoComplete="email"
-                autoFocus
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                sx={{ mb: 2 }}
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label={t("login.password")}
-                type={showPassword ? "text" : "password"}
-                id="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                slotProps={{
-                  input: {
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label={t("common.togglePassword")}
-                          onClick={() => setShowPassword(!showPassword)}
-                          edge="end"
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-                sx={{ mb: 3 }}
-              />
-
-              <Box sx={{ mb: 3, display: "flex", justifyContent: "center" }}>
-                <Turnstile
-                  key={TURNSTILE_SITE_KEY}
-                  ref={turnstileRef}
-                  siteKey={TURNSTILE_SITE_KEY}
-                  onSuccess={(token) => setCaptchaToken(token)}
-                  onError={() => {
-                    setCaptchaToken(undefined);
-                    handleError(
-                      new Error("CAPTCHA Error"),
-                      t("common.captchaError") || "CAPTCHA failed"
-                    );
+              {mfaRequired ? (
+                <TwoFactorVerification
+                  onVerify={async (code: string) => {
+                    await handleMfaVerify(code);
                   }}
-                  onExpire={() => setCaptchaToken(undefined)}
+                  loading={loading}
+                  error={mfaError}
                 />
-              </Box>
+              ) : (
+                <>
+                  <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="email"
+                    label={t("login.email")}
+                    name="email"
+                    autoComplete="email"
+                    autoFocus
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    sx={{ mb: 2 }}
+                  />
+                  <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="password"
+                    label={t("login.password")}
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    slotProps={{
+                      input: {
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              aria-label={t("common.togglePassword")}
+                              onClick={() => setShowPassword(!showPassword)}
+                              edge="end"
+                            >
+                              {showPassword ? (
+                                <VisibilityOff />
+                              ) : (
+                                <Visibility />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      },
+                    }}
+                    sx={{ mb: 3 }}
+                  />
 
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                disabled={loading || (!captchaToken && !import.meta.env.DEV)}
-                sx={{
-                  py: 1.5,
-                  fontSize: "1rem",
-                  fontWeight: "bold",
-                  boxShadow: "0 4px 14px 0 rgba(88, 166, 255, 0.39)",
-                }}
-              >
-                {loading ? t("login.signingIn") : t("login.signIn")}
-              </Button>
+                  <Box
+                    sx={{ mb: 3, display: "flex", justifyContent: "center" }}
+                  >
+                    <Turnstile
+                      key={TURNSTILE_SITE_KEY}
+                      ref={turnstileRef}
+                      siteKey={TURNSTILE_SITE_KEY}
+                      onSuccess={(token) => setCaptchaToken(token)}
+                      onError={() => {
+                        setCaptchaToken(undefined);
+                        handleError(
+                          new Error("CAPTCHA Error"),
+                          t("common.captchaError") || "CAPTCHA failed"
+                        );
+                      }}
+                      onExpire={() => setCaptchaToken(undefined)}
+                    />
+                  </Box>
+
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    disabled={
+                      loading || (!captchaToken && !import.meta.env.DEV)
+                    }
+                    sx={{
+                      py: 1.5,
+                      fontSize: "1rem",
+                      fontWeight: "bold",
+                      boxShadow: "0 4px 14px 0 rgba(88, 166, 255, 0.39)",
+                    }}
+                  >
+                    {loading ? t("login.signingIn") : t("login.signIn")}
+                  </Button>
+                </>
+              )}
             </Box>
 
             <Typography

@@ -167,6 +167,40 @@ const en = {
   "notifications.permissionDenied":
     "Permission denied. Please allow notifications in your browser settings.",
 
+  // Multi-Factor Authentication (MFA)
+  "mfa.title": "Two-Factor Authentication",
+  "mfa.description":
+    "Add an extra layer of security to your account by enabling two-factor authentication using an authenticator app.",
+  "mfa.enable": "Enable 2FA",
+  "mfa.disable": "Disable 2FA",
+  "mfa.enabled": "Enabled",
+  "mfa.disabled": "Disabled",
+  "mfa.currentlyEnabled":
+    "Two-factor authentication is currently enabled for your account.",
+  "mfa.enrollmentTitle": "Set up Two-Factor Authentication",
+  "mfa.scanQRCode": "Scan QR Code",
+  "mfa.verifySetup": "Verify Setup",
+  "mfa.scanWithApp":
+    "Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.)",
+  "mfa.manualEntry": "Or enter this code manually:",
+  "mfa.verificationCode": "Verification Code",
+  "mfa.enterCode": "Enter the 6-digit code from your authenticator app",
+  "mfa.enterCodeToVerify": "Enter code to complete setup",
+  "mfa.verify": "Verify",
+  "mfa.codeInvalid": "Invalid verification code. Please try again.",
+  "mfa.codeExpires": "Code expires in",
+  "mfa.required": "Two-Factor Authentication Required",
+  "mfa.enabledSuccess": "Two-factor authentication enabled successfully!",
+  "mfa.disabledSuccess": "Two-factor authentication disabled successfully!",
+  "mfa.confirmDisable": "Disable Two-Factor Authentication?",
+  "mfa.disableWarning":
+    "This will reduce your account security. You can re-enable it at any time from your settings.",
+  "mfa.enrollmentError":
+    "Failed to set up two-factor authentication. Please try again.",
+  "mfa.verificationError": "Verification failed. Please try again.",
+  "mfa.disableError":
+    "Failed to disable two-factor authentication. Please try again.",
+
   // Appliances
   "appliances.title": "Appliances",
   "appliances.add": "Add appliance",

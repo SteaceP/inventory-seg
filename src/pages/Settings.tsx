@@ -6,6 +6,7 @@ import ProfileSection from "@components/settings/ProfileSection";
 import NotificationSection from "@components/settings/NotificationSection";
 import AppearanceSection from "@components/settings/AppearanceSection";
 import SecuritySection from "@components/settings/SecuritySection";
+import TwoFactorSettings from "@components/settings/TwoFactorSettings";
 import type { Language } from "@/types/user";
 import {
   validateImageFile,
@@ -278,6 +279,10 @@ const Settings: React.FC = () => {
               setSaveSuccess(true);
             }}
           />
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 6 }}>
+          <TwoFactorSettings />
         </Grid>
       </Grid>
 

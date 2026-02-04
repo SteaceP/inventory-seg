@@ -44,6 +44,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const [lowStockThreshold, setLowStockThresholdState] = useState(5);
   const [darkMode, setDarkMode] = useState(true);
   const [compactView, setCompactView] = useState(false);
+  const [mfaEnabled, setMfaEnabledState] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
@@ -64,7 +65,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
         const fetchPromise = supabase
           .from("user_settings")
           .select(
-            "display_name, avatar_url, role, language, low_stock_threshold, dark_mode, compact_view"
+            "display_name, avatar_url, role, language, low_stock_threshold, dark_mode, compact_view, mfa_enabled"
           )
           .eq("user_id", uid)
           .single();
@@ -120,6 +121,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
           setLanguageState((s.language as Language) || "fr");
           setDarkMode(s.dark_mode ?? true);
           setCompactView(s.compact_view ?? false);
+          setMfaEnabledState(Boolean(s.mfa_enabled));
           if (
             s.low_stock_threshold !== undefined &&
             s.low_stock_threshold !== null
@@ -212,6 +214,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
         setLanguageState("fr");
         setDarkMode(true);
         setCompactView(false);
+        setMfaEnabledState(false);
         setLoading(false);
       }
     });
@@ -303,6 +306,25 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     [userId, showError]
   );
 
+  const setMfaEnabled = useCallback(
+    async (enabled: boolean) => {
+      try {
+        setMfaEnabledState(enabled);
+        if (userId) {
+          await supabase
+            .from("user_settings")
+            .upsert(
+              { user_id: userId, mfa_enabled: enabled },
+              { onConflict: "user_id" }
+            );
+        }
+      } catch {
+        showError("Failed to save MFA setting");
+      }
+    },
+    [userId, showError]
+  );
+
   const setUserProfile = useCallback((profile: Partial<UserProfile>) => {
     if (profile.displayName !== undefined) setDisplayName(profile.displayName);
     if (profile.avatarUrl !== undefined) setAvatarUrl(profile.avatarUrl);
@@ -317,6 +339,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       lowStockThreshold,
       darkMode,
       compactView,
+      mfaEnabled,
       userId,
       session,
       setUserProfile,
@@ -324,6 +347,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       setLowStockThreshold,
       toggleDarkMode,
       toggleCompactView,
+      setMfaEnabled,
       loading,
     }),
     [
@@ -334,6 +358,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       lowStockThreshold,
       darkMode,
       compactView,
+      mfaEnabled,
       userId,
       session,
       setUserProfile,
@@ -341,6 +366,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       setLowStockThreshold,
       toggleDarkMode,
       toggleCompactView,
+      setMfaEnabled,
       loading,
     ]
   );

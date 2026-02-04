@@ -37,6 +37,13 @@ We will acknowledge receipt of your report within 48 hours and work with you to 
 
 In addition to the built-in measures, we recommend that administrators:
 
+### Authentication
+
+- **Supabase Auth**: Used for all user authentication.
+- **2FA/MFA**: Time-based One-Time Password (TOTP) two-factor authentication is supported and recommended for all users.
+- **JWT**: Secure JSON Web Tokens are used for session management.
+- **RLS**: Row Level Security is enforced on all database tables.
+
 1. **Shorten JWT Expiration**: In the Supabase dashboard, set token expiration to a short value (e.g., 1 hour) to limit risks in case of session theft.
 2. **Use 2FA**: Enable two-factor authentication for all administrative accounts.
 3. **Review RLS Policies**: Ensure Row Level Security (RLS) policies are always enabled and restrictive.

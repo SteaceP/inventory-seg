@@ -177,6 +177,43 @@ const fr = {
   "notifications.permissionDenied":
     "Permission refusée. Veuillez autoriser les notifications dans les paramètres de votre navigateur.",
 
+  // Multi-Factor Authentication (MFA)
+  "mfa.title": "Authentification à deux facteurs",
+  "mfa.description":
+    "Ajoutez une couche de sécurité supplémentaire à votre compte en activant l'authentification à deux facteurs avec une application d'authentification.",
+  "mfa.enable": "Activer 2FA",
+  "mfa.disable": "Désactiver 2FA",
+  "mfa.enabled": "Activée",
+  "mfa.disabled": "Désactivée",
+  "mfa.currentlyEnabled":
+    "L'authentification à deux facteurs est actuellement activée pour votre compte.",
+  "mfa.enrollmentTitle": "Configurer l'authentification à deux facteurs",
+  "mfa.scanQRCode": "Scanner le code QR",
+  "mfa.verifySetup": "Vérifier la configuration",
+  "mfa.scanWithApp":
+    "Scannez ce code QR avec votre application d'authentification (Google Authenticator, Authy, etc.)",
+  "mfa.manualEntry": "Ou entrez ce code manuellement :",
+  "mfa.verificationCode": "Code de vérification",
+  "mfa.enterCode":
+    "Entrez le code à 6 chiffres de votre application d'authentification",
+  "mfa.enterCodeToVerify": "Entrez le code pour terminer la configuration",
+  "mfa.verify": "Vérifier",
+  "mfa.codeInvalid": "Code de vérification invalide. Veuillez réessayer.",
+  "mfa.codeExpires": "Le code expire dans",
+  "mfa.required": "Authentification à deux facteurs requise",
+  "mfa.enabledSuccess":
+    "Authentification à deux facteurs activée avec succès !",
+  "mfa.disabledSuccess":
+    "Authentification à deux facteurs désactivée avec succès !",
+  "mfa.confirmDisable": "Désactiver l'authentification à deux facteurs ?",
+  "mfa.disableWarning":
+    "Cela réduira la sécurité de votre compte. Vous pouvez la réactiver à tout moment depuis vos paramètres.",
+  "mfa.enrollmentError":
+    "Échec de la configuration de l'authentification à deux facteurs. Veuillez réessayer.",
+  "mfa.verificationError": "Vérification échouée. Veuillez réessayer.",
+  "mfa.disableError":
+    "Échec de la désactivation de l'authentification à deux facteurs. Veuillez réessayer.",
+
   // Appliances
   "appliances.title": "Appareils",
   "appliances.add": "Ajouter un appareil",
