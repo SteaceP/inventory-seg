@@ -155,6 +155,11 @@ const en = {
     "Low stock threshold updated successfully!",
   "settings.notifications.pushUpdated":
     "Push notification setting updated successfully!",
+  "settings.notifications.error.noSubscription":
+    "No push subscriptions found. Please enable push notifications on this device first.",
+  "settings.notifications.error.config":
+    "Server configuration error (VAPID). Please contact support.",
+  "settings.notifications.error.db": "Database error. Please try again later.",
   "notifications.notSupported":
     "Push notifications are not supported on this browser.",
   "notifications.configError":

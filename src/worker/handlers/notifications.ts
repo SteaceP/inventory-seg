@@ -32,18 +32,70 @@ export async function handleTestPush(
       return createResponse({ error: "Missing userId" }, 400, env, request);
     }
 
-    await broadcastPush(
-      {
-        userId,
-        title: "Push Notification Test",
-        body: "This is a test notification sent from the server!",
-        url: "/settings",
-        tag: "test-notification",
-      },
-      env
-    );
+    try {
+      await broadcastPush(
+        {
+          userId,
+          title: "Push Notification Test",
+          body: "This is a test notification sent from the server!",
+          url: "/settings",
+          tag: "test-notification",
+        },
+        env
+      );
 
-    return createResponse({ success: true }, 200, env, request);
+      return createResponse({ success: true }, 200, env, request);
+    } catch (broadcastErr) {
+      const errorMessage = (broadcastErr as Error).message;
+
+      // Handle specific error cases with appropriate status codes
+      if (errorMessage.includes("No push subscriptions")) {
+        return createResponse(
+          {
+            error:
+              "No push subscriptions found. Please enable push notifications in settings first.",
+            errorType: "NO_SUBSCRIPTION",
+          },
+          400,
+          env,
+          request
+        );
+      }
+
+      if (errorMessage.includes("VAPID keys")) {
+        reportError(broadcastErr);
+        return createResponse(
+          {
+            error:
+              "Push notifications are not properly configured on the server.",
+            errorType: "CONFIG_ERROR",
+          },
+          500,
+          env,
+          request
+        );
+      }
+
+      if (
+        errorMessage.includes("HYPERDRIVE") ||
+        errorMessage.includes("Database")
+      ) {
+        reportError(broadcastErr);
+        return createResponse(
+          {
+            error: "Database connection error. Please try again later.",
+            errorType: "DB_ERROR",
+          },
+          500,
+          env,
+          request
+        );
+      }
+
+      // Unknown error
+      reportError(broadcastErr);
+      return createResponse({ error: errorMessage }, 500, env, request);
+    }
   } catch (err) {
     reportError(err);
     return createResponse({ error: (err as Error).message }, 500, env, request);

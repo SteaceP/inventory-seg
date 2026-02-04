@@ -164,6 +164,12 @@ const fr = {
     "Seuil de stock bas mis à jour avec succès !",
   "settings.notifications.pushUpdated":
     "Paramètre de notifications push mis à jour avec succès !",
+  "settings.notifications.error.noSubscription":
+    "Aucun abonnement trouvé. Veuillez d'abord activer les notifications push sur cet appareil.",
+  "settings.notifications.error.config":
+    "Erreur de configuration serveur (VAPID). Veuillez contacter le support.",
+  "settings.notifications.error.db":
+    "Erreur de base de données. Veuillez réessayer plus tard.",
   "notifications.notSupported":
     "Les notifications push ne sont pas supportées sur ce navigateur.",
   "notifications.configError":

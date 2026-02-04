@@ -212,7 +212,7 @@ describe("NotificationSection", () => {
     });
   });
 
-  it("should handle failed test notification", async () => {
+  it("should handle failed test notification with generic error", async () => {
     mocks.getSession.mockResolvedValue({
       data: { session: { access_token: "fake-token" } as unknown as Session },
       error: null,
@@ -221,6 +221,30 @@ describe("NotificationSection", () => {
     mockFetch.mockResolvedValue({
       ok: false,
       text: () => Promise.resolve(errorMsg),
+      json: () => Promise.reject(new Error("Invalid JSON")),
+    } as unknown as Response);
+
+    render(<NotificationSection />);
+
+    const button = screen.getByTestId("test-push-button");
+    fireEvent.click(button);
+
+    await waitFor(() => {
+      // Should fallback to handle error with text
+      expect(mockAlert.showError).toHaveBeenCalledWith(errorMsg);
+    });
+  });
+
+  it("should handle NO_SUBSCRIPTION error", async () => {
+    mocks.getSession.mockResolvedValue({
+      data: { session: { access_token: "fake-token" } as unknown as Session },
+      error: null,
+    });
+
+    // Mock error response with specific structure
+    mockFetch.mockResolvedValue({
+      ok: false,
+      json: () => Promise.resolve({ errorType: "NO_SUBSCRIPTION" }),
     } as Response);
 
     render(<NotificationSection />);
@@ -229,9 +253,33 @@ describe("NotificationSection", () => {
     fireEvent.click(button);
 
     await waitFor(() => {
-      expect(mockHandleError).toHaveBeenCalledWith(
-        expect.any(Error),
-        "settings.notifications.testError"
+      // Should show specific error message directly via showError
+      // Note: We use t() key because we're mocking translation and checking behavior
+      expect(mockAlert.showError).toHaveBeenCalledWith(
+        "settings.notifications.error.noSubscription"
+      );
+    });
+  });
+
+  it("should handle CONFIG_ERROR", async () => {
+    mocks.getSession.mockResolvedValue({
+      data: { session: { access_token: "fake-token" } as unknown as Session },
+      error: null,
+    });
+
+    mockFetch.mockResolvedValue({
+      ok: false,
+      json: () => Promise.resolve({ errorType: "CONFIG_ERROR" }),
+    } as Response);
+
+    render(<NotificationSection />);
+
+    const button = screen.getByTestId("test-push-button");
+    fireEvent.click(button);
+
+    await waitFor(() => {
+      expect(mockAlert.showError).toHaveBeenCalledWith(
+        "settings.notifications.error.config"
       );
     });
   });

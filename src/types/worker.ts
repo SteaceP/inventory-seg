@@ -96,3 +96,8 @@ export interface PushData {
     url?: string;
   };
 }
+
+export interface ApiResponseError {
+  error?: string;
+  errorType?: string;
+}

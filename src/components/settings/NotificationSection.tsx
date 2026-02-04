@@ -9,6 +9,7 @@ import {
   unsubscribeFromPush,
   checkPushSubscription,
 } from "@/utils/push-notifications";
+import type { ApiResponseError } from "@/types/worker";
 
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -194,12 +195,60 @@ const NotificationSection: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error(await response.text());
+        // Try to parse the error response JSON
+        try {
+          const errorData = (await response.json()) as ApiResponseError;
+          const errorType = errorData.errorType;
+
+          if (errorType === "NO_SUBSCRIPTION") {
+            throw new Error(t("settings.notifications.error.noSubscription"));
+          } else if (errorType === "CONFIG_ERROR") {
+            throw new Error(t("settings.notifications.error.config"));
+          } else if (errorType === "DB_ERROR") {
+            throw new Error(t("settings.notifications.error.db"));
+          } else if (errorData.error) {
+            throw new Error(errorData.error);
+          }
+        } catch (parseError) {
+          // If we already threw a specific error above, rethrow it
+          if (
+            parseError instanceof Error &&
+            parseError.message !== "Unexpected token" &&
+            parseError.message !== "JSON.parse: unexpected character"
+          ) {
+            // Check if it's one of our known error messages (simple heuristic)
+            if (
+              parseError.message ===
+                t("settings.notifications.error.noSubscription") ||
+              parseError.message === t("settings.notifications.error.config") ||
+              parseError.message === t("settings.notifications.error.db")
+            ) {
+              throw parseError;
+            }
+            // For other errors (like JSON parse error), fall through to text fallback
+          }
+
+          // If JSON parsing fails or no specific error structure, fallback to text or default
+          throw new Error(await response.text());
+        }
+
+        throw new Error(response.statusText);
       }
 
       showSuccess(t("notifications.testMobileSuccess"));
     } catch (err) {
-      handleError(err, t("settings.notifications.testError"));
+      // Use the specific error message if it was thrown above, otherwise default generic error
+      const message =
+        err instanceof Error
+          ? err.message
+          : t("settings.notifications.testError");
+      // If the error message is the translation key (meaning it wasn't translated yet), use fallback
+      if (message === "settings.notifications.testError") {
+        handleError(err, t("settings.notifications.testError"));
+      } else {
+        // Use our specific error message
+        showError(message);
+      }
     }
   };
 

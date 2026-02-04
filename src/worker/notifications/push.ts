@@ -1,6 +1,6 @@
 import webpush from "web-push";
 import postgres from "postgres";
-import { reportError, logInfo } from "../errorReporting";
+import { reportError } from "../errorReporting";
 import type { Env, PushSubscriptionRow, PushOptions } from "../types";
 
 export async function broadcastPush(
@@ -8,13 +8,19 @@ export async function broadcastPush(
   env: Env
 ): Promise<void> {
   if (!env.HYPERDRIVE) {
-    logInfo("HYPERDRIVE is missing, skipping push notification.");
-    return;
+    const error = new Error(
+      "Database connection (HYPERDRIVE) is not configured"
+    );
+    reportError(error);
+    throw error;
   }
 
   if (!env.VAPID_PUBLIC_KEY || !env.VAPID_PRIVATE_KEY) {
-    logInfo("VAPID keys missing, skipping push notification.");
-    return;
+    const error = new Error(
+      "VAPID keys are not configured for push notifications"
+    );
+    reportError(error);
+    throw error;
   }
 
   const sql = postgres(env.HYPERDRIVE.connectionString);
@@ -23,7 +29,9 @@ export async function broadcastPush(
       SELECT * FROM push_subscriptions WHERE user_id = ${options.userId}
     `;
 
-    if (subscriptions.length === 0) return;
+    if (subscriptions.length === 0) {
+      throw new Error("No push subscriptions found for this user");
+    }
 
     const pushOptions = {
       vapidDetails: {
