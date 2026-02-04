@@ -11,8 +11,8 @@ Actuellement, seule la dernière version du système de gestion d'inventaire bé
 
 | Version | Prise en charge |
 | --- | --- |
-| 0.0.1 (Dernière) | :white_check_mark: |
-| < 0.0.1 | :x: |
+| 0.0.2 (Dernière) | :white_check_mark: |
+| < 0.0.2 | :x: |
 
 ## Signalement d'une vulnérabilité
 
