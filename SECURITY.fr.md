@@ -1,7 +1,6 @@
 <p align="center">
   <a href="SECURITY.md">English</a> | 
-  <b>Français</b> | 
-  <a href="SECURITY.ar.md">العربية</a>
+  <b>Français</b>
 </p>
 
 # Politique de sécurité
@@ -12,8 +11,8 @@ Actuellement, seule la dernière version du système de gestion d'inventaire bé
 
 | Version | Prise en charge |
 | --- | --- |
-| Dernière | :white_check_mark: |
-| < 1.0.0 | :x: |
+| 0.0.1 (Dernière) | :white_check_mark: |
+| < 0.0.1 | :x: |
 
 ## Signalement d'une vulnérabilité
 

@@ -1,7 +1,6 @@
 <p align="center">
   <b>English</b> | 
-  <a href="SECURITY.fr.md">Français</a> | 
-  <a href="SECURITY.ar.md">العربية</a>
+  <a href="SECURITY.fr.md">Français</a>
 </p>
 
 # Security Policy
@@ -12,8 +11,8 @@ Currently, only the latest version of the inventory management system receives s
 
 | Version | Supported |
 | --- | --- |
-| Latest | :white_check_mark: |
-| < 1.0.0 | :x: |
+| 0.0.1 (Latest) | :white_check_mark: |
+| < 0.0.1 | :x: |
 
 ## Reporting a Vulnerability
 
