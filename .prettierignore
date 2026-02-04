@@ -13,3 +13,6 @@ wrangler.jsonc
 src/types/database.types.ts
 .wrangler/
 coverage/
+supabase/.temp/
+supabase/.branches/
+supabase/.migrations/

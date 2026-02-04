@@ -3,9 +3,9 @@
   "compilerOptions": {
     "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.worker.tsbuildinfo",
-    "target": "ESNext",
+    "target": "ES2020",
     "module": "ESNext",
-    "lib": ["ESNext"],
+    "lib": ["ES2020"],
     "types": ["@cloudflare/workers-types", "vite/client", "vitest/globals"],
     "moduleResolution": "bundler",
     "noEmit": true,

@@ -247,6 +247,6 @@ export default defineConfig(({ mode }) => ({
 
     // Minify for production
     minify: "terser",
-    target: "es2015",
+    target: "es2020",
   },
 }));
