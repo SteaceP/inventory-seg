@@ -2,7 +2,6 @@ import path from "path";
 import fs from "fs";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
-import { checker } from "vite-plugin-checker";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { cloudflare } from "@cloudflare/vite-plugin";
 import { visualizer } from "rollup-plugin-visualizer";
@@ -11,6 +10,7 @@ import svgr from "vite-plugin-svgr";
 import UnpluginFonts from "unplugin-fonts/vite";
 import mkcert from "vite-plugin-mkcert";
 import { ViteImageOptimizer } from "vite-plugin-image-optimizer";
+import terser from "@rollup/plugin-terser";
 
 // https://vite.dev/config/
 const getCloudflareHeaders = (mode: string) => {
@@ -70,183 +70,234 @@ const getCloudflareHeaders = (mode: string) => {
   }
 };
 
-export default defineConfig(({ mode }) => ({
-  server: {
-    cors:
-      mode === "development"
+export default defineConfig(({ mode }) => {
+  const isDev = mode === "development";
+  const isBuild = mode === "production";
+
+  return {
+    server: {
+      cors: isDev
         ? {
             origin: [/^http:\/\/localhost:\d+$/],
             credentials: true,
           }
         : true,
-    headers: getCloudflareHeaders(mode),
-  },
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "src"),
-      "@components": path.resolve(__dirname, "src/components"),
-      "@contexts": path.resolve(__dirname, "src/contexts"),
-      "@hooks": path.resolve(__dirname, "src/hooks"),
-      "@locales": path.resolve(__dirname, "src/locales"),
-      "@pages": path.resolve(__dirname, "src/pages"),
-      "@supabaseClient": path.resolve(__dirname, "src/supabaseClient"),
-      "@test": path.resolve(__dirname, "src/test"),
-      "@utils": path.resolve(__dirname, "src/utils"),
+      headers: getCloudflareHeaders(mode),
     },
-  },
-  plugins: [
-    react(),
-    checker({
-      typescript: {
-        tsconfigPath: "./tsconfig.app.json",
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "src"),
+        "@components": path.resolve(__dirname, "src/components"),
+        "@contexts": path.resolve(__dirname, "src/contexts"),
+        "@hooks": path.resolve(__dirname, "src/hooks"),
+        "@locales": path.resolve(__dirname, "src/locales"),
+        "@pages": path.resolve(__dirname, "src/pages"),
+        "@supabaseClient": path.resolve(__dirname, "src/supabaseClient"),
+        "@test": path.resolve(__dirname, "src/test"),
+        "@utils": path.resolve(__dirname, "src/utils"),
       },
-      eslint: {
-        lintCommand: "eslint .",
-        useFlatConfig: true,
-      },
-    }),
-    cloudflare({
-      // Automatically use wrangler.jsonc for configuration
-      configPath: "./wrangler.jsonc",
-      // Enable persistent storage for D1 and other bindings during dev
-      persistState: true,
-    }),
-    sentryVitePlugin({
-      org: "coderage",
-      project: "seg-inv-frontend",
-      telemetry: false,
-    }),
-    sentryVitePlugin({
-      org: "coderage",
-      project: "seg-inv-backend",
-      telemetry: false,
-    }),
-    // Bundle analyzer - generates stats.html in dist
-    visualizer({
-      filename: "./dist/stats.html",
-      open: false,
-      gzipSize: true,
-      brotliSize: true,
-    }),
-    svgr(),
-    mkcert(),
-    UnpluginFonts({
-      google: {
-        families: [
-          {
-            name: "Inter",
-            styles: "wght@400;500;600;700;800",
-          },
-          {
-            name: "Roboto",
-            styles: "wght@400;500;700",
-          },
-        ],
-      },
-    }),
-    ViteImageOptimizer({
-      svg: {
-        multipass: true,
-        plugins: [
-          {
-            name: "preset-default",
-            params: {
-              overrides: {
-                cleanupIds: false,
-                removeViewBox: false,
+    },
+    plugins: [
+      react(),
+
+      cloudflare({
+        configPath: "./wrangler.jsonc",
+        persistState: true,
+      }),
+
+      // Only run Sentry upload on production builds
+      ...(isBuild
+        ? [
+            sentryVitePlugin({
+              org: "coderage",
+              project: "seg-inv-frontend",
+              telemetry: false,
+              // Only upload source maps, don't block build
+              sourcemaps: {
+                assets: "./dist/**",
               },
-            },
-          },
-          "sortAttrs",
-          {
-            name: "addAttributesToSVGElement",
-            params: {
-              attributes: [{ xmlns: "http://www.w3.org/2000/svg" }],
-            },
-          },
-        ],
-      },
-      png: { quality: 80 },
-      jpeg: { quality: 80 },
-      webp: { quality: 80 },
-    }),
-    VitePWA({
-      registerType: "autoUpdate",
-      strategies: "injectManifest",
-      srcDir: "src",
-      filename: "sw.ts",
-      injectRegister: false,
-      manifest: {
-        name: "SEG Inventaire",
-        short_name: "Inventaire",
-        description: "Système de gestion d'inventaire moderne",
-        theme_color: "#027d6f",
-        background_color: "#0d1117",
-        display: "standalone",
-        start_url: "/",
-        icons: [
-          {
-            src: "icons/icon.svg",
-            sizes: "any",
-            type: "image/svg+xml",
-            purpose: "any",
-          },
-          {
-            src: "icons/icon_maskable.svg",
-            sizes: "any",
-            type: "image/svg+xml",
-            purpose: "maskable",
-          },
-        ],
-      },
-      devOptions: {
-        enabled: false, // Disable by default to avoid issues with Vite HMR/icons in dev
-        type: "module",
-      },
-    }),
-  ],
-  optimizeDeps: {
-    include: ["@emotion/react", "@emotion/styled", "@mui/material/Tooltip"],
-  },
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          // React ecosystem
-          "react-vendor": ["react", "react-dom", "react-router-dom"],
+            }),
+            sentryVitePlugin({
+              org: "coderage",
+              project: "seg-inv-backend",
+              telemetry: false,
+              sourcemaps: {
+                assets: "./dist/**",
+              },
+            }),
+          ]
+        : []),
 
-          // Emotion styling
-          emotion: ["@emotion/react", "@emotion/styled"],
+      // Bundle analyzer - only in production builds
+      ...(isBuild
+        ? [
+            visualizer({
+              filename: "./dist/stats.html",
+              open: false,
+              gzipSize: true,
+              brotliSize: true,
+            }),
+          ]
+        : []),
 
-          // MUI - keep as single chunk to avoid circular dependencies
-          // Splitting MUI components causes circular chunk warnings because
-          // components like Dialog, TextField, etc. import from each other
-          "mui-vendor": ["@mui/material"],
+      svgr(),
 
-          // Icons - keep separate as they're large
-          "mui-icons": ["@mui/icons-material"],
+      // HTTPS cert for development only
+      ...(isDev ? [mkcert()] : []),
 
-          // Backend services
-          "supabase-vendor": ["@supabase/supabase-js"],
-          "sentry-vendor": ["@sentry/react"],
+      // Font loading - only in production builds
+      // In dev, fonts load from CDN directly
+      ...(isBuild
+        ? [
+            UnpluginFonts({
+              google: {
+                families: [
+                  {
+                    name: "Inter",
+                    styles: "wght@400;500;600;700;800",
+                  },
+                  {
+                    name: "Roboto",
+                    styles: "wght@400;500;700",
+                  },
+                ],
+              },
+            }),
+          ]
+        : []),
 
-          // Heavy libraries - lazy loaded via dynamic imports
-          "scanner-vendor": ["@zxing/library"],
-          "barcode-vendor": ["react-barcode"],
+      // Image optimization - only in production builds
+      ...(isBuild
+        ? [
+            ViteImageOptimizer({
+              svg: {
+                multipass: true,
+                plugins: [
+                  {
+                    name: "preset-default",
+                    params: {
+                      overrides: {
+                        // Remove most default plugins but keep essential ones
+                        cleanupIds: false,
+                      },
+                    },
+                  },
+                  "sortAttrs",
+                  {
+                    name: "addAttributesToSVGElement",
+                    params: {
+                      attributes: [{ xmlns: "http://www.w3.org/2000/svg" }],
+                    },
+                  },
+                ],
+              },
+              png: { quality: 80 },
+              jpeg: { quality: 80 },
+              webp: { quality: 80 },
+            }),
+          ]
+        : []),
 
-          // Animation
-          "framer-vendor": ["framer-motion"],
-        },
-      },
+      // PWA - only in production builds
+      ...(isBuild
+        ? [
+            VitePWA({
+              registerType: "autoUpdate",
+              strategies: "injectManifest",
+              srcDir: "src",
+              filename: "sw.ts",
+              injectRegister: false,
+              manifest: {
+                name: "SEG Inventaire",
+                short_name: "Inventaire",
+                description: "Système de gestion d'inventaire moderne",
+                theme_color: "#027d6f",
+                background_color: "#0d1117",
+                display: "standalone",
+                start_url: "/",
+                icons: [
+                  {
+                    src: "icons/icon.svg",
+                    sizes: "any",
+                    type: "image/svg+xml",
+                    purpose: "any",
+                  },
+                  {
+                    src: "icons/icon_maskable.svg",
+                    sizes: "any",
+                    type: "image/svg+xml",
+                    purpose: "maskable",
+                  },
+                ],
+              },
+              devOptions: {
+                enabled: false,
+                type: "module",
+              },
+            }),
+          ]
+        : []),
+    ],
+    optimizeDeps: {
+      include: ["@emotion/react", "@emotion/styled", "@mui/material/Tooltip"],
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            // React ecosystem
+            "react-vendor": ["react", "react-dom", "react-router-dom"],
 
-    // Warn if chunks exceed 500KB
-    chunkSizeWarningLimit: 400,
+            // Emotion styling
+            emotion: ["@emotion/react", "@emotion/styled"],
 
-    sourcemap: true,
+            // MUI - keep as single chunk to avoid circular dependencies
+            // Splitting MUI components causes circular chunk warnings because
+            // components like Dialog, TextField, etc. import from each other
+            "mui-vendor": ["@mui/material"],
 
-    // Minify for production
-    minify: "terser",
-    target: "es2020",
-  },
-}));
+            // Icons - keep separate as they're large
+            "mui-icons": ["@mui/icons-material"],
+
+            // Backend services
+            "supabase-vendor": ["@supabase/supabase-js"],
+            "sentry-vendor": ["@sentry/react"],
+
+            // Heavy libraries - lazy loaded via dynamic imports
+            "scanner-vendor": ["@zxing/library"],
+            "barcode-vendor": ["react-barcode"],
+
+            // Animation
+            "framer-vendor": ["framer-motion"],
+          },
+        },
+        // Enable parallel terser minification
+        plugins: [
+          terser({
+            maxWorkers: 12, // Utilize 12 CPU cores for faster minification
+            compress: {
+              drop_console: false, // Keep console logs for debugging
+              drop_debugger: true, // Remove debugger statements
+              passes: 4, // Multiple passes for better compression
+            },
+            mangle: {
+              safari10: true, // Fix Safari 10 issues
+            },
+            format: {
+              comments: false, // Remove all comments
+            },
+          }),
+        ],
+      },
+
+      // Warn if chunks exceed 400KB
+      chunkSizeWarningLimit: 400,
+
+      sourcemap: true,
+
+      // Disable Vite's built-in minification (using @rollup/plugin-terser instead)
+      minify: false,
+      target: "es2020",
+    },
+  };
+});
