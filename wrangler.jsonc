@@ -40,7 +40,8 @@
 		"enabled": true
 	},
 	"ai": {
-		"binding": "AI_SERVICE"
+		"binding": "AI_SERVICE",
+		"remote": true
 	},
 	"env": {
 		"dev": {

@@ -46,6 +46,7 @@ export default defineConfig([
     settings: {
       "import/resolver": {
         typescript: {
+          noWarnOnMultipleProjects: true,
           project: [
             "./tsconfig.app.json",
             "./tsconfig.node.json",

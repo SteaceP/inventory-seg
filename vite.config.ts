@@ -1,13 +1,14 @@
 import path from "path";
 import fs from "fs";
+import react from "@vitejs/plugin-react";
+import { checker } from "vite-plugin-checker";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
 import { cloudflare } from "@cloudflare/vite-plugin";
 import { visualizer } from "rollup-plugin-visualizer";
 
 // https://vite.dev/config/
-const getCloudflareHeaders = () => {
+const getCloudflareHeaders = (mode: string) => {
   try {
     const headersPath = path.resolve(__dirname, "public/_headers");
     if (!fs.existsSync(headersPath)) return {};
@@ -28,6 +29,17 @@ const getCloudflareHeaders = () => {
       }
     });
 
+    if (mode === "development" && headers["Content-Security-Policy"]) {
+      // Relax CSP for local development
+      headers["Content-Security-Policy"] = headers["Content-Security-Policy"]
+        .replace(
+          "connect-src ",
+          "connect-src http://localhost:* ws://localhost:* "
+        )
+        .replace("img-src ", "img-src http://localhost:* ")
+        .replace("script-src ", "script-src 'unsafe-eval' http://localhost:* ");
+    }
+
     return headers;
   } catch (e) {
     console.warn("Failed to read public/_headers", e);
@@ -35,10 +47,16 @@ const getCloudflareHeaders = () => {
   }
 };
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   server: {
-    cors: true,
-    headers: getCloudflareHeaders(),
+    cors:
+      mode === "development"
+        ? {
+            origin: [/^http:\/\/localhost:\d+$/],
+            credentials: true,
+          }
+        : true,
+    headers: getCloudflareHeaders(mode),
   },
   resolve: {
     alias: {
@@ -55,6 +73,15 @@ export default defineConfig({
   },
   plugins: [
     react(),
+    checker({
+      typescript: {
+        tsconfigPath: "./tsconfig.app.json",
+      },
+      eslint: {
+        lintCommand: "eslint .",
+        useFlatConfig: true,
+      },
+    }),
     cloudflare({
       // Automatically use wrangler.jsonc for configuration
       configPath: "./wrangler.jsonc",
@@ -64,10 +91,12 @@ export default defineConfig({
     sentryVitePlugin({
       org: "coderage",
       project: "seg-inv-frontend",
+      telemetry: false,
     }),
     sentryVitePlugin({
       org: "coderage",
       project: "seg-inv-backend",
+      telemetry: false,
     }),
     // Bundle analyzer - generates stats.html in dist
     visualizer({
@@ -113,7 +142,7 @@ export default defineConfig({
     },
 
     // Warn if chunks exceed 500KB
-    chunkSizeWarningLimit: 500,
+    chunkSizeWarningLimit: 400,
 
     sourcemap: true,
 
@@ -121,4 +150,4 @@ export default defineConfig({
     minify: "terser",
     target: "es2015",
   },
-});
+}));
