@@ -379,6 +379,25 @@ const en = {
     "Microphone permission denied. Please allow access.",
   "assistant.errors.network": "Network connection required for voice input.",
   "assistant.errors.no_speech": "No speech detected. Please try again.",
+
+  // SEO
+  "seo.description.default":
+    "Advanced Inventory Management System featuring multi-location tracking, AI-driven reordering, and appliance maintenance history.",
+  "seo.description.dashboard":
+    "View inventory overview, low stock alerts, and recent activity",
+  "seo.description.inventory":
+    "Manage and track your inventory items with multi-location support",
+  "seo.description.reports":
+    "Generate monthly and annual inventory reports with detailed analytics",
+  "seo.description.activity": "Track all inventory changes and audit history",
+  "seo.description.locations":
+    "Manage warehouse locations and hierarchical stock organization",
+  "seo.description.appliances":
+    "Track household appliances, maintenance schedules, and repair history",
+  "seo.description.settings":
+    "Manage your profile, preferences, and notification settings",
+  "seo.description.login": "Sign in to your inventory management account",
+  "seo.description.signup": "Create a new inventory management account",
 };
 
 export default en;

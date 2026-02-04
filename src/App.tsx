@@ -9,6 +9,7 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import Layout from "./components/layout/Layout";
 import { useTranslation } from "./i18n";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -183,15 +184,17 @@ import WifiOffIcon from "@mui/icons-material/WifiOff";
 const App = () => {
   return (
     <ErrorBoundary>
-      <AlertProvider>
-        <UserProvider>
-          <InventoryProvider>
-            <Router>
-              <AppContent />
-            </Router>
-          </InventoryProvider>
-        </UserProvider>
-      </AlertProvider>
+      <HelmetProvider>
+        <AlertProvider>
+          <UserProvider>
+            <InventoryProvider>
+              <Router>
+                <AppContent />
+              </Router>
+            </InventoryProvider>
+          </UserProvider>
+        </AlertProvider>
+      </HelmetProvider>
     </ErrorBoundary>
   );
 };

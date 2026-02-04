@@ -390,6 +390,27 @@ const fr = {
     "Permission microphone refusée. Veuillez autoriser l'accès.",
   "assistant.errors.network": "Connexion réseau requise pour la saisie vocale.",
   "assistant.errors.no_speech": "Aucune parole détectée. Veuillez réessayer.",
+
+  // SEO
+  "seo.description.default":
+    "Système avancé de gestion d'inventaire avec suivi multi-emplacements, réapprovisionnement piloté par IA et historique de maintenance des appareils.",
+  "seo.description.dashboard":
+    "Consultez l'aperçu de l'inventaire, les alertes de stock faible et l'activité récente",
+  "seo.description.inventory":
+    "Gérez et suivez vos articles d'inventaire avec le support multi-emplacements",
+  "seo.description.reports":
+    "Générez des rapports d'inventaire mensuels et annuels avec des analyses détaillées",
+  "seo.description.activity":
+    "Suivez tous les changements d'inventaire et l'historique d'audit",
+  "seo.description.locations":
+    "Gérez les emplacements d'entrepôt et l'organisation hiérarchique du stock",
+  "seo.description.appliances":
+    "Suivez les appareils ménagers, les calendriers de maintenance et l'historique des réparations",
+  "seo.description.settings":
+    "Gérez votre profil, vos préférences et vos paramètres de notification",
+  "seo.description.login":
+    "Connectez-vous à votre compte de gestion d'inventaire",
+  "seo.description.signup": "Créez un nouveau compte de gestion d'inventaire",
 };
 
 export default fr;

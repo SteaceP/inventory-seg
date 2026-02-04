@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import type { Appliance } from "@/types/appliances";
 import { useInventoryForm } from "@hooks/inventory/useInventoryForm";
 import { useInventoryActions } from "@hooks/inventory/useInventoryActions";
+import SEO from "@components/SEO";
 
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -311,216 +312,222 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <Box sx={{ p: { xs: 2, sm: 3 }, maxWidth: "1600px", mx: "auto" }}>
-      <Box sx={{ mb: { xs: 2, sm: 4 } }}>
-        <Typography variant="h4" fontWeight="900" gutterBottom>
-          {t("dashboard.title")}
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          {t("dashboard.welcome")}
-        </Typography>
-      </Box>
-
-      {/* QuickActions - Show at top on mobile for better accessibility */}
-      {isMobile && (
-        <Box sx={{ mb: 3 }}>
-          <QuickActions
-            onScanClick={() => setScanOpen(true)}
-            onAddApplianceClick={() => setAddApplianceOpen(true)}
-            onAddInventoryClick={() => handleOpenInventory()}
-          />
+    <>
+      <SEO
+        title={t("dashboard.title")}
+        descriptionKey="seo.description.dashboard"
+      />
+      <Box sx={{ p: { xs: 2, sm: 3 }, maxWidth: "1600px", mx: "auto" }}>
+        <Box sx={{ mb: { xs: 2, sm: 4 } }}>
+          <Typography variant="h4" fontWeight="900" gutterBottom>
+            {t("dashboard.title")}
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            {t("dashboard.welcome")}
+          </Typography>
         </Box>
-      )}
 
-      <Grid
-        container
-        spacing={{ xs: 1.5, sm: 3 }}
-        sx={{ mt: { xs: 0, sm: 2 } }}
-      >
-        <Grid size={{ xs: 6, sm: 6, md: 3 }}>
-          <StatCard
-            title={t("dashboard.totalItems")}
-            value={stats.totalItems.toLocaleString()}
-            icon={<InventoryIcon />}
-            color="status.success"
-          />
-        </Grid>
-        <Grid size={{ xs: 6, sm: 6, md: 3 }}>
-          <StatCard
-            title={t("dashboard.lowStockItems")}
-            value={stats.lowStockItems.length}
-            icon={<WarningIcon />}
-            color="status.warning"
-          />
-        </Grid>
-        <Grid size={{ xs: 6, sm: 6, md: 3 }}>
-          <StatCard
-            title={t("dashboard.topCategory")}
-            value={stats.topCategory}
-            icon={<CategoryIcon />}
-            color="status.info"
-          />
-        </Grid>
-        <Grid size={{ xs: 6, sm: 6, md: 3 }}>
-          <StatCard
-            title={t("dashboard.movements")}
-            value={`+${dailyStats.in} / -${dailyStats.out}`}
-            icon={<HistoryIcon />}
-            color="brand.secondary"
-          />
-        </Grid>
-      </Grid>
+        {/* QuickActions - Show at top on mobile for better accessibility */}
+        {isMobile && (
+          <Box sx={{ mb: 3 }}>
+            <QuickActions
+              onScanClick={() => setScanOpen(true)}
+              onAddApplianceClick={() => setAddApplianceOpen(true)}
+              onAddInventoryClick={() => handleOpenInventory()}
+            />
+          </Box>
+        )}
 
-      <Box sx={{ mt: { xs: 3, sm: 4 } }}>
-        <StockHealth />
-      </Box>
+        <Grid
+          container
+          spacing={{ xs: 1.5, sm: 3 }}
+          sx={{ mt: { xs: 0, sm: 2 } }}
+        >
+          <Grid size={{ xs: 6, sm: 6, md: 3 }}>
+            <StatCard
+              title={t("dashboard.totalItems")}
+              value={stats.totalItems.toLocaleString()}
+              icon={<InventoryIcon />}
+              color="status.success"
+            />
+          </Grid>
+          <Grid size={{ xs: 6, sm: 6, md: 3 }}>
+            <StatCard
+              title={t("dashboard.lowStockItems")}
+              value={stats.lowStockItems.length}
+              icon={<WarningIcon />}
+              color="status.warning"
+            />
+          </Grid>
+          <Grid size={{ xs: 6, sm: 6, md: 3 }}>
+            <StatCard
+              title={t("dashboard.topCategory")}
+              value={stats.topCategory}
+              icon={<CategoryIcon />}
+              color="status.info"
+            />
+          </Grid>
+          <Grid size={{ xs: 6, sm: 6, md: 3 }}>
+            <StatCard
+              title={t("dashboard.movements")}
+              value={`+${dailyStats.in} / -${dailyStats.out}`}
+              icon={<HistoryIcon />}
+              color="brand.secondary"
+            />
+          </Grid>
+        </Grid>
 
-      {/* QuickActions - Show at bottom on desktop/tablet */}
-      {!isMobile && (
-        <Box sx={{ mt: 4 }}>
-          <QuickActions
-            onScanClick={() => setScanOpen(true)}
-            onAddApplianceClick={() => setAddApplianceOpen(true)}
-            onAddInventoryClick={() => handleOpenInventory()}
-          />
+        <Box sx={{ mt: { xs: 3, sm: 4 } }}>
+          <StockHealth />
         </Box>
-      )}
 
-      <InventoryScanner
-        open={scanOpen}
-        onClose={() => setScanOpen(false)}
-        onScanSuccess={(decodedText) => {
-          setScanOpen(false);
-          const existingItem = items.find((i) => i.sku === decodedText);
-          if (existingItem) {
-            void navigate(
-              `/inventory?scanResult=${encodeURIComponent(decodedText)}`
-            );
-          } else {
-            setScannedBarcode(decodedText);
-            setItemNotFoundOpen(true);
-          }
-        }}
-        onError={(msg) => handleError(new Error(msg), msg)}
-      />
+        {/* QuickActions - Show at bottom on desktop/tablet */}
+        {!isMobile && (
+          <Box sx={{ mt: 4 }}>
+            <QuickActions
+              onScanClick={() => setScanOpen(true)}
+              onAddApplianceClick={() => setAddApplianceOpen(true)}
+              onAddInventoryClick={() => handleOpenInventory()}
+            />
+          </Box>
+        )}
 
-      <ApplianceDialog
-        open={addApplianceOpen}
-        onClose={() => setAddApplianceOpen(false)}
-        onSave={(newApp) => void handleSaveAppliance(newApp)}
-        loading={isSavingAppliance}
-      />
-
-      <InventoryDialog
-        open={inventoryOpen}
-        editingItem={null}
-        formData={inventoryFormData}
-        isMobile={isMobile}
-        onClose={handleCloseInventory}
-        onSave={() => {
-          void handleSave().then(() => {
-            setTimeout(() => {
-              setSuccessType("item");
-              setSuccessDialogOpen(true);
-            }, 500);
-          });
-        }}
-        onFormDataChange={setInventoryFormData}
-        onGenerateSKU={generateSKU}
-        onImageUpload={(e) => void handleImageUpload(e)}
-        getBarcodeFormat={getBarcodeFormat}
-        role={role}
-        loading={inventorySaving}
-      />
-
-      {/* Success Dialog */}
-      <Dialog
-        open={successDialogOpen}
-        onClose={() => setSuccessDialogOpen(false)}
-      >
-        <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <SuccessIcon color="success" />
-          {t("common.success")}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {successType === "item"
-              ? t("inventory.scanner.success.item")
-              : t("inventory.scanner.success.appliance")}{" "}
-            {t("inventory.scanner.success.nextAction")}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setSuccessDialogOpen(false)}>
-            {t("common.done")}
-          </Button>
-          <Button
-            onClick={() => {
-              setSuccessDialogOpen(false);
-              if (successType === "item") {
-                handleOpenInventory();
-              } else {
-                setAddApplianceOpen(true);
-              }
-            }}
-          >
-            {successType === "item"
-              ? "Add Another Item"
-              : "Add Another Appliance"}
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => {
-              setSuccessDialogOpen(false);
+        <InventoryScanner
+          open={scanOpen}
+          onClose={() => setScanOpen(false)}
+          onScanSuccess={(decodedText) => {
+            setScanOpen(false);
+            const existingItem = items.find((i) => i.sku === decodedText);
+            if (existingItem) {
               void navigate(
-                successType === "item" ? "/inventory" : "/appliances"
+                `/inventory?scanResult=${encodeURIComponent(decodedText)}`
               );
-            }}
-          >
-            {t("common.viewList")}
-          </Button>
-        </DialogActions>
-      </Dialog>
+            } else {
+              setScannedBarcode(decodedText);
+              setItemNotFoundOpen(true);
+            }
+          }}
+          onError={(msg) => handleError(new Error(msg), msg)}
+        />
 
-      {/* Item Not Found Dialog */}
-      <Dialog
-        open={itemNotFoundOpen}
-        onClose={() => setItemNotFoundOpen(false)}
-      >
-        <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <WarningIcon color="warning" />
-          {t("inventory.scanner.notFound.title")}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {t("inventory.scanner.notFound.message", {
-              sku: scannedBarcode || "",
-            })}
-          </DialogContentText>
-          <DialogContentText sx={{ mt: 1.5, fontSize: "0.875rem" }}>
-            {t("inventory.scanner.notFound.rescanHint")}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setItemNotFoundOpen(false)}>
-            {t("common.cancel")}
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => {
-              setItemNotFoundOpen(false);
-              handleOpenInventory();
-              setInventoryFormData((prev) => ({
-                ...prev,
+        <ApplianceDialog
+          open={addApplianceOpen}
+          onClose={() => setAddApplianceOpen(false)}
+          onSave={(newApp) => void handleSaveAppliance(newApp)}
+          loading={isSavingAppliance}
+        />
+
+        <InventoryDialog
+          open={inventoryOpen}
+          editingItem={null}
+          formData={inventoryFormData}
+          isMobile={isMobile}
+          onClose={handleCloseInventory}
+          onSave={() => {
+            void handleSave().then(() => {
+              setTimeout(() => {
+                setSuccessType("item");
+                setSuccessDialogOpen(true);
+              }, 500);
+            });
+          }}
+          onFormDataChange={setInventoryFormData}
+          onGenerateSKU={generateSKU}
+          onImageUpload={(e) => void handleImageUpload(e)}
+          getBarcodeFormat={getBarcodeFormat}
+          role={role}
+          loading={inventorySaving}
+        />
+
+        {/* Success Dialog */}
+        <Dialog
+          open={successDialogOpen}
+          onClose={() => setSuccessDialogOpen(false)}
+        >
+          <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <SuccessIcon color="success" />
+            {t("common.success")}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {successType === "item"
+                ? t("inventory.scanner.success.item")
+                : t("inventory.scanner.success.appliance")}{" "}
+              {t("inventory.scanner.success.nextAction")}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setSuccessDialogOpen(false)}>
+              {t("common.done")}
+            </Button>
+            <Button
+              onClick={() => {
+                setSuccessDialogOpen(false);
+                if (successType === "item") {
+                  handleOpenInventory();
+                } else {
+                  setAddApplianceOpen(true);
+                }
+              }}
+            >
+              {successType === "item"
+                ? "Add Another Item"
+                : "Add Another Appliance"}
+            </Button>
+            <Button
+              variant="contained"
+              onClick={() => {
+                setSuccessDialogOpen(false);
+                void navigate(
+                  successType === "item" ? "/inventory" : "/appliances"
+                );
+              }}
+            >
+              {t("common.viewList")}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Item Not Found Dialog */}
+        <Dialog
+          open={itemNotFoundOpen}
+          onClose={() => setItemNotFoundOpen(false)}
+        >
+          <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <WarningIcon color="warning" />
+            {t("inventory.scanner.notFound.title")}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {t("inventory.scanner.notFound.message", {
                 sku: scannedBarcode || "",
-              }));
-            }}
-          >
-            {t("inventory.scanner.notFound.addButton")}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+              })}
+            </DialogContentText>
+            <DialogContentText sx={{ mt: 1.5, fontSize: "0.875rem" }}>
+              {t("inventory.scanner.notFound.rescanHint")}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setItemNotFoundOpen(false)}>
+              {t("common.cancel")}
+            </Button>
+            <Button
+              variant="contained"
+              onClick={() => {
+                setItemNotFoundOpen(false);
+                handleOpenInventory();
+                setInventoryFormData((prev) => ({
+                  ...prev,
+                  sku: scannedBarcode || "",
+                }));
+              }}
+            >
+              {t("inventory.scanner.notFound.addButton")}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
+    </>
   );
 };
 

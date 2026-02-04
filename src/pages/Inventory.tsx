@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslation } from "@/i18n";
+import SEO from "@components/SEO";
 import BarcodePrinter from "@components/BarcodePrinter";
 import InventoryHeader from "@components/inventory/grid/InventoryHeader";
 import InventoryCategorizedGrid from "@components/inventory/grid/InventoryCategorizedGrid";
@@ -80,114 +81,110 @@ const Inventory: React.FC = () => {
   const { handleError } = useErrorHandler();
 
   return (
-    <Box
-      sx={{
-        p: compactView ? 2 : 3,
-        maxWidth: { lg: "2200px", xl: "3200px" },
-        mx: "auto",
-      }}
-    >
-      <InventoryHeader
-        isMobile={isMobile}
-        selectedCount={selectedItems.size}
-        onPrint={() => window.print()}
-        onScan={() => setScanOpen(true)}
-        onAdd={role === "admin" ? () => handleOpen() : undefined}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        onManageCategories={
-          role === "admin" ? () => setCategoriesDialogOpen(true) : undefined
-        }
+    <>
+      <SEO
+        title={t("inventory.title")}
+        descriptionKey="seo.description.inventory"
       />
+      <Box
+        sx={{
+          p: compactView ? 2 : 3,
+          maxWidth: { lg: "2200px", xl: "3200px" },
+          mx: "auto",
+        }}
+      >
+        <InventoryHeader
+          isMobile={isMobile}
+          selectedCount={selectedItems.size}
+          onPrint={() => window.print()}
+          onScan={() => setScanOpen(true)}
+          onAdd={role === "admin" ? () => handleOpen() : undefined}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onManageCategories={
+            role === "admin" ? () => setCategoriesDialogOpen(true) : undefined
+          }
+        />
 
-      {inventoryLoading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
-          <CircularProgress />
-        </Box>
-      ) : (
-        <>
-          <InventoryStats
-            items={items}
-            globalThreshold={globalThreshold}
-            categories={categories}
-            activeTab={currentTab}
-            onTabChange={(newValue: number) => {
-              setCurrentTab(newValue);
-              if (newValue === 1) {
-                setSearchParams({ filter: "lowStock" });
-              } else if (newValue === 2) {
-                setSearchParams({ filter: "outOfStock" });
-              } else {
-                const newParams = new URLSearchParams(searchParams);
-                newParams.delete("filter");
-                setSearchParams(newParams);
+        {inventoryLoading ? (
+          <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <>
+            <InventoryStats
+              items={items}
+              globalThreshold={globalThreshold}
+              categories={categories}
+              activeTab={currentTab}
+              onTabChange={(newValue: number) => {
+                setCurrentTab(newValue);
+                if (newValue === 1) {
+                  setSearchParams({ filter: "lowStock" });
+                } else if (newValue === 2) {
+                  setSearchParams({ filter: "outOfStock" });
+                } else {
+                  const newParams = new URLSearchParams(searchParams);
+                  newParams.delete("filter");
+                  setSearchParams(newParams);
+                }
+              }}
+            />
+
+            <CategoryFilters
+              categories={categories}
+              selectedCategory={selectedCategory}
+              onSelectCategory={setSelectedCategory}
+            />
+
+            <InventoryCategorizedGrid
+              items={filteredItems}
+              selectedItems={selectedItems}
+              onToggleItem={toggleItem}
+              onEdit={handleOpen}
+              onAdjust={handleAdjust}
+              onDelete={
+                role === "admin" ? (id) => handleDeleteClick(id) : undefined
               }
-            }}
-          />
+              onViewHistory={(itemId, itemName) => {
+                setSelectedItemForHistory({ id: itemId, name: itemName });
+                setHistoryDialogOpen(true);
+              }}
+              compactView={compactView}
+              selectedCategory={selectedCategory}
+            />
+          </>
+        )}
 
-          <CategoryFilters
-            categories={categories}
-            selectedCategory={selectedCategory}
-            onSelectCategory={setSelectedCategory}
-          />
+        <ConfirmDialog
+          open={deleteConfirmOpen}
+          title={t("inventory.delete") || "Delete Item"}
+          content={t("inventory.deleteConfirm")}
+          onConfirm={() => void handleDeleteConfirm()}
+          onCancel={() => setDeleteConfirmOpen(false)}
+        />
 
-          <InventoryCategorizedGrid
-            items={filteredItems}
-            selectedItems={selectedItems}
-            onToggleItem={toggleItem}
-            onEdit={handleOpen}
-            onAdjust={handleAdjust}
-            onDelete={
-              role === "admin" ? (id) => handleDeleteClick(id) : undefined
-            }
-            onViewHistory={(itemId, itemName) => {
-              setSelectedItemForHistory({ id: itemId, name: itemName });
-              setHistoryDialogOpen(true);
-            }}
-            compactView={compactView}
-            selectedCategory={selectedCategory}
-          />
-        </>
-      )}
+        <InventoryDialog
+          open={open}
+          editingItem={editingItem}
+          formData={formData}
+          isMobile={isMobile}
+          onClose={handleClose}
+          onSave={() => void handleSave()}
+          onFormDataChange={setFormData}
+          onGenerateSKU={generateSKU}
+          onImageUpload={(file) => void handleImageUpload(file)}
+          getBarcodeFormat={getBarcodeFormat}
+          role={role}
+          loading={actionLoading}
+        />
 
-      <ConfirmDialog
-        open={deleteConfirmOpen}
-        title={t("inventory.delete") || "Delete Item"}
-        content={t("inventory.deleteConfirm")}
-        onConfirm={() => void handleDeleteConfirm()}
-        onCancel={() => setDeleteConfirmOpen(false)}
-      />
-
-      <InventoryDialog
-        open={open}
-        editingItem={editingItem}
-        formData={formData}
-        isMobile={isMobile}
-        onClose={handleClose}
-        onSave={() => void handleSave()}
-        onFormDataChange={setFormData}
-        onGenerateSKU={generateSKU}
-        onImageUpload={(file) => void handleImageUpload(file)}
-        getBarcodeFormat={getBarcodeFormat}
-        role={role}
-        loading={actionLoading}
-      />
-
-      <StockAdjustmentDialog
-        open={stockDialogOpen}
-        item={selectedItem}
-        isMobile={isMobile}
-        onClose={() => setStockDialogOpen(false)}
-        onSave={(
-          itemId,
-          newStock,
-          location,
-          actionType,
-          parentLocation,
-          recipient,
-          destination
-        ) =>
-          void handleStockSave(
+        <StockAdjustmentDialog
+          open={stockDialogOpen}
+          item={selectedItem}
+          isMobile={isMobile}
+          onClose={() => setStockDialogOpen(false)}
+          onSave={(
             itemId,
             newStock,
             location,
@@ -195,52 +192,62 @@ const Inventory: React.FC = () => {
             parentLocation,
             recipient,
             destination
-          )
-        }
-        loading={actionLoading}
-      />
+          ) =>
+            void handleStockSave(
+              itemId,
+              newStock,
+              location,
+              actionType,
+              parentLocation,
+              recipient,
+              destination
+            )
+          }
+          loading={actionLoading}
+        />
 
-      <InventoryScanner
-        open={scanOpen}
-        onClose={() => setScanOpen(false)}
-        onScanSuccess={handleScanSuccess}
-        onError={(msg) => handleError(new Error(msg), msg)}
-      />
+        <InventoryScanner
+          open={scanOpen}
+          onClose={() => setScanOpen(false)}
+          onScanSuccess={handleScanSuccess}
+          onError={(msg) => handleError(new Error(msg), msg)}
+        />
 
-      <BarcodePrinter
-        items={items
-          .filter((i) => selectedItems.has(i.id))
-          .map((i) => ({
-            name: i.name,
-            sku: i.sku || "",
-            category: i.category,
-          }))}
-      />
+        <BarcodePrinter
+          items={items
+            .filter((i) => selectedItems.has(i.id))
+            .map((i) => ({
+              name: i.name,
+              sku: i.sku || "",
+              category: i.category,
+            }))}
+        />
 
-      <CategoryManagementDialog
-        open={categoriesDialogOpen}
-        onClose={() => setCategoriesDialogOpen(false)}
-      />
+        <CategoryManagementDialog
+          open={categoriesDialogOpen}
+          onClose={() => setCategoriesDialogOpen(false)}
+        />
 
-      <StockHistoryDialog
-        open={historyDialogOpen}
-        itemId={selectedItemForHistory?.id || null}
-        itemName={selectedItemForHistory?.name || ""}
-        onClose={() => {
-          setHistoryDialogOpen(false);
-          setSelectedItemForHistory(null);
-        }}
-      />
+        <StockHistoryDialog
+          open={historyDialogOpen}
+          itemId={selectedItemForHistory?.id || null}
+          itemName={selectedItemForHistory?.name || ""}
+          onClose={() => {
+            setHistoryDialogOpen(false);
+            setSelectedItemForHistory(null);
+          }}
+        />
 
-      <InventoryDrawer
-        open={openDrawer}
-        onClose={() => setOpenDrawer(false)}
-        item={selectedItem}
-        onEdit={handleEdit}
-        onDelete={handleDeleteClick}
-        onAdjustStock={handleAdjust}
-      />
-    </Box>
+        <InventoryDrawer
+          open={openDrawer}
+          onClose={() => setOpenDrawer(false)}
+          item={selectedItem}
+          onEdit={handleEdit}
+          onDelete={handleDeleteClick}
+          onAdjustStock={handleAdjust}
+        />
+      </Box>
+    </>
   );
 };
 
