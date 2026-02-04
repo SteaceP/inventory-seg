@@ -91,6 +91,7 @@ Implementation locations:
 ## TypeScript Best Practices
 
 - **Strict Typing**: NEVER use the `any` type. Use `unknown`, proper interfaces, or generics instead.
+- **Centralized Types**: ALWAYS place global types and interfaces in the `src/types/` directory to ensure consistency and reusability across the codebase.
 - **Type Exhaustiveness**: Ensure all switches/conditionals cover all possible types.
 
 ## Testing Guidelines

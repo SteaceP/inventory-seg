@@ -83,3 +83,16 @@ export interface PushOptions {
   tag: string;
   requireInteraction?: boolean;
 }
+
+export interface PushData {
+  title: string;
+  body: string;
+  icon?: string;
+  badge?: string;
+  vibrate?: number[];
+  tag?: string;
+  requireInteraction?: boolean;
+  data?: {
+    url?: string;
+  };
+}

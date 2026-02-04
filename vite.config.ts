@@ -1,11 +1,16 @@
 import path from "path";
 import fs from "fs";
+import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { checker } from "vite-plugin-checker";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
-import { defineConfig } from "vite";
 import { cloudflare } from "@cloudflare/vite-plugin";
 import { visualizer } from "rollup-plugin-visualizer";
+import { VitePWA } from "vite-plugin-pwa";
+import svgr from "vite-plugin-svgr";
+import UnpluginFonts from "unplugin-fonts/vite";
+import mkcert from "vite-plugin-mkcert";
+import { ViteImageOptimizer } from "vite-plugin-image-optimizer";
 
 // https://vite.dev/config/
 const getCloudflareHeaders = (mode: string) => {
@@ -30,14 +35,32 @@ const getCloudflareHeaders = (mode: string) => {
     });
 
     if (mode === "development" && headers["Content-Security-Policy"]) {
-      // Relax CSP for local development
-      headers["Content-Security-Policy"] = headers["Content-Security-Policy"]
-        .replace(
-          "connect-src ",
-          "connect-src http://localhost:* ws://localhost:* "
-        )
-        .replace("img-src ", "img-src http://localhost:* ")
-        .replace("script-src ", "script-src 'unsafe-eval' http://localhost:* ");
+      console.log("Relaxing CSP for development mode");
+      let csp = headers["Content-Security-Policy"];
+
+      // Relax connect-src
+      if (csp.includes("connect-src")) {
+        csp = csp.replace(
+          /connect-src\s+([^;]+)/,
+          "connect-src $1 http://localhost:* ws://localhost:*"
+        );
+      }
+
+      // Relax img-src
+      if (csp.includes("img-src")) {
+        csp = csp.replace(/img-src\s+([^;]+)/, "img-src $1 http://localhost:*");
+      }
+
+      // Relax script-src
+      if (csp.includes("script-src")) {
+        csp = csp.replace(
+          /script-src\s+([^;]+)/,
+          "script-src $1 'unsafe-eval' http://localhost:*"
+        );
+      }
+
+      headers["Content-Security-Policy"] = csp;
+      console.log("Updated CSP:", headers["Content-Security-Policy"]);
     }
 
     return headers;
@@ -104,6 +127,82 @@ export default defineConfig(({ mode }) => ({
       open: false,
       gzipSize: true,
       brotliSize: true,
+    }),
+    svgr(),
+    mkcert(),
+    UnpluginFonts({
+      google: {
+        families: [
+          {
+            name: "Inter",
+            styles: "wght@400;500;600;700;800",
+          },
+          {
+            name: "Roboto",
+            styles: "wght@400;500;700",
+          },
+        ],
+      },
+    }),
+    ViteImageOptimizer({
+      svg: {
+        multipass: true,
+        plugins: [
+          {
+            name: "preset-default",
+            params: {
+              overrides: {
+                cleanupIds: false,
+                removeViewBox: false,
+              },
+            },
+          },
+          "sortAttrs",
+          {
+            name: "addAttributesToSVGElement",
+            params: {
+              attributes: [{ xmlns: "http://www.w3.org/2000/svg" }],
+            },
+          },
+        ],
+      },
+      png: { quality: 80 },
+      jpeg: { quality: 80 },
+      webp: { quality: 80 },
+    }),
+    VitePWA({
+      registerType: "autoUpdate",
+      strategies: "injectManifest",
+      srcDir: "src",
+      filename: "sw.ts",
+      injectRegister: false,
+      manifest: {
+        name: "SEG Inventaire",
+        short_name: "Inventaire",
+        description: "Système de gestion d'inventaire moderne",
+        theme_color: "#027d6f",
+        background_color: "#0d1117",
+        display: "standalone",
+        start_url: "/",
+        icons: [
+          {
+            src: "icons/icon.svg",
+            sizes: "any",
+            type: "image/svg+xml",
+            purpose: "any",
+          },
+          {
+            src: "icons/icon_maskable.svg",
+            sizes: "any",
+            type: "image/svg+xml",
+            purpose: "maskable",
+          },
+        ],
+      },
+      devOptions: {
+        enabled: false, // Disable by default to avoid issues with Vite HMR/icons in dev
+        type: "module",
+      },
     }),
   ],
   optimizeDeps: {

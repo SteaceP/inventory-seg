@@ -32,8 +32,8 @@ createRoot(document.getElementById("root")!).render(
   </StrictMode>
 );
 
-// Register the service worker
-if ("serviceWorker" in navigator) {
+// Register the service worker only in production or if explicitly enabled
+if ("serviceWorker" in navigator && import.meta.env.PROD) {
   window.addEventListener("load", () => {
     void Sentry.startSpan(
       {

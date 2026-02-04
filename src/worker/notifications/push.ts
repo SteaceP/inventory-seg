@@ -1,16 +1,7 @@
 import webpush from "web-push";
 import postgres from "postgres";
 import { reportError, logInfo } from "../errorReporting";
-import type { Env, PushSubscriptionRow } from "../types";
-
-export interface PushOptions {
-  userId: string;
-  title: string;
-  body: string;
-  url: string;
-  tag: string;
-  requireInteraction?: boolean;
-}
+import type { Env, PushSubscriptionRow, PushOptions } from "../types";
 
 export async function broadcastPush(
   options: PushOptions,
