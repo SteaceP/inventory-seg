@@ -1,11 +1,14 @@
-import { vi, describe, it, expect, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import { mockSupabaseClient } from "@test/mocks/supabase";
+import { vi, describe, it, expect, beforeEach } from "vitest";
+
+import type { InventoryItem } from "@/types/inventory";
+
 import {
   createMockAlertContext,
   createMockInventoryContext,
   createMockUserContext,
 } from "@test/mocks/contexts";
+import { mockSupabaseClient } from "@test/mocks/supabase";
 
 // Mock contexts
 const mockAlert = createMockAlertContext();
@@ -57,7 +60,6 @@ vi.stubGlobal("fetch", mockFetch);
 
 // Import hook after mocks
 import { useInventoryStock } from "../useInventoryStock";
-import type { InventoryItem } from "@/types/inventory";
 
 describe("useInventoryStock", () => {
   beforeEach(() => {

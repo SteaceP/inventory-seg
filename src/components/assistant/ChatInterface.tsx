@@ -1,27 +1,31 @@
 import React, { useState, useRef, useEffect } from "react";
+
 import { AnimatePresence } from "framer-motion";
-import { useUserContext } from "@contexts/UserContext";
+
+// Sub-components
+
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import IconButton from "@mui/material/IconButton";
+import Paper from "@mui/material/Paper";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
+
+import CloseIcon from "@mui/icons-material/Close";
+import DeleteIcon from "@mui/icons-material/DeleteOutline";
+import RobotIcon from "@mui/icons-material/SmartToy";
+
 import { useTranslation } from "@/i18n";
+import type { Message, ChatInterfaceProps } from "@/types/assistant";
+
+import { useUserContext } from "@contexts/UserContext";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { usePerformance } from "@hooks/usePerformance";
 
-// Sub-components
-import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
+import ChatMessage from "./ChatMessage";
 import WelcomeView from "./WelcomeView";
-
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
-import Avatar from "@mui/material/Avatar";
-import CircularProgress from "@mui/material/CircularProgress";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
-import RobotIcon from "@mui/icons-material/SmartToy";
-import DeleteIcon from "@mui/icons-material/DeleteOutline";
-import CloseIcon from "@mui/icons-material/Close";
-
-import type { Message, ChatInterfaceProps } from "@/types/assistant";
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ onClose }) => {
   const [messages, setMessages] = useState<Message[]>(() => {

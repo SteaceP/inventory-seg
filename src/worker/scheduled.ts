@@ -1,6 +1,8 @@
-import webpush from "web-push";
 import postgres from "postgres"; // Using Hyperdrive connection
+import webpush from "web-push";
+
 import { reportError } from "./errorReporting";
+
 import type { Env, PushSubscriptionRow } from "./types";
 
 interface PostgresChanges extends Record<string, unknown> {

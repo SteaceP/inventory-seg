@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { handleAssistantChat } from "../handlers/assistant";
+
 import { createMockEnv } from "./scheduled.mocks";
 import { getUser } from "../auth";
+import { handleAssistantChat } from "../handlers/assistant";
+
 import type { Env } from "../types";
 
 interface ChatResponse {

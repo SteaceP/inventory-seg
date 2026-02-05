@@ -1,7 +1,9 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import InventorySearch from "../InventorySearch";
+
 import { createMockTranslation } from "@test/mocks";
+
+import InventorySearch from "../InventorySearch";
 
 // Mock translation hook
 const { t } = createMockTranslation();

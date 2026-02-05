@@ -1,15 +1,18 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useTranslation } from "@/i18n";
-import { supabase } from "@/supabaseClient";
-import { useErrorHandler } from "@hooks/useErrorHandler";
-import type { ActivityLog } from "@/types/inventory";
 
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
 import ListItemText from "@mui/material/ListItemText";
+import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+
 import HistoryIcon from "@mui/icons-material/History";
+
+import { useTranslation } from "@/i18n";
+import { supabase } from "@/supabaseClient";
+import type { ActivityLog } from "@/types/inventory";
+
+import { useErrorHandler } from "@hooks/useErrorHandler";
 
 interface InventoryActivityLogProps {
   itemId: string;

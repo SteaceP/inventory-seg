@@ -1,4 +1,5 @@
 import type { ThemeMode, ColorCollection } from "@/types/theme";
+
 import colors from "./colors.json";
 
 /**

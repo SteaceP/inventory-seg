@@ -1,16 +1,18 @@
 import React from "react";
-import { useTranslation } from "@/i18n";
-import type { Appliance } from "@/types/appliances";
 
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import { useTheme, alpha } from "@mui/material/styles";
-import ApplianceIcon from "@mui/icons-material/Kitchen";
-import WarningIcon from "@mui/icons-material/WarningAmber";
+import Typography from "@mui/material/Typography";
+
 import ServiceIcon from "@mui/icons-material/Build";
+import ApplianceIcon from "@mui/icons-material/Kitchen";
 import HealthyIcon from "@mui/icons-material/Verified";
+import WarningIcon from "@mui/icons-material/WarningAmber";
+
+import { useTranslation } from "@/i18n";
+import type { Appliance } from "@/types/appliances";
 
 interface AppliancesStatsProps {
   appliances: Appliance[];

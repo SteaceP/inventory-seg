@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
+
+import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
-import Alert from "@mui/material/Alert";
 import LinearProgress from "@mui/material/LinearProgress";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+
 import { useTranslation } from "@/i18n";
+
 import { isValidTOTPCode } from "@utils/mfaUtils";
 
 interface TwoFactorVerificationProps {

@@ -1,4 +1,5 @@
 import { Helmet } from "@dr.pogodin/react-helmet";
+
 import { useTranslation } from "../i18n";
 
 interface SEOProps {

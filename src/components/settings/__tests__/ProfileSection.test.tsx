@@ -1,7 +1,9 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import ProfileSection from "../ProfileSection";
+
 import { createMockTranslation } from "@test/mocks";
+
+import ProfileSection from "../ProfileSection";
 
 // Mock translation hook
 const { t } = createMockTranslation();

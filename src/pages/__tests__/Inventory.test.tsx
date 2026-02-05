@@ -1,7 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@test/test-utils";
-import Inventory from "../Inventory";
+
 import type { InventoryItem } from "@/types/inventory";
+
+import { render, screen } from "@test/test-utils";
+
+import Inventory from "../Inventory";
 
 // Mock dependencies
 vi.mock("@hooks/useErrorHandler", () => ({

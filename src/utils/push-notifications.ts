@@ -1,4 +1,5 @@
 import { supabase } from "@/supabaseClient";
+
 import { getDeviceInfo } from "./crypto";
 
 function urlBase64ToUint8Array(base64String: string) {

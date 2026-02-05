@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import * as Sentry from "@sentry/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import { reportError, logInfo } from "../errorReporting";
 
 // Mock Sentry module

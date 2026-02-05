@@ -1,21 +1,26 @@
 import React, { useState } from "react";
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
+
 import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
+import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
-import DialogActions from "@mui/material/DialogActions";
-import SecurityIcon from "@mui/icons-material/Security";
+import DialogTitle from "@mui/material/DialogTitle";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import SecurityIcon from "@mui/icons-material/Security";
+
 import { useTranslation } from "@/i18n";
-import { useUserContext } from "@contexts/UserContext";
 import { supabase } from "@/supabaseClient";
+
+import { useUserContext } from "@contexts/UserContext";
 import { useErrorHandler } from "@hooks/useErrorHandler";
+
 import TwoFactorEnrollment from "./TwoFactorEnrollment";
 
 const TwoFactorSettings: React.FC = () => {

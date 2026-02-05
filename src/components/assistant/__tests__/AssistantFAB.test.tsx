@@ -1,7 +1,9 @@
-import { render, screen, fireEvent, act } from "@test/test-utils";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import AssistantFAB from "../AssistantFAB";
+
 import { createMockTranslation } from "@test/mocks";
+import { render, screen, fireEvent, act } from "@test/test-utils";
+
+import AssistantFAB from "../AssistantFAB";
 
 // Mock the ChatInterface to avoid testing its internal logic here
 vi.mock("../ChatInterface", () => ({

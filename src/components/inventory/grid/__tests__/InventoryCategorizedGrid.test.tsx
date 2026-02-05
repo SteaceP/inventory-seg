@@ -1,7 +1,15 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import InventoryCategorizedGrid from "../InventoryCategorizedGrid";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import type { InventoryItem } from "@/types/inventory";
+
+import {
+  createMockTranslation,
+  createMockUserContext,
+  createMockInventoryContext,
+} from "@test/mocks";
+
+import InventoryCategorizedGrid from "../InventoryCategorizedGrid";
 
 // Mock sub-components
 vi.mock("../../CategoryManagement/CategorySection", () => ({
@@ -21,12 +29,6 @@ vi.mock("../../CategoryManagement/CategorySection", () => ({
 vi.mock("../../CategoryManagement/CategoryThresholdDialog", () => ({
   default: () => <div data-testid="threshold-dialog">Threshold Dialog</div>,
 }));
-
-import {
-  createMockTranslation,
-  createMockUserContext,
-  createMockInventoryContext,
-} from "@test/mocks";
 
 const { t } = createMockTranslation();
 vi.mock("@i18n", () => ({

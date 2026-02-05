@@ -1,8 +1,7 @@
-import { AlertProvider } from "./contexts/AlertContext";
-import { AuthProvider } from "./contexts/AuthContext";
-import { UserProvider, useUserContext } from "./contexts/UserContext";
-import { InventoryProvider } from "./contexts/InventoryContext";
 import { useState, useEffect, lazy, Suspense } from "react";
+
+import { HelmetProvider } from "@dr.pogodin/react-helmet";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   BrowserRouter as Router,
   Routes,
@@ -10,12 +9,22 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
-import { HelmetProvider } from "@dr.pogodin/react-helmet";
-import Layout from "./components/layout/Layout";
-import { useTranslation } from "./i18n";
-import ErrorBoundary from "./components/ErrorBoundary";
-import RealtimeNotifications from "./components/RealtimeNotifications";
 
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "@mui/material/styles";
+
+import WifiOffIcon from "@mui/icons-material/WifiOff";
+
+import ErrorBoundary from "./components/ErrorBoundary";
+import Layout from "./components/layout/Layout";
+import RealtimeNotifications from "./components/RealtimeNotifications";
+import { AlertProvider } from "./contexts/AlertContext";
+import { AuthProvider } from "./contexts/AuthContext";
+import { InventoryProvider } from "./contexts/InventoryContext";
+import { UserProvider, useUserContext } from "./contexts/UserContext";
+import { useTranslation } from "./i18n";
 import { getTheme } from "./theme";
 
 // Lazy load pages for better bundle size
@@ -173,14 +182,6 @@ const AppContent = () => {
     </ThemeProvider>
   );
 };
-
-import { AnimatePresence, motion } from "framer-motion";
-
-import { ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import Box from "@mui/material/Box";
-import CircularProgress from "@mui/material/CircularProgress";
-import WifiOffIcon from "@mui/icons-material/WifiOff";
 
 const App = () => {
   return (

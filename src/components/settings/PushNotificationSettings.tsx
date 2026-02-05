@@ -1,7 +1,9 @@
 import React from "react";
+
 import Button from "@mui/material/Button";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
+
 import { useTranslation } from "@/i18n";
 
 interface PushNotificationSettingsProps {

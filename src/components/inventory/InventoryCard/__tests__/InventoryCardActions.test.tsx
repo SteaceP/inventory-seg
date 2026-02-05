@@ -1,7 +1,9 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import InventoryCardActions from "../InventoryCardActions";
+
 import type { InventoryItem } from "@/types/inventory";
+
+import InventoryCardActions from "../InventoryCardActions";
 
 const mockT = vi.fn((key: string) => key);
 

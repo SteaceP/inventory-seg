@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import {
   handleActivityLogPost,
   handleActivityLogGet,
 } from "../handlers/activity";
 import { createResponse } from "../helpers";
+
 import type { Env } from "../types";
 
 // Mock dependencies

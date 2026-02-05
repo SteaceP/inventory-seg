@@ -1,10 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+
+import type { InventoryActivity } from "@/types/activity";
+
 import {
   getStockChange,
   getActivityNarrative,
   logActivity,
 } from "../activityUtils";
-import type { InventoryActivity } from "@/types/activity";
 
 describe("getStockChange", () => {
   it("should return null when stock has not changed", () => {

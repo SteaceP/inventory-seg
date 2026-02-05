@@ -1,7 +1,9 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import SecuritySection from "../SecuritySection";
+
 import { createMockTranslation } from "@test/mocks";
+
+import SecuritySection from "../SecuritySection";
 
 // Mock hooks
 const mockHandleError = vi.fn();

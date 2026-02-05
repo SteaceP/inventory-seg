@@ -1,27 +1,29 @@
 import React from "react";
-import { useTranslation } from "@/i18n";
-import SEO from "@components/SEO";
-import BarcodePrinter from "@components/BarcodePrinter";
-import InventoryHeader from "@components/inventory/grid/InventoryHeader";
-import InventoryCategorizedGrid from "@components/inventory/grid/InventoryCategorizedGrid";
-import InventoryDialog from "@components/inventory/InventoryDialog/InventoryDialog";
-import InventoryScanner from "@components/inventory/InventoryScanner/InventoryScanner";
-import StockAdjustmentDialog from "@components/inventory/StockAdjustmentDialog/index";
-import StockHistoryDialog from "@components/inventory/StockHistoryDialog/StockHistoryDialog";
-import ConfirmDialog from "@components/ConfirmDialog";
-import CategoryManagementDialog from "@components/inventory/CategoryManagement/CategoryManagementDialog";
-import InventoryDrawer from "@components/inventory/InventoryDrawer/InventoryDrawer";
-import InventoryStats from "@components/inventory/stats/InventoryStats";
-import CategoryFilters from "@components/inventory/CategoryManagement/CategoryFilters";
-import { useInventoryContext } from "@contexts/InventoryContext";
-import { useErrorHandler } from "@hooks/useErrorHandler";
-import { useInventoryPage } from "@hooks/useInventoryPage";
-import { useUserContext } from "@contexts/UserContext";
 
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+
+import { useTranslation } from "@/i18n";
+
+import BarcodePrinter from "@components/BarcodePrinter";
+import ConfirmDialog from "@components/ConfirmDialog";
+import CategoryFilters from "@components/inventory/CategoryManagement/CategoryFilters";
+import CategoryManagementDialog from "@components/inventory/CategoryManagement/CategoryManagementDialog";
+import InventoryCategorizedGrid from "@components/inventory/grid/InventoryCategorizedGrid";
+import InventoryHeader from "@components/inventory/grid/InventoryHeader";
+import InventoryDialog from "@components/inventory/InventoryDialog/InventoryDialog";
+import InventoryDrawer from "@components/inventory/InventoryDrawer/InventoryDrawer";
+import InventoryScanner from "@components/inventory/InventoryScanner/InventoryScanner";
+import InventoryStats from "@components/inventory/stats/InventoryStats";
+import StockAdjustmentDialog from "@components/inventory/StockAdjustmentDialog/index";
+import StockHistoryDialog from "@components/inventory/StockHistoryDialog/StockHistoryDialog";
+import SEO from "@components/SEO";
+import { useInventoryContext } from "@contexts/InventoryContext";
+import { useUserContext } from "@contexts/UserContext";
+import { useErrorHandler } from "@hooks/useErrorHandler";
+import { useInventoryPage } from "@hooks/useInventoryPage";
 
 const Inventory: React.FC = () => {
   const {

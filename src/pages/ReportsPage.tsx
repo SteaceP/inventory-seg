@@ -1,28 +1,31 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { useErrorHandler } from "@hooks/useErrorHandler";
-import { useTranslation } from "@/i18n";
-import { useInventoryContext } from "@contexts/InventoryContext";
-import { supabase } from "@/supabaseClient";
 
-import Box from "@mui/material/Box";
-import CircularProgress from "@mui/material/CircularProgress";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import Paper from "@mui/material/Paper";
-import Button from "@mui/material/Button";
-import Container from "@mui/material/Container";
-import TextField from "@mui/material/TextField";
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Autocomplete from "@mui/material/Autocomplete";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import Container from "@mui/material/Container";
+import Divider from "@mui/material/Divider";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import TextField from "@mui/material/TextField";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import Typography from "@mui/material/Typography";
+
 import PrintIcon from "@mui/icons-material/Print";
+
+import { useTranslation } from "@/i18n";
+import { supabase } from "@/supabaseClient";
+
+import { useInventoryContext } from "@contexts/InventoryContext";
+import { useErrorHandler } from "@hooks/useErrorHandler";
 
 const ReportsPage: React.FC = () => {
   const { t, lang } = useTranslation();

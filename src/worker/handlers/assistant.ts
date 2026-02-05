@@ -1,7 +1,9 @@
 import postgres from "postgres";
-import { getSecurityHeaders } from "../helpers";
-import { reportError } from "../errorReporting";
+
 import { getUser } from "../auth";
+import { reportError } from "../errorReporting";
+import { getSecurityHeaders } from "../helpers";
+
 import type {
   Env,
   WorkerChatRequest as ChatRequest,

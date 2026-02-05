@@ -1,16 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
-import type { BrowserMultiFormatReader } from "@zxing/library";
-import { motion } from "framer-motion";
-import { useTranslation } from "@/i18n";
-import { reportError } from "@utils/errorReporting";
 
-import Typography from "@mui/material/Typography";
+import { motion } from "framer-motion";
+
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import Dialog from "@mui/material/Dialog";
 import IconButton from "@mui/material/IconButton";
-import CircularProgress from "@mui/material/CircularProgress";
+import Typography from "@mui/material/Typography";
+
 import CloseIcon from "@mui/icons-material/Close";
+
+import { useTranslation } from "@/i18n";
+
+import { reportError } from "@utils/errorReporting";
+
+import type { BrowserMultiFormatReader } from "@zxing/library";
 
 interface InventoryScannerProps {
   open: boolean;

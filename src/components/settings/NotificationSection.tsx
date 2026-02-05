@@ -1,12 +1,16 @@
 import React from "react";
+
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
+
 import NotificationsIcon from "@mui/icons-material/Notifications";
+
 import { useTranslation } from "@/i18n";
-import { useNotificationSettings } from "./useNotificationSettings";
-import PushNotificationSettings from "./PushNotificationSettings";
+
 import EmailNotificationSettings from "./EmailNotificationSettings";
+import PushNotificationSettings from "./PushNotificationSettings";
+import { useNotificationSettings } from "./useNotificationSettings";
 
 const NotificationSection: React.FC = () => {
   const { t } = useTranslation();

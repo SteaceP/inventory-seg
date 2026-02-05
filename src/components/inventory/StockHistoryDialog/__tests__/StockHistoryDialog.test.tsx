@@ -1,18 +1,22 @@
+import { screen, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+
+import { createMockTranslation } from "@test/mocks";
+import { render } from "@test/test-utils";
+
 import StockHistoryDialog from "../StockHistoryDialog";
 
 // Mock dependencies
-import { createMockTranslation } from "@test/mocks";
 
 const { t } = createMockTranslation();
 vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 
+const mockHandleError = vi.fn();
 vi.mock("@hooks/useErrorHandler", () => ({
   useErrorHandler: () => ({
-    handleError: vi.fn(),
+    handleError: mockHandleError,
   }),
 }));
 
@@ -25,19 +29,27 @@ vi.mock("@utils/activityUtils", () => ({
 }));
 
 // Mock Supabase
-const { mockFrom, mockSelect, mockEq, mockOrder, mockLimit, mockIn } =
-  vi.hoisted(() => {
-    return {
-      mockFrom: vi.fn(),
-      mockSelect: vi.fn(),
-      mockEq: vi.fn(),
-      mockOrder: vi.fn(),
-      mockLimit: vi.fn(),
-      mockIn: vi.fn(),
-    };
-  });
+const { mockFrom, mockLimit, mockIn } = vi.hoisted(() => {
+  const builder = {
+    select: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+    in: vi
+      .fn()
+      .mockImplementation(() => Promise.resolve({ data: [], error: null })),
+    order: vi.fn().mockReturnThis(),
+    limit: vi
+      .fn()
+      .mockImplementation(() => Promise.resolve({ data: [], error: null })),
+  };
 
-vi.mock("@supabaseClient", () => ({
+  return {
+    mockFrom: vi.fn(() => builder),
+    mockLimit: builder.limit,
+    mockIn: builder.in,
+  };
+});
+
+vi.mock("@/supabaseClient", () => ({
   supabase: {
     from: mockFrom,
   },
@@ -54,21 +66,12 @@ describe("StockHistoryDialog", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // Setup mock chain
-    mockOrder.mockReturnValue({ limit: mockLimit });
-    mockEq.mockReturnValue({ order: mockOrder });
-
-    mockSelect.mockReturnValue({
-      eq: mockEq,
-      in: mockIn,
-    });
-
-    mockFrom.mockImplementation(() => ({
-      select: mockSelect,
-    }));
-
-    // Default success response for activity
+    // Default success responses
     mockLimit.mockResolvedValue({
+      data: [],
+      error: null,
+    });
+    mockIn.mockResolvedValue({
       data: [],
       error: null,
     });
@@ -131,23 +134,28 @@ describe("StockHistoryDialog", () => {
 
     render(<StockHistoryDialog {...defaultProps} />);
 
+    // Check if fetch was called
+    expect(mockFrom).toHaveBeenCalledWith("inventory_activity");
+
     await waitFor(() => {
-      expect(screen.getByText(/Activity: created/)).toBeInTheDocument();
+      expect(screen.getByText("Activity: created")).toBeInTheDocument();
     });
   });
 
   it("handles error when fetching history", async () => {
-    const error = new Error("Fetch failed");
-    mockLimit.mockResolvedValue({
+    const error = { message: "Fetch failed" };
+    mockLimit.mockResolvedValueOnce({
       data: null,
       error: error,
     });
 
     render(<StockHistoryDialog {...defaultProps} />);
 
-    // Wait for error handler to be called
     await waitFor(() => {
-      // Verify useErrorHandler was called
+      expect(mockHandleError).toHaveBeenCalledWith(
+        error,
+        expect.stringContaining("errors.loadActivity")
+      );
     });
   });
 });

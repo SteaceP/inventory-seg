@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
 import { BrowserRouter } from "react-router-dom";
+import { describe, it, expect, vi } from "vitest";
+
 import LowStockAlert from "../LowStockAlert";
 
 // Mock translation hook

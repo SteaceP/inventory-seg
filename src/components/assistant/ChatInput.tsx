@@ -1,16 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
+
 import { motion } from "framer-motion";
-import { useTranslation } from "@/i18n";
-import { useErrorHandler } from "@hooks/useErrorHandler";
 
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
 import TextField from "@mui/material/TextField";
-import SendIcon from "@mui/icons-material/Send";
+import Tooltip from "@mui/material/Tooltip";
+
 import MicIcon from "@mui/icons-material/Mic";
+import SendIcon from "@mui/icons-material/Send";
 import StopIcon from "@mui/icons-material/Stop";
 
+import { useTranslation } from "@/i18n";
 import type {
   ChatInputProps,
   SpeechRecognitionEvent,
@@ -18,6 +19,8 @@ import type {
   SpeechRecognition,
   SpeechRecognitionConstructor,
 } from "@/types/assistant";
+
+import { useErrorHandler } from "@hooks/useErrorHandler";
 
 // Helper for browser support
 const SpeechRecognition =

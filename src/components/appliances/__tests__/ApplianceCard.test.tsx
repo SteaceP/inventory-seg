@@ -1,7 +1,10 @@
-import { render, screen, fireEvent } from "@test/test-utils";
 import { describe, it, expect, vi } from "vitest";
-import ApplianceCard from "../ApplianceCard/ApplianceCard";
+
 import type { Appliance } from "@/types/appliances";
+
+import { render, screen, fireEvent } from "@test/test-utils";
+
+import ApplianceCard from "../ApplianceCard/ApplianceCard";
 
 const mockAppliance: Appliance = {
   id: "1",

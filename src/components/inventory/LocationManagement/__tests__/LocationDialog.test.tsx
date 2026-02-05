@@ -1,5 +1,11 @@
 import { vi, describe, it, expect, beforeEach } from "vitest";
+
+import type { MasterLocation } from "@/types/inventory";
+
+import { createMockLocation } from "@test/mocks/factories";
 import { render, screen, fireEvent } from "@test/test-utils";
+
+import LocationDialog from "../LocationDialog";
 
 // Standard top-level mocks
 vi.mock("@/i18n", () => ({
@@ -8,10 +14,6 @@ vi.mock("@/i18n", () => ({
     lang: "en",
   }),
 }));
-
-import LocationDialog from "../LocationDialog";
-import { createMockLocation } from "@test/mocks/factories";
-import type { MasterLocation } from "@/types/inventory";
 
 describe("LocationDialog", () => {
   const mockOnClose = vi.fn();

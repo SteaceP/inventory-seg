@@ -1,10 +1,12 @@
 import React from "react";
-import { useTranslation } from "@/i18n";
-import type { Appliance } from "@/types/appliances";
 
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
+
 import InventoryIcon from "@mui/icons-material/Inventory";
+
+import { useTranslation } from "@/i18n";
+import type { Appliance } from "@/types/appliances";
 
 interface ApplianceDetailsGridProps {
   appliance: Appliance;

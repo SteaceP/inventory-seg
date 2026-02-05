@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-redundant-type-constituents */
-import { vi } from "vitest";
 import React from "react";
+
+import { vi } from "vitest";
 
 /**
  * Pre-configured vi.mock for framer-motion

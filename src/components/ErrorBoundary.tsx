@@ -1,9 +1,11 @@
 import React from "react";
+
 import * as Sentry from "@sentry/react";
 
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+
 import ErrorIcon from "@mui/icons-material/ErrorOutline";
 
 import type { ErrorBoundaryProps, ErrorBoundaryState } from "@/types/ui";

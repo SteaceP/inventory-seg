@@ -1,6 +1,8 @@
-import { render, screen, fireEvent } from "@test/test-utils";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { BrowserRouter } from "react-router-dom";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
+import { render, screen, fireEvent } from "@test/test-utils";
+
 import QuickActions from "../QuickActions";
 
 // Mock translation hook

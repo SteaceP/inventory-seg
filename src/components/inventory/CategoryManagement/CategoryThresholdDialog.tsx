@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { useTranslation } from "@/i18n";
 
-import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+
+import { useTranslation } from "@/i18n";
 
 interface CategoryThresholdDialogProps {
   open: boolean;

@@ -1,15 +1,17 @@
 import React from "react";
-import { useTranslation } from "@/i18n";
-import type { InventoryItem } from "@/types/inventory";
 
-import Button from "@mui/material/Button";
+import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
+import Typography from "@mui/material/Typography";
+
 import AddCircleIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircleOutline";
+
+import { useTranslation } from "@/i18n";
+import type { InventoryItem } from "@/types/inventory";
 
 interface StockLocationFieldsProps {
   stockLocations: InventoryItem["stock_locations"];

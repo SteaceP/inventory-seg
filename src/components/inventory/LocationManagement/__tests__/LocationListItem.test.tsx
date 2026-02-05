@@ -1,7 +1,9 @@
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@test/test-utils";
-import LocationListItem from "../LocationListItem";
+
 import { createMockLocation } from "@test/mocks/factories";
+import { render, screen, fireEvent } from "@test/test-utils";
+
+import LocationListItem from "../LocationListItem";
 
 describe("LocationListItem", () => {
   const mockOnEdit = vi.fn();

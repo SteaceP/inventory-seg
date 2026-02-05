@@ -1,8 +1,11 @@
 import { useCallback } from "react";
+
 import * as Sentry from "@sentry/react";
+
+import { useTranslation } from "@/i18n";
+
 import { useAlert } from "@contexts/AlertContext";
 import { reportError } from "@utils/errorReporting";
-import { useTranslation } from "@/i18n";
 
 type TFunction = (
   key: string,

@@ -1,9 +1,11 @@
 import React from "react";
-import { useTranslation } from "@/i18n";
 
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+
 import RobotIcon from "@mui/icons-material/SmartToy";
+
+import { useTranslation } from "@/i18n";
 
 const WelcomeView: React.FC = () => {
   const { t } = useTranslation();

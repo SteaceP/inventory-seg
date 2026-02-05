@@ -1,7 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import RecentActivity from "../RecentActivity";
+
 import type { RecentActivityItem } from "@/types/activity";
+
+import RecentActivity from "../RecentActivity";
 
 // Mock translation hook
 const mockT = vi.fn((key: string) => key);

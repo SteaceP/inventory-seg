@@ -1,17 +1,20 @@
 import React from "react";
-import { useTranslation } from "@/i18n";
-import type { InventoryActivity } from "@/types/activity";
-import { getActivityNarrative, getStockChange } from "@utils/activityUtils";
 
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
 import Chip from "@mui/material/Chip";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import TrendingDownIcon from "@mui/icons-material/TrendingDown";
-import EditIcon from "@mui/icons-material/Edit";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import TrendingDownIcon from "@mui/icons-material/TrendingDown";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+
+import { useTranslation } from "@/i18n";
+import type { InventoryActivity } from "@/types/activity";
+
+import { getActivityNarrative, getStockChange } from "@utils/activityUtils";
 
 interface StockHistoryItemProps {
   activity: InventoryActivity;

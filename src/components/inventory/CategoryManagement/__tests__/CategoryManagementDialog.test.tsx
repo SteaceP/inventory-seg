@@ -1,12 +1,15 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import CategoryManagementDialog from "../CategoryManagementDialog";
+
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+
 import {
   createMockTranslation,
   createMockInventoryContext,
   createMockCategory,
 } from "@test/mocks";
+
+import CategoryManagementDialog from "../CategoryManagementDialog";
 
 // Mock i18n
 const { t } = createMockTranslation();

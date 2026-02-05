@@ -1,9 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+
+import { createMockTranslation } from "@test/mocks";
 import { render, screen, fireEvent } from "@test/test-utils";
+
 import StockLocationFields from "../StockLocationFields";
 
 // Mock i18n
-import { createMockTranslation } from "@test/mocks";
 
 const { t } = createMockTranslation();
 vi.mock("@i18n", () => ({

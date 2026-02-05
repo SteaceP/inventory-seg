@@ -1,16 +1,17 @@
-import path from "path";
 import fs from "fs";
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
-import { sentryVitePlugin } from "@sentry/vite-plugin";
+import path from "path";
+
 import { cloudflare } from "@cloudflare/vite-plugin";
+import terser from "@rollup/plugin-terser";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
+import react from "@vitejs/plugin-react-swc";
 import { visualizer } from "rollup-plugin-visualizer";
+import UnpluginFonts from "unplugin-fonts/vite";
+import { defineConfig } from "vite";
+import { ViteImageOptimizer } from "vite-plugin-image-optimizer";
+import mkcert from "vite-plugin-mkcert";
 import { VitePWA } from "vite-plugin-pwa";
 import svgr from "vite-plugin-svgr";
-import UnpluginFonts from "unplugin-fonts/vite";
-import mkcert from "vite-plugin-mkcert";
-import { ViteImageOptimizer } from "vite-plugin-image-optimizer";
-import terser from "@rollup/plugin-terser";
 
 // https://vite.dev/config/
 const getCloudflareHeaders = (mode: string) => {

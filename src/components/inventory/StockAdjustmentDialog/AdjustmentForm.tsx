@@ -1,21 +1,26 @@
 import React from "react";
-import { motion } from "framer-motion";
-import type { Variants } from "framer-motion";
-import { useTranslation } from "@/i18n";
-import type { InventoryItem } from "@/types/inventory";
-import type { SelectedLocation } from "./types";
-import AdjustmentKeypad from "./AdjustmentKeypad";
 
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
+import { motion } from "framer-motion";
+
+import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
 import Fade from "@mui/material/Fade";
-import PersonIcon from "@mui/icons-material/Person";
+import Paper from "@mui/material/Paper";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+
 import MapIcon from "@mui/icons-material/Map";
+import PersonIcon from "@mui/icons-material/Person";
+
+import { useTranslation } from "@/i18n";
+import type { InventoryItem } from "@/types/inventory";
+
+import AdjustmentKeypad from "./AdjustmentKeypad";
+
+import type { SelectedLocation } from "./types";
+import type { Variants } from "framer-motion";
 
 const MotionBox = motion.create(Box);
 

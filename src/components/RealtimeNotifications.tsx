@@ -1,9 +1,11 @@
 import React, { useEffect } from "react";
-import { useErrorHandler } from "@hooks/useErrorHandler";
-import { useUserContext } from "@contexts/UserContext";
-import { useAlert } from "@contexts/AlertContext";
+
 import { useTranslation } from "@/i18n";
 import { supabase } from "@/supabaseClient";
+
+import { useAlert } from "@contexts/AlertContext";
+import { useUserContext } from "@contexts/UserContext";
+import { useErrorHandler } from "@hooks/useErrorHandler";
 
 interface Activity {
   id: string;

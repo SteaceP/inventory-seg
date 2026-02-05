@@ -1,8 +1,9 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import CategoryThresholdDialog from "../CategoryThresholdDialog";
+import { describe, it, expect, vi } from "vitest";
 
 import { createMockTranslation } from "@test/mocks";
+
+import CategoryThresholdDialog from "../CategoryThresholdDialog";
 
 // Mock i18n
 const { t } = createMockTranslation();

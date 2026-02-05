@@ -1,5 +1,6 @@
-import type { Env } from "../types";
 import { logInfo } from "../errorReporting";
+
+import type { Env } from "../types";
 
 export interface EmailOptions {
   to: string;

@@ -1,7 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import ApplianceDrawer from "../ApplianceDrawer/ApplianceDrawer";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import type { Appliance, Repair } from "@/types/appliances";
+
+import ApplianceDrawer from "../ApplianceDrawer/ApplianceDrawer";
 
 // Mock dependencies
 vi.mock("@i18n", () => ({

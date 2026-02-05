@@ -1,7 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import AdjustmentQuickInfo from "../AdjustmentQuickInfo";
+
 import type { InventoryItem } from "@/types/inventory";
+
+import AdjustmentQuickInfo from "../AdjustmentQuickInfo";
 
 vi.mock("@i18n", () => ({
   useTranslation: () => ({

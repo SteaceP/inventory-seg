@@ -1,5 +1,5 @@
-import type { TurnstileInstance } from "@marsidev/react-turnstile";
 import type { Language } from "./user";
+import type { TurnstileInstance } from "@marsidev/react-turnstile";
 
 export interface LanguageSwitcherProps {
   language: string;

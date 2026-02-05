@@ -1,23 +1,25 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { useTranslation } from "@/i18n";
-import { useUserContext } from "@contexts/UserContext";
-import { supabase } from "@/supabaseClient";
-import { useNavigate } from "react-router-dom";
+
 import { type TurnstileInstance } from "@marsidev/react-turnstile";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import Paper from "@mui/material/Paper";
+
+import LanguageSwitcher from "@/components/auth/LanguageSwitcher";
+import LoginHeader from "@/components/auth/LoginHeader";
+import SignupFooter from "@/components/auth/SignupFooter";
+import SignupForm from "@/components/auth/SignupForm";
+import SignupSuccess from "@/components/auth/SignupSuccess";
+import { useTranslation } from "@/i18n";
+import { supabase } from "@/supabaseClient";
+
+import { useUserContext } from "@contexts/UserContext";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { usePerformance } from "@hooks/usePerformance";
 import { logInfo } from "@utils/errorReporting";
-
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import Container from "@mui/material/Container";
-
-import LoginHeader from "@/components/auth/LoginHeader";
-import LanguageSwitcher from "@/components/auth/LanguageSwitcher";
-import SignupForm from "@/components/auth/SignupForm";
-import SignupSuccess from "@/components/auth/SignupSuccess";
-import SignupFooter from "@/components/auth/SignupFooter";
 
 // Cloudflare Turnstile Site Key
 // In development, we use the "Always Pass" test key if the environment variable is missing

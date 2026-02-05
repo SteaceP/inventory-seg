@@ -1,21 +1,24 @@
 import React from "react";
-import { useTranslation } from "@/i18n";
-import { useErrorHandler } from "@hooks/useErrorHandler";
 
 import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
+import Paper from "@mui/material/Paper";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+
 import SecurityIcon from "@mui/icons-material/Security";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+
+import { useTranslation } from "@/i18n";
+
+import { useErrorHandler } from "@hooks/useErrorHandler";
 
 interface SecuritySectionProps {
   onSignOut: () => void;

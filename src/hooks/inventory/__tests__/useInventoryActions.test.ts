@@ -6,13 +6,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 
 import { renderHook, act, cleanup } from "@testing-library/react";
-
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { useInventoryActions } from "../useInventoryActions";
+
 import { supabase } from "@/supabaseClient";
+import type { InventoryItem } from "@/types/inventory";
+
 import * as ActivityUtils from "@utils/activityUtils";
 
-import type { InventoryItem } from "@/types/inventory";
+import { useInventoryActions } from "../useInventoryActions";
 
 // Mock Supabase
 vi.mock("@supabaseClient", () => {

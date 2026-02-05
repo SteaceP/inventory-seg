@@ -1,5 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { type ReactElement } from "react";
+
+import { HelmetProvider } from "@dr.pogodin/react-helmet";
 import {
   render,
   type RenderOptions,
@@ -10,19 +12,19 @@ import {
   waitFor,
   within,
 } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+
 import { ThemeProvider } from "@mui/material/styles";
-import { HelmetProvider } from "@dr.pogodin/react-helmet";
 
 import { AlertProvider } from "@/contexts/AlertContext";
-import { MemoryRouter } from "react-router-dom";
+import type { CustomRenderOptions } from "@/types/testing";
+
 import { getTheme } from "../theme";
 
 /**
  * Custom theme for tests using the actual theme generation logic
  */
-const theme = getTheme("light");
-
-import type { CustomRenderOptions } from "@/types/testing";
+const testTheme = getTheme("light");
 
 /**
  * AllTheProviders wrapper component
@@ -48,7 +50,7 @@ const AllTheProviders = ({
 
   return (
     <HelmetProvider>
-      <ThemeProvider theme={theme}>{content}</ThemeProvider>
+      <ThemeProvider theme={testTheme}>{content}</ThemeProvider>
     </HelmetProvider>
   );
 };

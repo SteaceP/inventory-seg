@@ -1,7 +1,9 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import InventoryHeader from "../InventoryHeader";
+
 import { createMockTranslation } from "@test/mocks";
+
+import InventoryHeader from "../InventoryHeader";
 
 // Mock translation
 const { t } = createMockTranslation();

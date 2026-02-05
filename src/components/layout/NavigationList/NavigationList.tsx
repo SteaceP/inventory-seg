@@ -1,16 +1,19 @@
 import React from "react";
+
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useTranslation } from "@/i18n";
-import { supabase } from "@/supabaseClient";
 
+import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
-import Divider from "@mui/material/Divider";
 import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
 import Tooltip from "@mui/material/Tooltip";
+
 import LogoutIcon from "@mui/icons-material/ExitToApp";
+
+import { useTranslation } from "@/i18n";
+import { supabase } from "@/supabaseClient";
 
 interface NavItem {
   text: string;

@@ -1,8 +1,10 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
-import NavigationList from "../NavigationList";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import { supabase } from "@/supabaseClient";
+
+import NavigationList from "../NavigationList";
 
 // Mock translation hook
 vi.mock("@i18n", () => ({

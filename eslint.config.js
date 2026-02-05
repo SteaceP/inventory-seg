@@ -63,6 +63,48 @@ export default defineConfig([
           patterns: [{ regex: "^@mui/[^/]+$" }],
         },
       ],
+      "import/order": [
+        "error",
+        {
+          groups: [
+            "builtin",
+            "external",
+            "internal",
+            ["parent", "sibling"],
+            "index",
+            "object",
+            "type",
+          ],
+          pathGroups: [
+            {
+              pattern: "react",
+              group: "builtin",
+              position: "before",
+            },
+            {
+              pattern: "@mui/material/**",
+              group: "external",
+              position: "after",
+            },
+            {
+              pattern: "@mui/icons-material/**",
+              group: "external",
+              position: "after",
+            },
+            {
+              pattern: "@/**",
+              group: "internal",
+              position: "before",
+            },
+          ],
+          pathGroupsExcludedImportTypes: ["react"],
+          "newlines-between": "always",
+          alphabetize: {
+            order: "asc",
+            caseInsensitive: true,
+          },
+        },
+      ],
     },
   },
   prettierRecommended,

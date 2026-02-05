@@ -1,7 +1,9 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import AdjustmentForm from "../AdjustmentForm";
+
 import type { InventoryItem } from "@/types/inventory";
+
+import AdjustmentForm from "../AdjustmentForm";
 
 vi.mock("@i18n", () => ({
   useTranslation: () => ({

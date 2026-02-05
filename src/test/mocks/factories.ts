@@ -1,9 +1,9 @@
+import type { InventoryActivity } from "@/types/activity";
 import type {
   InventoryItem,
   InventoryCategory,
   MasterLocation,
 } from "@/types/inventory";
-import type { InventoryActivity } from "@/types/activity";
 
 /**
  * Test data factories for creating realistic test objects

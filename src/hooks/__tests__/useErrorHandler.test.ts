@@ -1,10 +1,12 @@
+import * as Sentry from "@sentry/react";
 import { renderHook } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { useErrorHandler } from "../useErrorHandler";
+
 import { useAlert } from "@contexts/AlertContext";
-import { reportError } from "@utils/errorReporting";
 import { createMockAlertContext } from "@test/mocks";
-import * as Sentry from "@sentry/react";
+import { reportError } from "@utils/errorReporting";
+
+import { useErrorHandler } from "../useErrorHandler";
 
 // Mock dependencies
 vi.mock("../../contexts/AlertContext", () => ({

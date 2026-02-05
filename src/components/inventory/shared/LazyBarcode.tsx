@@ -1,7 +1,9 @@
 import React, { Suspense, lazy } from "react";
-import type { BarcodeProps } from "react-barcode";
+
 import Box from "@mui/material/Box";
 import Skeleton from "@mui/material/Skeleton";
+
+import type { BarcodeProps } from "react-barcode";
 
 // Lazy load the barcode library (75 kB) only when needed
 const BarcodeComponent = lazy(() => import("react-barcode"));

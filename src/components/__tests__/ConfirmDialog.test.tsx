@@ -1,7 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, act } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+
 import ConfirmDialog from "../ConfirmDialog";
 
 // Create a theme with ripples and focus ripples disabled for testing

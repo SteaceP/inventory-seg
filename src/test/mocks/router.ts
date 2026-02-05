@@ -54,13 +54,17 @@ export const setupRouterMock = (customMocks?: {
   const location = customMocks?.location ?? createMockLocation();
   const params = customMocks?.params ?? {};
 
-  vi.mock("react-router-dom", async () => {
+  vi.doMock("react-router-dom", async () => {
     const actual = await vi.importActual("react-router-dom");
     return {
       ...actual,
+      // eslint-disable-next-line react-x/no-unnecessary-use-prefix
       useNavigate: () => navigate,
+      // eslint-disable-next-line react-x/no-unnecessary-use-prefix
       useLocation: () => location,
+      // eslint-disable-next-line react-x/no-unnecessary-use-prefix
       useParams: () => params,
+      // eslint-disable-next-line react-x/no-unnecessary-use-prefix
       useSearchParams: () => createMockSearchParams(),
       // Link component mock - just pass through for testing
       Link: actual.Link,

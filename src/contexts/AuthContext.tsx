@@ -7,8 +7,11 @@ import React, {
   useMemo,
   useRef,
 } from "react";
+
 import { supabase } from "@/supabaseClient";
+
 import { useErrorHandler } from "@hooks/useErrorHandler";
+
 import type { Session } from "@supabase/supabase-js";
 
 interface AuthContextType {

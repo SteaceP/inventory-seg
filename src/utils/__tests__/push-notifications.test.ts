@@ -7,12 +7,14 @@ import {
   afterEach,
   type Mock,
 } from "vitest";
+
+import { supabase } from "@/supabaseClient";
+
 import {
   subscribeToPush,
   unsubscribeFromPush,
   checkPushSubscription,
 } from "../push-notifications";
-import { supabase } from "@/supabaseClient";
 
 // Mock Supabase client
 vi.mock("@supabaseClient", () => ({

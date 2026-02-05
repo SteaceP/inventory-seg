@@ -1,7 +1,9 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import LocationSelector from "../LocationSelector";
+
 import type { InventoryItem } from "@/types/inventory";
+
+import LocationSelector from "../LocationSelector";
 
 vi.mock("@i18n", () => ({
   useTranslation: () => ({

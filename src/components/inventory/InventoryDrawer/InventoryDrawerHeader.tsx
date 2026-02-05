@@ -1,8 +1,10 @@
 import React from "react";
-import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
+
 import AppBar from "@mui/material/AppBar";
+import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+
 import CloseIcon from "@mui/icons-material/Close";
 
 interface InventoryDrawerHeaderProps {

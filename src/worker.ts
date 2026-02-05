@@ -1,6 +1,6 @@
 import * as Sentry from "@sentry/cloudflare";
+
 import { getSecurityHeaders } from "./worker/helpers";
-import { handleScheduled } from "./worker/scheduled";
 import {
   handleActivityLogPost,
   handleActivityLogGet,
@@ -10,6 +10,8 @@ import {
   handleLowStockAlert,
   handleAssistantChat,
 } from "./worker/routes";
+import { handleScheduled } from "./worker/scheduled";
+
 import type { Env } from "./worker/types";
 
 export default Sentry.withSentry(

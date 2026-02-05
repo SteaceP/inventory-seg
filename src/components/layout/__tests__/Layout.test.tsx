@@ -1,6 +1,11 @@
-import { render, screen, fireEvent } from "@test/test-utils";
-import Layout from "../Layout";
 import { MemoryRouter } from "react-router-dom";
+
+import { useUserContext } from "@contexts/UserContext";
+import { render, screen, fireEvent } from "@test/test-utils";
+
+import Layout from "../Layout";
+
+import type { Mock } from "vitest";
 
 // Mock dependencies
 vi.mock("@contexts/UserContext", () => ({
@@ -28,9 +33,6 @@ const stubMatchMedia = (matches: boolean) => {
     }))
   );
 };
-
-import { useUserContext } from "@contexts/UserContext";
-import type { Mock } from "vitest";
 
 describe("Layout Component", () => {
   const mockUserContext = {

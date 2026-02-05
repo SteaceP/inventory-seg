@@ -1,11 +1,13 @@
 import React from "react";
-import { useTranslation } from "@/i18n";
-import type { Appliance } from "@/types/appliances";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import EditIcon from "@mui/icons-material/Edit";
+
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+
+import { useTranslation } from "@/i18n";
+import type { Appliance } from "@/types/appliances";
 
 interface ApplianceActionButtonsProps {
   appliance: Appliance;

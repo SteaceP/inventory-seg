@@ -1,22 +1,25 @@
 import React from "react";
-import { useTranslation } from "@/i18n";
-import type { Appliance, Repair } from "@/types/appliances";
-import ApplianceDrawerHeader from "./ApplianceDrawerHeader";
-import ApplianceWarrantyCard from "./ApplianceWarrantyCard";
-import ApplianceDetailsGrid from "./ApplianceDetailsGrid";
-import ApplianceRepairHistory from "./ApplianceRepairHistory";
-import ApplianceActionButtons from "./ApplianceActionButtons";
 
 import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
 import Chip from "@mui/material/Chip";
+import Drawer from "@mui/material/Drawer";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
-import InventoryIcon from "@mui/icons-material/Inventory";
+
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
-import WarningIcon from "@mui/icons-material/Warning";
+import InventoryIcon from "@mui/icons-material/Inventory";
 import LabelIcon from "@mui/icons-material/Label";
+import WarningIcon from "@mui/icons-material/Warning";
+
+import { useTranslation } from "@/i18n";
+import type { Appliance, Repair } from "@/types/appliances";
+
+import ApplianceActionButtons from "./ApplianceActionButtons";
+import ApplianceDetailsGrid from "./ApplianceDetailsGrid";
+import ApplianceDrawerHeader from "./ApplianceDrawerHeader";
+import ApplianceRepairHistory from "./ApplianceRepairHistory";
+import ApplianceWarrantyCard from "./ApplianceWarrantyCard";
 
 interface ApplianceDrawerProps {
   open: boolean;

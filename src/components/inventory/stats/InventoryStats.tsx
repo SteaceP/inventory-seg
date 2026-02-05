@@ -1,15 +1,17 @@
 import React from "react";
-import { useTranslation } from "@/i18n";
-import type { InventoryItem } from "@/types/inventory";
 
-import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import { useTheme, alpha } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+
+import ErrorIcon from "@mui/icons-material/Error";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import WarningIcon from "@mui/icons-material/Warning";
-import ErrorIcon from "@mui/icons-material/Error";
+
+import { useTranslation } from "@/i18n";
+import type { InventoryItem } from "@/types/inventory";
 
 interface InventoryStatsProps {
   items: InventoryItem[];

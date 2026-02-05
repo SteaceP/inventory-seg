@@ -1,8 +1,9 @@
 import React from "react";
+
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import { useTheme, alpha } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 import type { ActionCardProps } from "@/types/ui";

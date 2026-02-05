@@ -8,17 +8,21 @@ import React, {
   useMemo,
   useRef,
 } from "react";
+
 import { supabase } from "@/supabaseClient";
-import { logInfo } from "@utils/errorReporting";
-import { useAlert } from "./AlertContext";
-import { useErrorHandler } from "@hooks/useErrorHandler";
-import { useAuth } from "./AuthContext";
 import type {
   Language,
   UserProfile,
   UserContextType,
   UserSettingsRow,
 } from "@/types/user";
+
+import { useErrorHandler } from "@hooks/useErrorHandler";
+import { logInfo } from "@utils/errorReporting";
+
+import { useAlert } from "./AlertContext";
+import { useAuth } from "./AuthContext";
+
 import type { Session, PostgrestError } from "@supabase/supabase-js";
 
 // Re-exporting Session for convenience if needed by consumers, though they should ideally use simple types

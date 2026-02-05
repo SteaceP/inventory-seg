@@ -1,37 +1,41 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useUserContext } from "@contexts/UserContext";
-import { useTranslation } from "@/i18n";
-import { useInventoryContext } from "@contexts/InventoryContext";
-import QuickActions from "@components/dashboard/QuickActions/QuickActions";
-import StockHealth from "@components/dashboard/StockHealth/StockHealth";
-import { useErrorHandler } from "@hooks/useErrorHandler";
-import { supabase } from "@/supabaseClient";
-import InventoryScanner from "@components/inventory/InventoryScanner/InventoryScanner";
-import ApplianceDialog from "@components/appliances/ApplianceDialog/ApplianceDialog";
-import InventoryDialog from "@components/inventory/InventoryDialog/InventoryDialog";
+
 import { useNavigate } from "react-router-dom";
-import type { Appliance } from "@/types/appliances";
-import { useInventoryForm } from "@hooks/inventory/useInventoryForm";
-import { useInventoryActions } from "@hooks/inventory/useInventoryActions";
-import SEO from "@components/SEO";
 
 import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
-import { useTheme, alpha } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import Paper from "@mui/material/Paper";
+import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
+import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
-import DialogActions from "@mui/material/DialogActions";
-import Button from "@mui/material/Button";
+import DialogTitle from "@mui/material/DialogTitle";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import { useTheme, alpha } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+import useMediaQuery from "@mui/material/useMediaQuery";
+
+import CategoryIcon from "@mui/icons-material/Category";
+import SuccessIcon from "@mui/icons-material/CheckCircle";
+import HistoryIcon from "@mui/icons-material/History";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import WarningIcon from "@mui/icons-material/Warning";
-import CategoryIcon from "@mui/icons-material/Category";
-import HistoryIcon from "@mui/icons-material/History";
-import SuccessIcon from "@mui/icons-material/CheckCircle";
+
+import { useTranslation } from "@/i18n";
+import { supabase } from "@/supabaseClient";
+import type { Appliance } from "@/types/appliances";
+
+import ApplianceDialog from "@components/appliances/ApplianceDialog/ApplianceDialog";
+import QuickActions from "@components/dashboard/QuickActions/QuickActions";
+import StockHealth from "@components/dashboard/StockHealth/StockHealth";
+import InventoryDialog from "@components/inventory/InventoryDialog/InventoryDialog";
+import InventoryScanner from "@components/inventory/InventoryScanner/InventoryScanner";
+import SEO from "@components/SEO";
+import { useInventoryContext } from "@contexts/InventoryContext";
+import { useUserContext } from "@contexts/UserContext";
+import { useInventoryActions } from "@hooks/inventory/useInventoryActions";
+import { useInventoryForm } from "@hooks/inventory/useInventoryForm";
+import { useErrorHandler } from "@hooks/useErrorHandler";
 
 interface StatCardProps {
   title: string;

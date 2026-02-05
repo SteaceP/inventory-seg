@@ -1,4 +1,5 @@
 import { createTheme, alpha } from "@mui/material/styles";
+
 import { getCustomPalette } from "./colorSystem";
 
 declare module "@mui/material/styles" {

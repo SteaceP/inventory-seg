@@ -2,6 +2,7 @@
 // Examples: toBeInTheDocument(), toHaveTextContent(), etc.
 import "@testing-library/jest-dom";
 import { vi } from "vitest";
+
 import { setupFramerMotionMock } from "./mocks/framer-motion";
 
 setupFramerMotionMock();

@@ -1,12 +1,14 @@
 import React from "react";
-import { useTranslation } from "@/i18n";
 
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+
 import AddIcon from "@mui/icons-material/Add";
 import ScanIcon from "@mui/icons-material/FilterCenterFocus";
 import PrintIcon from "@mui/icons-material/Print";
+
+import { useTranslation } from "@/i18n";
 
 interface AppliancesHeaderProps {
   compactView: boolean;

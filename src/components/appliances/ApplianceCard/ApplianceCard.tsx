@@ -1,16 +1,18 @@
 import React from "react";
-import type { Appliance } from "@/types/appliances";
-import ApplianceStatusChip from "./ApplianceStatusChip";
-import ApplianceWarrantyProgress from "./ApplianceWarrantyProgress";
-import ApplianceCardActions from "./ApplianceCardActions";
 
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import Checkbox from "@mui/material/Checkbox";
 import CardMedia from "@mui/material/CardMedia";
+import Checkbox from "@mui/material/Checkbox";
 import { alpha } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+
+import type { Appliance } from "@/types/appliances";
+
+import ApplianceCardActions from "./ApplianceCardActions";
+import ApplianceStatusChip from "./ApplianceStatusChip";
+import ApplianceWarrantyProgress from "./ApplianceWarrantyProgress";
 
 interface ApplianceCardProps {
   appliance: Appliance;

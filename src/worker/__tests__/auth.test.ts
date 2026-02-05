@@ -1,7 +1,9 @@
 // @vitest-environment node
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import type { Ai } from "@cloudflare/workers-types";
+
 import { verifyAuth } from "../auth";
+
+import type { Ai } from "@cloudflare/workers-types";
 
 describe("worker/auth", () => {
   const mockEnv = {

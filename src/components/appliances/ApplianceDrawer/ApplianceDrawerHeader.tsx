@@ -1,8 +1,10 @@
 import React from "react";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
+
 import AppBar from "@mui/material/AppBar";
+import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+
 import CloseIcon from "@mui/icons-material/Close";
 
 interface ApplianceDrawerHeaderProps {

@@ -1,11 +1,13 @@
 import React from "react";
-import type { InventoryItem } from "@/types/inventory";
 
 import Box from "@mui/material/Box";
+import Checkbox from "@mui/material/Checkbox";
 import Chip from "@mui/material/Chip";
 import { useTheme, alpha } from "@mui/material/styles";
-import Checkbox from "@mui/material/Checkbox";
+
 import InventoryIcon from "@mui/icons-material/Inventory";
+
+import type { InventoryItem } from "@/types/inventory";
 
 interface InventoryCardMediaProps {
   item: InventoryItem;

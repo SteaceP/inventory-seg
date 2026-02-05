@@ -1,5 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, waitFor, act } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
+
 import { AlertProvider, useAlert } from "../AlertContext";
 
 describe("AlertContext", () => {

@@ -1,10 +1,11 @@
 import React from "react";
-import { useTranslation } from "@/i18n";
-import type { Repair } from "@/types/appliances";
 
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+
+import { useTranslation } from "@/i18n";
+import type { Repair } from "@/types/appliances";
 
 interface RepairItemProps {
   repair: Repair;

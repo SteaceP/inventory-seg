@@ -1,7 +1,16 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import InventoryDrawer from "../InventoryDrawer";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import type { InventoryItem } from "@/types/inventory";
+
+import {
+  createMockTranslation,
+  createMockUserContext,
+  createMockInventoryContext,
+  createMockCategory,
+} from "@test/mocks";
+
+import InventoryDrawer from "../InventoryDrawer";
 
 // Mock dependencies
 const mocks = vi.hoisted(() => {
@@ -14,13 +23,6 @@ const mocks = vi.hoisted(() => {
     limit: vi.fn(),
   };
 });
-
-import {
-  createMockTranslation,
-  createMockUserContext,
-  createMockInventoryContext,
-  createMockCategory,
-} from "@test/mocks";
 
 const { t } = createMockTranslation();
 vi.mock("@i18n", () => ({

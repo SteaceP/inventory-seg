@@ -1,25 +1,28 @@
 import React, { useState, useEffect, useCallback } from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import CircularProgress from "@mui/material/CircularProgress";
+
 import Alert from "@mui/material/Alert";
-import Stepper from "@mui/material/Stepper";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
+import Stepper from "@mui/material/Stepper";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+
 import { useTranslation } from "@/i18n";
 import { supabase } from "@/supabaseClient";
+
+import { useErrorHandler } from "@hooks/useErrorHandler";
 import {
   generateQRCode,
   formatTOTPSecret,
   isValidTOTPCode,
 } from "@utils/mfaUtils";
-import { useErrorHandler } from "@hooks/useErrorHandler";
 
 interface TwoFactorEnrollmentProps {
   open: boolean;

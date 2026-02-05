@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { useTranslation } from "@/i18n";
-import { useInventoryContext } from "@contexts/InventoryContext";
-import { useAlert } from "@contexts/AlertContext";
-import { useErrorHandler } from "@hooks/useErrorHandler";
-import { supabase } from "@/supabaseClient";
-import type { MasterLocation } from "@/types/inventory";
-import LocationList from "@components/inventory/LocationManagement/LocationList";
-import LocationDialog from "@components/inventory/LocationManagement/LocationDialog";
 
 import Box from "@mui/material/Box";
-import CircularProgress from "@mui/material/CircularProgress";
-import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+
 import AddIcon from "@mui/icons-material/Add";
 import RefreshIcon from "@mui/icons-material/Refresh";
+
+import { useTranslation } from "@/i18n";
+import { supabase } from "@/supabaseClient";
+import type { MasterLocation } from "@/types/inventory";
+
+import LocationDialog from "@components/inventory/LocationManagement/LocationDialog";
+import LocationList from "@components/inventory/LocationManagement/LocationList";
+import { useAlert } from "@contexts/AlertContext";
+import { useInventoryContext } from "@contexts/InventoryContext";
+import { useErrorHandler } from "@hooks/useErrorHandler";
 
 const StockLocationsPage: React.FC = () => {
   const { t } = useTranslation();

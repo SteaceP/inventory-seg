@@ -8,17 +8,20 @@ import React, {
   useMemo,
   useRef,
 } from "react";
+
+import { useTranslation } from "@/i18n";
 import { supabase } from "@/supabaseClient";
-import type { RealtimeChannel } from "@supabase/supabase-js";
 import type {
   InventoryItem,
   InventoryCategory,
   MasterLocation,
   InventoryContextType,
 } from "@/types/inventory";
-import { useTranslation } from "@/i18n";
+
 import { useAlert } from "./AlertContext";
 import { useUserContext } from "./UserContext";
+
+import type { RealtimeChannel } from "@supabase/supabase-js";
 
 const InventoryContext = createContext<InventoryContextType | undefined>(
   undefined

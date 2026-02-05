@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import { reportError, logInfo } from "../errorReporting";
 
 const mockCaptureException = vi.fn();

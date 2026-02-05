@@ -1,5 +1,6 @@
 import { render } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
+
 import BarcodePrinter from "../BarcodePrinter";
 
 // Mock LazyBarcode instead of react-barcode

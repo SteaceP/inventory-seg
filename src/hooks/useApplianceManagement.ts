@@ -1,9 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
+
 import { useSearchParams } from "react-router-dom";
-import { supabase } from "@/supabaseClient";
-import { useErrorHandler } from "./useErrorHandler";
+
 import { useTranslation } from "@/i18n";
+import { supabase } from "@/supabaseClient";
 import type { Appliance, Repair, ApplianceStatus } from "@/types/appliances";
+
+import { useErrorHandler } from "./useErrorHandler";
 
 export function useApplianceManagement() {
   const { t } = useTranslation();

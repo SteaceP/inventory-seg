@@ -1,7 +1,11 @@
 import postgres from "postgres";
-import { reportError } from "../errorReporting";
+
 import { verifyAuth } from "../auth";
+import { reportError } from "../errorReporting";
 import { createResponse } from "../helpers";
+import { sendEmail } from "../notifications/email";
+import { broadcastPush } from "../notifications/push";
+import { getTranslation } from "../notifications/translations";
 import {
   sanitizeHtml,
   validateEmail,
@@ -9,10 +13,8 @@ import {
   validateStock,
   validateThreshold,
 } from "../validators";
+
 import type { Env, RequestBody } from "../types";
-import { getTranslation } from "../notifications/translations";
-import { sendEmail } from "../notifications/email";
-import { broadcastPush } from "../notifications/push";
 
 /**
  * Handle test push notification

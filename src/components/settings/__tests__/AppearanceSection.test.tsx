@@ -1,7 +1,9 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import AppearanceSection from "../AppearanceSection";
+
 import { createMockTranslation, createMockUserContext } from "@test/mocks";
+
+import AppearanceSection from "../AppearanceSection";
 
 // Mock contexts using centralized utilities
 const mockToggleDarkMode = vi.fn();

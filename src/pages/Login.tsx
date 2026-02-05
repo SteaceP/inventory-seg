@@ -1,23 +1,27 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { useTranslation } from "@/i18n";
-import { useUserContext } from "@contexts/UserContext";
-import { supabase } from "@/supabaseClient";
-import { useNavigate, useLocation } from "react-router-dom";
+
 import { type TurnstileInstance } from "@marsidev/react-turnstile";
+import { motion } from "framer-motion";
+import { useNavigate, useLocation } from "react-router-dom";
+
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import Paper from "@mui/material/Paper";
+
+import LanguageSwitcher from "@/components/auth/LanguageSwitcher";
+import LoginFooter from "@/components/auth/LoginFooter";
+import LoginForm from "@/components/auth/LoginForm";
+import LoginHeader from "@/components/auth/LoginHeader";
+import TwoFactorVerification from "@/components/auth/TwoFactorVerification";
+import { useTranslation } from "@/i18n";
+import { supabase } from "@/supabaseClient";
+
+import { useUserContext } from "@contexts/UserContext";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { usePerformance } from "@hooks/usePerformance";
 import { logInfo } from "@utils/errorReporting";
-import TwoFactorVerification from "@/components/auth/TwoFactorVerification";
-import LoginHeader from "@/components/auth/LoginHeader";
-import LoginForm from "@/components/auth/LoginForm";
-import LoginFooter from "@/components/auth/LoginFooter";
-import LanguageSwitcher from "@/components/auth/LanguageSwitcher";
-import type { AuthMFAChallengeResponse } from "@supabase/supabase-js";
 
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import Container from "@mui/material/Container";
+import type { AuthMFAChallengeResponse } from "@supabase/supabase-js";
 
 interface LocationState {
   from?: {

@@ -1,25 +1,31 @@
 import React, { useState } from "react";
+
 import { AnimatePresence } from "framer-motion";
+
+import Box from "@mui/material/Box";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+
+import BackIcon from "@mui/icons-material/ArrowBack";
+import CloseIcon from "@mui/icons-material/Close";
+
 import { useTranslation } from "@/i18n";
+
 import { useInventoryContext } from "@contexts/InventoryContext";
+
+import AdjustmentForm from "./AdjustmentForm";
+import AdjustmentModeSelector from "./AdjustmentModeSelector";
+import AdjustmentQuickInfo from "./AdjustmentQuickInfo";
+import LocationSelector from "./LocationSelector";
+
 import type {
   StockAdjustmentDialogProps,
   Mode,
   SelectedLocation,
 } from "./types";
-import AdjustmentQuickInfo from "./AdjustmentQuickInfo";
-import AdjustmentModeSelector from "./AdjustmentModeSelector";
-import LocationSelector from "./LocationSelector";
-import AdjustmentForm from "./AdjustmentForm";
-
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import BackIcon from "@mui/icons-material/ArrowBack";
 
 const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
   open,

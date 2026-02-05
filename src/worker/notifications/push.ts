@@ -1,6 +1,8 @@
-import webpush from "web-push";
 import postgres from "postgres";
+import webpush from "web-push";
+
 import { reportError } from "../errorReporting";
+
 import type { Env, PushSubscriptionRow, PushOptions } from "../types";
 
 export async function broadcastPush(

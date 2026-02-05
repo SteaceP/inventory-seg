@@ -1,7 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, act } from "@testing-library/react";
-import Settings from "../Settings";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+
+import Settings from "../Settings";
 
 // Mocks
 const mockSetLanguage = vi.fn();

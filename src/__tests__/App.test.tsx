@@ -1,11 +1,14 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import React from "react";
-import { render, screen, waitFor } from "@test/test-utils";
-import App from "../App";
+
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import {
   createMockAlertContext,
   createMockInventoryContext,
 } from "@test/mocks";
+import { render, screen, waitFor } from "@test/test-utils";
+
+import App from "../App";
 
 // Mock react-router-dom to use MemoryRouter instead of BrowserRouter (which App uses)
 vi.mock("react-router-dom", async () => {

@@ -1,7 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { handleTestPush } from "../notifications";
-import * as push from "../../notifications/push";
+
 import * as auth from "../../auth";
+import * as push from "../../notifications/push";
+import { handleTestPush } from "../notifications";
+
 import type { Env } from "../../../types/worker";
 
 // Mock dependencies

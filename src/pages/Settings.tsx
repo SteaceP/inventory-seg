@@ -1,29 +1,31 @@
 import React, { useState, useEffect, useRef } from "react";
+
+import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import FormControl from "@mui/material/FormControl";
+import Grid from "@mui/material/Grid";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import Snackbar from "@mui/material/Snackbar";
+import Typography from "@mui/material/Typography";
+
 import { useTranslation } from "@/i18n";
 import { supabase } from "@/supabaseClient";
-import { useUserContext } from "@contexts/UserContext";
-import ProfileSection from "@components/settings/ProfileSection";
-import NotificationSection from "@components/settings/NotificationSection";
+import type { Language } from "@/types/user";
+
 import AppearanceSection from "@components/settings/AppearanceSection";
+import NotificationSection from "@components/settings/NotificationSection";
+import ProfileSection from "@components/settings/ProfileSection";
 import SecuritySection from "@components/settings/SecuritySection";
 import TwoFactorSettings from "@components/settings/TwoFactorSettings";
-import type { Language } from "@/types/user";
+import { useUserContext } from "@contexts/UserContext";
 import {
   validateImageFile,
   generateSecureFileName,
   getExtensionFromMimeType,
 } from "@utils/crypto";
-
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import Alert from "@mui/material/Alert";
-import Snackbar from "@mui/material/Snackbar";
 
 const Settings: React.FC = () => {
   const [saveSuccess, setSaveSuccess] = useState(false);

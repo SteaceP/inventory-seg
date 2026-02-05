@@ -1,9 +1,11 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
+
+import { createMockTranslation } from "@test/mocks";
+
 import ImageUploadField from "../ImageUploadField";
 
 // Mock translation
-import { createMockTranslation } from "@test/mocks";
 
 const { t } = createMockTranslation();
 vi.mock("@i18n", () => ({

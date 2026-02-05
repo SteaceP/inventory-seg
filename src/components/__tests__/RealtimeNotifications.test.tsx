@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import RealtimeNotifications from "../RealtimeNotifications";
 
 // Hoist mocks to share between factory and tests

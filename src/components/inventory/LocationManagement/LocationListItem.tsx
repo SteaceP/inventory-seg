@@ -1,15 +1,17 @@
 import React from "react";
-import type { MasterLocation } from "@/types/inventory";
 
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
-import Box from "@mui/material/Box";
 import { useTheme, alpha } from "@mui/material/styles";
-import IconButton from "@mui/material/IconButton";
-import EditIcon from "@mui/icons-material/Edit";
+
 import DeleteIcon from "@mui/icons-material/Delete";
-import LocationIcon from "@mui/icons-material/LocationOn";
+import EditIcon from "@mui/icons-material/Edit";
 import FolderIcon from "@mui/icons-material/Folder";
+import LocationIcon from "@mui/icons-material/LocationOn";
+
+import type { MasterLocation } from "@/types/inventory";
 
 interface LocationListItemProps {
   location: MasterLocation;

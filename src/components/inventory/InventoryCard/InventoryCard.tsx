@@ -1,21 +1,24 @@
 import React from "react";
+
 import { motion } from "framer-motion";
-import type { InventoryItem } from "@/types/inventory";
-import { useTranslation } from "@/i18n";
-import { useUserContext } from "@contexts/UserContext";
-import { useInventoryContext } from "@contexts/InventoryContext";
 
-// Sub-components
-import InventoryCardMedia from "./InventoryCardMedia";
-import InventoryCardStock from "./InventoryCardStock";
-import InventoryCardActions from "./InventoryCardActions";
-
-import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import { useTheme, alpha } from "@mui/material/styles";
-import Divider from "@mui/material/Divider";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
+import Divider from "@mui/material/Divider";
+import { useTheme, alpha } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+
+import { useTranslation } from "@/i18n";
+import type { InventoryItem } from "@/types/inventory";
+
+import { useInventoryContext } from "@contexts/InventoryContext";
+import { useUserContext } from "@contexts/UserContext";
+
+// Sub-components
+import InventoryCardActions from "./InventoryCardActions";
+import InventoryCardMedia from "./InventoryCardMedia";
+import InventoryCardStock from "./InventoryCardStock";
 
 interface InventoryCardProps {
   item: InventoryItem;

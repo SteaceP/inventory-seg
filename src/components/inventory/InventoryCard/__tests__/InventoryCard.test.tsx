@@ -1,19 +1,23 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
-import { render, screen } from "@test/test-utils";
 import { describe, it, expect, vi } from "vitest";
-import InventoryCard from "../InventoryCard";
-import {
-  createMockInventoryItem,
-  createMockInventoryContext,
-  createMockUserContext,
-} from "@test/mocks";
-import * as InventoryContextModule from "@contexts/InventoryContext";
-import * as UserContextModule from "@contexts/UserContext";
+
 import type {
   InventoryContextType,
   InventoryCategory,
 } from "@/types/inventory";
 import type { UserContextType } from "@/types/user";
+
+import * as InventoryContextModule from "@contexts/InventoryContext";
+import * as UserContextModule from "@contexts/UserContext";
+import {
+  createMockInventoryItem,
+  createMockInventoryContext,
+  createMockUserContext,
+} from "@test/mocks";
+import { render, screen } from "@test/test-utils";
+
+import InventoryCard from "../InventoryCard";
+
 import type { Session } from "@supabase/supabase-js";
 
 const { mockPresence, UserContextMock } = vi.hoisted(() => {

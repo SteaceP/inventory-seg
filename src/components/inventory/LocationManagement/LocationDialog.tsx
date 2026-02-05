@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import { useTranslation } from "@/i18n";
-import type { MasterLocation } from "@/types/inventory";
 
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
-import TextField from "@mui/material/TextField";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import MenuItem from "@mui/material/MenuItem";
+import TextField from "@mui/material/TextField";
+
+import { useTranslation } from "@/i18n";
+import type { MasterLocation } from "@/types/inventory";
 
 interface LocationDialogProps {
   open: boolean;

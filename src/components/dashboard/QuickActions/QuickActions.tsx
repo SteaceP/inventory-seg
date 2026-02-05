@@ -1,20 +1,25 @@
 import React from "react";
+
 import { useNavigate } from "react-router-dom";
+
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import { useTheme, alpha } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+import useMediaQuery from "@mui/material/useMediaQuery";
+
+import AddIcon from "@mui/icons-material/Add";
+import ReportIcon from "@mui/icons-material/Assessment";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import RepairIcon from "@mui/icons-material/HomeRepairService";
+import ScanIcon from "@mui/icons-material/QrCodeScanner";
+
 import { useTranslation } from "@/i18n";
-import ActionCard from "../ActionCard/ActionCard";
+
 import { useScrollIndicators } from "@hooks/useScrollIndicators";
 
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import { useTheme, alpha } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import AddIcon from "@mui/icons-material/Add";
-import ScanIcon from "@mui/icons-material/QrCodeScanner";
-import RepairIcon from "@mui/icons-material/HomeRepairService";
-import ReportIcon from "@mui/icons-material/Assessment";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ActionCard from "../ActionCard/ActionCard";
 
 interface QuickActionsProps {
   onScanClick?: () => void;

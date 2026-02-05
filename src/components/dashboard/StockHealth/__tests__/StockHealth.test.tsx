@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
-import { render, screen } from "@test/test-utils";
 import { describe, it, expect, vi } from "vitest";
-import StockHealth from "../StockHealth";
+
 import type { InventoryItem, InventoryCategory } from "@/types/inventory";
+
+import { render, screen } from "@test/test-utils";
+
+import StockHealth from "../StockHealth";
 
 // Use vi.hoisted to ensure these are available in mock factory
 const { mockItems, mockCategories, mockUserContextValue, UserContextMock } =

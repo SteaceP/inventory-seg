@@ -1,16 +1,20 @@
 import React, { useState } from "react";
-import type { InventoryItem } from "@/types/inventory";
-import { useTranslation } from "@/i18n";
-import { useUserContext } from "@contexts/UserContext";
-import { useInventoryContext } from "@contexts/InventoryContext";
-import { useInventoryCategorization } from "@hooks/useInventoryCategorization";
-import CategoryThresholdDialog from "../CategoryManagement/CategoryThresholdDialog";
-import CategorySection from "../CategoryManagement/CategorySection";
 
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
+import Typography from "@mui/material/Typography";
+
 import CategoryIcon from "@mui/icons-material/Category";
+
+import { useTranslation } from "@/i18n";
+import type { InventoryItem } from "@/types/inventory";
+
+import { useInventoryContext } from "@contexts/InventoryContext";
+import { useUserContext } from "@contexts/UserContext";
+import { useInventoryCategorization } from "@hooks/useInventoryCategorization";
+
+import CategorySection from "../CategoryManagement/CategorySection";
+import CategoryThresholdDialog from "../CategoryManagement/CategoryThresholdDialog";
 
 interface InventoryCategorizedGridProps {
   items: InventoryItem[];

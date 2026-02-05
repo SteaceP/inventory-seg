@@ -1,6 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@test/test-utils";
-import Dashboard from "../Dashboard";
 
 import {
   createMockTranslation,
@@ -9,6 +7,9 @@ import {
   createMockInventoryItem,
   createMockCategory,
 } from "@test/mocks";
+import { render, screen, waitFor } from "@test/test-utils";
+
+import Dashboard from "../Dashboard";
 
 // Create test data using factories
 const mockInventoryItems = [

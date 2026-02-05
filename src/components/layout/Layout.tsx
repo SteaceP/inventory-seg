@@ -1,27 +1,31 @@
 import React, { useState } from "react";
+
 import { useLocation, Outlet } from "react-router-dom";
-import { useUserContext } from "@contexts/UserContext";
+
+import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";
+import Divider from "@mui/material/Divider";
+import Drawer from "@mui/material/Drawer";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+
+import AssessmentIcon from "@mui/icons-material/Assessment";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import ActivityIcon from "@mui/icons-material/History";
+import ApplianceIcon from "@mui/icons-material/Kitchen";
+import LocationIcon from "@mui/icons-material/LocationOn";
+import SettingsIcon from "@mui/icons-material/Settings";
+
 import { useTranslation } from "@/i18n";
 
+import { useUserContext } from "@contexts/UserContext";
+
 // Sub-components
+import MobileAppBar from "./MobileAppBar/MobileAppBar";
+import NavigationList from "./NavigationList/NavigationList";
 import SidebarHeader from "./SidebarHeader/SidebarHeader";
 import UserProfile from "./UserProfile/UserProfile";
-import NavigationList from "./NavigationList/NavigationList";
-import MobileAppBar from "./MobileAppBar/MobileAppBar";
 import AssistantFAB from "../assistant/AssistantFAB";
-
-import { useTheme } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
-import Divider from "@mui/material/Divider";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import CssBaseline from "@mui/material/CssBaseline";
-import ApplianceIcon from "@mui/icons-material/Kitchen";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import SettingsIcon from "@mui/icons-material/Settings";
-import ActivityIcon from "@mui/icons-material/History";
-import LocationIcon from "@mui/icons-material/LocationOn";
-import AssessmentIcon from "@mui/icons-material/Assessment";
 
 const Layout: React.FC = () => {
   const location = useLocation();

@@ -1,11 +1,12 @@
 import React from "react";
-import type { InventoryItem } from "@/types/inventory";
 
-import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
-import { useTheme, alpha } from "@mui/material/styles";
 import LinearProgress from "@mui/material/LinearProgress";
+import { useTheme, alpha } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+
+import type { InventoryItem } from "@/types/inventory";
 
 interface InventoryCardStockProps {
   item: InventoryItem;

@@ -1,11 +1,14 @@
 import React from "react";
+
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import InventoryScanner from "../InventoryScanner";
+
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 // Mock Translation
 import { createMockTranslation } from "@test/mocks";
+
+import InventoryScanner from "../InventoryScanner";
 
 const { t } = createMockTranslation();
 vi.mock("@i18n", () => ({

@@ -1,6 +1,12 @@
 import React from "react";
-import { vi, describe, it, expect, beforeEach } from "vitest";
+
 import { renderHook, act } from "@testing-library/react";
+import { vi, describe, it, expect, beforeEach } from "vitest";
+
+import { mockSupabaseClient as mockClient } from "@test/mocks/supabase";
+import { validateImageFile } from "@utils/crypto";
+
+import { useInventoryImage } from "../useInventoryImage";
 
 // Setup i18n mock
 vi.mock("@/i18n", () => ({
@@ -11,7 +17,6 @@ vi.mock("@/i18n", () => ({
 }));
 
 // Mock supabaseClient
-import { mockSupabaseClient as mockClient } from "@test/mocks/supabase";
 vi.mock("@/supabaseClient", () => ({
   supabase: mockClient.client,
 }));
@@ -26,10 +31,6 @@ vi.mock("@utils/crypto", () => ({
   generateSecureFileName: vi.fn((ext: string) => `mock-file.${ext}`),
   getExtensionFromMimeType: vi.fn(() => "png"),
 }));
-
-// Import hook after mocks
-import { useInventoryImage } from "../useInventoryImage";
-import { validateImageFile } from "@utils/crypto";
 
 describe("useInventoryImage", () => {
   const setFormData = vi.fn();

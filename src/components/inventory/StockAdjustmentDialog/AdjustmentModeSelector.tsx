@@ -1,13 +1,17 @@
 import React from "react";
-import { motion } from "framer-motion";
-import type { Variants } from "framer-motion";
-import { useTranslation } from "@/i18n";
 
-import Typography from "@mui/material/Typography";
+import { motion } from "framer-motion";
+
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+
+import { useTranslation } from "@/i18n";
+
+import type { Variants } from "framer-motion";
 
 const MotionBox = motion.create(Box);
 

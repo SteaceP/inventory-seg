@@ -1,7 +1,9 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import StockAdjustmentDialog from "../index";
+
 import type { InventoryItem } from "@/types/inventory";
+
+import StockAdjustmentDialog from "../index";
 
 vi.mock("@i18n", () => ({
   useTranslation: () => ({

@@ -1,7 +1,8 @@
-import { vi, describe, it, expect } from "vitest";
-import { renderHook } from "@testing-library/react";
-import { usePerformance } from "../usePerformance";
 import * as Sentry from "@sentry/react";
+import { renderHook } from "@testing-library/react";
+import { vi, describe, it, expect } from "vitest";
+
+import { usePerformance } from "../usePerformance";
 
 // Mock Sentry
 vi.mock("@sentry/react", () => ({

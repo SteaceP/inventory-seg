@@ -1,13 +1,16 @@
 import React from "react";
+
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@test/test-utils";
-import Signup from "../Signup";
+
 import {
   createMockTranslation,
   createMockUserContext,
   createMockErrorHandler,
   createMockPerformance,
 } from "@test/mocks";
+import { render, screen, fireEvent, waitFor } from "@test/test-utils";
+
+import Signup from "../Signup";
 const mockSignUp = vi.fn();
 vi.mock("@supabaseClient", () => ({
   supabase: {

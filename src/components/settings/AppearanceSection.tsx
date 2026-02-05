@@ -1,14 +1,17 @@
 import React from "react";
-import { useUserContext } from "@contexts/UserContext";
-import { useTranslation } from "@/i18n";
 
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import Paper from "@mui/material/Paper";
 // import { alpha, useTheme } from "@mui/material/styles"; // Unused
-import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
+import Typography from "@mui/material/Typography";
+
 import PaletteIcon from "@mui/icons-material/Palette";
+
+import { useTranslation } from "@/i18n";
+
+import { useUserContext } from "@contexts/UserContext";
 
 interface AppearanceSectionProps {
   darkMode: boolean;

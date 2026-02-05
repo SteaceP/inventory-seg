@@ -1,8 +1,11 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import CategoryFilters from "../CategoryFilters";
-import { createMockTranslation, createMockCategory } from "@test/mocks";
+
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+
+import { createMockTranslation, createMockCategory } from "@test/mocks";
+
+import CategoryFilters from "../CategoryFilters";
 
 // Mock translation hook
 const { t } = createMockTranslation();

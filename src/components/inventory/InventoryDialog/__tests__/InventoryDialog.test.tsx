@@ -1,7 +1,8 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import InventoryDialog from "../InventoryDialog";
+
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+
 import {
   createMockTranslation,
   createMockUserContext,
@@ -9,6 +10,8 @@ import {
   createMockCategory,
   createMockLocation,
 } from "@test/mocks";
+
+import InventoryDialog from "../InventoryDialog";
 
 // Mock Child Components
 vi.mock("@components/inventory/shared/ImageUploadField", () => ({

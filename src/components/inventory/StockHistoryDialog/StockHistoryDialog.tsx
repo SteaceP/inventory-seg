@@ -1,22 +1,26 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useErrorHandler } from "@hooks/useErrorHandler";
+
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+
+import CloseIcon from "@mui/icons-material/Close";
+import PrintIcon from "@mui/icons-material/Print";
+
 import { useTranslation } from "@/i18n";
 import { supabase } from "@/supabaseClient";
 import type { InventoryActivity, ActivityAction } from "@/types/activity";
-import StockHistoryItem from "./StockHistoryItem";
 
-import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import IconButton from "@mui/material/IconButton";
-import DialogActions from "@mui/material/DialogActions";
-import CircularProgress from "@mui/material/CircularProgress";
-import Divider from "@mui/material/Divider";
-import CloseIcon from "@mui/icons-material/Close";
-import PrintIcon from "@mui/icons-material/Print";
+import { useErrorHandler } from "@hooks/useErrorHandler";
+
+import StockHistoryItem from "./StockHistoryItem";
 
 interface StockHistoryDialogProps {
   open: boolean;

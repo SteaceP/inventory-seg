@@ -1,7 +1,9 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import StockAdjustmentDialog from "../index";
+
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+
+import StockAdjustmentDialog from "../index";
 
 // Mock i18n
 vi.mock("@i18n", () => ({

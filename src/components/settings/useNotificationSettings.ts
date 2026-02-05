@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
-import { useErrorHandler } from "@hooks/useErrorHandler";
-import { useUserContext } from "@contexts/UserContext";
-import { useAlert } from "@contexts/AlertContext";
+
 import { useTranslation } from "@/i18n";
 import { supabase } from "@/supabaseClient";
+import type { ApiResponseError } from "@/types/worker";
 import {
   subscribeToPush,
   unsubscribeFromPush,
   checkPushSubscription,
 } from "@/utils/push-notifications";
-import type { ApiResponseError } from "@/types/worker";
+
+import { useAlert } from "@contexts/AlertContext";
+import { useUserContext } from "@contexts/UserContext";
+import { useErrorHandler } from "@hooks/useErrorHandler";
 
 export const useNotificationSettings = () => {
   const { t } = useTranslation();

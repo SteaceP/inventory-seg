@@ -1,6 +1,6 @@
 /* eslint-disable react-x/no-unnecessary-use-prefix */
-import { vi, describe, it, expect, beforeEach } from "vitest";
 import { renderHook, waitFor, act } from "@testing-library/react";
+import { vi, describe, it, expect, beforeEach } from "vitest";
 
 const mocks = vi.hoisted(() => {
   const t = (k: string) => k;
@@ -45,8 +45,9 @@ vi.mock("react-router-dom", () => ({
   useSearchParams: mocks.router.useSearchParams,
 }));
 
-import { useApplianceManagement } from "../useApplianceManagement";
 import type { Appliance } from "@/types/appliances";
+
+import { useApplianceManagement } from "../useApplianceManagement";
 
 describe("useApplianceManagement - State & Fetching", () => {
   beforeEach(() => {

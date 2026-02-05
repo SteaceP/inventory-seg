@@ -1,12 +1,14 @@
 import React from "react";
-import { useTranslation } from "@/i18n";
 
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
-import DeleteIcon from "@mui/icons-material/Delete";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+
 import AddPhotoIcon from "@mui/icons-material/AddPhotoAlternate";
+import DeleteIcon from "@mui/icons-material/Delete";
+
+import { useTranslation } from "@/i18n";
 
 interface ImageUploadFieldProps {
   imageUrl?: string;

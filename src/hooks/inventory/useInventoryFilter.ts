@@ -1,5 +1,7 @@
 import { useState, useMemo } from "react";
+
 import { useSearchParams } from "react-router-dom";
+
 import type { InventoryItem, InventoryCategory } from "@/types/inventory";
 
 interface UseInventoryFilterProps {

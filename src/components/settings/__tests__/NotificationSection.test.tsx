@@ -6,13 +6,16 @@ import {
   cleanup,
 } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import NotificationSection from "../NotificationSection";
-import type { Session } from "@supabase/supabase-js";
+
 import {
   createMockAlertContext,
   createMockTranslation,
   createMockUserContext,
 } from "@test/mocks";
+
+import NotificationSection from "../NotificationSection";
+
+import type { Session } from "@supabase/supabase-js";
 
 // Hoist mocks to avoid unbound-method lint errors
 const mocks = vi.hoisted(() => ({

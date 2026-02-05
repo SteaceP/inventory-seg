@@ -1,20 +1,24 @@
 import React, { useState } from "react";
-import { useTranslation } from "@/i18n";
-import type { Appliance, Repair, RepairPart } from "@/types/appliances";
-import { generateSecureId } from "@utils/crypto";
-import RepairPartItem from "./RepairPartItem";
 
-import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
 import CircularProgress from "@mui/material/CircularProgress";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import Divider from "@mui/material/Divider";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+
 import AddIcon from "@mui/icons-material/Add";
+
+import { useTranslation } from "@/i18n";
+import type { Appliance, Repair, RepairPart } from "@/types/appliances";
+
+import { generateSecureId } from "@utils/crypto";
+
+import RepairPartItem from "./RepairPartItem";
 
 interface ApplianceRepairDialogProps {
   open: boolean;

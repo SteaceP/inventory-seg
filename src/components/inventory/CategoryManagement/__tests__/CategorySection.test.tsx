@@ -1,8 +1,11 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@test/test-utils";
-import CategorySection from "../CategorySection";
+
 import type { InventoryItem } from "@/types/inventory";
+
 import { createMockTranslation, createMockInventoryItem } from "@test/mocks";
+import { render, screen, fireEvent } from "@test/test-utils";
+
+import CategorySection from "../CategorySection";
 
 // Mock InventoryCard
 vi.mock("../../InventoryCard/InventoryCard", () => ({

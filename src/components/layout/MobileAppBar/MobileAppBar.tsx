@@ -1,14 +1,17 @@
 import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useTranslation } from "@/i18n";
 
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
+import { motion, AnimatePresence } from "framer-motion";
+
 import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+
 import CloseIcon from "@mui/icons-material/Close";
 import MenuIcon from "@mui/icons-material/Menu";
+
+import { useTranslation } from "@/i18n";
 
 interface MobileAppBarProps {
   mobileOpen: boolean;

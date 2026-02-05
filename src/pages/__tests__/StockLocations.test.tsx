@@ -1,4 +1,3 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   render,
   screen,
@@ -6,14 +5,18 @@ import {
   fireEvent,
   within,
 } from "@testing-library/react";
-import StockLocationsPage from "../StockLocations";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+
 import {
   createMockAlertContext,
   createMockTranslation,
   createMockInventoryContext,
   createMockLocation,
 } from "@test/mocks";
+
+import StockLocationsPage from "../StockLocations";
 
 // Create mock data using factories
 const mockLocations = [

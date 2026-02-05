@@ -1,17 +1,20 @@
 import React, { useState } from "react";
+
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+
+import PhotoCamera from "@mui/icons-material/PhotoCamera";
+
 import { useTranslation } from "@/i18n";
-import { useErrorHandler } from "@hooks/useErrorHandler";
 import { supabase } from "@/supabaseClient";
+
+import { useErrorHandler } from "@hooks/useErrorHandler";
 import {
   validateImageFile,
   generateSecureFileName,
   getExtensionFromMimeType,
 } from "@utils/crypto";
-
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import PhotoCamera from "@mui/icons-material/PhotoCamera";
 
 interface ApplianceImageUploadProps {
   photoUrl: string | null | undefined;

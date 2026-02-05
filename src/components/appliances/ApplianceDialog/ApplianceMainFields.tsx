@@ -1,14 +1,17 @@
 import React from "react";
-import { useTranslation } from "@/i18n";
-import type { Appliance } from "@/types/appliances";
-import { generateSecureId } from "@utils/crypto";
 
 import Grid from "@mui/material/Grid";
-import TextField from "@mui/material/TextField";
-import MenuItem from "@mui/material/MenuItem";
-import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
+import MenuItem from "@mui/material/MenuItem";
+import TextField from "@mui/material/TextField";
+
 import AutoRenewIcon from "@mui/icons-material/Autorenew";
+
+import { useTranslation } from "@/i18n";
+import type { Appliance } from "@/types/appliances";
+
+import { generateSecureId } from "@utils/crypto";
 
 interface ApplianceMainFieldsProps {
   formData: Partial<Appliance>;

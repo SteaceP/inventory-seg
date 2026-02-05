@@ -1,8 +1,9 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import * as Sentry from "@sentry/react";
 import { render, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+
 import ErrorBoundary from "../ErrorBoundary";
-import * as Sentry from "@sentry/react";
 
 // Mock Sentry
 vi.mock("@sentry/react", () => ({

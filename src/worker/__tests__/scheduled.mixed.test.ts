@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
+
 import { handleScheduled } from "../scheduled";
 import {
   mockSql,
@@ -6,6 +7,7 @@ import {
   createMockEnv,
   createMockCtx,
 } from "./scheduled.mocks";
+
 import type { Env } from "../types";
 
 vi.mock("postgres", () => ({
