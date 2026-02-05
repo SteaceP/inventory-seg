@@ -1,26 +1,51 @@
+/**
+ * Represents a single message in an AI assistant conversation.
+ */
 export interface Message {
+  /** Unique identifier for the message */
   id: string;
+  /** Role of the sender (human user or AI assistant) */
   role: "user" | "assistant";
+  /** Textual content of the message */
   content: string;
 }
 
+/**
+ * Props for the main Assistant chat interface.
+ */
 export interface ChatInterfaceProps {
+  /** Optional callback triggered when the interface is dismissed */
   onClose?: () => void;
 }
 
+/**
+ * Props for displaying an individual chat message bubble.
+ */
 export interface ChatMessageProps {
+  /** Message data to display */
   message: Message;
+  /** URL for the sender's avatar image */
   avatarUrl: string | null;
 }
 
+/**
+ * Props for the chat message input area.
+ */
 export interface ChatInputProps {
+  /** Current text value in the input */
   input: string;
+  /** State setter for the input value */
   setInput: React.Dispatch<React.SetStateAction<string>>;
+  /** Callback triggered when the message is submitted */
   onSend: () => void;
+  /** Whether a response is currently being fetched */
   loading: boolean;
 }
 
 // Web Speech API interfaces
+/**
+ * Event emitted by the Speech Recognition API containing results.
+ */
 export interface SpeechRecognitionEvent {
   resultIndex: number;
   results: SpeechRecognitionResultList;

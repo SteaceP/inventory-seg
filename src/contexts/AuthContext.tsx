@@ -22,6 +22,12 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/**
+ * Hook to access the current authentication state and session.
+ *
+ * @returns {AuthContextType} The auth context value.
+ * @throws {Error} if used outside of AuthProvider.
+ */
 export const useAuth = () => {
   const context = use(AuthContext);
   if (context === undefined) {
@@ -30,6 +36,10 @@ export const useAuth = () => {
   return context;
 };
 
+/**
+ * Provider component for authentication state.
+ * Initializes the Supabase session and listens for auth state changes.
+ */
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {

@@ -1,5 +1,11 @@
 import type { InventoryActivity } from "@/types/activity";
 
+/**
+ * Calculates the difference between old and new stock levels.
+ *
+ * @param changes - The changes object from an inventory activity log.
+ * @returns An object with diff, old/new levels, and a color recommendation, or null if no change.
+ */
 export const getStockChange = (changes: InventoryActivity["changes"]) => {
   const oldStock = (changes?.old_stock as number) ?? 0;
   const newStock = (changes?.stock as number) ?? 0;
@@ -15,6 +21,13 @@ export const getStockChange = (changes: InventoryActivity["changes"]) => {
   };
 };
 
+/**
+ * Generates a human-readable narrative string for an inventory activity.
+ *
+ * @param activity - The inventory activity object.
+ * @param t - Translation function for localization.
+ * @returns A localized string describing the activity.
+ */
 export const getActivityNarrative = (
   activity: InventoryActivity,
   t: (
@@ -87,6 +100,13 @@ export const getActivityNarrative = (
   });
 };
 
+/**
+ * POSTs an activity log entry to the edge function.
+ *
+ * @param activity - Activity data to log.
+ * @param session - Current auth session for token authorization.
+ * @param handleError - Error handling callback.
+ */
 export const logActivity = async (
   activity: {
     inventory_id: string;

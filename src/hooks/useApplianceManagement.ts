@@ -8,6 +8,12 @@ import type { Appliance, Repair, ApplianceStatus } from "@/types/appliances";
 
 import { useErrorHandler } from "./useErrorHandler";
 
+/**
+ * Custom hook for managing appliance-related state and operations.
+ * Handles fetching list, details, repairs, and performing CRUD actions.
+ *
+ * @returns An object containing appliance state, filtered lists, and action handlers.
+ */
 export function useApplianceManagement() {
   const { t } = useTranslation();
   const { handleError } = useErrorHandler();

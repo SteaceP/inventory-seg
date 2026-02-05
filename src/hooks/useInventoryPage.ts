@@ -11,6 +11,12 @@ import { useInventoryActions } from "./inventory/useInventoryActions";
 import { useInventoryFilter } from "./inventory/useInventoryFilter";
 import { useInventoryForm } from "./inventory/useInventoryForm";
 
+/**
+ * Orchestrator hook for the Inventory page.
+ * Aggregates filtering, form management, and CRUD actions for inventory items.
+ *
+ * @returns A comprehensive state and action object for the Inventory UI.
+ */
 export const useInventoryPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [stockDialogOpen, setStockDialogOpen] = useState(false);

@@ -11,9 +11,23 @@ const translations: Record<Lang, Record<string, string>> = {
   en,
 };
 
+/**
+ * Custom hook for localized text and dynamic translations.
+ * Automatically respects the language setting from UserContext.
+ *
+ * @returns {Object} t function for lookups and current language code.
+ */
 export function useTranslation() {
   const context = use(UserContext);
   const language = context?.language || "fr";
+
+  /**
+   * Translates a specific key using the current language.
+   *
+   * @param key - The translation key path.
+   * @param params - Optional template variables to inject into the string.
+   * @returns {string} The translated (and interpolated) string.
+   */
   const t = useCallback(
     (
       key: string,

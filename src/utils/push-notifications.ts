@@ -2,6 +2,13 @@ import { supabase } from "@/supabaseClient";
 
 import { getDeviceInfo } from "./crypto";
 
+/**
+ * Converts a base64 string to a Uint8Array.
+ * Used for processing VAPID public keys for push notifications.
+ *
+ * @param base64String - The base64 URL-safe encoded string.
+ * @returns A Uint8Array representing the key.
+ */
 function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
@@ -15,6 +22,13 @@ function urlBase64ToUint8Array(base64String: string) {
   return outputArray;
 }
 
+/**
+ * Requests push notification permission and subscribes the user.
+ * Persists the subscription to Supabase if the user is authenticated.
+ *
+ * @returns {Promise<PushSubscription>} The resulting subscription object.
+ * @throws {Error} if push is not supported or VAPID key is missing.
+ */
 export async function subscribeToPush() {
   if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
     throw new Error("Push notifications are not supported by your browser");
@@ -61,6 +75,10 @@ export async function subscribeToPush() {
   return subscription;
 }
 
+/**
+ * Unsubscribes the user from push notifications.
+ * Removes the subscription from both the browser and the Supabase database.
+ */
 export async function unsubscribeFromPush() {
   const registration = await navigator.serviceWorker.ready;
   const subscription = await registration.pushManager.getSubscription();
@@ -81,6 +99,11 @@ export async function unsubscribeFromPush() {
   }
 }
 
+/**
+ * Checks if the browser currently has an active push subscription.
+ *
+ * @returns {Promise<boolean>} True if subscribed, false otherwise.
+ */
 export async function checkPushSubscription() {
   if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
     return false;

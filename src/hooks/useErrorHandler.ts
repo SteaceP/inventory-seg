@@ -79,6 +79,13 @@ export const useErrorHandler = () => {
   const { showError } = useAlert();
   const { t } = useTranslation();
 
+  /**
+   * Centralized error handler that logs to Sentry and notifies the user.
+   *
+   * @param error - The raw error object (unknown type)
+   * @param userMessage - Optional custom message to show to the user
+   * @param context - Optional additional context to include in Sentry report
+   */
   const handleError = useCallback(
     (
       error: unknown,

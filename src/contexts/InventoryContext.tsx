@@ -27,6 +27,12 @@ const InventoryContext = createContext<InventoryContextType | undefined>(
   undefined
 );
 
+/**
+ * Hook to access inventory data, categories, and sync operations.
+ *
+ * @returns {InventoryContextType} The inventory context value.
+ * @throws {Error} if used outside of InventoryProvider.
+ */
 export const useInventoryContext = () => {
   const context = use(InventoryContext);
   if (context === undefined) {
@@ -37,6 +43,11 @@ export const useInventoryContext = () => {
   return context;
 };
 
+/**
+ * Provider component for global inventory state.
+ * Handles fetching inventory data from Supabase, managing real-time subscriptions,
+ * and maintaining collaborative presence data.
+ */
 export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {

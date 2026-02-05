@@ -18,6 +18,13 @@ import type { AlertContextType } from "@/types/alert";
 
 const AlertContext = createContext<AlertContextType | undefined>(undefined);
 
+/**
+ * Hook to access the global alert system.
+ * Must be used within an AlertProvider.
+ *
+ * @returns {AlertContextType} The alert context value.
+ * @throws {Error} if used outside of AlertProvider.
+ */
 export const useAlert = () => {
   const context = use(AlertContext);
   if (context === undefined) {
@@ -36,6 +43,13 @@ function SlideTransition(props: SlideProps) {
   return <Slide {...props} direction="up" />;
 }
 
+/**
+ * Provider component for the global alert system.
+ * Manages snackbar state and provides methods to show different alert severities.
+ *
+ * @param {Object} props - Component props.
+ * @param {ReactNode} props.children - Child components to be wrapped.
+ */
 export const AlertProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {

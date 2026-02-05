@@ -10,6 +10,11 @@ const supabasePublishableKey =
   (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string) ||
   "placeholder-key";
 
+/**
+ * Centralized Supabase client instance.
+ * Configured with auto-refresh and persistence for seamless session management.
+ * Uses environment variables for URL and Publishable Key.
+ */
 export const supabase = createClient<Database>(
   supabaseUrl,
   supabasePublishableKey,

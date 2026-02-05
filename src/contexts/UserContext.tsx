@@ -30,6 +30,12 @@ export const UserContext = createContext<
   (UserContextType & { session: Session | null }) | undefined
 >(undefined);
 
+/**
+ * Hook to access user settings, profile, and preferences.
+ *
+ * @returns {UserContextType} The user context value.
+ * @throws {Error} if used outside of UserProvider.
+ */
 export const useUserContext = () => {
   const context = use(UserContext);
   if (context === undefined) {
@@ -38,6 +44,10 @@ export const useUserContext = () => {
   return context;
 };
 
+/**
+ * Provider component for user-specific settings and profile data.
+ * Manages fetching and persisting user preferences to Supabase.
+ */
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {

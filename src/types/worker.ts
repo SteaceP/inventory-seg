@@ -3,6 +3,7 @@
  */
 import type { Ai, D1Database } from "@cloudflare/workers-types";
 
+/** Environment variables and bindings for the Cloudflare Worker */
 export interface Env {
   BREVO_API_KEY: string;
   BREVO_SENDER_EMAIL: string;
@@ -11,13 +12,18 @@ export interface Env {
   VAPID_PUBLIC_KEY: string;
   VAPID_PRIVATE_KEY: string;
   fetch: typeof fetch;
+  /** Custom CORS origin if set */
   ALLOWED_ORIGIN?: string;
   SENTRY_DSN: string;
+  /** Cloudflare Hyperdrive connection to Supabase */
   HYPERDRIVE: { connectionString: string };
+  /** D1 database instance for local state if needed */
   DB: D1Database;
+  /** AI Service binding for Llama analysis */
   AI_SERVICE: Ai;
 }
 
+/** Payload for low stock notification requests */
 export interface RequestBody {
   itemName: string;
   currentStock: number;
@@ -26,6 +32,7 @@ export interface RequestBody {
   userId: string;
 }
 
+/** Web Push subscription object format */
 export interface PushSubscription {
   endpoint: string;
   keys: {
@@ -34,6 +41,7 @@ export interface PushSubscription {
   };
 }
 
+/** Database representation of a push subscription */
 export interface PushSubscriptionRow {
   id: string;
   user_id: string;
@@ -42,22 +50,26 @@ export interface PushSubscriptionRow {
   created_at: string;
 }
 
+/** Options for sending transactional emails */
 export interface EmailOptions {
   to: string;
   subject: string;
   htmlContent: string;
 }
 
+/** Individual message in the worker's AI context */
 export interface WorkerAssistantMessage {
   role: string;
   content: string;
 }
 
+/** Request payload for AI-powered assistant features */
 export interface WorkerChatRequest {
   messages: WorkerAssistantMessage[];
   language?: string;
 }
 
+/** Parameters for creating/updating products via worker */
 export interface ProductParams {
   name: string;
   category?: string;
@@ -66,6 +78,7 @@ export interface ProductParams {
   notes?: string;
 }
 
+/** Parameters for creating/updating appliances via worker */
 export interface ApplianceParams {
   name: string;
   brand?: string;
@@ -75,6 +88,7 @@ export interface ApplianceParams {
   notes?: string;
 }
 
+/** Input for sending a push notification */
 export interface PushOptions {
   userId: string;
   title: string;
@@ -84,6 +98,7 @@ export interface PushOptions {
   requireInteraction?: boolean;
 }
 
+/** Standard Web Push API message structure */
 export interface PushData {
   title: string;
   body: string;
@@ -97,6 +112,7 @@ export interface PushData {
   };
 }
 
+/** Standard error response format for API endpoints */
 export interface ApiResponseError {
   error?: string;
   errorType?: string;
