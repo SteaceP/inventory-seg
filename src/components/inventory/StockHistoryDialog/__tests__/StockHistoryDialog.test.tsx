@@ -1,17 +1,11 @@
 import { screen, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { createMockTranslation } from "@test/mocks";
 import { render } from "@test/test-utils";
 
 import StockHistoryDialog from "../StockHistoryDialog";
 
 // Mock dependencies
-
-const { t } = createMockTranslation();
-vi.mock("@i18n", () => ({
-  useTranslation: () => ({ t }),
-}));
 
 const mockHandleError = vi.fn();
 vi.mock("@hooks/useErrorHandler", () => ({
@@ -28,8 +22,7 @@ vi.mock("@utils/activityUtils", () => ({
   getStockChange: vi.fn(() => null),
 }));
 
-// Mock Supabase
-const { mockFrom, mockLimit, mockIn } = vi.hoisted(() => {
+const { mockFrom, mockLimit, mockIn, mockT } = vi.hoisted(() => {
   const builder = {
     select: vi.fn().mockReturnThis(),
     eq: vi.fn().mockReturnThis(),
@@ -46,6 +39,7 @@ const { mockFrom, mockLimit, mockIn } = vi.hoisted(() => {
     mockFrom: vi.fn(() => builder),
     mockLimit: builder.limit,
     mockIn: builder.in,
+    mockT: vi.fn((key: string) => key),
   };
 });
 
@@ -53,6 +47,10 @@ vi.mock("@/supabaseClient", () => ({
   supabase: {
     from: mockFrom,
   },
+}));
+
+vi.mock("@/i18n", () => ({
+  useTranslation: () => ({ t: mockT, lang: "en" }),
 }));
 
 describe("StockHistoryDialog", () => {
