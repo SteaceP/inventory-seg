@@ -3,28 +3,21 @@ import { motion } from "framer-motion";
 import { useTranslation } from "@/i18n";
 import { useUserContext } from "@contexts/UserContext";
 import { supabase } from "@/supabaseClient";
-import { useNavigate, useLocation, Link as RouterLink } from "react-router-dom";
-import type { Language } from "@/types/user";
-import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
+import { useNavigate, useLocation } from "react-router-dom";
+import { type TurnstileInstance } from "@marsidev/react-turnstile";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { usePerformance } from "@hooks/usePerformance";
 import { logInfo } from "@utils/errorReporting";
 import TwoFactorVerification from "@/components/auth/TwoFactorVerification";
+import LoginHeader from "@/components/auth/LoginHeader";
+import LoginForm from "@/components/auth/LoginForm";
+import LoginFooter from "@/components/auth/LoginFooter";
+import LanguageSwitcher from "@/components/auth/LanguageSwitcher";
 import type { AuthMFAChallengeResponse } from "@supabase/supabase-js";
 
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
-import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
-import IconButton from "@mui/material/IconButton";
-import TextField from "@mui/material/TextField";
-import InputAdornment from "@mui/material/InputAdornment";
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import Link from "@mui/material/Link";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 interface LocationState {
   from?: {
@@ -63,6 +56,7 @@ const Login: React.FC = () => {
     undefined
   );
   const turnstileRef = React.useRef<TurnstileInstance>(null);
+
   const handleLogin = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -190,24 +184,7 @@ const Login: React.FC = () => {
               borderRadius: "16px",
             }}
           >
-            <Box
-              sx={{
-                mb: 3,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <Box
-                component="img"
-                src="/logo-secondary.svg"
-                sx={{ width: 120, height: "auto", mb: 2 }}
-                alt="Logo"
-              />
-              <Typography variant="h5" fontWeight="bold" color="text.primary">
-                {t("login.signIn")}
-              </Typography>
-            </Box>
+            <LoginHeader title={t("login.signIn")} />
 
             <Box
               component="form"
@@ -225,145 +202,50 @@ const Login: React.FC = () => {
                   error={mfaError}
                 />
               ) : (
-                <>
-                  <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="email"
-                    label={t("login.email")}
-                    name="email"
-                    autoComplete="email"
-                    autoFocus
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    sx={{ mb: 2 }}
-                  />
-                  <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="password"
-                    label={t("login.password")}
-                    type={showPassword ? "text" : "password"}
-                    id="password"
-                    autoComplete="current-password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    slotProps={{
-                      input: {
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton
-                              aria-label={t("common.togglePassword")}
-                              onClick={() => setShowPassword(!showPassword)}
-                              edge="end"
-                            >
-                              {showPassword ? (
-                                <VisibilityOff />
-                              ) : (
-                                <Visibility />
-                              )}
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      },
-                    }}
-                    sx={{ mb: 3 }}
-                  />
-
-                  <Box
-                    sx={{ mb: 3, display: "flex", justifyContent: "center" }}
-                  >
-                    <Turnstile
-                      key={TURNSTILE_SITE_KEY}
-                      ref={turnstileRef}
-                      siteKey={TURNSTILE_SITE_KEY}
-                      onSuccess={(token) => setCaptchaToken(token)}
-                      onError={() => {
-                        setCaptchaToken(undefined);
-                        handleError(
-                          new Error("CAPTCHA Error"),
-                          t("common.captchaError") || "CAPTCHA failed"
-                        );
-                      }}
-                      onExpire={() => setCaptchaToken(undefined)}
-                    />
-                  </Box>
-
-                  <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    disabled={
-                      loading || (!captchaToken && !import.meta.env.DEV)
-                    }
-                    sx={{
-                      py: 1.5,
-                      fontSize: "1rem",
-                      fontWeight: "bold",
-                      boxShadow: "0 4px 14px 0 rgba(88, 166, 255, 0.39)",
-                    }}
-                  >
-                    {loading ? t("login.signingIn") : t("login.signIn")}
-                  </Button>
-                </>
+                <LoginForm
+                  email={email}
+                  onEmailChange={setEmail}
+                  password={password}
+                  onPasswordChange={setPassword}
+                  showPassword={showPassword}
+                  onTogglePassword={() => setShowPassword(!showPassword)}
+                  loading={loading}
+                  captchaToken={captchaToken}
+                  onCaptchaSuccess={setCaptchaToken}
+                  onCaptchaError={() => {
+                    setCaptchaToken(undefined);
+                    handleError(
+                      new Error("CAPTCHA Error"),
+                      t("common.captchaError") || "CAPTCHA failed"
+                    );
+                  }}
+                  onCaptchaExpire={() => setCaptchaToken(undefined)}
+                  turnstileRef={turnstileRef}
+                  turnstileSiteKey={TURNSTILE_SITE_KEY}
+                  labels={{
+                    email: t("login.email"),
+                    password: t("login.password"),
+                    togglePassword: t("common.togglePassword"),
+                    signIn: t("login.signIn"),
+                    signingIn: t("login.signingIn"),
+                    captchaError: t("common.captchaError"),
+                  }}
+                  isDev={import.meta.env.DEV}
+                />
               )}
             </Box>
 
-            <Typography
-              variant="body2"
-              sx={{ mt: 3, mb: 1, color: "text.secondary" }}
-            >
-              {t("login.noAccount")}{" "}
-              <Link
-                component={RouterLink}
-                to="/signup"
-                fontWeight="bold"
-                sx={{ cursor: "pointer" }}
-              >
-                {t("login.noAccountLink")}
-              </Link>
-            </Typography>
+            {!mfaRequired && (
+              <LoginFooter
+                noAccountText={t("login.noAccount")}
+                noAccountLinkText={t("login.noAccountLink")}
+              />
+            )}
 
-            <Box
-              sx={{
-                mt: 2,
-                display: "flex",
-                justifyContent: "center",
-                width: "100%",
-              }}
-            >
-              <ToggleButtonGroup
-                value={language}
-                exclusive
-                onChange={(_e, val: string | null) => {
-                  if (val) void setLanguage(val as Language);
-                }}
-                size="small"
-                aria-label="language switcher"
-                sx={{
-                  "& .MuiToggleButton-root": {
-                    px: 2,
-                    py: 0.5,
-                    fontSize: "0.75rem",
-                    fontWeight: "bold",
-                    textTransform: "uppercase",
-                    borderColor: "divider",
-                    "&.Mui-selected": {
-                      backgroundColor: "primary.main",
-                      color: "primary.contrastText",
-                      "&:hover": {
-                        backgroundColor: "primary.dark",
-                      },
-                    },
-                  },
-                }}
-              >
-                <ToggleButton value="fr">FR</ToggleButton>
-                <ToggleButton value="en">EN</ToggleButton>
-              </ToggleButtonGroup>
-            </Box>
+            <LanguageSwitcher
+              language={language}
+              onLanguageChange={setLanguage}
+            />
           </Paper>
         </motion.div>
       </Box>

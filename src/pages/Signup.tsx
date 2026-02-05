@@ -4,7 +4,6 @@ import { useTranslation } from "@/i18n";
 import { useUserContext } from "@contexts/UserContext";
 import { supabase } from "@/supabaseClient";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
-import type { Language } from "@/types/user";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { usePerformance } from "@hooks/usePerformance";
@@ -18,8 +17,6 @@ import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Link from "@mui/material/Link";
 import Alert from "@mui/material/Alert";
 import Visibility from "@mui/icons-material/Visibility";
@@ -36,6 +33,9 @@ if (!TURNSTILE_SITE_KEY) {
     "[Turnstile] Warning: VITE_TURNSTILE_SITE_KEY is not defined. Falling back to test key."
   );
 }
+
+import LoginHeader from "@/components/auth/LoginHeader";
+import LanguageSwitcher from "@/components/auth/LanguageSwitcher";
 
 const Signup: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -191,24 +191,7 @@ const Signup: React.FC = () => {
               borderRadius: "16px",
             }}
           >
-            <Box
-              sx={{
-                mb: 3,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <Box
-                component="img"
-                src="/logo-secondary.svg"
-                sx={{ width: 120, height: "auto", mb: 2 }}
-                alt="Logo"
-              />
-              <Typography variant="h5" fontWeight="bold" color="text.primary">
-                {t("signup.title")}
-              </Typography>
-            </Box>
+            <LoginHeader title={t("signup.title")} />
 
             <Box
               component="form"
@@ -316,44 +299,10 @@ const Signup: React.FC = () => {
               </Link>
             </Typography>
 
-            <Box
-              sx={{
-                mt: 2,
-                display: "flex",
-                justifyContent: "center",
-                width: "100%",
-              }}
-            >
-              <ToggleButtonGroup
-                value={language}
-                exclusive
-                onChange={(_e, val: string | null) => {
-                  if (val) void setLanguage(val as Language);
-                }}
-                size="small"
-                aria-label="language switcher"
-                sx={{
-                  "& .MuiToggleButton-root": {
-                    px: 2,
-                    py: 0.5,
-                    fontSize: "0.75rem",
-                    fontWeight: "bold",
-                    textTransform: "uppercase",
-                    borderColor: "divider",
-                    "&.Mui-selected": {
-                      backgroundColor: "primary.main",
-                      color: "primary.contrastText",
-                      "&:hover": {
-                        backgroundColor: "primary.dark",
-                      },
-                    },
-                  },
-                }}
-              >
-                <ToggleButton value="fr">FR</ToggleButton>
-                <ToggleButton value="en">EN</ToggleButton>
-              </ToggleButtonGroup>
-            </Box>
+            <LanguageSwitcher
+              language={language}
+              onLanguageChange={setLanguage}
+            />
           </Paper>
         </motion.div>
       </Box>
