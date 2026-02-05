@@ -7,9 +7,11 @@ import Button from "@mui/material/Button";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Turnstile } from "@marsidev/react-turnstile";
-import type { LoginFormProps } from "@/types/auth";
+import type { SignupFormProps } from "@/types/auth";
 
-const LoginForm: React.FC<LoginFormProps> = ({
+const SignupForm: React.FC<SignupFormProps> = ({
+  displayName,
+  onDisplayNameChange,
   email,
   onEmailChange,
   password,
@@ -32,11 +34,23 @@ const LoginForm: React.FC<LoginFormProps> = ({
         margin="normal"
         required
         fullWidth
+        id="displayName"
+        label={labels.displayName}
+        name="displayName"
+        autoComplete="name"
+        autoFocus
+        value={displayName}
+        onChange={(e) => onDisplayNameChange(e.target.value)}
+        sx={{ mb: 2 }}
+      />
+      <TextField
+        margin="normal"
+        required
+        fullWidth
         id="email"
         label={labels.email}
         name="email"
         autoComplete="email"
-        autoFocus
         value={email}
         onChange={(e) => onEmailChange(e.target.value)}
         sx={{ mb: 2 }}
@@ -49,7 +63,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
         label={labels.password}
         type={showPassword ? "text" : "password"}
         id="password"
-        autoComplete="current-password"
+        autoComplete="new-password"
         value={password}
         onChange={(e) => onPasswordChange(e.target.value)}
         slotProps={{
@@ -93,10 +107,10 @@ const LoginForm: React.FC<LoginFormProps> = ({
           boxShadow: "0 4px 14px 0 rgba(88, 166, 255, 0.39)",
         }}
       >
-        {loading ? labels.signingIn : labels.signIn}
+        {loading ? labels.creatingAccount : labels.createAccount}
       </Button>
     </>
   );
 };
 
-export default LoginForm;
+export default SignupForm;

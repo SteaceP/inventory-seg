@@ -3,24 +3,21 @@ import { motion } from "framer-motion";
 import { useTranslation } from "@/i18n";
 import { useUserContext } from "@contexts/UserContext";
 import { supabase } from "@/supabaseClient";
-import { useNavigate, Link as RouterLink } from "react-router-dom";
-import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
+import { useNavigate } from "react-router-dom";
+import { type TurnstileInstance } from "@marsidev/react-turnstile";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { usePerformance } from "@hooks/usePerformance";
 import { logInfo } from "@utils/errorReporting";
 
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
-import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
-import IconButton from "@mui/material/IconButton";
-import TextField from "@mui/material/TextField";
-import InputAdornment from "@mui/material/InputAdornment";
-import Link from "@mui/material/Link";
-import Alert from "@mui/material/Alert";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
+
+import LoginHeader from "@/components/auth/LoginHeader";
+import LanguageSwitcher from "@/components/auth/LanguageSwitcher";
+import SignupForm from "@/components/auth/SignupForm";
+import SignupSuccess from "@/components/auth/SignupSuccess";
+import SignupFooter from "@/components/auth/SignupFooter";
 
 // Cloudflare Turnstile Site Key
 // In development, we use the "Always Pass" test key if the environment variable is missing
@@ -33,9 +30,6 @@ if (!TURNSTILE_SITE_KEY) {
     "[Turnstile] Warning: VITE_TURNSTILE_SITE_KEY is not defined. Falling back to test key."
   );
 }
-
-import LoginHeader from "@/components/auth/LoginHeader";
-import LanguageSwitcher from "@/components/auth/LanguageSwitcher";
 
 const Signup: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -53,6 +47,7 @@ const Signup: React.FC = () => {
     undefined
   );
   const turnstileRef = React.useRef<TurnstileInstance>(null);
+
   const handleSignup = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -106,53 +101,14 @@ const Signup: React.FC = () => {
 
   if (success) {
     return (
-      <Container maxWidth="xs">
-        <Box
-          sx={{
-            height: "100dvh",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            overflow: "hidden",
-          }}
-        >
-          <Paper
-            elevation={0}
-            sx={{
-              p: 4,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              background: (theme) =>
-                theme.palette.mode === "dark"
-                  ? "rgba(22, 27, 34, 0.7)"
-                  : "#ffffff",
-              backdropFilter: "blur(20px)",
-              border: "1px solid",
-              borderColor: "divider",
-              borderRadius: "16px",
-              textAlign: "center",
-            }}
-          >
-            <Typography variant="h5" fontWeight="bold" gutterBottom>
-              {t("signup.title")}
-            </Typography>
-            <Alert severity="success" sx={{ mb: 3 }}>
-              {t("signup.success")}
-            </Alert>
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={() => {
-                void navigate("/login");
-              }}
-            >
-              {t("login.signIn")}
-            </Button>
-          </Paper>
-        </Box>
-      </Container>
+      <SignupSuccess
+        title={t("signup.title")}
+        successMessage={t("signup.success")}
+        signInLabel={t("login.signIn")}
+        onSignInClick={() => {
+          void navigate("/login");
+        }}
+      />
     );
   }
 
@@ -200,104 +156,44 @@ const Signup: React.FC = () => {
               }}
               sx={{ width: "100%" }}
             >
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="displayName"
-                label={t("signup.displayName")}
-                name="displayName"
-                autoComplete="name"
-                autoFocus
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                sx={{ mb: 2 }}
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label={t("signup.email")}
-                name="email"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                sx={{ mb: 2 }}
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label={t("signup.password")}
-                type={showPassword ? "text" : "password"}
-                id="password"
-                autoComplete="new-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                slotProps={{
-                  input: {
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label={t("common.togglePassword")}
-                          onClick={() => setShowPassword(!showPassword)}
-                          edge="end"
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  },
+              <SignupForm
+                displayName={displayName}
+                onDisplayNameChange={setDisplayName}
+                email={email}
+                onEmailChange={setEmail}
+                password={password}
+                onPasswordChange={setPassword}
+                showPassword={showPassword}
+                onTogglePassword={() => setShowPassword(!showPassword)}
+                loading={loading}
+                captchaToken={captchaToken}
+                onCaptchaSuccess={setCaptchaToken}
+                onCaptchaError={() => {
+                  setCaptchaToken(undefined);
+                  handleError(
+                    new Error("CAPTCHA Error"),
+                    t("common.captchaError") || "CAPTCHA failed"
+                  );
                 }}
-                sx={{ mb: 3 }}
-              />
-
-              <Box sx={{ mb: 3, display: "flex", justifyContent: "center" }}>
-                <Turnstile
-                  key={TURNSTILE_SITE_KEY}
-                  ref={turnstileRef}
-                  siteKey={TURNSTILE_SITE_KEY}
-                  onSuccess={(token) => setCaptchaToken(token)}
-                  onError={() => {
-                    setCaptchaToken(undefined);
-                    handleError(
-                      new Error("CAPTCHA Error"),
-                      t("common.captchaError") || "CAPTCHA failed"
-                    );
-                  }}
-                  onExpire={() => setCaptchaToken(undefined)}
-                />
-              </Box>
-
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                disabled={loading || (!captchaToken && !import.meta.env.DEV)}
-                sx={{
-                  py: 1.5,
-                  fontSize: "1rem",
-                  fontWeight: "bold",
-                  boxShadow: "0 4px 14px 0 rgba(88, 166, 255, 0.39)",
+                onCaptchaExpire={() => setCaptchaToken(undefined)}
+                turnstileRef={turnstileRef}
+                turnstileSiteKey={TURNSTILE_SITE_KEY}
+                labels={{
+                  displayName: t("signup.displayName"),
+                  email: t("signup.email"),
+                  password: t("signup.password"),
+                  togglePassword: t("common.togglePassword"),
+                  createAccount: t("signup.createAccount"),
+                  creatingAccount: t("signup.creatingAccount"),
                 }}
-              >
-                {loading
-                  ? t("signup.creatingAccount")
-                  : t("signup.createAccount")}
-              </Button>
+                isDev={import.meta.env.DEV}
+              />
             </Box>
 
-            <Typography
-              variant="body2"
-              sx={{ mt: 3, mb: 1, color: "text.secondary" }}
-            >
-              {t("signup.alreadyHaveAccount")}{" "}
-              <Link component={RouterLink} to="/login" fontWeight="bold">
-                {t("login.signIn")}
-              </Link>
-            </Typography>
+            <SignupFooter
+              alreadyHaveAccountText={t("signup.alreadyHaveAccount")}
+              signInText={t("login.signIn")}
+            />
 
             <LanguageSwitcher
               language={language}

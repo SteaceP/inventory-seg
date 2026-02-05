@@ -2,12 +2,8 @@ import React from "react";
 import Box from "@mui/material/Box";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import type { LanguageSwitcherProps } from "@/types/auth";
 import type { Language } from "@/types/user";
-
-interface LanguageSwitcherProps {
-  language: string;
-  onLanguageChange: (language: Language) => void | Promise<void>;
-}
 
 const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
   language,

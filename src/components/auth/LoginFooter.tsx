@@ -3,10 +3,7 @@ import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 import { Link as RouterLink } from "react-router-dom";
 
-interface LoginFooterProps {
-  noAccountText: string;
-  noAccountLinkText: string;
-}
+import type { LoginFooterProps } from "@/types/auth";
 
 const LoginFooter: React.FC<LoginFooterProps> = ({
   noAccountText,
