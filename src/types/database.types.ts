@@ -339,7 +339,7 @@ export type Database = {
           email_alerts: boolean | null
           language: string | null
           low_stock_threshold: number | null
-          mfa_enabled: boolean
+          mfa_enabled: boolean | null
           notifications: boolean | null
           role: string | null
           updated_at: string | null
@@ -353,7 +353,7 @@ export type Database = {
           email_alerts?: boolean | null
           language?: string | null
           low_stock_threshold?: number | null
-          mfa_enabled?: boolean
+          mfa_enabled?: boolean | null
           notifications?: boolean | null
           role?: string | null
           updated_at?: string | null
@@ -367,7 +367,7 @@ export type Database = {
           email_alerts?: boolean | null
           language?: string | null
           low_stock_threshold?: number | null
-          mfa_enabled?: boolean
+          mfa_enabled?: boolean | null
           notifications?: boolean | null
           role?: string | null
           updated_at?: string | null

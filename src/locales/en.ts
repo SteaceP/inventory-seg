@@ -76,6 +76,8 @@ const en = {
   "errors.unexpected": "An unexpected error occurred. Please try again.",
   "errors.network": "Network error. Please check your connection.",
   "errors.unauthorized": "You do not have permission to perform this action.",
+  "errors.rateLimit":
+    "Too many attempts. Please wait a moment before trying again.",
 
   // Login
   "login.title": "Sign in",

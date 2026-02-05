@@ -22,18 +22,28 @@ const getErrorMessage = (
   userMessage: string | undefined,
   t: TFunction
 ): string | undefined => {
-  if (userMessage) return userMessage;
-
   const err = error as ExtendedError;
   const message = err.message || "";
   const code = err.code || "";
+  const status = err.status;
 
-  // 1. CAPTCHA failures
+  // 1. Rate Limiting (429) from Auth Hooks - PRIORITY
+  // Check both status code and specific message
+  if (
+    status === 429 ||
+    message.toLowerCase().includes("please wait a moment")
+  ) {
+    return t("errors.rateLimit");
+  }
+
+  if (userMessage) return userMessage;
+
+  // 2. CAPTCHA failures
   if (message.toLowerCase().includes("captcha verification process failed")) {
     return t("errors.captcha_verification_failed");
   }
 
-  // 2. Network/Fetch issues
+  // 3. Network/Fetch issues
   if (
     message.toLowerCase().includes("failed to fetch") ||
     message.toLowerCase().includes("network error") ||
@@ -42,7 +52,7 @@ const getErrorMessage = (
     return t("errors.network");
   }
 
-  // 3. Supabase/Postgres Error Codes
+  // 4. Supabase/Postgres Error Codes
   switch (code) {
     case "23505": // Unique constraint violation
       return t("errors.duplicateSku");
@@ -54,7 +64,7 @@ const getErrorMessage = (
       return t("errors.login");
   }
 
-  // 4. Fallback to generic if no message was passed at all
+  // 5. Fallback to generic if no message was passed at all
   return t("errors.unexpected");
 };
 

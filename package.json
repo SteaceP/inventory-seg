@@ -140,9 +140,9 @@
     },
     "onlyBuiltDependencies": [
       "@sentry/cli",
-      "@swc/core",
       "esbuild",
       "sharp",
+      "supabase",
       "unrs-resolver",
       "workerd"
     ]

@@ -83,6 +83,8 @@ const fr = {
   "errors.network": "Erreur réseau. Veuillez vérifier votre connexion.",
   "errors.unauthorized":
     "Vous n'avez pas la permission d'effectuer cette action.",
+  "errors.rateLimit":
+    "Trop de tentatives. Veuillez patienter un instant avant de réessayer.",
 
   // Login
   "login.title": "Connexion",
