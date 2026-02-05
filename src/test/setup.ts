@@ -6,7 +6,12 @@ import { setupFramerMotionMock } from "./mocks/framer-motion";
 
 setupFramerMotionMock();
 
-setupFramerMotionMock();
+// Mock Helmet and HelmetProvider to avoid issues with Happy DOM and DOM updates
+vi.mock("@dr.pogodin/react-helmet", () => ({
+  Helmet: ({ children }: { children: React.ReactNode }) => children || null,
+  HelmetProvider: ({ children }: { children: React.ReactNode }) =>
+    children || null,
+}));
 
 /**
  * Global test setup

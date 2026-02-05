@@ -10,7 +10,7 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
-import { HelmetProvider } from "react-helmet-async";
+import { HelmetProvider } from "@dr.pogodin/react-helmet";
 import Layout from "./components/layout/Layout";
 import { useTranslation } from "./i18n";
 import ErrorBoundary from "./components/ErrorBoundary";
