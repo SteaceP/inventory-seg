@@ -262,6 +262,21 @@ export type Database = {
           },
         ]
       }
+      password_failed_verification_attempts: {
+        Row: {
+          last_failed_at: string | null
+          user_id: string
+        }
+        Insert: {
+          last_failed_at?: string | null
+          user_id: string
+        }
+        Update: {
+          last_failed_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       push_subscriptions: {
         Row: {
           created_at: string | null
@@ -380,7 +395,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      hook_password_verification_attempt: {
+        Args: { event: Json }
+        Returns: Json
+      }
     }
     Enums: {
       appliance_status: "functional" | "needs_service" | "broken"
