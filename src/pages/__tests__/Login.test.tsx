@@ -113,7 +113,10 @@ describe("Login Page", () => {
   });
 
   it("handles successful login", async () => {
-    mockSignInWithPassword.mockResolvedValueOnce({ error: null });
+    mockSignInWithPassword.mockResolvedValueOnce({
+      data: { session: { user: { id: "test" } } },
+      error: null,
+    });
     render(<Login />);
 
     fireEvent.change(screen.getByLabelText(/login.email/i), {
@@ -146,7 +149,10 @@ describe("Login Page", () => {
   });
 
   it("handles successful login with captcha", async () => {
-    mockSignInWithPassword.mockResolvedValueOnce({ error: null });
+    mockSignInWithPassword.mockResolvedValueOnce({
+      data: { session: { user: { id: "test" } } },
+      error: null,
+    });
     render(<Login />);
 
     fireEvent.change(screen.getByLabelText(/login.email/i), {

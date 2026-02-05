@@ -1,4 +1,5 @@
 import { AlertProvider } from "./contexts/AlertContext";
+import { AuthProvider } from "./contexts/AuthContext";
 import { UserProvider, useUserContext } from "./contexts/UserContext";
 import { InventoryProvider } from "./contexts/InventoryContext";
 import { useState, useEffect, lazy, Suspense } from "react";
@@ -186,13 +187,15 @@ const App = () => {
     <ErrorBoundary>
       <HelmetProvider>
         <AlertProvider>
-          <UserProvider>
-            <InventoryProvider>
-              <Router>
-                <AppContent />
-              </Router>
-            </InventoryProvider>
-          </UserProvider>
+          <AuthProvider>
+            <UserProvider>
+              <InventoryProvider>
+                <Router>
+                  <AppContent />
+                </Router>
+              </InventoryProvider>
+            </UserProvider>
+          </AuthProvider>
         </AlertProvider>
       </HelmetProvider>
     </ErrorBoundary>

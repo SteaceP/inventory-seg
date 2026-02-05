@@ -61,6 +61,12 @@ vi.mock("@utils/crypto", () => ({
   getExtensionFromMimeType: () => "jpg",
 }));
 
+vi.mock("@hooks/useErrorHandler", () => ({
+  useErrorHandler: () => ({
+    handleError: vi.fn(),
+  }),
+}));
+
 // Mock child components
 vi.mock("@components/settings/ProfileSection", () => ({
   default: () => <div data-testid="profile-section">Profile Section</div>,

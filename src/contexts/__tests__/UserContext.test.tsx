@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, act } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { UserProvider, useUserContext } from "../UserContext";
 
@@ -9,9 +9,7 @@ const mocks = vi.hoisted(() => {
   const showError = vi.fn();
   const handleError = vi.fn();
 
-  // Supabase mock structure
-  const getSession = vi.fn();
-  const onAuthStateChange = vi.fn();
+  // Supabase mock structure (subset needed for settings)
   const from = vi.fn();
   const upsert = vi.fn();
   const select = vi.fn();
@@ -19,18 +17,20 @@ const mocks = vi.hoisted(() => {
   const single = vi.fn();
   const setLanguage = vi.fn();
 
+  // Auth mock
+  const useAuthMock = vi.fn();
+
   return {
     showInfo,
     showError,
     handleError,
-    getSession,
-    onAuthStateChange,
     from,
     upsert,
     select,
     eq,
     single,
     setLanguage,
+    useAuthMock,
   };
 });
 
@@ -48,12 +48,12 @@ vi.mock("../AlertContext", () => ({
   }),
 }));
 
+vi.mock("../AuthContext", () => ({
+  useAuth: mocks.useAuthMock,
+}));
+
 vi.mock("@supabaseClient", () => ({
   supabase: {
-    auth: {
-      getSession: mocks.getSession,
-      onAuthStateChange: mocks.onAuthStateChange,
-    },
     from: mocks.from,
   },
 }));
@@ -62,8 +62,15 @@ const mockSession = {
   user: {
     id: "test-user-id",
     email: "test@example.com",
+    app_metadata: {},
+    user_metadata: {},
+    aud: "authenticated",
+    created_at: "",
   },
   access_token: "token",
+  refresh_token: "refresh",
+  expires_in: 3600,
+  token_type: "bearer",
 };
 
 // Test Component
@@ -90,15 +97,11 @@ describe("UserContext", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // Default happy path mocks
-    mocks.getSession.mockResolvedValue({
-      data: { session: mockSession },
-      error: null,
-    });
-
-    // Return a valid subscription object
-    mocks.onAuthStateChange.mockReturnValue({
-      data: { subscription: { unsubscribe: vi.fn() } },
+    // Default auth state: Loading
+    mocks.useAuthMock.mockReturnValue({
+      session: null,
+      userId: null,
+      loading: true,
     });
 
     // Mock settings fetch chain
@@ -106,6 +109,7 @@ describe("UserContext", () => {
     mocks.from.mockReturnValue({
       select: mocks.select,
       upsert: mocks.upsert,
+      insert: mocks.upsert, // insert acts same as upsert for mock
     });
     mocks.select.mockReturnValue({ eq: mocks.eq });
     mocks.eq.mockReturnValue({ single: mocks.single });
@@ -125,9 +129,7 @@ describe("UserContext", () => {
   });
 
   it("should initialize with loading state", () => {
-    // Delay resolution to catch loading state
-    mocks.getSession.mockReturnValue(new Promise(() => {}));
-
+    // Auth loading is true by default in beforeEach
     render(
       <UserProvider>
         <TestComponent />
@@ -138,14 +140,12 @@ describe("UserContext", () => {
   });
 
   it("should load user session and settings on mount", async () => {
-    // Capture the subscription callback
-    let authCallback: (event: string, session: typeof mockSession) => void;
-    mocks.onAuthStateChange.mockImplementation(
-      (cb: (event: string, session: typeof mockSession) => void) => {
-        authCallback = cb;
-        return { data: { subscription: { unsubscribe: vi.fn() } } };
-      }
-    );
+    // Setup Auth: Logged In
+    mocks.useAuthMock.mockReturnValue({
+      session: mockSession,
+      userId: mockSession.user.id,
+      loading: false,
+    });
 
     render(
       <UserProvider>
@@ -153,30 +153,29 @@ describe("UserContext", () => {
       </UserProvider>
     );
 
-    // Initial load finishes because session exists
+    // Waiting for settings to load
+    // Note: UserContext shows "Loading..." if auth is loading OR (user exists AND settings loading)
+    // Here auth is done, but settings will fetch.
+
+    // Initially might see Loading... while fetching settings
+    expect(screen.getByText("Loading...")).toBeInTheDocument();
+
+    // After fetch completes
     await waitFor(() => {
       expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
     });
 
     expect(screen.getByTestId("user-id")).toHaveTextContent("test-user-id");
-
-    // Manually trigger the auth event to simulate INITIAL_SESSION and fetch settings
-    act(() => {
-      if (authCallback) {
-        authCallback("INITIAL_SESSION", mockSession);
-      }
-    });
-
-    await waitFor(() => {
-      expect(screen.getByTestId("display-name")).toHaveTextContent("Test User");
-      expect(screen.getByTestId("language")).toHaveTextContent("fr");
-    });
+    expect(screen.getByTestId("display-name")).toHaveTextContent("Test User");
+    expect(screen.getByTestId("language")).toHaveTextContent("fr");
   });
 
   it("should handle no session (logged out)", async () => {
-    mocks.getSession.mockResolvedValue({
-      data: { session: null },
-      error: null,
+    // Auth: Logged Out
+    mocks.useAuthMock.mockReturnValue({
+      session: null,
+      userId: null,
+      loading: false,
     });
 
     render(
@@ -191,6 +190,13 @@ describe("UserContext", () => {
   });
 
   it("should update language", async () => {
+    // Auth: Logged In
+    mocks.useAuthMock.mockReturnValue({
+      session: mockSession,
+      userId: mockSession.user.id,
+      loading: false,
+    });
+
     const user = userEvent.setup();
     render(
       <UserProvider>
@@ -214,20 +220,5 @@ describe("UserContext", () => {
       expect.objectContaining({ language: "en", user_id: "test-user-id" }),
       expect.objectContaining({ onConflict: "user_id" })
     );
-  });
-
-  it("should handle error during initialization", async () => {
-    const error = new Error("Init failed");
-    mocks.getSession.mockRejectedValue(error);
-
-    render(
-      <UserProvider>
-        <div>Content</div>
-      </UserProvider>
-    );
-
-    await waitFor(() => {
-      expect(mocks.handleError).toHaveBeenCalledWith(error, expect.any(String));
-    });
   });
 });

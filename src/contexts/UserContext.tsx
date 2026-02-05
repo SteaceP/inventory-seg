@@ -12,6 +12,7 @@ import { supabase } from "@/supabaseClient";
 import { logInfo } from "@utils/errorReporting";
 import { useAlert } from "./AlertContext";
 import { useErrorHandler } from "@hooks/useErrorHandler";
+import { useAuth } from "./AuthContext";
 import type {
   Language,
   UserProfile,
@@ -20,6 +21,7 @@ import type {
 } from "@/types/user";
 import type { Session, PostgrestError } from "@supabase/supabase-js";
 
+// Re-exporting Session for convenience if needed by consumers, though they should ideally use simple types
 export const UserContext = createContext<
   (UserContextType & { session: Session | null }) | undefined
 >(undefined);
@@ -35,8 +37,10 @@ export const useUserContext = () => {
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const { session, userId, loading: authLoading } = useAuth();
   const { showError } = useAlert();
   const { handleError } = useErrorHandler();
+
   const [displayName, setDisplayName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [role, setRole] = useState("user");
@@ -45,11 +49,30 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const [darkMode, setDarkMode] = useState(true);
   const [compactView, setCompactView] = useState(false);
   const [mfaEnabled, setMfaEnabledState] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-  const prevUserIdRef = useRef<string | null>(null);
+
+  // Settings loading state
+  const [settingsLoading, setSettingsLoading] = useState(true);
+
   const profileLoadedRef = useRef(false);
+
+  // Reset state when user logs out
+  useEffect(() => {
+    if (!userId) {
+      profileLoadedRef.current = false;
+      setDisplayName("");
+      setAvatarUrl("");
+      setRole("user");
+      setLanguageState("fr");
+      setDarkMode(true);
+      setCompactView(false);
+      setMfaEnabledState(false);
+      setSettingsLoading(false); // No user means no settings to load
+    } else {
+      // User logged in, start loading settings
+      setSettingsLoading(true);
+    }
+  }, [userId]);
+
   const fetchUserSettings = useCallback(
     async (uid: string) => {
       try {
@@ -106,8 +129,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
               throw insertError;
             }
 
-            // Retry fetch (or just set defaults directly to save a round trip)
-            return fetchUserSettings(uid); // Recursive call to fetch the newly created row
+            // Retry fetch
+            return fetchUserSettings(uid);
           }
           throw error;
         }
@@ -140,91 +163,18 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
           return;
         }
         handleError(err, "Failed to fetch user settings: " + msg);
+      } finally {
+        setSettingsLoading(false);
       }
     },
     [handleError]
   );
 
   useEffect(() => {
-    let isMounted = true;
-
-    const initUser = async () => {
-      try {
-        const {
-          data: { session: initialSession },
-        } = await supabase.auth.getSession();
-
-        if (!isMounted) return; // Component unmounted, skip state updates
-
-        if (initialSession?.user) {
-          setSession(initialSession);
-          setUserId(initialSession.user.id);
-          setLoading(false);
-          // Rely on onAuthStateChange to trigger the fetch, as it covers INITIAL_SESSION
-          // avoiding redundant parallel requests and race conditions
-        } else {
-          setLoading(false);
-        }
-      } catch (err) {
-        // Report to standardized error handler (sentry)
-        handleError(err, "Failed to initialize user session");
-        setLoading(false);
-      }
-    };
-
-    void initUser();
-
-    // Safety net: if loading is still true after 3 seconds, force it to false
-    // This prevents infinite loading states from edge cases
-    const safetyTimeout = setTimeout(() => {
-      setLoading(false);
-    }, 3000);
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, newSession) => {
-      const nextUserId = newSession?.user?.id || null;
-      const prevUserId = prevUserIdRef.current;
-
-      // Only update state if session/user actually changed to avoid unnecessary re-renders
-      // asking React to bail out if values are same
-      setSession(newSession);
-      setUserId(nextUserId);
-
-      prevUserIdRef.current = nextUserId;
-
-      if (nextUserId) {
-        // User is logged in
-        setLoading(false);
-        if (
-          event === "SIGNED_IN" ||
-          event === "INITIAL_SESSION" ||
-          (event === "TOKEN_REFRESHED" &&
-            (nextUserId !== prevUserId || !profileLoadedRef.current))
-        ) {
-          // Fetch settings for new/changed sessions
-          void fetchUserSettings(nextUserId);
-        }
-      } else {
-        // User is logged out
-        profileLoadedRef.current = false;
-        setDisplayName("");
-        setAvatarUrl("");
-        setRole("user");
-        setLanguageState("fr");
-        setDarkMode(true);
-        setCompactView(false);
-        setMfaEnabledState(false);
-        setLoading(false);
-      }
-    });
-
-    return () => {
-      isMounted = false; // Mark component as unmounted
-      clearTimeout(safetyTimeout);
-      subscription.unsubscribe();
-    };
-  }, [fetchUserSettings, handleError]);
+    if (userId) {
+      void fetchUserSettings(userId);
+    }
+  }, [userId, fetchUserSettings]);
 
   const setLanguage = useCallback(
     async (lang: Language) => {
@@ -348,7 +298,9 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       toggleDarkMode,
       toggleCompactView,
       setMfaEnabled,
-      loading,
+      // If we are waiting for auth OR waiting for settings (and we have a user), we are loading.
+      // If auth says no user, then we are not loading settings.
+      loading: authLoading || (!!userId && settingsLoading),
     }),
     [
       displayName,
@@ -367,7 +319,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       toggleDarkMode,
       toggleCompactView,
       setMfaEnabled,
-      loading,
+      authLoading,
+      settingsLoading,
     ]
   );
 
