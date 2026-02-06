@@ -34,13 +34,25 @@ Placeholders in templates follow the `${VAR_NAME}` syntax. The generator script 
 - **Local (dev)**: The `wrangler.template.jsonc` includes an `env.dev` block that overrides certain variables (like `APP_URL` to `localhost`) for safety.
 - **Production (deploy)**: The top-level variables in templates should represent the production state. These are populated from `.dev.vars` or production CI/CD environment variables.
 
-## Secret Management Best Practices
+## Environment Management (4-File System)
 
-To maintain security and generic portability, follow these rules:
+To simplify management, we use exactly 4 environment files:
 
-1. **Build-time Variables (GitHub)**: Use these for data required to generate `package.json` and `wrangler.jsonc` (e.g., URLs, Repo Names, Infrastructure IDs). These are injected into the final files.
-2. **Runtime Secrets (Cloudflare)**: Use these for sensitive API keys and credentials (e.g., `SUPABASE_SECRET_KEY`, `BREVO_API_KEY`). These should **NEVER** be in templates or generated files.
-3. **Local Development**:
-   - Use `.env.local` for client-side variables (`VITE_*`).
-   - Use `.dev.vars` for server-side secrets during local `wrangler dev` execution.
-4. **Validation**: The `prepare-configs.js` script enforces that all placeholders have values. If a new placeholder is added to a template, it must be provided at build time.
+1.  **`.env.example`**: The blueprint/template. Tracked in Git.
+2.  **`.env.local`**: Everything for local development (Vite + local Worker). Ignored.
+3.  **`.act.env`**: Local simulation of CI/CD for GitHub Actions and `act`. Ignored.
+4.  **`.prod.vars`**: Production-only infrastructure IDs and secrets. Ignored.
+
+### Loading Priority (prepare-configs.js)
+The generator script loads variables in this order (last wins):
+1.  `.env.example` (Blueprint)
+2.  `.env.local` (Development)
+3.  `.act.env` (Only if `process.env.CI` or `process.env.ACT` is true)
+4.  `.prod.vars` (Production)
+5.  `process.env` (System overrides/GitHub Secrets)
+
+### Secret Management
+- **Local Dev**: Use `.env.local`.
+- **Local CI Testing**: Use `.act.env`.
+- **Production Infrastructure**: Use `.prod.vars` for IDs and secrets not handled by Cloudflare UI.
+- **GitHub Actions**: Use Repository Secrets; they are picked up via `process.env` by the generator script.

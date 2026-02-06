@@ -32,12 +32,15 @@ function loadEnvFile(filePath) {
   });
   return env;
 }
+const isCI =
+  process.env.GITHUB_ACTIONS === "true" || process.env.ACT === "true";
 
 const env = {
-  ...loadEnvFile(path.join(rootDir, ".env.example")),
-  ...loadEnvFile(path.join(rootDir, ".env.local")),
-  ...loadEnvFile(path.join(rootDir, ".dev.vars")),
-  ...process.env,
+  ...loadEnvFile(path.join(rootDir, ".env.example")), // Blueprint
+  ...loadEnvFile(path.join(rootDir, ".env.local")), // Development
+  ...(isCI ? loadEnvFile(path.join(rootDir, ".act.env")) : {}), // CI / Local ACT
+  ...loadEnvFile(path.join(rootDir, ".prod.vars")), // Production Infrastructure
+  ...process.env, // Final Overrides
 };
 
 // Derive extracted values

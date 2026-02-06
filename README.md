@@ -66,37 +66,24 @@ A standalone inventory management application built with a modern tech stack, de
    pnpm install
    ```
 
-4. Configure environment variables:
-
-   **Important**: Never commit real secrets to version control!
-
+4. **Configure environment variables**:
    Create a `.env.local` file in the root directory (ignored by git):
 
    ```bash
    cp .env.example .env.local
    ```
 
-   Then, edit `.env.local` with your own Supabase credentials:
+   Then, edit `.env.local` with your credentials (both public `VITE_` vars and private worker secrets):
 
    ```env
-   # App Customization
-   VITE_APP_NAME="Inventory System"
-   VITE_COMPANY_NAME="Acme Corp"
-   VITE_COMPANY_URL="https://acme.org"
-
    # Supabase
    VITE_SUPABASE_URL=https://your-project.supabase.co
    VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key_here
-   
+   SUPABASE_SECRET_KEY=your_service_role_key_here
+
    # Push Notifications
    VITE_VAPID_PUBLIC_KEY=your_vapid_public_key_here
-   ```
-
-   **Local Development with Secrets**: For the worker to work locally with secrets, create a `.dev.vars` file in the root (gitignored):
-   ```properties
-   SUPABASE_SECRET_KEY="your_secret_key"
-   BREVO_API_KEY="your_api_key"
-   VAPID_PRIVATE_KEY="your_private_key"
+   VAPID_PRIVATE_KEY=your_private_key_here
    ```
 
    **NEVER** use `VITE_SUPABASE_SECRET_KEY` in client-side code!
@@ -186,9 +173,16 @@ To set a secret via CLI:
 pnpm dlx wrangler secret put SUPABASE_SECRET_KEY
 ```
 
-#### 3. Local Development (`.env.local` & `.dev.vars`)
--   **`.env.local`**: Use for `VITE_` variables. See `.env.example` for a template.
--   **`.dev.vars`**: Use for local worker secrets (e.g., `SUPABASE_SECRET_KEY`) when running `pnpm run dev`.
+#### 3. Local Development (`.env.local`)
+-   **`.env.local`**: Consolidated file for all local variables. This includes `VITE_` variables for the frontend and worker secrets (e.g., `SUPABASE_SECRET_KEY`) for local `pnpm run dev`.
+
+> [!TIP]
+> Use `.env.example` as a template for your `.env.local`.
+
+#### 4. Local CI Testing (`act`)
+You can simulate the GitHub Actions environment locally using [act](https://github.com/nektos/act). We use a consolidated `.act.env` file (ignored by git) for both secrets and variables.
+
+For multi-OS installation guides and detailed usage, see [07-local-testing.md](.agent/rules/07-local-testing.md).
 
 ### Pre-deployment Security Checklist
 

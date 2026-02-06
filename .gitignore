@@ -36,12 +36,16 @@ wrangler.jsonc
 # ======================
 # Environment Variables
 # ======================
-.env
+# Use for development secrets (MUI, Supabase local, etc.)
 .env.local
-.env.test
-.env.test.local
-.env.production
-.env.production.local
+
+# Use for local GitHub Actions simulation (act)
+.act.env
+
+# Use for production infrastructure (Cloudflare secrets/IDs)
+.prod.vars
+
+# Legacy/Sentry
 .env.sentry-build-plugin
 
 # ======================
