@@ -43,10 +43,10 @@ jobs:
           BREVO_SENDER_EMAIL: ${{ vars.BREVO_SENDER_EMAIL }}
           SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
           # Production Infra (for wrangler.jsonc generation)
-          HYPERDRIVE_ID: ${{ secrets.HYPERDRIVE_ID }}
+          HYPERDRIVE_ID: ${{ secrets.HYPERDRIVE_ID || vars.HYPERDRIVE_ID }}
           HYPERDRIVE_LOCAL_CONNECTION_STRING: ${{ vars.HYPERDRIVE_LOCAL_CONNECTION_STRING }}
-          D1_DATABASE_NAME: ${{ secrets.D1_DATABASE_NAME }}
-          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+          D1_DATABASE_NAME: ${{ vars.D1_DATABASE_NAME }}
+          D1_DATABASE_ID: ${{ vars.D1_DATABASE_ID }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -102,7 +102,7 @@ jobs:
           VAPID_PUBLIC_KEY: ${{ vars.VITE_VAPID_PUBLIC_KEY }}
           BREVO_SENDER_EMAIL: ${{ vars.BREVO_SENDER_EMAIL }}
           SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
-          HYPERDRIVE_ID: ${{ vars.HYPERDRIVE_ID }}
+          HYPERDRIVE_ID: ${{ secrets.HYPERDRIVE_ID || vars.HYPERDRIVE_ID }}
           HYPERDRIVE_LOCAL_CONNECTION_STRING: ${{ vars.HYPERDRIVE_LOCAL_CONNECTION_STRING }}
           D1_DATABASE_NAME: ${{ vars.D1_DATABASE_NAME }}
           D1_DATABASE_ID: ${{ vars.D1_DATABASE_ID }}

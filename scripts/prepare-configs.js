@@ -70,13 +70,15 @@ function processTemplate(templateName, outputName) {
   // Replace ${VAR_NAME} placeholders
   content = content.replace(/\$\{([A-Z0-9_]+)\}/g, (match, varName) => {
     // Check environment variables (both standard and VITE_ prefixed)
-    const value = env[varName] || env[`VITE_${varName}`];
+    const hasVar = varName in env;
+    const hasViteVar = `VITE_${varName}` in env;
 
-    if (value === undefined) {
+    if (!hasVar && !hasViteVar) {
       missingVars.push(varName);
       return match;
     }
-    return value;
+
+    return env[varName] !== undefined ? env[varName] : env[`VITE_${varName}`];
   });
 
   if (missingVars.length > 0) {
