@@ -25,8 +25,8 @@ export async function sendEmail(
     },
     body: JSON.stringify({
       sender: {
-        name: "Inventaire SEG",
-        email: env.BREVO_SENDER_EMAIL || "noreply@coderage.pro",
+        name: env.COMPANY_NAME || "Inventory System",
+        email: env.BREVO_SENDER_EMAIL,
       },
       to: [{ email: options.to }],
       subject: options.subject,

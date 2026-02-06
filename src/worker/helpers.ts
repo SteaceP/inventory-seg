@@ -2,9 +2,7 @@
  * Response and security helper utilities for the Cloudflare Worker
  */
 
-interface Env {
-  ALLOWED_ORIGIN?: string;
-}
+import type { Env } from "./types";
 
 /**
  * Returns security headers for responses
@@ -34,11 +32,13 @@ export function createResponse(
   request: Request
 ): Response {
   const origin = request.headers.get("Origin") || "";
+  // Build list of allowed origins from APP_URL and ALLOWED_ORIGIN
   const allowedOrigins = [
-    env.ALLOWED_ORIGIN,
-    "https://inv.coderage.pro",
-    "https://inventory-seg.pages.dev",
-  ].filter(Boolean);
+    env.APP_URL,
+    ...(env.ALLOWED_ORIGIN?.split(",") || []),
+  ]
+    .filter(Boolean)
+    .map((o) => o.trim());
 
   const finalOrigin =
     allowedOrigins.includes("*") || allowedOrigins.length === 0

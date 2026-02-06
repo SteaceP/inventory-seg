@@ -5,7 +5,7 @@ import { useTranslation } from "../i18n";
 interface SEOProps {
   /**
    * Page-specific title suffix (e.g., "Dashboard", "Inventory")
-   * Will be combined with app title to form: "Dashboard | SEG Inventory" or "Tableau de bord | Inventaire SEG"
+   * Will be combined with app title to form: `Dashboard | ${import.meta.env.VITE_APP_NAME}`
    */
   title?: string;
   /**

@@ -1,11 +1,6 @@
-<p align="center">
-  <b>English</b> | 
-  <a href="README.fr.md">Français</a>
-</p>
+# Modern Inventory Management System
 
-# SEG Inventory
-
-An inventory management application for La Société Emmanuel-Grégoire, entirely independent of the main intranet/extranet, built with a modern tech stack, designed for efficiency, clarity, and real-time synchronization.
+A standalone inventory management application built with a modern tech stack, designed for efficiency, clarity, and real-time synchronization. This project is designed to be easily configurable and forkable via environment variables.
 
 ## ✨ Features
 
@@ -54,17 +49,24 @@ An inventory management application for La Société Emmanuel-Grégoire, entirel
 1. Clone the repo:
 
    ```bash
-   git clone https://github.com/steace/inventory-seg.git
-   cd inventory-seg
+   git clone https://github.com/your-username/inventory-system.git
+   cd inventory-system
    ```
 
-2. Install dependencies:
+2. **Prepare Configuration Files**:
+   Generate `package.json` and `wrangler.jsonc` from templates using environment variables:
+
+   ```bash
+   node scripts/prepare-configs.js
+   ```
+
+3. **Install dependencies**:
 
    ```bash
    pnpm install
    ```
 
-3. Configure environment variables:
+4. Configure environment variables:
 
    **Important**: Never commit real secrets to version control!
 
@@ -77,10 +79,24 @@ An inventory management application for La Société Emmanuel-Grégoire, entirel
    Then, edit `.env.local` with your own Supabase credentials:
 
    ```env
+   # App Customization
+   VITE_APP_NAME="Inventory System"
+   VITE_COMPANY_NAME="Acme Corp"
+   VITE_COMPANY_URL="https://acme.org"
+
+   # Supabase
    VITE_SUPABASE_URL=https://your-project.supabase.co
    VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key_here
+   
+   # Push Notifications
    VITE_VAPID_PUBLIC_KEY=your_vapid_public_key_here
-   VITE_VAPID_PRIVATE_KEY=your_vapid_private_key_here
+   ```
+
+   **Local Development with Secrets**: For the worker to work locally with secrets, create a `.dev.vars` file in the root (gitignored):
+   ```properties
+   SUPABASE_SECRET_KEY="your_secret_key"
+   BREVO_API_KEY="your_api_key"
+   VAPID_PRIVATE_KEY="your_private_key"
    ```
 
    **NEVER** use `VITE_SUPABASE_SECRET_KEY` in client-side code!
@@ -96,17 +112,22 @@ An inventory management application for La Société Emmanuel-Grégoire, entirel
 
 ## 🚀 Deployment
 
-### Cloudflare Pages + Workers
+### Cloudflare Workers with Assets
 
-This application is designed to be deployed on Cloudflare Pages with a Cloudflare Worker for the backend API.
+This application is deployed as a single Cloudflare Worker using the **Workers with Assets** feature (no separate Cloudflare Pages project required).
 
-1. **Build the application:**
+1. **Configure Environment Variables**:
+   Set your production variables in the Cloudflare Dashboard (Settings -> Variables) or in `wrangler.jsonc` (not recommended for secrets).
+
+2. **Deploy via Wrangler**:
 
    ```bash
-   pnpm run build
+   pnpm run deploy
    ```
 
-2. **Set Cloudflare Worker secrets** (NEVER commit these to version control):
+   This command runs `pnpm run build` and then `wrangler deploy` to publish both the worker logic and the static assets.
+
+3. **Set Worker Secrets**:
 
    ```bash
    pnpm dlx wrangler secret put SUPABASE_SECRET_KEY
@@ -114,17 +135,60 @@ This application is designed to be deployed on Cloudflare Pages with a Cloudflar
    pnpm dlx wrangler secret put BREVO_API_KEY
    ```
 
-3. **Deploy the Worker:**
+- Deploy with `pnpm run deploy`
+- Your assets are automatically handled in the `dist/client` directory as configured in `wrangler.jsonc`.
 
-   ```bash
-   pnpm dlx wrangler deploy
-   ```
+### 🔐 Configuration & Secret Management
 
-4. **Deploy to Cloudflare Pages:**
-   - Connect your GitHub repo to Cloudflare Pages
-   - Set build command: `pnpm run build`
-   - Set output directory: `dist`
-   - Add environment variables (VITE_* variables only)
+This project is fully genericized. All environment-specific values are injected at build-time or runtime via environment variables and secrets.
+
+#### 1. GitHub Environment (Build-time & CI/CD)
+Configure these in **Settings > Secrets and variables > Actions**. These are required for generating configuration files and building the application.
+
+| Type | Name | Purpose |
+| :--- | :--- | :--- |
+| **Secret** | `CLOUDFLARE_API_TOKEN` | Deployment token for Cloudflare. |
+| **Secret** | `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID. |
+| **Secret** | `SENTRY_AUTH_TOKEN` | Required for uploading source maps. |
+| **Secret** | `HYPERDRIVE_ID` | Production Hyperdrive ID (Binding). |
+| **Secret** | `D1_DATABASE_ID` | Production D1 Database UUID (Binding). |
+| **Secret** | `D1_DATABASE_NAME` | Production D1 Database Name. |
+| **Variable** | `APP_URL` | Production URL (e.g., `https://inv.example.com`). |
+| **Variable** | `ALLOWED_ORIGIN`| Additional CORS origins (separates by comma). |
+| **Variable** | `BREVO_SENDER_EMAIL` | Email address shown as sender. |
+| **Variable** | `GH_USERNAME` | GitHub username for repository links. |
+| **Variable** | `REPO_NAME` | Repository name (e.g., `inventory-seg`). |
+| **Variable** | `PACKAGE_NAME` | Application name in `package.json`. |
+| **Variable** | `WORKER_NAME` | Name of the deployed Cloudflare Worker. |
+| **Variable** | `COMPANY_NAME` | Company name shown in UI and footers. |
+| **Variable** | `ADMIN_EMAIL` | Admin contact for notifications. |
+| **Variable** | `VITE_APP_NAME` | Public application title. |
+| **Variable** | `VITE_COMPANY_NAME` | Public company name. |
+| **Variable** | `VITE_COMPANY_URL` | Public company website URL. |
+| **Variable** | `VITE_SUPABASE_URL` | **Crucial**: Public URL of your Supabase project. |
+| **Variable** | `VITE_SUPABASE_PUBLISHABLE_KEY`| Public anon key for Supabase. |
+| **Variable** | `VITE_VAPID_PUBLIC_KEY` | Public key for browser push notifications. |
+| **Variable** | `VITE_SENTRY_DSN` | Sentry DSN for error reporting. |
+| **Variable** | `VITE_TURNSTILE_SITE_KEY` | (Optional) Cloudflare Turnstile key. |
+
+#### 2. Cloudflare Runtime (Production Secrets)
+These must be set directly on the Cloudflare Worker dashboard (**Settings > Variables**) or via CLI. These are **never** committed and are not part of the build templates.
+
+| Secret Name | Purpose |
+| :--- | :--- |
+| `SUPABASE_SECRET_KEY` | **Service Role** key for backend DB access. |
+| `BREVO_API_KEY` | API key for sending notifications. |
+| `VAPID_PRIVATE_KEY` | Private key for push notification signing. |
+| `SENTRY_DSN` | Sentry DSN for the worker logic. |
+
+To set a secret via CLI:
+```bash
+pnpm dlx wrangler secret put SUPABASE_SECRET_KEY
+```
+
+#### 3. Local Development (`.env.local` & `.dev.vars`)
+-   **`.env.local`**: Use for `VITE_` variables. See `.env.example` for a template.
+-   **`.dev.vars`**: Use for local worker secrets (e.g., `SUPABASE_SECRET_KEY`) when running `pnpm run dev`.
 
 ### Pre-deployment Security Checklist
 
@@ -164,8 +228,4 @@ Core tables include:
 
 ## 🤝 Contributing
 
-This is a personal project, but suggestions and improvements are welcome! Feel free to open an issue or submit a pull request.
-
-## 📄 License
-
-This project is private and intended for personal use. See the [`LICENSE`](./LICENSE) file for more details.
+This project is licensed under the **AGPL-3.0-only** license. See the [`LICENSE`](./LICENSE) file for more details.

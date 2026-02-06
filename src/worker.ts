@@ -30,11 +30,9 @@ export default Sentry.withSentry(
       // Handle CORS preflight
       if (request.method === "OPTIONS") {
         const origin = request.headers.get("Origin") || "";
-        const allowedOrigins = [
-          env.ALLOWED_ORIGIN,
-          "https://inv.coderage.pro",
-          "https://inventory-seg.pages.dev",
-        ].filter(Boolean);
+        const allowedOrigins = [env.ALLOWED_ORIGIN, env.APP_URL].filter(
+          Boolean
+        );
 
         const finalOrigin =
           allowedOrigins.includes("*") || allowedOrigins.length === 0

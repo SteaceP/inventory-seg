@@ -41,7 +41,7 @@ export async function handleAssistantChat(
     };
     const language = languageMap[languageCode] || "English";
 
-    const systemPrompt = `You are Emmanuel, a helpful assistant for the Inventory Management System of La Société Emmanuel-Grégoire. 
+    const systemPrompt = `You are an AI assistant for the Inventory Management System of ${env.COMPANY_NAME}. 
     You help users manage their inventory, appliances, and repairs. 
     The system tracks items like stock, locations, and maintenance history.
     

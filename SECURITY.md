@@ -1,8 +1,3 @@
-<p align="center">
-  <b>English</b> | 
-  <a href="SECURITY.fr.md">Français</a>
-</p>
-
 # Security Policy
 
 ## Supported Versions

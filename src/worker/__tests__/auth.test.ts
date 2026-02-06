@@ -13,11 +13,14 @@ describe("worker/auth", () => {
     BREVO_SENDER_EMAIL: "test@example.com",
     VAPID_PUBLIC_KEY: "test-public-key",
     VAPID_PRIVATE_KEY: "test-private-key",
-    SENTRY_DSN: "https://test@sentry.io/123",
+    SENTRY_DSN: "https://test@sentry.example.com/123",
     fetch: global.fetch,
     HYPERDRIVE: { connectionString: "test" },
     DB: {} as D1Database,
     AI_SERVICE: {} as Ai,
+    APP_URL: "https://app.example.com",
+    COMPANY_NAME: "Test Company",
+    ADMIN_EMAIL: "admin@example.com",
   } as const;
 
   beforeEach(() => {

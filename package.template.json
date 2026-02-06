@@ -1,21 +1,18 @@
 {
-  "name": "seg-inventaire",
+  "name": "${PACKAGE_NAME}",
   "description": "Advanced Inventory Management System, featuring multi-location tracking, AI-driven reordering, and appliance maintenance history.",
   "private": true,
   "version": "0.0.2",
   "license": "AGPL-3.0-only",
-  "author": "Steace Paquette",
-  "github": "SteaceP",
+  "author": "${PACKAGE_AUTHOR}",
+  "github": "${GH_USERNAME}",
   "repository": {
     "type": "git",
-    "url": "https://github.com/SteaceP/inventory-seg.git"
+    "url": "https://github.com/${GH_USERNAME}/${REPO_NAME}.git"
   },
-  "homepage": "https://inv.coderage.pro",
+  "homepage": "${APP_URL}",
   "bugs": {
-    "url": "https://github.com/SteaceP/inventory-seg/issues"
-  },
-  "funding": {
-    "url": "https://github.com/sponsors/SteaceP"
+    "url": "https://github.com/${GH_USERNAME}/${REPO_NAME}/issues"
   },
   "keywords": [
     "inventory",
@@ -33,27 +30,29 @@
     "node": ">=24.0.0"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "analyze": "ANALYZE=true vite build",
-    "complete-check": "pnpm run format && pnpm run lint && pnpm run test:all && pnpm run build",
+    "dev": "node scripts/prepare-configs.js && vite",
+    "build": "node scripts/prepare-configs.js && tsc -b && vite build",
+    "pre-commit": "pnpm run format && pnpm run lint && pnpm run test:all && pnpm run build",
     "vitest-ui": "vitest --ui --coverage.enabled=true --coverage.provider=v8 --coverage.reporter=html --coverage.reporter=lcov",
-    "deploy": "pnpm run build && wrangler deploy --env production",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "preview": "pnpm run build && vite preview",
-    "supabase:start": "supabase start",
-    "supabase:stop": "supabase stop",
-    "supabase:gen-types": "supabase gen types typescript --local > src/types/database.types.ts",
+    "format:check": "prettier --check .",
     "test": "vitest",
+    "test:all": "pnpm run test:run && pnpm run test:worker:run",
     "test:run": "vitest run",
     "test:worker": "vitest --config vitest.worker.config.ts",
     "test:worker:run": "vitest run --config vitest.worker.config.ts",
     "test:coverage": "vitest run --coverage",
-    "format:check": "prettier --check .",
-    "test:all": "pnpm run test:run && pnpm run test:worker:run",
     "worker:tail": "wrangler tail",
-    "generate-vapid": "web-push generate-vapid-keys"
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:gen-types": "supabase gen types typescript --local > src/types/database.types.ts",
+    "deploy": "pnpm run build && wrangler deploy --env production",
+    "prepare-configs": "node scripts/prepare-configs.js",
+    "preview": "pnpm run build && vite preview",
+    "analyze": "ANALYZE=true vite build",
+    "generate-vapid": "web-push generate-vapid-keys",
+    "prepare": "husky"
   },
   "dependencies": {
     "@dr.pogodin/react-helmet": "^3.0.6",
@@ -65,11 +64,11 @@
     "@sentry/cloudflare": "^10.38.0",
     "@sentry/react": "^10.38.0",
     "@sentry/vite-plugin": "^4.9.0",
-    "@supabase/supabase-js": "^2.94.0",
+    "@supabase/supabase-js": "^2.94.1",
     "@types/web-push": "^3.6.4",
     "@vitest/ui": "^3.2.4",
     "@zxing/library": "^0.21.3",
-    "framer-motion": "^12.31.0",
+    "framer-motion": "^12.31.1",
     "postgres": "^3.4.8",
     "qrcode": "^1.5.4",
     "react": "^19.2.4",
@@ -81,16 +80,20 @@
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.23.0",
     "@cloudflare/vitest-pool-workers": "^0.12.9",
-    "@cloudflare/workers-types": "^4.20260203.0",
+    "@cloudflare/workers-types": "^4.20260205.0",
+    "@commitlint/cli": "^20.4.1",
+    "@commitlint/config-conventional": "^20.4.1",
     "@eslint/js": "^9.39.2",
-    "@rollup/plugin-terser": "^0.4.4",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/exec": "^7.1.0",
+    "@semantic-release/git": "^10.0.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "25.2.0",
     "@types/qrcode": "^1.5.6",
-    "@types/react": "^19.2.10",
+    "@types/react": "^19.2.13",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react-swc": "^4.2.3",
     "@vitest/coverage-v8": "^3.2.4",
@@ -105,8 +108,11 @@
     "eslint-plugin-react-x": "^2.9.4",
     "globals": "^17.3.0",
     "happy-dom": "^20.5.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "prettier": "^3.8.1",
     "rollup-plugin-visualizer": "^6.0.5",
+    "semantic-release": "^25.0.3",
     "sharp": "^0.34.5",
     "svgo": "^4.0.0",
     "terser": "^5.46.0",
@@ -131,20 +137,12 @@
     "overrides": {
       "vite": "^7.3.1",
       "rollup": "^4.57.0",
-      "workbox-build>glob": "^13.0.1",
-      "sourcemap-codec": "npm:@jridgewell/sourcemap-codec@^1.4.15",
-      "source-map": "^0.7.4",
       "vitest": "3.2.4",
       "@vitest/ui": "3.2.4",
       "@vitest/coverage-v8": "3.2.4"
-    },
-    "onlyBuiltDependencies": [
-      "@sentry/cli",
-      "esbuild",
-      "sharp",
-      "supabase",
-      "unrs-resolver",
-      "workerd"
-    ]
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,css,md}": ["prettier --write"]
   }
 }

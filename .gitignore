@@ -22,11 +22,14 @@ test_output.txt
 # Dependencies
 # ======================
 node_modules
+package.json
+pnpm-lock.yaml
 
 # ======================
 # Cloudflare
 # ======================
 .wrangler
+wrangler.jsonc
 .dev.vars
 .wrangler.dev.vars*
 

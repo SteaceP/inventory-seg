@@ -14,6 +14,9 @@ export interface Env {
   fetch: typeof fetch;
   /** Custom CORS origin if set */
   ALLOWED_ORIGIN?: string;
+  APP_URL: string;
+  COMPANY_NAME: string;
+  ADMIN_EMAIL: string;
   SENTRY_DSN: string;
   /** Cloudflare Hyperdrive connection to Supabase */
   HYPERDRIVE: { connectionString: string };

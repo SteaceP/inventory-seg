@@ -3,6 +3,8 @@ import { describe, it, expect } from "vitest";
 
 import { getSecurityHeaders, createResponse } from "../helpers";
 
+import type { Env } from "../types";
+
 describe("worker/helpers", () => {
   describe("getSecurityHeaders", () => {
     it("should return correct security headers", () => {
@@ -25,8 +27,9 @@ describe("worker/helpers", () => {
 
   describe("createResponse", () => {
     const mockEnv = {
-      ALLOWED_ORIGIN: "https://allowed.com",
-    };
+      ALLOWED_ORIGIN: "https://allowed.example.com",
+      APP_URL: "https://app.example.com",
+    } as unknown as Env;
 
     it("should create a response with string body", () => {
       const request = new Request("https://api.example.com");
@@ -48,29 +51,29 @@ describe("worker/helpers", () => {
 
     it("should set CORS headers for allowed origin", () => {
       const request = new Request("https://api.example.com", {
-        headers: { Origin: "https://allowed.com" },
+        headers: { Origin: "https://allowed.example.com" },
       });
       const response = createResponse({}, 200, mockEnv, request);
 
       expect(response.headers.get("Access-Control-Allow-Origin")).toBe(
-        "https://allowed.com"
+        "https://allowed.example.com"
       );
     });
 
     it("should set CORS headers for whitelisted origin", () => {
       const request = new Request("https://api.example.com", {
-        headers: { Origin: "https://inv.coderage.pro" },
+        headers: { Origin: "https://app.example.com" },
       });
       const response = createResponse({}, 200, mockEnv, request);
 
       expect(response.headers.get("Access-Control-Allow-Origin")).toBe(
-        "https://inv.coderage.pro"
+        "https://app.example.com"
       );
     });
 
     it("should set CORS headers to null for disallowed origin", () => {
       const request = new Request("https://api.example.com", {
-        headers: { Origin: "https://evil.com" },
+        headers: { Origin: "https://evil.example.com" },
       });
       const response = createResponse({}, 200, mockEnv, request);
 

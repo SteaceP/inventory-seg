@@ -2,5 +2,6 @@ onlyBuiltDependencies:
   - "@sentry/cli"
   - esbuild
   - sharp
+  - supabase
   - unrs-resolver
   - workerd

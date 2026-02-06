@@ -37,7 +37,7 @@ export async function broadcastPush(
 
     const pushOptions = {
       vapidDetails: {
-        subject: "mailto:admin@coderage.pro",
+        subject: `mailto:${env.ADMIN_EMAIL}`,
         publicKey: env.VAPID_PUBLIC_KEY,
         privateKey: env.VAPID_PRIVATE_KEY,
       },

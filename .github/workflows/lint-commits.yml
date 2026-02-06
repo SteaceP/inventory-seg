@@ -1,0 +1,57 @@
+name: Lint Commits
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Prepare Configuration Files
+        run: node scripts/prepare-configs.js
+        env:
+          PACKAGE_NAME: ${{ vars.PACKAGE_NAME }}
+          PACKAGE_AUTHOR: ${{ vars.PACKAGE_AUTHOR }}
+          GH_USERNAME: ${{ vars.GH_USERNAME }}
+          REPO_NAME: ${{ vars.REPO_NAME }}
+          WORKER_NAME: ${{ vars.WORKER_NAME }}
+          COMPANY_NAME: ${{ vars.COMPANY_NAME }}
+          ADMIN_EMAIL: ${{ vars.ADMIN_EMAIL }}
+          APP_URL: ${{ vars.APP_URL }}
+          ALLOWED_ORIGIN: ${{ vars.ALLOWED_ORIGIN || vars.APP_URL }}
+          SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_APP_NAME: ${{ vars.VITE_APP_NAME }}
+          VITE_COMPANY_NAME: ${{ vars.COMPANY_NAME }}
+          VITE_COMPANY_URL: ${{ vars.VITE_COMPANY_URL }}
+          VAPID_PUBLIC_KEY: ${{ vars.VITE_VAPID_PUBLIC_KEY }}
+          BREVO_SENDER_EMAIL: ${{ vars.BREVO_SENDER_EMAIL }}
+          SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
+          # These are needed to avoid build failure during config generation
+          HYPERDRIVE_ID: ${{ secrets.HYPERDRIVE_ID }}
+          HYPERDRIVE_LOCAL_CONNECTION_STRING: ${{ vars.HYPERDRIVE_LOCAL_CONNECTION_STRING }}
+          D1_DATABASE_NAME: ${{ secrets.D1_DATABASE_NAME }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Validate current commit (last commit)
+        if: github.event_name == 'push'
+        run: npx commitlint --from HEAD~1 --to HEAD --verbose
+
+      - name: Validate PR commits
+        if: github.event_name == 'pull_request'
+        run: npx commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose

@@ -61,13 +61,6 @@ async function processScheduledTask(env: Env) {
 
     sql = postgres(env.HYPERDRIVE.connectionString);
 
-    // 1. Fetch History of "Stock Added" (stock increase) - Last 6 months
-    // We look for 'updated' actions where stock increased, OR 'created' actions
-    // And we need to join with inventory to get the category (if not in activity item_name snapshot)
-    // Actually activity snapshot has item_name. But we need category for the rules.
-    // The activity table doesn't have category. We must join or query inventory.
-    // Since inventory items might be deleted, a LEFT JOIN is safer, but we only care about active items for reorder.
-
     // Complex query: Get all stock increases in last 6 months
     const history = await sql<ActivityRow[]>`
       SELECT 
@@ -86,11 +79,6 @@ async function processScheduledTask(env: Env) {
       ORDER BY a.created_at ASC
     `;
 
-    // 2. Fetch Current Low Stock Items
-    // We check against item threshold or category threshold or global threshold (complex logic).
-    // For simplicity efficiently in SQL:
-    // We'll fetch ALL items and filter in JS, or write a smart query.
-    // Let's fetch all items to be safe and use same logic as app.
     const allItems = await sql<InventoryItemRow[]>`
       SELECT 
         i.id, 
@@ -103,10 +91,6 @@ async function processScheduledTask(env: Env) {
       LEFT JOIN inventory_categories c ON i.category = c.name
     `;
 
-    // We also need global threshold. It's user specific...
-    // But this is a background job. We should probably pick a "default" admin user or just rely on item/category.
-    // Let's pick the "admin" user settings or a fallback.
-    // Simplifying: Use 10 as fallback if no thresholds set.
     const GLOBAL_THRESHOLD = 5;
 
     // Filter for low stock
@@ -278,7 +262,7 @@ async function sendNotification(
 
     const options = {
       vapidDetails: {
-        subject: "mailto:admin@coderage.pro",
+        subject: `mailto:${env.ADMIN_EMAIL}`,
         publicKey: env.VAPID_PUBLIC_KEY,
         privateKey: env.VAPID_PRIVATE_KEY,
       },
@@ -311,8 +295,6 @@ async function sendNotification(
           })
       )
     );
-
-    // Also Send Email? (Optional, skipping for brevity unless requested, consistent with existing low stock alert)
   } catch (err) {
     reportError(err, { context: "Notification failed" });
   }

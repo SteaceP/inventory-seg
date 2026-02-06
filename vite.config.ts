@@ -1,13 +1,13 @@
 import fs from "fs";
+import os from "os";
 import path from "path";
 
 import { cloudflare } from "@cloudflare/vite-plugin";
-import terser from "@rollup/plugin-terser";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import react from "@vitejs/plugin-react-swc";
 import { visualizer } from "rollup-plugin-visualizer";
 import UnpluginFonts from "unplugin-fonts/vite";
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import { ViteImageOptimizer } from "vite-plugin-image-optimizer";
 import mkcert from "vite-plugin-mkcert";
 import { VitePWA } from "vite-plugin-pwa";
@@ -30,7 +30,14 @@ const getCloudflareHeaders = (mode: string) => {
       const colonIndex = trimmed.indexOf(":");
       if (colonIndex > -1) {
         const key = trimmed.slice(0, colonIndex).trim();
-        const value = trimmed.slice(colonIndex + 1).trim();
+        let value = trimmed.slice(colonIndex + 1).trim();
+
+        // Replace placeholders (mimic build-time plugin)
+        const env = loadEnv(mode, process.cwd(), "");
+        value = value
+          .replace(/%VITE_APP_URL%/g, env.VITE_APP_URL || "")
+          .replace(/%VITE_WORKER_URL%/g, env.VITE_WORKER_URL || "");
+
         headers[key] = value;
       }
     });
@@ -43,20 +50,23 @@ const getCloudflareHeaders = (mode: string) => {
       if (csp.includes("connect-src")) {
         csp = csp.replace(
           /connect-src\s+([^;]+)/,
-          "connect-src $1 http://localhost:* ws://localhost:*"
+          "connect-src $1 http://localhost:* ws://localhost:* http://127.0.0.1:* ws://127.0.0.1:*"
         );
       }
 
       // Relax img-src
       if (csp.includes("img-src")) {
-        csp = csp.replace(/img-src\s+([^;]+)/, "img-src $1 http://localhost:*");
+        csp = csp.replace(
+          /img-src\s+([^;]+)/,
+          "img-src $1 http://localhost:* http://127.0.0.1:*"
+        );
       }
 
       // Relax script-src
       if (csp.includes("script-src")) {
         csp = csp.replace(
           /script-src\s+([^;]+)/,
-          "script-src $1 'unsafe-eval' http://localhost:*"
+          "script-src $1 'unsafe-eval' http://localhost:* http://127.0.0.1:*"
         );
       }
 
@@ -74,6 +84,7 @@ const getCloudflareHeaders = (mode: string) => {
 export default defineConfig(({ mode }) => {
   const isDev = mode === "development";
   const isBuild = mode === "production";
+  const env = loadEnv(mode, process.cwd(), "");
 
   return {
     server: {
@@ -99,6 +110,33 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [
+      {
+        name: "html-env-transform",
+        transformIndexHtml(html) {
+          return html
+            .replace(
+              /%VITE_APP_NAME%/g,
+              env.VITE_APP_NAME || "Inventory System"
+            )
+            .replace(/%VITE_COMPANY_URL%/g, env.VITE_COMPANY_URL || "")
+            .replace(/%VITE_COMPANY_NAME%/g, env.VITE_COMPANY_NAME || "");
+        },
+      },
+      {
+        name: "headers-env-transform",
+        apply: "build",
+        closeBundle() {
+          const headersPath = path.resolve(__dirname, "dist/client/_headers");
+          if (fs.existsSync(headersPath)) {
+            let content = fs.readFileSync(headersPath, "utf-8");
+            content = content
+              .replace(/%VITE_APP_URL%/g, env.VITE_APP_URL || "")
+              .replace(/%VITE_WORKER_URL%/g, env.VITE_WORKER_URL || "");
+            fs.writeFileSync(headersPath, content);
+            console.log("Transformed dist/client/_headers with env vars");
+          }
+        },
+      },
       react(),
 
       cloudflare({
@@ -272,23 +310,6 @@ export default defineConfig(({ mode }) => {
             "framer-vendor": ["framer-motion"],
           },
         },
-        // Enable parallel terser minification
-        plugins: [
-          terser({
-            maxWorkers: 12, // Utilize 12 CPU cores for faster minification
-            compress: {
-              drop_console: false, // Keep console logs for debugging
-              drop_debugger: true, // Remove debugger statements
-              passes: 4, // Multiple passes for better compression
-            },
-            mangle: {
-              safari10: true, // Fix Safari 10 issues
-            },
-            format: {
-              comments: false, // Remove all comments
-            },
-          }),
-        ],
       },
 
       // Warn if chunks exceed 400KB
@@ -296,8 +317,21 @@ export default defineConfig(({ mode }) => {
 
       sourcemap: true,
 
-      // Disable Vite's built-in minification (using @rollup/plugin-terser instead)
-      minify: false,
+      minify: "terser",
+      terserOptions: {
+        maxWorkers: Math.max(1, os.cpus().length - 1), // Utilize all available CPU cores minus 1 for the main thread
+        compress: {
+          drop_console: false, // We keep console logs for Cloudflare Workers
+          drop_debugger: true,
+          passes: 3,
+        },
+        mangle: {
+          safari10: true,
+        },
+        format: {
+          comments: false,
+        },
+      },
       target: "es2020",
     },
   };

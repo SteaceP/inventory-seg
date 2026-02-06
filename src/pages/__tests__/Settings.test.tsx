@@ -51,7 +51,9 @@ vi.mock("@supabaseClient", () => ({
     storage: {
       from: () => ({
         upload: vi.fn().mockResolvedValue({ error: null }),
-        getPublicUrl: () => ({ data: { publicUrl: "https://new-avatar.com" } }),
+        getPublicUrl: () => ({
+          data: { publicUrl: "https://new-avatar.example.com" },
+        }),
       }),
     },
   },
