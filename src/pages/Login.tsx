@@ -32,8 +32,7 @@ interface LocationState {
 // Cloudflare Turnstile Site Key
 // In development, we use the "Always Pass" test key if the environment variable is missing
 const TURNSTILE_SITE_KEY =
-  (import.meta.env.VITE_TURNSTILE_SITE_KEY as string) ||
-  "1x00000000000000000000AA";
+  import.meta.env.VITE_TURNSTILE_SITE_KEY || "1x00000000000000000000AA";
 
 if (!TURNSTILE_SITE_KEY) {
   logInfo(
