@@ -12,7 +12,7 @@ This project follows the **Conventional Commits** specification.
 `<type>(<scope>): <subject>`
 
 - **Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
-- 1vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv**Scope**: Optional, provides additional contextual information (e.g., `deps`, `worker`, `ui`).
+- **Scope**: Optional, provides additional contextual information (e.g., `deps`, `worker`, `ui`).
 - **Subject**:
   - Use imperative, present tense ("add" not "added", "change" not "changed").
   - Do NOT capitalize the first letter.
