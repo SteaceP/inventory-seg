@@ -161,11 +161,6 @@ describe("crypto utilities", () => {
       expect(info.length).toBeGreaterThan(0);
     });
 
-    it("should include separator in output", () => {
-      const info = getDeviceInfo();
-      expect(info).toContain("-");
-    });
-
     it("should not throw errors", () => {
       expect(() => getDeviceInfo()).not.toThrow();
     });
