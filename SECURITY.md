@@ -6,8 +6,8 @@ Currently, only the latest version of the inventory management system receives s
 
 | Version | Supported |
 | --- | --- |
-| 0.0.2 (Latest) | :white_check_mark: |
-| < 0.0.2 | :x: |
+| 1.0.0 (Latest) | :white_check_mark: |
+| < 1.0.0 |
 
 ## Reporting a Vulnerability
 
