@@ -96,8 +96,12 @@ describe("useApplianceManagement - State & Fetching", () => {
     expect(result.current.filteredAppliances[0].id).toBe("1");
   });
 
-  it("should handle toggle item selection", () => {
+  it("should handle toggle item selection", async () => {
     const { result } = renderHook(() => useApplianceManagement());
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
 
     act(() => {
       result.current.actions.toggleItem("1", true);
@@ -110,12 +114,16 @@ describe("useApplianceManagement - State & Fetching", () => {
     expect(result.current.selectedItems.has("1")).toBe(false);
   });
 
-  it("should toggle all appliances", () => {
+  it("should toggle all appliances", async () => {
     const mockAppliances = [
       { id: "1", name: "Fridge", status: "functional" },
       { id: "2", name: "Oven", status: "broken" },
     ];
     const { result } = renderHook(() => useApplianceManagement());
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
 
     act(() => {
       result.current.actions.toggleAll(
