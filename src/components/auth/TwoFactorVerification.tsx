@@ -40,7 +40,7 @@ const TwoFactorVerification: React.FC<TwoFactorVerificationProps> = ({
     return () => clearInterval(interval);
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (isValidTOTPCode(code)) {
       await onVerify(code);
@@ -82,14 +82,16 @@ const TwoFactorVerification: React.FC<TwoFactorVerificationProps> = ({
         value={code}
         onChange={handleCodeChange}
         placeholder="000000"
-        inputProps={{
-          maxLength: 6,
-          pattern: "[0-9]*",
-          inputMode: "numeric",
-          style: {
-            textAlign: "center",
-            fontSize: "1.5rem",
-            letterSpacing: "0.5em",
+        slotProps={{
+          htmlInput: {
+            maxLength: 6,
+            pattern: "[0-9]*",
+            inputMode: "numeric",
+            style: {
+              textAlign: "center",
+              fontSize: "1.5rem",
+              letterSpacing: "0.5em",
+            },
           },
         }}
         sx={{ mb: 2 }}

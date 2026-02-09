@@ -72,13 +72,12 @@ export const getExtensionFromMimeType = (mimeType: string): string => {
 export const getDeviceInfo = (): string => {
   try {
     const ua = navigator.userAgent;
-    const platform = navigator.platform || "Unknown";
 
     // Safely extract device info from user agent
     const match = ua.match(/\(([^)]+)\)/);
     const device = match ? match[1] : "Unknown Device";
 
-    return `${platform} - ${device}`;
+    return device;
   } catch {
     return "Unknown Device";
   }

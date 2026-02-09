@@ -74,8 +74,10 @@ const LocationListItem: React.FC<LocationListItemProps> = ({
       <ListItemText
         primary={location.name}
         secondary={location.description}
-        primaryTypographyProps={{
-          fontWeight: location.parent_id ? "medium" : "bold",
+        slotProps={{
+          primary: {
+            fontWeight: location.parent_id ? "medium" : "bold",
+          },
         }}
       />
     </ListItem>

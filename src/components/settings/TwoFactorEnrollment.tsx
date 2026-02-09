@@ -212,14 +212,16 @@ const TwoFactorEnrollment: React.FC<TwoFactorEnrollmentProps> = ({
               onChange={handleCodeChange}
               placeholder="000000"
               helperText={t("mfa.enterCodeToVerify")}
-              inputProps={{
-                maxLength: 6,
-                pattern: "[0-9]*",
-                inputMode: "numeric",
-                style: {
-                  textAlign: "center",
-                  fontSize: "1.5rem",
-                  letterSpacing: "0.5em",
+              slotProps={{
+                htmlInput: {
+                  maxLength: 6,
+                  pattern: "[0-9]*",
+                  inputMode: "numeric",
+                  style: {
+                    textAlign: "center",
+                    fontSize: "1.5rem",
+                    letterSpacing: "0.5em",
+                  },
                 },
               }}
             />

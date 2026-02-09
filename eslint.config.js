@@ -105,6 +105,7 @@ export default defineConfig([
           },
         },
       ],
+      "@typescript-eslint/no-deprecated": "warn",
     },
   },
   prettierRecommended,

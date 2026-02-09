@@ -105,9 +105,11 @@ const NavigationList: React.FC<NavigationListProps> = ({
                         {item.text}
                       </motion.span>
                     }
-                    primaryTypographyProps={{
-                      fontSize: compactView ? "0.8125rem" : "0.875rem",
-                      fontWeight: location.pathname === item.path ? 600 : 400,
+                    slotProps={{
+                      primary: {
+                        fontSize: compactView ? "0.8125rem" : "0.875rem",
+                        fontWeight: location.pathname === item.path ? 600 : 400,
+                      },
                     }}
                   />
                 )}
@@ -155,8 +157,10 @@ const NavigationList: React.FC<NavigationListProps> = ({
                       {t("security.signOut")}
                     </motion.span>
                   }
-                  primaryTypographyProps={{
-                    fontSize: compactView ? "0.8125rem" : "0.875rem",
+                  slotProps={{
+                    primary: {
+                      fontSize: compactView ? "0.8125rem" : "0.875rem",
+                    },
                   }}
                 />
               )}

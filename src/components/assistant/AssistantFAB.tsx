@@ -163,13 +163,15 @@ const AssistantFAB: React.FC = () => {
           zIndex: (theme) => theme.zIndex.drawer + 2,
         }}
         container={typeof document !== "undefined" ? document.body : undefined}
-        PaperProps={{
-          sx: {
-            width: isMobile ? "100%" : 400,
-            height: "100%",
-            borderRadius: isMobile ? 0 : "20px 0 0 20px",
-            overflow: "hidden",
-            boxShadow: theme.shadows[24],
+        slotProps={{
+          paper: {
+            sx: {
+              width: isMobile ? "100%" : 400,
+              height: "100%",
+              borderRadius: isMobile ? 0 : "20px 0 0 20px",
+              overflow: "hidden",
+              boxShadow: theme.shadows[24],
+            },
           },
         }}
         ModalProps={{
