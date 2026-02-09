@@ -8,6 +8,12 @@ trigger: always_on
 
 This project follows the **Conventional Commits** specification.
 
+> [!IMPORTANT]
+> **CRITICAL COMMIT RULES**:
+> 1. **NO TERMINATING DOT**: Never end the subject with a period/dot.
+> 2. **LOWERCASE SUBJECT**: The subject must start with a lowercase letter and must NOT be sentence-case or PascalCase.
+> 3. **MAX 125 CHARS**: Stay under the length limit.
+
 ### Format
 `<type>(<scope>): <subject>`
 
@@ -15,9 +21,9 @@ This project follows the **Conventional Commits** specification.
 - **Scope**: Optional, provides additional contextual information (e.g., `deps`, `worker`, `ui`).
 - **Subject**:
   - Use imperative, present tense ("add" not "added", "change" not "changed").
-  - Do NOT capitalize the first letter.
-  - Do NOT end with a period.
-  - **Max Length**: 200 characters for the header (standard is 100, but bumped for this project).
+  - **MANDATORY**: Start with a lowercase letter.
+  - **MANDATORY**: MUST NOT end with a period, dot, or any punctuation `.`.
+  - **Max Length**: 125 characters for the header (standard is 100, but bumped for this project in `commitlint.config.js`).
 
 ### Examples
 - `feat(ui): add compact view mode to inventory grid`

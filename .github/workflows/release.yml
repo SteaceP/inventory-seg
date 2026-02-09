@@ -14,6 +14,28 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    env:
+      PACKAGE_NAME: ${{ vars.PACKAGE_NAME }}
+      PACKAGE_AUTHOR: ${{ vars.PACKAGE_AUTHOR }}
+      GH_USERNAME: ${{ vars.GH_USERNAME }}
+      REPO_NAME: ${{ vars.REPO_NAME }}
+      WORKER_NAME: ${{ vars.WORKER_NAME }}
+      COMPANY_NAME: ${{ vars.COMPANY_NAME }}
+      ADMIN_EMAIL: ${{ vars.ADMIN_EMAIL }}
+      APP_URL: ${{ vars.APP_URL }}
+      ALLOWED_ORIGIN: ${{ vars.ALLOWED_ORIGIN || vars.APP_URL }}
+      SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+      VITE_APP_NAME: ${{ vars.VITE_APP_NAME }}
+      VITE_COMPANY_NAME: ${{ vars.COMPANY_NAME }}
+      VITE_COMPANY_URL: ${{ vars.VITE_COMPANY_URL }}
+      VAPID_PUBLIC_KEY: ${{ vars.VITE_VAPID_PUBLIC_KEY }}
+      BREVO_SENDER_EMAIL: ${{ vars.BREVO_SENDER_EMAIL }}
+      SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
+      # Production Infra (for wrangler.jsonc generation)
+      HYPERDRIVE_ID: ${{ secrets.HYPERDRIVE_ID || vars.HYPERDRIVE_ID }}
+      HYPERDRIVE_LOCAL_CONNECTION_STRING: ${{ vars.HYPERDRIVE_LOCAL_CONNECTION_STRING }}
+      D1_DATABASE_NAME: ${{ vars.D1_DATABASE_NAME }}
+      D1_DATABASE_ID: ${{ vars.D1_DATABASE_ID }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -27,28 +49,6 @@ jobs:
 
       - name: Prepare Configuration Files
         run: node scripts/prepare-configs.js
-        env:
-          PACKAGE_NAME: ${{ vars.PACKAGE_NAME }}
-          PACKAGE_AUTHOR: ${{ vars.PACKAGE_AUTHOR }}
-          GH_USERNAME: ${{ vars.GH_USERNAME }}
-          REPO_NAME: ${{ vars.REPO_NAME }}
-          WORKER_NAME: ${{ vars.WORKER_NAME }}
-          COMPANY_NAME: ${{ vars.COMPANY_NAME }}
-          ADMIN_EMAIL: ${{ vars.ADMIN_EMAIL }}
-          APP_URL: ${{ vars.APP_URL }}
-          ALLOWED_ORIGIN: ${{ vars.ALLOWED_ORIGIN || vars.APP_URL }}
-          SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
-          VITE_APP_NAME: ${{ vars.VITE_APP_NAME }}
-          VITE_COMPANY_NAME: ${{ vars.COMPANY_NAME }}
-          VITE_COMPANY_URL: ${{ vars.VITE_COMPANY_URL }}
-          VAPID_PUBLIC_KEY: ${{ vars.VITE_VAPID_PUBLIC_KEY }}
-          BREVO_SENDER_EMAIL: ${{ vars.BREVO_SENDER_EMAIL }}
-          SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
-          # Production Infra (for wrangler.jsonc generation)
-          HYPERDRIVE_ID: ${{ secrets.HYPERDRIVE_ID || vars.HYPERDRIVE_ID }}
-          HYPERDRIVE_LOCAL_CONNECTION_STRING: ${{ vars.HYPERDRIVE_LOCAL_CONNECTION_STRING }}
-          D1_DATABASE_NAME: ${{ vars.D1_DATABASE_NAME }}
-          D1_DATABASE_ID: ${{ vars.D1_DATABASE_ID }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
