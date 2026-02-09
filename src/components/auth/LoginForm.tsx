@@ -29,9 +29,18 @@ const LoginForm: React.FC<LoginFormProps> = ({
   turnstileSiteKey,
   labels,
   isDev,
+  onSubmit,
 }) => {
   return (
-    <>
+    <Box
+      component="form"
+      onSubmit={(e) => {
+        if (onSubmit) {
+          void onSubmit(e);
+        }
+      }}
+      sx={{ width: "100%" }}
+    >
       <TextField
         margin="normal"
         required
@@ -99,7 +108,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
       >
         {loading ? labels.signingIn : labels.signIn}
       </Button>
-    </>
+    </Box>
   );
 };
 

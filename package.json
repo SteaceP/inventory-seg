@@ -2,9 +2,9 @@
   "name": "seg-inventaire",
   "description": "Advanced Inventory Management System, featuring multi-location tracking, AI-driven reordering, and appliance maintenance history.",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.0.2",
   "license": "AGPL-3.0-only",
-  "author": "Steace Paquette",
+  "author": "SteaceP",
   "github": "SteaceP",
   "repository": {
     "type": "git",
@@ -143,12 +143,7 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{json,css,md}": [
-      "prettier --write"
-    ]
+    "*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
+    "*.{json,css,md}": ["prettier --write"]
   }
 }

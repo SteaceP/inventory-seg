@@ -47,6 +47,8 @@ export interface LoginFormProps {
   };
   /** Development mode flag for skipping captcha */
   isDev: boolean;
+  /** Callback for form submission */
+  onSubmit?: (e: React.SyntheticEvent<HTMLFormElement>) => void | Promise<void>;
 }
 
 /** Props for footer links on the login screen */
@@ -84,6 +86,8 @@ export interface SignupFormProps {
     creatingAccount: string;
   };
   isDev: boolean;
+  /** Callback for form submission */
+  onSubmit?: (e: React.SyntheticEvent<HTMLFormElement>) => void | Promise<void>;
 }
 
 /** Props for the successful registration placeholder */

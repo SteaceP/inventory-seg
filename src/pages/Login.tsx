@@ -104,8 +104,49 @@ const Login: React.FC = () => {
             throw signInError;
           }
 
+          // Check if MFA is required by looking at assurance levels
+          const { data: aalData, error: aalError } =
+            await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+
+          if (aalError) {
+            throw aalError;
+          }
+
+          if (
+            aalData?.nextLevel === "aal2" &&
+            aalData.nextLevel !== aalData.currentLevel
+          ) {
+            // User has MFA enrolled but is only at AAL1
+            const { data: factorsData, error: factorsError } =
+              await supabase.auth.mfa.listFactors();
+
+            if (factorsError) {
+              throw factorsError;
+            }
+
+            const totpFactor = factorsData?.totp?.[0];
+            if (totpFactor) {
+              const { data: challengeData, error: challengeError } =
+                await supabase.auth.mfa.challenge({
+                  factorId: totpFactor.id,
+                });
+
+              if (challengeError) {
+                throw challengeError;
+              }
+
+              if (challengeData) {
+                setMfaChallengeId(challengeData.id);
+                setMfaFactorId(totpFactor.id);
+                setMfaRequired(true);
+                setLoading(false);
+                return;
+              }
+            }
+          }
+
           // If no MFA required, navigate to app
-          if (data?.session) {
+          if (!mfaRequired && data?.session) {
             const from =
               (location.state as LocationState)?.from?.pathname || "/";
             void navigate(from, { replace: true });
@@ -189,13 +230,7 @@ const Login: React.FC = () => {
           >
             <LoginHeader title={t("login.signIn")} />
 
-            <Box
-              component="form"
-              onSubmit={(e) => {
-                void handleLogin(e);
-              }}
-              sx={{ width: "100%" }}
-            >
+            <Box sx={{ width: "100%" }}>
               {mfaRequired ? (
                 <TwoFactorVerification
                   onVerify={async (code: string) => {
@@ -234,6 +269,9 @@ const Login: React.FC = () => {
                     captchaError: t("common.captchaError"),
                   }}
                   isDev={import.meta.env.DEV}
+                  onSubmit={(e: React.SyntheticEvent<HTMLFormElement>) => {
+                    void handleLogin(e);
+                  }}
                 />
               )}
             </Box>

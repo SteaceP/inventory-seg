@@ -31,9 +31,18 @@ const SignupForm: React.FC<SignupFormProps> = ({
   turnstileSiteKey,
   labels,
   isDev,
+  onSubmit,
 }) => {
   return (
-    <>
+    <Box
+      component="form"
+      onSubmit={(e) => {
+        if (onSubmit) {
+          void onSubmit(e);
+        }
+      }}
+      sx={{ width: "100%" }}
+    >
       <TextField
         margin="normal"
         required
@@ -113,7 +122,7 @@ const SignupForm: React.FC<SignupFormProps> = ({
       >
         {loading ? labels.creatingAccount : labels.createAccount}
       </Button>
-    </>
+    </Box>
   );
 };
 

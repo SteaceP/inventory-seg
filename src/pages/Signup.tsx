@@ -150,13 +150,7 @@ const Signup: React.FC = () => {
           >
             <LoginHeader title={t("signup.title")} />
 
-            <Box
-              component="form"
-              onSubmit={(e) => {
-                void handleSignup(e);
-              }}
-              sx={{ width: "100%" }}
-            >
+            <Box sx={{ width: "100%" }}>
               <SignupForm
                 displayName={displayName}
                 onDisplayNameChange={setDisplayName}
@@ -188,6 +182,9 @@ const Signup: React.FC = () => {
                   creatingAccount: t("signup.creatingAccount"),
                 }}
                 isDev={import.meta.env.DEV}
+                onSubmit={(e: React.SyntheticEvent<HTMLFormElement>) => {
+                  void handleSignup(e);
+                }}
               />
             </Box>
 
