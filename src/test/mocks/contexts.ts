@@ -38,11 +38,13 @@ export const createMockUserContext = (overrides?: {
   language?: string;
   notifications?: boolean;
   emailAlerts?: boolean;
+  mfaEnabled?: boolean;
   toggleDarkMode?: ReturnType<typeof vi.fn>;
   toggleCompactView?: ReturnType<typeof vi.fn>;
   updateSettings?: ReturnType<typeof vi.fn>;
   refreshUser?: ReturnType<typeof vi.fn>;
   setLanguage?: ReturnType<typeof vi.fn>;
+  setMfaEnabled?: ReturnType<typeof vi.fn>;
 }) => {
   return {
     userId: overrides?.userId ?? "test-user-123",
@@ -54,12 +56,14 @@ export const createMockUserContext = (overrides?: {
     language: overrides?.language ?? "en",
     notifications: overrides?.notifications ?? true,
     emailAlerts: overrides?.emailAlerts ?? false,
+    mfaEnabled: overrides?.mfaEnabled ?? false,
     avatarUrl: null,
     toggleDarkMode: overrides?.toggleDarkMode ?? vi.fn(),
     toggleCompactView: overrides?.toggleCompactView ?? vi.fn(),
     updateSettings: overrides?.updateSettings ?? vi.fn(),
     refreshUser: overrides?.refreshUser ?? vi.fn(),
     setLanguage: overrides?.setLanguage ?? vi.fn(),
+    setMfaEnabled: overrides?.setMfaEnabled ?? vi.fn(),
   };
 };
 
