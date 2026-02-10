@@ -1,6 +1,15 @@
 import { supabase } from "@/supabaseClient";
 
-import { getDeviceInfo } from "./crypto";
+// Helper to get device info (inlined to avoid circular dependencies/mocking issues)
+const getDeviceInfo = (): string => {
+  try {
+    const ua = navigator.userAgent;
+    const match = ua.match(/\(([^)]+)\)/);
+    return match ? match[1] : "Unknown Device";
+  } catch {
+    return "Unknown Device";
+  }
+};
 
 /**
  * Converts a base64 string to a Uint8Array.

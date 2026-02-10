@@ -7,6 +7,7 @@ import {
   createMockTranslation,
   createMockInventoryContext,
   createMockCategory,
+  mockSupabaseClient,
 } from "@test/mocks";
 
 import CategoryManagementDialog from "../CategoryManagementDialog";
@@ -24,26 +25,7 @@ vi.mock("@hooks/useErrorHandler", () => ({
   }),
 }));
 
-// Mock Supabase
-const { mockUpsert, mockInsert, mockDelete } = vi.hoisted(() => {
-  return {
-    mockUpsert: vi.fn().mockResolvedValue({ error: null }),
-    mockInsert: vi.fn().mockResolvedValue({ error: null }),
-    mockDelete: vi.fn().mockResolvedValue({ error: null }),
-  };
-});
-
-vi.mock("@supabaseClient", () => ({
-  supabase: {
-    from: vi.fn(() => ({
-      upsert: mockUpsert,
-      insert: mockInsert,
-      delete: () => ({
-        eq: mockDelete,
-      }),
-    })),
-  },
-}));
+// Supabase is mocked globally
 
 // Mock InventoryContext using centralized utilities
 const mockInventory = createMockInventoryContext({
@@ -88,7 +70,9 @@ describe("CategoryManagementDialog", () => {
     fireEvent.click(addButton);
 
     await waitFor(() => {
-      expect(mockInsert).toHaveBeenCalledWith({ name: "Books" });
+      expect(mockSupabaseClient.mocks.insert).toHaveBeenCalledWith({
+        name: "Books",
+      });
       expect(mockInventory.refreshInventory).toHaveBeenCalled();
     });
   });
@@ -105,7 +89,10 @@ describe("CategoryManagementDialog", () => {
     fireEvent.click(deleteBtn);
 
     await waitFor(() => {
-      expect(mockDelete).toHaveBeenCalledWith("name", "Electronics"); // eq("name", name)
+      expect(mockSupabaseClient.mocks.eq).toHaveBeenCalledWith(
+        "name",
+        "Electronics"
+      ); // eq("name", name)
       expect(mockInventory.refreshInventory).toHaveBeenCalled();
     });
   });
@@ -128,7 +115,7 @@ describe("CategoryManagementDialog", () => {
     fireEvent.blur(input);
 
     await waitFor(() => {
-      expect(mockUpsert).toHaveBeenCalledWith(
+      expect(mockSupabaseClient.mocks.upsert).toHaveBeenCalledWith(
         expect.objectContaining({
           name: "Electronics",
           low_stock_threshold: 8,

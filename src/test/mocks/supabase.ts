@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { vi, type Mock } from "vitest";
 
 /**
@@ -15,7 +16,16 @@ export const createMockSupabaseClient = () => {
   const mockGetSession = vi.fn();
   const mockSignIn = vi.fn();
   const mockSignOut = vi.fn();
+
   const mockSignUp = vi.fn();
+  const mockOnAuthStateChange = vi.fn().mockReturnValue({
+    data: { subscription: { unsubscribe: vi.fn() } },
+  });
+
+  const mockVerify = vi.fn();
+  const mockGetAuthenticatorAssuranceLevel = vi.fn();
+  const mockListFactors = vi.fn();
+  const mockChallenge = vi.fn();
 
   // Storage mocks
   const mockUpload = vi.fn();
@@ -44,6 +54,7 @@ export const createMockSupabaseClient = () => {
   // Query builder mocks (only keeping the ones we actually return)
   const mockEq = vi.fn();
   const mockOrder = vi.fn();
+  const mockLimit = vi.fn();
   const mockSingle = vi.fn();
 
   // Chainable query methods
@@ -54,14 +65,26 @@ export const createMockSupabaseClient = () => {
     const chain: any = {};
 
     // Now assign properties that reference chain
-    chain.eq = vi.fn().mockReturnValue(chain);
-    chain.neq = vi.fn().mockReturnValue(chain);
+    chain.eq = vi.fn((...args) => {
+      mockEq(...args);
+      return chain;
+    });
+    chain.neq = vi.fn().mockReturnValue(chain); // Add mockNeq if needed later
     chain.gt = vi.fn().mockReturnValue(chain);
     chain.lt = vi.fn().mockReturnValue(chain);
     chain.in = vi.fn().mockReturnValue(chain);
-    chain.order = vi.fn().mockReturnValue(chain);
-    chain.limit = vi.fn().mockReturnValue(chain);
-    chain.single = vi.fn(() => finalResolver());
+    chain.order = vi.fn((...args) => {
+      mockOrder(...args);
+      return chain;
+    });
+    chain.limit = vi.fn((...args) => {
+      mockLimit(...args);
+      return chain;
+    });
+    chain.single = vi.fn((...args) => {
+      mockSingle(...args);
+      return finalResolver();
+    });
     chain.maybeSingle = vi.fn(() => finalResolver());
     chain.then = (resolve: (value: unknown) => unknown) =>
       finalResolver().then(resolve);
@@ -94,6 +117,13 @@ export const createMockSupabaseClient = () => {
       signInWithPassword: mockSignIn,
       signOut: mockSignOut,
       signUp: mockSignUp,
+      onAuthStateChange: mockOnAuthStateChange,
+      mfa: {
+        verify: mockVerify,
+        getAuthenticatorAssuranceLevel: mockGetAuthenticatorAssuranceLevel,
+        listFactors: mockListFactors,
+        challenge: mockChallenge,
+      },
     },
     storage: {
       from: vi.fn(() => ({
@@ -105,6 +135,11 @@ export const createMockSupabaseClient = () => {
     from: mockFrom,
     channel: mockChannel,
     removeChannel: mockRemoveChannel,
+    realtime: {
+      setAuth: vi.fn(),
+      connect: vi.fn(),
+      disconnect: vi.fn(),
+    },
   };
 
   // Helper to set default responses
@@ -137,9 +172,15 @@ export const createMockSupabaseClient = () => {
       // Auth
       getUser: mockGetUser,
       getSession: mockGetSession,
-      signIn: mockSignIn,
+      signInWithPassword: mockSignIn,
       signOut: mockSignOut,
       signUp: mockSignUp,
+      onAuthStateChange: mockOnAuthStateChange,
+      // MFA
+      getAuthenticatorAssuranceLevel: mockGetAuthenticatorAssuranceLevel,
+      listFactors: mockListFactors,
+      challenge: mockChallenge,
+      verify: mockVerify,
       // Storage
       upload: mockUpload,
       getPublicUrl: mockGetPublicUrl,
@@ -163,6 +204,7 @@ export const createMockSupabaseClient = () => {
       eq: mockEq,
       order: mockOrder,
       single: mockSingle,
+      limit: mockLimit,
     },
     helpers: {
       setAuthUser,
@@ -182,7 +224,8 @@ export const setupSupabaseMock = (
 ) => {
   const client = customClient ?? mockSupabaseClient;
 
-  vi.doMock("../../supabaseClient", () => ({
+  // Use alias for consistency
+  vi.doMock("@supabaseClient", () => ({
     supabase: client.client,
   }));
 

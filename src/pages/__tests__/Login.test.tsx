@@ -7,34 +7,13 @@ import {
   createMockUserContext,
   createMockErrorHandler,
   createMockPerformance,
+  mockSupabaseClient,
 } from "@test/mocks";
 import { render, screen, fireEvent, waitFor } from "@test/test-utils";
 
 import Login from "../Login";
 
-// Mock Supabase
-const mockSignInWithPassword = vi.fn();
-const mockGetAuthenticatorAssuranceLevel = vi.fn();
-const mockListFactors = vi.fn();
-const mockChallenge = vi.fn();
-const mockVerify = vi.fn();
-
-vi.mock("@supabaseClient", () => ({
-  supabase: {
-    auth: {
-      signInWithPassword: (...args: unknown[]) =>
-        mockSignInWithPassword(...args) as Promise<unknown>,
-      mfa: {
-        getAuthenticatorAssuranceLevel: () =>
-          mockGetAuthenticatorAssuranceLevel() as Promise<unknown>,
-        listFactors: () => mockListFactors() as Promise<unknown>,
-        challenge: (...args: unknown[]) =>
-          mockChallenge(...args) as Promise<unknown>,
-        verify: (...args: unknown[]) => mockVerify(...args) as Promise<unknown>,
-      },
-    },
-  },
-}));
+// Supabase is mocked globally
 
 // Mock UserContext
 const mockSetLanguage = vi.fn();
@@ -104,7 +83,7 @@ describe("Login Page", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Default: no MFA required
-    mockGetAuthenticatorAssuranceLevel.mockResolvedValue({
+    mockSupabaseClient.mocks.getAuthenticatorAssuranceLevel.mockResolvedValue({
       data: { currentLevel: "aal1", nextLevel: "aal1" },
       error: null,
     });
@@ -134,7 +113,7 @@ describe("Login Page", () => {
   });
 
   it("handles successful login", async () => {
-    mockSignInWithPassword.mockResolvedValueOnce({
+    mockSupabaseClient.mocks.signInWithPassword.mockResolvedValueOnce({
       data: { session: { user: { id: "test" } } },
       error: null,
     });
@@ -155,7 +134,7 @@ describe("Login Page", () => {
         "Sign In with Password",
         expect.any(Function)
       );
-      expect(mockSignInWithPassword).toHaveBeenCalledWith({
+      expect(mockSupabaseClient.mocks.signInWithPassword).toHaveBeenCalledWith({
         email: "test@example.com",
         password: "password123",
         options: {
@@ -170,7 +149,7 @@ describe("Login Page", () => {
   });
 
   it("handles successful login with captcha", async () => {
-    mockSignInWithPassword.mockResolvedValueOnce({
+    mockSupabaseClient.mocks.signInWithPassword.mockResolvedValueOnce({
       data: { session: { user: { id: "test" } } },
       error: null,
     });
@@ -189,7 +168,7 @@ describe("Login Page", () => {
     fireEvent.click(screen.getByRole("button", { name: /login.signIn/i }));
 
     await waitFor(() => {
-      expect(mockSignInWithPassword).toHaveBeenCalledWith({
+      expect(mockSupabaseClient.mocks.signInWithPassword).toHaveBeenCalledWith({
         email: "test@example.com",
         password: "password123",
         options: {
@@ -200,19 +179,21 @@ describe("Login Page", () => {
   });
 
   it("prompts for MFA when enrolled", async () => {
-    mockSignInWithPassword.mockResolvedValueOnce({
+    mockSupabaseClient.mocks.signInWithPassword.mockResolvedValueOnce({
       data: { session: { user: { id: "test" } } },
       error: null,
     });
-    mockGetAuthenticatorAssuranceLevel.mockResolvedValueOnce({
-      data: { currentLevel: "aal1", nextLevel: "aal2" },
-      error: null,
-    });
-    mockListFactors.mockResolvedValueOnce({
+    mockSupabaseClient.mocks.getAuthenticatorAssuranceLevel.mockResolvedValueOnce(
+      {
+        data: { currentLevel: "aal1", nextLevel: "aal2" },
+        error: null,
+      }
+    );
+    mockSupabaseClient.mocks.listFactors.mockResolvedValueOnce({
       data: { totp: [{ id: "factor-id" }] },
       error: null,
     });
-    mockChallenge.mockResolvedValueOnce({
+    mockSupabaseClient.mocks.challenge.mockResolvedValueOnce({
       data: { id: "challenge-id" },
       error: null,
     });
@@ -238,23 +219,25 @@ describe("Login Page", () => {
 
   it("handles successful MFA verification", async () => {
     // 1. Setup MFA prompt state
-    mockSignInWithPassword.mockResolvedValueOnce({
+    mockSupabaseClient.mocks.signInWithPassword.mockResolvedValueOnce({
       data: { session: { user: { id: "test" } } },
       error: null,
     });
-    mockGetAuthenticatorAssuranceLevel.mockResolvedValueOnce({
-      data: { currentLevel: "aal1", nextLevel: "aal2" },
-      error: null,
-    });
-    mockListFactors.mockResolvedValueOnce({
+    mockSupabaseClient.mocks.getAuthenticatorAssuranceLevel.mockResolvedValueOnce(
+      {
+        data: { currentLevel: "aal1", nextLevel: "aal2" },
+        error: null,
+      }
+    );
+    mockSupabaseClient.mocks.listFactors.mockResolvedValueOnce({
       data: { totp: [{ id: "factor-id" }] },
       error: null,
     });
-    mockChallenge.mockResolvedValueOnce({
+    mockSupabaseClient.mocks.challenge.mockResolvedValueOnce({
       data: { id: "challenge-id" },
       error: null,
     });
-    mockVerify.mockResolvedValueOnce({
+    mockSupabaseClient.mocks.verify.mockResolvedValueOnce({
       data: { user: { id: "test" } },
       error: null,
     });
@@ -282,7 +265,7 @@ describe("Login Page", () => {
     fireEvent.click(screen.getByRole("button", { name: /mfa.verify/i }));
 
     await waitFor(() => {
-      expect(mockVerify).toHaveBeenCalledWith({
+      expect(mockSupabaseClient.mocks.verify).toHaveBeenCalledWith({
         factorId: "factor-id",
         challengeId: "challenge-id",
         code: "123456",
@@ -293,7 +276,7 @@ describe("Login Page", () => {
 
   it("handles failed login", async () => {
     const error = { message: "Invalid credentials", status: 400 };
-    mockSignInWithPassword.mockResolvedValueOnce({
+    mockSupabaseClient.mocks.signInWithPassword.mockResolvedValueOnce({
       error,
     });
 

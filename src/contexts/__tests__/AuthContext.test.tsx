@@ -3,18 +3,17 @@ import { act } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
+import { mockSupabaseClient } from "@test/mocks";
+
 import { AuthProvider, useAuth } from "../AuthContext";
 
 // Hoist mocks
 const mocks = vi.hoisted(() => {
   const handleError = vi.fn();
-  const getSession = vi.fn();
-  const onAuthStateChange = vi.fn();
+  // Removed getSession and onAuthStateChange as they are now global
 
   return {
     handleError,
-    getSession,
-    onAuthStateChange,
   };
 });
 
@@ -25,14 +24,7 @@ vi.mock("@hooks/useErrorHandler", () => ({
   }),
 }));
 
-vi.mock("@supabaseClient", () => ({
-  supabase: {
-    auth: {
-      getSession: mocks.getSession,
-      onAuthStateChange: mocks.onAuthStateChange,
-    },
-  },
-}));
+// Supabase is mocked globally
 
 const mockSession = {
   user: {
@@ -65,18 +57,18 @@ describe("AuthContext", () => {
     vi.clearAllMocks();
 
     // Default mocks
-    mocks.getSession.mockResolvedValue({
+    mockSupabaseClient.mocks.getSession.mockResolvedValue({
       data: { session: null },
       error: null,
     });
 
-    mocks.onAuthStateChange.mockReturnValue({
+    mockSupabaseClient.mocks.onAuthStateChange.mockReturnValue({
       data: { subscription: { unsubscribe: vi.fn() } },
     });
   });
 
   it("should initialize loading then settle", () => {
-    mocks.getSession.mockReturnValue(new Promise(() => {})); // Hang forever
+    mockSupabaseClient.mocks.getSession.mockReturnValue(new Promise(() => {})); // Hang forever
 
     // We can't easily wait for "never", but we can verify it starts loading
     const { unmount } = render(
@@ -90,7 +82,7 @@ describe("AuthContext", () => {
   });
 
   it("should load session on mount", async () => {
-    mocks.getSession.mockResolvedValue({
+    mockSupabaseClient.mocks.getSession.mockResolvedValue({
       data: { session: mockSession },
       error: null,
     });
@@ -114,10 +106,12 @@ describe("AuthContext", () => {
       event: string,
       session: typeof mockSession | null
     ) => void;
-    mocks.onAuthStateChange.mockImplementation((cb: typeof authCallback) => {
-      authCallback = cb;
-      return { data: { subscription: { unsubscribe: vi.fn() } } };
-    });
+    mockSupabaseClient.mocks.onAuthStateChange.mockImplementation(
+      (cb: typeof authCallback) => {
+        authCallback = cb;
+        return { data: { subscription: { unsubscribe: vi.fn() } } };
+      }
+    );
 
     render(
       <AuthProvider>

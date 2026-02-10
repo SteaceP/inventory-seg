@@ -7,18 +7,11 @@ import {
   createMockUserContext,
   createMockErrorHandler,
   createMockPerformance,
+  mockSupabaseClient,
 } from "@test/mocks";
 import { render, screen, fireEvent, waitFor } from "@test/test-utils";
 
 import Signup from "../Signup";
-const mockSignUp = vi.fn();
-vi.mock("@supabaseClient", () => ({
-  supabase: {
-    auth: {
-      signUp: (...args: unknown[]) => mockSignUp(...args) as Promise<unknown>,
-    },
-  },
-}));
 
 // Mock UserContext
 const mockSetLanguage = vi.fn();
@@ -141,11 +134,11 @@ describe("Signup Page", () => {
       );
     });
 
-    expect(mockSignUp).not.toHaveBeenCalled();
+    expect(mockSupabaseClient.mocks.signUp).not.toHaveBeenCalled();
   });
 
   it("handles successful signup", async () => {
-    mockSignUp.mockResolvedValueOnce({ error: null });
+    mockSupabaseClient.mocks.signUp.mockResolvedValueOnce({ error: null });
     render(<Signup />);
 
     fireEvent.change(screen.getByLabelText(/signup.displayName/i), {
@@ -168,7 +161,7 @@ describe("Signup Page", () => {
         "Sign Up with Password",
         expect.any(Function)
       );
-      expect(mockSignUp).toHaveBeenCalledWith({
+      expect(mockSupabaseClient.mocks.signUp).toHaveBeenCalledWith({
         email: "test@s-e-g.ca",
         password: "password123",
         options: {
@@ -192,7 +185,7 @@ describe("Signup Page", () => {
 
   it("handles signup error", async () => {
     const error = { message: "User already registered", status: 422 };
-    mockSignUp.mockResolvedValueOnce({
+    mockSupabaseClient.mocks.signUp.mockResolvedValueOnce({
       error,
     });
 

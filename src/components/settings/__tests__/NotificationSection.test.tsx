@@ -11,40 +11,18 @@ import {
   createMockAlertContext,
   createMockTranslation,
   createMockUserContext,
+  mockSupabaseClient,
 } from "@test/mocks";
 
 import NotificationSection from "../NotificationSection";
 
-import type { Session } from "@supabase/supabase-js";
+// No unused imports
 
 // Hoist mocks to avoid unbound-method lint errors
 const mocks = vi.hoisted(() => ({
-  getSession: vi.fn(),
   subscribeToPush: vi.fn(),
   unsubscribeFromPush: vi.fn(),
   checkPushSubscription: vi.fn(),
-  supabaseFrom: vi.fn(() => {
-    const chain: {
-      select: ReturnType<typeof vi.fn>;
-      eq: ReturnType<typeof vi.fn>;
-      single: ReturnType<typeof vi.fn>;
-      update: ReturnType<typeof vi.fn>;
-    } = {} as never;
-
-    chain.select = vi.fn().mockReturnValue(chain);
-    chain.eq = vi.fn().mockResolvedValue({ error: null });
-    chain.single = vi.fn().mockResolvedValue({
-      data: {
-        notifications: false,
-        email_alerts: false,
-        low_stock_threshold: 10,
-      },
-      error: null,
-    });
-    chain.update = vi.fn().mockReturnValue(chain);
-
-    return chain;
-  }),
 }));
 
 // Mock contexts using centralized utilities
@@ -81,15 +59,9 @@ vi.mock("@/utils/push-notifications", () => ({
   checkPushSubscription: mocks.checkPushSubscription,
 }));
 
-// Mock supabaseClient
-vi.mock("@supabaseClient", () => ({
-  supabase: {
-    auth: {
-      getSession: mocks.getSession,
-    },
-    from: mocks.supabaseFrom,
-  },
-}));
+// Mock supabaseClient via global setup
+// The mockSupabaseClient is already configured in src/test/setup.ts
+// We just need to ensure the mocks are clear or set up specific return values in tests
 
 describe("NotificationSection", () => {
   let mockFetch: ReturnType<typeof vi.fn>;
@@ -104,6 +76,41 @@ describe("NotificationSection", () => {
     mocks.subscribeToPush.mockResolvedValue(undefined);
     mocks.unsubscribeFromPush.mockResolvedValue(undefined);
     mocks.checkPushSubscription.mockResolvedValue(false);
+
+    // Setup Supabase mocks
+    mockSupabaseClient.helpers.setAuthSession({ access_token: "fake-token" });
+
+    // Mock settings fetch chain: from -> select -> eq -> single
+    mockSupabaseClient.mocks.from.mockReturnValue({
+      select: mockSupabaseClient.mocks.select,
+      update: mockSupabaseClient.mocks.update,
+    });
+
+    mockSupabaseClient.mocks.select.mockReturnValue({
+      eq: mockSupabaseClient.mocks.eq,
+    });
+
+    // Default single response (settings)
+    mockSupabaseClient.mocks.single.mockResolvedValue({
+      data: {
+        notifications: false,
+        email_alerts: false,
+        low_stock_threshold: 10,
+      },
+      error: null,
+    });
+
+    // Mock settings update chain: from -> update -> eq
+    mockSupabaseClient.mocks.update.mockReturnValue({
+      eq: mockSupabaseClient.mocks.eq,
+    });
+
+    // Default eq response for update (success)
+    mockSupabaseClient.mocks.eq.mockResolvedValue({ error: null });
+    // Also make eq chainable for select->eq
+    mockSupabaseClient.mocks.eq.mockReturnValue({
+      single: mockSupabaseClient.mocks.single,
+    });
   });
 
   it("should render notification titles and switches", () => {
@@ -190,10 +197,7 @@ describe("NotificationSection", () => {
   });
 
   it("should handle successful test notification", async () => {
-    mocks.getSession.mockResolvedValue({
-      data: { session: { access_token: "fake-token" } as unknown as Session },
-      error: null,
-    });
+    mockSupabaseClient.helpers.setAuthSession({ access_token: "fake-token" });
     mockFetch.mockResolvedValue({
       ok: true,
     } as Response);
@@ -216,10 +220,7 @@ describe("NotificationSection", () => {
   });
 
   it("should handle failed test notification with generic error", async () => {
-    mocks.getSession.mockResolvedValue({
-      data: { session: { access_token: "fake-token" } as unknown as Session },
-      error: null,
-    });
+    mockSupabaseClient.helpers.setAuthSession({ access_token: "fake-token" });
     const errorMsg = "API Error";
     mockFetch.mockResolvedValue({
       ok: false,
@@ -239,10 +240,7 @@ describe("NotificationSection", () => {
   });
 
   it("should handle NO_SUBSCRIPTION error", async () => {
-    mocks.getSession.mockResolvedValue({
-      data: { session: { access_token: "fake-token" } as unknown as Session },
-      error: null,
-    });
+    mockSupabaseClient.helpers.setAuthSession({ access_token: "fake-token" });
 
     // Mock error response with specific structure
     mockFetch.mockResolvedValue({
@@ -265,10 +263,7 @@ describe("NotificationSection", () => {
   });
 
   it("should handle CONFIG_ERROR", async () => {
-    mocks.getSession.mockResolvedValue({
-      data: { session: { access_token: "fake-token" } as unknown as Session },
-      error: null,
-    });
+    mockSupabaseClient.helpers.setAuthSession({ access_token: "fake-token" });
 
     mockFetch.mockResolvedValue({
       ok: false,

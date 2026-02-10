@@ -48,6 +48,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
         id="email"
         label={labels.email}
         name="email"
+        type="email"
         autoComplete="email"
         autoFocus
         value={email}

@@ -6,6 +6,7 @@ import {
   createMockInventoryContext,
   createMockInventoryItem,
   createMockCategory,
+  mockSupabaseClient,
 } from "@test/mocks";
 import { render, screen, waitFor } from "@test/test-utils";
 
@@ -71,15 +72,7 @@ vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 
-vi.mock("@supabaseClient", () => ({
-  supabase: {
-    auth: {
-      getSession: vi.fn().mockResolvedValue({
-        data: { session: { access_token: "fake-token" } },
-      }),
-    },
-  },
-}));
+// Supabase is mocked globally
 
 // Mock child components to isolate Dashboard logic
 vi.mock("@components/dashboard/QuickActions/QuickActions", () => ({
@@ -109,6 +102,7 @@ globalThis.matchMedia = vi.fn().mockImplementation((query: string) => ({
 describe("Dashboard Page", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSupabaseClient.helpers.setAuthSession({ access_token: "fake-token" });
     mockFetch.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({ in: 10, out: 5 }),

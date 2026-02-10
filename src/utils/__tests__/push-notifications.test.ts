@@ -10,26 +10,15 @@ import {
 
 import { supabase } from "@/supabaseClient";
 
+import { mockSupabaseClient } from "@test/mocks";
+
 import {
   subscribeToPush,
   unsubscribeFromPush,
   checkPushSubscription,
 } from "../push-notifications";
 
-// Mock Supabase client
-vi.mock("@supabaseClient", () => ({
-  supabase: {
-    auth: {
-      getUser: vi.fn(),
-    },
-    from: vi.fn(),
-  },
-}));
-
-// Mock crypto utils
-vi.mock("../crypto", () => ({
-  getDeviceInfo: vi.fn(() => "Test Device"),
-}));
+// Supabase mock is handled globally in src/test/setup.ts
 
 describe("push-notifications", () => {
   const mockServiceWorkerRegistration = {
@@ -46,6 +35,7 @@ describe("push-notifications", () => {
   };
 
   beforeEach(() => {
+    vi.unmock("../crypto");
     vi.clearAllMocks();
     vi.stubEnv("VITE_VAPID_PUBLIC_KEY", "test-vapid-key");
 
@@ -55,20 +45,30 @@ describe("push-notifications", () => {
       PushManager: {},
     });
 
+    Object.defineProperty(global.navigator, "userAgent", {
+      value: "Mozilla/5.0 (Test Device)",
+      writable: true,
+    });
+
     vi.stubGlobal("navigator", {
       serviceWorker: {
         ready: Promise.resolve(mockServiceWorkerRegistration),
       },
+      userAgent: "Mozilla/5.0 (Test Device)",
     });
 
     // Default Supabase mock implementation
-    (supabase.auth.getUser as Mock).mockResolvedValue({
-      data: { user: { id: "user-123" } },
-      error: null,
+    mockSupabaseClient.helpers.setAuthUser({
+      id: "user-123",
+      email: "test@example.com",
     });
-    (supabase.from as Mock).mockReturnValue({
-      upsert: vi.fn().mockResolvedValue({ error: null }),
-      delete: vi.fn().mockReturnValue({
+
+    mockSupabaseClient.mocks.from.mockReturnValue({
+      upsert: mockSupabaseClient.mocks.upsert.mockResolvedValue({
+        data: null,
+        error: null,
+      }),
+      delete: mockSupabaseClient.mocks.delete.mockReturnValue({
         match: vi.fn().mockResolvedValue({ error: null }),
       }),
     });

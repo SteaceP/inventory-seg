@@ -33,32 +33,46 @@ const InventoryDrawerLocations: React.FC<InventoryDrawerLocationsProps> = ({
         {t("inventory.drawer.locations")}
       </Typography>
       <Stack spacing={1.5}>
-        {item.stock_locations.map((loc, idx) => (
-          <Box key={loc.id || idx}>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                mb: 0.5,
-              }}
-            >
-              <Typography variant="body2" fontWeight="medium">
-                {loc.location}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {loc.quantity ?? 0}
-              </Typography>
+        {item.stock_locations.map((loc, idx) => {
+          const locationVal = loc.location as
+            | string
+            | { name: string }
+            | null
+            | undefined;
+          const locationName =
+            typeof locationVal === "object" &&
+            locationVal !== null &&
+            "name" in locationVal
+              ? locationVal.name
+              : String(locationVal || "");
+
+          return (
+            <Box key={loc.id || idx}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  mb: 0.5,
+                }}
+              >
+                <Typography variant="body2" fontWeight="medium">
+                  {locationName}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {loc.quantity ?? 0}
+                </Typography>
+              </Box>
+              <LinearProgress
+                variant="determinate"
+                value={Math.min(
+                  100,
+                  ((loc.quantity || 0) / (item.stock || 1)) * 100
+                )}
+                sx={{ height: 6, borderRadius: 3 }}
+              />
             </Box>
-            <LinearProgress
-              variant="determinate"
-              value={Math.min(
-                100,
-                ((loc.quantity || 0) / (item.stock || 1)) * 100
-              )}
-              sx={{ height: 6, borderRadius: 3 }}
-            />
-          </Box>
-        ))}
+          );
+        })}
       </Stack>
     </Box>
   );

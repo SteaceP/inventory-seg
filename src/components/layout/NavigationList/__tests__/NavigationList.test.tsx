@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { supabase } from "@/supabaseClient";
+import { mockSupabaseClient } from "@test/mocks";
 
 import NavigationList from "../NavigationList";
 
@@ -14,13 +14,7 @@ vi.mock("@i18n", () => ({
 }));
 
 // Mock Supabase
-vi.mock("@supabaseClient", () => ({
-  supabase: {
-    auth: {
-      signOut: vi.fn().mockResolvedValue({ error: null }),
-    },
-  },
-}));
+// Supabase is mocked globally
 
 const mockNavigate = vi.fn();
 vi.mock("react-router-dom", async () => {
@@ -85,8 +79,7 @@ describe("NavigationList", () => {
     const logoutButton = screen.getByText("security.signOut");
     fireEvent.click(logoutButton);
 
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(supabase.auth.signOut).toHaveBeenCalled();
+    expect(mockSupabaseClient.mocks.signOut).toHaveBeenCalled();
     await vi.waitFor(() => expect(mockNavigate).toHaveBeenCalledWith("/login"));
   });
 });

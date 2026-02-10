@@ -4,8 +4,10 @@ import "@testing-library/jest-dom";
 import { vi } from "vitest";
 
 import { setupFramerMotionMock } from "./mocks/framer-motion";
+import { setupSupabaseMock } from "./mocks/supabase";
 
 setupFramerMotionMock();
+setupSupabaseMock();
 
 // Mock Helmet and HelmetProvider to avoid issues with Happy DOM and DOM updates
 vi.mock("@dr.pogodin/react-helmet", () => ({

@@ -44,12 +44,14 @@ export const setupActivityUtilsMock = () => {
 // Crypto utilities mock
 export const mockValidateImageFile = vi.fn();
 export const mockGenerateSecureFileName = vi.fn(() => "secure-file.jpg");
+export const mockGenerateSecureId = vi.fn(() => "APP-12345");
 export const mockGetExtensionFromMimeType = vi.fn(() => "jpg");
 
 export const setupCryptoUtilsMock = () => {
   vi.mock("../../utils/crypto", () => ({
     validateImageFile: mockValidateImageFile,
     generateSecureFileName: mockGenerateSecureFileName,
+    generateSecureId: mockGenerateSecureId,
     getExtensionFromMimeType: mockGetExtensionFromMimeType,
   }));
 };

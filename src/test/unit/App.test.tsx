@@ -8,7 +8,7 @@ import {
 } from "@test/mocks";
 import { render, screen, waitFor } from "@test/test-utils";
 
-import App from "../App";
+import App from "../../App";
 
 // Mock react-router-dom to use MemoryRouter instead of BrowserRouter (which App uses)
 vi.mock("react-router-dom", async () => {
@@ -20,17 +20,17 @@ vi.mock("react-router-dom", async () => {
 });
 
 // Mock dependencies
-vi.mock("../i18n", () => ({
+vi.mock("../../i18n", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
 }));
 
-vi.mock("../components/RealtimeNotifications", () => ({
+vi.mock("../../components/RealtimeNotifications", () => ({
   default: () => null,
 }));
 
-vi.mock("../components/Layout", async () => {
+vi.mock("../../components/Layout", async () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { Outlet } = (await vi.importActual("react-router-dom")) as {
     Outlet: React.ComponentType;
@@ -45,15 +45,15 @@ vi.mock("../components/Layout", async () => {
   };
 });
 
-vi.mock("../components/OfflineFallback", () => ({
+vi.mock("../../components/OfflineFallback", () => ({
   default: () => <div>Offline Fallback</div>,
 }));
 
-vi.mock("../components/ErrorBoundary", () => ({
+vi.mock("../../components/ErrorBoundary", () => ({
   default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-vi.mock("../supabaseClient", () => ({
+vi.mock("../../supabaseClient", () => ({
   supabase: {
     auth: {
       onAuthStateChange: vi.fn().mockReturnValue({
@@ -73,29 +73,29 @@ vi.mock("../supabaseClient", () => ({
 }));
 
 // Mock child pages to avoid testing their internals and focus on routing
-vi.mock("../pages/Login", () => ({ default: () => <div>Login Page</div> }));
-vi.mock("../pages/Dashboard", () => ({
+vi.mock("../../pages/Login", () => ({ default: () => <div>Login Page</div> }));
+vi.mock("../../pages/Dashboard", () => ({
   default: () => <div>Dashboard Page</div>,
 }));
 
 // Mock useUserContext to control auth state
 const mockUseUserContext = vi.fn();
 
-vi.mock("../contexts/UserContext", () => ({
+vi.mock("../../contexts/UserContext", () => ({
   UserProvider: ({ children }: { children: React.ReactNode }) => (
     <>{children}</>
   ),
   useUserContext: () => mockUseUserContext() as unknown,
 }));
 
-vi.mock("../contexts/AlertContext", () => ({
+vi.mock("../../contexts/AlertContext", () => ({
   AlertProvider: ({ children }: { children: React.ReactNode }) => (
     <>{children}</>
   ),
   useAlert: () => createMockAlertContext(),
 }));
 
-vi.mock("../contexts/InventoryContext", () => ({
+vi.mock("../../contexts/InventoryContext", () => ({
   InventoryProvider: ({ children }: { children: React.ReactNode }) => (
     <>{children}</>
   ),

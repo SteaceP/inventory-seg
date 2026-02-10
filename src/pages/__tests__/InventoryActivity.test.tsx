@@ -5,7 +5,11 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
-import { createMockTranslation, createMockActivity } from "@test/mocks";
+import {
+  createMockTranslation,
+  createMockActivity,
+  mockSupabaseClient,
+} from "@test/mocks";
 
 import InventoryActivityPage from "../InventoryActivity";
 
@@ -21,29 +25,10 @@ vi.mock("@hooks/useErrorHandler", () => ({
 const { t } = createMockTranslation();
 vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
+  Trans: ({ i18nKey }: { i18nKey: string }) => <span>{i18nKey}</span>,
 }));
 
-// Mock Supabase
-const { mockGetSession } = vi.hoisted(() => ({
-  mockGetSession: vi.fn(),
-}));
-
-vi.mock("@supabaseClient", () => ({
-  supabase: {
-    auth: {
-      getSession: () =>
-        mockGetSession() as Promise<{
-          data: { session: unknown };
-          error: unknown;
-        }>,
-    },
-    from: () => ({
-      select: () => ({
-        in: () => Promise.resolve({ data: [], error: null }),
-      }),
-    }),
-  },
-}));
+// Supabase is mocked globally
 
 const mockFetch = vi.fn();
 globalThis.fetch = mockFetch;
@@ -86,10 +71,7 @@ const mockActivities = [
 describe("InventoryActivity Page", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetSession.mockResolvedValue({
-      data: { session: { access_token: "fake-token" } },
-      error: null,
-    });
+    mockSupabaseClient.helpers.setAuthSession({ access_token: "fake-token" });
     mockFetch.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve(mockActivities),

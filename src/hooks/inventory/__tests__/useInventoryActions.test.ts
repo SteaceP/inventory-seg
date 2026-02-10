@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/require-await */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
+
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 
 import { renderHook, act, cleanup } from "@testing-library/react";
@@ -11,49 +9,13 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { supabase } from "@/supabaseClient";
 import type { InventoryItem } from "@/types/inventory";
 
+import { mockSupabaseClient } from "@test/mocks";
 import * as ActivityUtils from "@utils/activityUtils";
 
 import { useInventoryActions } from "../useInventoryActions";
 
 // Mock Supabase
-vi.mock("@supabaseClient", () => {
-  const mockUpload = vi.fn();
-  const mockGetPublicUrl = vi.fn();
-  const mockUpdate = vi.fn();
-  const mockInsert = vi.fn();
-  const mockDelete = vi.fn();
-  const mockSelect = vi.fn();
-  const mockEq = vi.fn();
-
-  // Chainable mocks
-  mockUpdate.mockReturnValue({ eq: mockEq });
-  mockDelete.mockReturnValue({ eq: mockEq });
-  // mockInsert returns select().single() chain
-  const mockSingle = vi.fn();
-  const mockSelectChain = vi.fn(() => ({ single: mockSingle }));
-  mockInsert.mockReturnValue({ select: mockSelectChain });
-
-  return {
-    supabase: {
-      auth: {
-        getUser: vi.fn(),
-        getSession: vi.fn(),
-      },
-      storage: {
-        from: vi.fn(() => ({
-          upload: mockUpload,
-          getPublicUrl: mockGetPublicUrl,
-        })),
-      },
-      from: vi.fn(() => ({
-        update: mockUpdate,
-        insert: mockInsert,
-        delete: mockDelete,
-        select: mockSelect,
-      })),
-    },
-  };
-});
+// Supabase mock is handled globally in src/test/setup.ts
 
 // Mock Contexts and Hooks
 const mockShowError = vi.fn();
@@ -140,21 +102,11 @@ describe("useInventoryActions", () => {
     globalThis.fetch = vi.fn() as unknown as typeof fetch;
 
     // Default Supabase Auth Mocks
-    vi.mocked(supabase.auth.getUser).mockImplementation(
-      async () => ({}) as any
-    );
-    vi.mocked(supabase.auth.getSession).mockImplementation(
-      async () => ({}) as any
-    );
-
-    vi.mocked(supabase.auth.getUser).mockResolvedValue({
-      data: { user: { id: "u1", email: "test@example.com" } as any },
-      error: null,
+    mockSupabaseClient.helpers.setAuthUser({
+      id: "u1",
+      email: "test@example.com",
     });
-    vi.mocked(supabase.auth.getSession).mockResolvedValue({
-      data: { session: { access_token: "token" } as any },
-      error: null,
-    });
+    mockSupabaseClient.helpers.setAuthSession({ access_token: "token" });
   });
 
   afterEach(() => {

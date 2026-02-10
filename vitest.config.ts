@@ -35,6 +35,7 @@ export default defineConfig({
       "**/dist/**",
       "**/build/**",
       "src/worker/**",
+      "src/test/e2e/**",
     ],
 
     // Enable globals like 'describe', 'it', 'expect'

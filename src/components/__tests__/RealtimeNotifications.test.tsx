@@ -1,6 +1,8 @@
 import { render } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
+import { mockSupabaseClient } from "@test/mocks";
+
 import RealtimeNotifications from "../RealtimeNotifications";
 
 // Hoist mocks to share between factory and tests
@@ -55,19 +57,27 @@ vi.mock("@i18n", () => ({
   }),
 }));
 
-vi.mock("@supabaseClient", () => ({
-  supabase: {
-    channel: mocks.channelFn,
-    removeChannel: mocks.removeChannel,
-    realtime: {
-      setAuth: mocks.setAuth,
-    },
-  },
-}));
+// Supabase is mocked globally via src/test/setup.ts
 
 describe("RealtimeNotifications", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Setup Supabase mocks using the centralized client
+    // We need to override the default mocks with our specific test mocks
+    if (mockSupabaseClient.client) {
+      mockSupabaseClient.client.channel = mocks.channelFn;
+      mockSupabaseClient.client.removeChannel = mocks.removeChannel;
+      if (mockSupabaseClient.client.realtime) {
+        mockSupabaseClient.client.realtime.setAuth = mocks.setAuth;
+      }
+      (
+        mockSupabaseClient.client as unknown as {
+          realtime: { setAuth: typeof mocks.setAuth };
+        }
+      ).realtime.setAuth = mocks.setAuth;
+    }
+
     // Ensure the chainable mock returns 'this' (the channel object)
     mocks.channel.on.mockReturnThis();
     // Reset our channel function to return the same channel object

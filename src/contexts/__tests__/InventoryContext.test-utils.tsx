@@ -28,12 +28,7 @@ vi.mock("@i18n", () => ({
   }),
 }));
 
-vi.mock("@supabaseClient", async () => {
-  const { mockSupabaseClient } = await import("@test/mocks/supabase");
-  return {
-    supabase: mockSupabaseClient.client,
-  };
-});
+// Supabase is mocked globally
 
 // 2. Shared Test Data
 export const mockItems = [

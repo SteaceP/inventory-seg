@@ -2,6 +2,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
+import { mockSupabaseClient } from "@test/mocks";
+
 import { UserProvider, useUserContext } from "../UserContext";
 
 // Hoist mocks
@@ -10,14 +12,6 @@ const mocks = vi.hoisted(() => {
   const showError = vi.fn();
   const handleError = vi.fn();
 
-  // Supabase mock structure (subset needed for settings)
-  const from = vi.fn();
-  const upsert = vi.fn();
-  const select = vi.fn();
-  const eq = vi.fn();
-  const single = vi.fn();
-  const setLanguage = vi.fn();
-
   // Auth mock
   const useAuthMock = vi.fn();
 
@@ -25,12 +19,6 @@ const mocks = vi.hoisted(() => {
     showInfo,
     showError,
     handleError,
-    from,
-    upsert,
-    select,
-    eq,
-    single,
-    setLanguage,
     useAuthMock,
   };
 });
@@ -53,11 +41,7 @@ vi.mock("../AuthContext", () => ({
   useAuth: mocks.useAuthMock,
 }));
 
-vi.mock("@supabaseClient", () => ({
-  supabase: {
-    from: mocks.from,
-  },
-}));
+// Supabase is mocked globally
 
 const mockSession = {
   user: {
@@ -107,15 +91,19 @@ describe("UserContext", () => {
 
     // Mock settings fetch chain
     // from -> select -> eq -> single
-    mocks.from.mockReturnValue({
-      select: mocks.select,
-      upsert: mocks.upsert,
-      insert: mocks.upsert, // insert acts same as upsert for mock
+    mockSupabaseClient.mocks.from.mockReturnValue({
+      select: mockSupabaseClient.mocks.select,
+      upsert: mockSupabaseClient.mocks.upsert,
+      insert: mockSupabaseClient.mocks.upsert, // insert acts same as upsert for mock
     });
-    mocks.select.mockReturnValue({ eq: mocks.eq });
-    mocks.eq.mockReturnValue({ single: mocks.single });
+    mockSupabaseClient.mocks.select.mockReturnValue({
+      eq: mockSupabaseClient.mocks.eq,
+    });
+    mockSupabaseClient.mocks.eq.mockReturnValue({
+      single: mockSupabaseClient.mocks.single,
+    });
 
-    mocks.single.mockResolvedValue({
+    mockSupabaseClient.mocks.single.mockResolvedValue({
       data: {
         display_name: "Test User",
         avatar_url: "http://avatar.com",
@@ -126,7 +114,7 @@ describe("UserContext", () => {
       error: null,
     });
 
-    mocks.upsert.mockResolvedValue({ error: null });
+    mockSupabaseClient.mocks.upsert.mockResolvedValue({ error: null });
   });
 
   it("should initialize with loading state", () => {
@@ -217,7 +205,7 @@ describe("UserContext", () => {
     });
 
     // Verify DB call
-    expect(mocks.upsert).toHaveBeenCalledWith(
+    expect(mockSupabaseClient.mocks.upsert).toHaveBeenCalledWith(
       expect.objectContaining({ language: "en", user_id: "test-user-id" }),
       expect.objectContaining({ onConflict: "user_id" })
     );

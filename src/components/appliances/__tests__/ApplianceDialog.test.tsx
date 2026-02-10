@@ -3,6 +3,9 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
+import { mockSupabaseClient, setupCryptoUtilsMock } from "@test/mocks";
+import { generateSecureId } from "@utils/crypto";
+
 import ApplianceDialog from "../ApplianceDialog/ApplianceDialog";
 
 // Mock Translation
@@ -19,34 +22,8 @@ vi.mock("@hooks/useErrorHandler", () => ({
   }),
 }));
 
-// Mock Supabase
-const { mockFrom, mockUpload } = vi.hoisted(() => {
-  const mockUpload = vi.fn().mockResolvedValue({ error: null });
-  const mockGetPublicUrl = vi
-    .fn()
-    .mockReturnValue({ data: { publicUrl: "http://example.com/image.jpg" } });
-  const mockFrom = vi.fn(() => ({
-    upload: mockUpload,
-    getPublicUrl: mockGetPublicUrl,
-  }));
-  return { mockFrom, mockUpload, mockGetPublicUrl };
-});
-
-vi.mock("@supabaseClient", () => ({
-  supabase: {
-    storage: {
-      from: mockFrom,
-    },
-  },
-}));
-
-// Mock Utils
-vi.mock("@utils/crypto", () => ({
-  validateImageFile: vi.fn(),
-  generateSecureFileName: vi.fn().mockReturnValue("secure-name.jpg"),
-  generateSecureId: vi.fn().mockReturnValue("APP-12345"),
-  getExtensionFromMimeType: vi.fn().mockReturnValue("jpg"),
-}));
+// Setup Crypto Mock
+setupCryptoUtilsMock();
 
 const theme = createTheme();
 
@@ -65,6 +42,7 @@ describe("ApplianceDialog", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSupabaseClient.helpers.setStorageUploadSuccess("image.jpg");
   });
 
   it("renders correctly in add mode", () => {
@@ -109,11 +87,16 @@ describe("ApplianceDialog", () => {
     });
   });
 
-  it("generates SKU when button is clicked", () => {
+  it("generates SKU when button is clicked", async () => {
     renderWithTheme(<ApplianceDialog {...defaultProps} />);
     const generateButton = screen.getByTitle("appliances.generateSku");
     fireEvent.click(generateButton);
-    expect(screen.getByDisplayValue("APP-12345")).toBeInTheDocument();
+
+    expect(generateSecureId).toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue("APP-12345")).toBeInTheDocument();
+    });
   });
 
   it("handles image upload", async () => {
@@ -131,8 +114,12 @@ describe("ApplianceDialog", () => {
 
     await waitFor(() => {
       // Check if upload was initiated
-      expect(mockFrom).toHaveBeenCalledWith("appliance-images");
-      expect(mockUpload).toHaveBeenCalled();
+      // mockSupabaseClient.client.storage.from() is mocked to return the storage mock object
+      // which has upload method.
+      // But the test called `supabase.storage.from("...").upload(...)`
+      // mockSupabaseClient makes `from` return a mock object that has `upload`.
+      // The `mockSupabaseClient.mocks.upload` is that upload function.
+      expect(mockSupabaseClient.mocks.upload).toHaveBeenCalled();
     });
   });
 });

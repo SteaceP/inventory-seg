@@ -58,3 +58,4 @@ wrangler.jsonc
 *.njsproj
 *.sln
 *.sw?
+test-results*
