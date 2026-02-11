@@ -128,9 +128,7 @@ describe("Appliances Page", () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(
-        screen.getByText("appliances.noAppliancesFound")
-      ).toBeInTheDocument();
+      expect(screen.getByText("appliances.empty")).toBeInTheDocument();
     });
   });
 });

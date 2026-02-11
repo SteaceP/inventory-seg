@@ -19,8 +19,10 @@ test.describe("Appliance Management", () => {
     await page.getByRole("button", { name: /add|ajouter/i }).click();
 
     // Fill dialog
-    await expect(page.getByRole("dialog")).toBeVisible();
-    await page.locator('input[name="name"]').fill(applianceName);
+    await expect(page.getByRole("dialog")).toBeVisible({ timeout: 10000 });
+    const nameField = page.locator('input[name="name"]');
+    await expect(nameField).toBeVisible();
+    await nameField.fill(applianceName);
     await page.locator('input[name="brand"]').fill("Samsung");
     await page.locator('input[name="model"]').fill("RF28");
 

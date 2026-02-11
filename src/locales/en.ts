@@ -62,6 +62,7 @@ const en = {
   "inventory.notes": "Notes",
   "errors.uploadImage": "Error uploading image. Please try again.",
   "errors.updateStock": "Error updating stock.",
+  "errors.updateLocation": "Failed to update stock location.",
   "errors.updateItem": "Failed to update item. Please try again.",
   "errors.addItem": "Failed to add item. Please try again.",
   "errors.saveItem": "An error occurred. Please try again.",
@@ -75,6 +76,7 @@ const en = {
     "CAPTCHA verification failed. Please refresh the page and try again.",
   "errors.unexpected": "An unexpected error occurred. Please try again.",
   "errors.network": "Network error. Please check your connection.",
+  "errors.fetchUserSettings": "Failed to fetch user settings: {{error}}",
   "errors.unauthorized": "You do not have permission to perform this action.",
   "errors.rateLimit":
     "Too many attempts. Please wait a moment before trying again.",
@@ -247,7 +249,10 @@ const en = {
   "appliances.filter.operational": "Operational",
   "appliances.filter.serviceNeeded": "Service Needed",
   "appliances.filter.broken": "Broken",
-  "appliances.noAppliancesFound": "No appliances found in this category.",
+  "appliances.noAppliancesFound":
+    "No units found matching your search or filter.",
+  "appliances.empty":
+    "Your appliance list is empty. Add your first unit to get started.",
   "appliances.unknown": "Unknown",
   "appliances.close": "Close",
   "appliances.cancel": "Cancel",
@@ -279,7 +284,9 @@ const en = {
   "inventory.generateSku": "Generate random SKU",
   "inventory.cancel": "Cancel",
   "inventory.save": "Save",
-  "inventory.noItemsFound": "No items found in this category.",
+  "inventory.noItemsFound": "No items found matching your search or filter.",
+  "inventory.empty":
+    "Your inventory is empty. Add your first item to get started.",
   "inventory.create": "Create Item",
   "inventory.categories.manage": "Manage Categories",
   "inventory.categories.newName": "New category name",

@@ -1,10 +1,5 @@
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  cleanup,
-} from "@testing-library/react";
+import { render, screen, waitFor, cleanup } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import {
@@ -122,6 +117,7 @@ describe("NotificationSection", () => {
   });
 
   it("should toggle push notifications", async () => {
+    const user = userEvent.setup();
     render(<NotificationSection />);
 
     const pushSwitch = screen.getByRole("switch", {
@@ -129,11 +125,9 @@ describe("NotificationSection", () => {
     });
 
     // Initial state should be unchecked
-    await waitFor(() => {
-      expect(pushSwitch).not.toBeChecked();
-    });
+    expect(pushSwitch).not.toBeChecked();
 
-    fireEvent.click(pushSwitch);
+    await user.click(pushSwitch);
 
     // Wait for push mock to be called
     await waitFor(
@@ -153,6 +147,7 @@ describe("NotificationSection", () => {
   });
 
   it("should show/hide threshold field when email alerts are toggled", async () => {
+    const user = userEvent.setup();
     render(<NotificationSection />);
 
     expect(
@@ -162,7 +157,7 @@ describe("NotificationSection", () => {
     const emailSwitch = screen.getByRole("switch", {
       name: /notifications.emailAlerts/i,
     });
-    fireEvent.click(emailSwitch);
+    await user.click(emailSwitch);
 
     await waitFor(() => {
       expect(
@@ -170,7 +165,7 @@ describe("NotificationSection", () => {
       ).toBeInTheDocument();
     });
 
-    fireEvent.click(emailSwitch);
+    await user.click(emailSwitch);
 
     await waitFor(() => {
       expect(
@@ -180,16 +175,18 @@ describe("NotificationSection", () => {
   });
 
   it("should change threshold value", async () => {
+    const user = userEvent.setup();
     render(<NotificationSection />);
 
-    fireEvent.click(
+    await user.click(
       screen.getByRole("switch", { name: /notifications.emailAlerts/i })
     );
 
     const input = await screen.findByLabelText(
       /notifications.lowStockThreshold/i
     );
-    fireEvent.change(input, { target: { value: "15" } });
+    await user.clear(input);
+    await user.type(input, "15");
 
     await waitFor(() => {
       expect(input).toHaveValue(15);
@@ -202,10 +199,11 @@ describe("NotificationSection", () => {
       ok: true,
     } as Response);
 
+    const user = userEvent.setup();
     render(<NotificationSection />);
 
     const button = screen.getByTestId("test-push-button");
-    fireEvent.click(button);
+    await user.click(button);
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith(
@@ -228,10 +226,11 @@ describe("NotificationSection", () => {
       json: () => Promise.reject(new Error("Invalid JSON")),
     } as unknown as Response);
 
+    const user = userEvent.setup();
     render(<NotificationSection />);
 
     const button = screen.getByTestId("test-push-button");
-    fireEvent.click(button);
+    await user.click(button);
 
     await waitFor(() => {
       // Should fallback to handle error with text
@@ -248,10 +247,11 @@ describe("NotificationSection", () => {
       json: () => Promise.resolve({ errorType: "NO_SUBSCRIPTION" }),
     } as Response);
 
+    const user = userEvent.setup();
     render(<NotificationSection />);
 
     const button = screen.getByTestId("test-push-button");
-    fireEvent.click(button);
+    await user.click(button);
 
     await waitFor(() => {
       // Should show specific error message directly via showError
@@ -270,10 +270,11 @@ describe("NotificationSection", () => {
       json: () => Promise.resolve({ errorType: "CONFIG_ERROR" }),
     } as Response);
 
+    const user = userEvent.setup();
     render(<NotificationSection />);
 
     const button = screen.getByTestId("test-push-button");
-    fireEvent.click(button);
+    await user.click(button);
 
     await waitFor(() => {
       expect(mockAlert.showError).toHaveBeenCalledWith(

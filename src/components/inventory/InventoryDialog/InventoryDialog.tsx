@@ -106,6 +106,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
             onChange={(e) =>
               onFormDataChange({ ...formData, name: e.target.value })
             }
+            slotProps={{ htmlInput: { "data-testid": "item-name-input" } }}
             disabled={!isAdmin}
           />
 
@@ -130,6 +131,12 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                 id="item-category"
                 name="category"
                 label={t("inventory.category")}
+                slotProps={{
+                  htmlInput: {
+                    ...params.inputProps,
+                    "data-testid": "item-category-input",
+                  },
+                }}
               />
             )}
           />
@@ -156,6 +163,12 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
             }
             type="number"
             fullWidth
+            slotProps={{
+              htmlInput: { "data-testid": "item-threshold-input" },
+              inputLabel: {
+                shrink: true,
+              },
+            }}
             value={formData.low_stock_threshold ?? ""}
             onChange={(e) =>
               onFormDataChange({
@@ -171,11 +184,6 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
                 ? `${t("inventory.usingBaseThreshold") || "Utilise le seuil par défaut"}: ${effectiveBaseThreshold}`
                 : ""
             }
-            slotProps={{
-              inputLabel: {
-                shrink: true,
-              },
-            }}
           />
 
           <TextField
@@ -198,6 +206,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
               name="sku"
               label={t("inventory.skuLabel")}
               fullWidth
+              slotProps={{ htmlInput: { "data-testid": "item-sku-input" } }}
               value={formData.sku || ""}
               onChange={(e) =>
                 onFormDataChange({ ...formData, sku: e.target.value })

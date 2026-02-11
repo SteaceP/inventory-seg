@@ -5,6 +5,7 @@ import React from "react";
 // Types & Hooks
 
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
@@ -13,6 +14,10 @@ import Grid from "@mui/material/Grid";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
+
+import AddIcon from "@mui/icons-material/Add";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import KitchenIcon from "@mui/icons-material/Kitchen";
 
 import { useTranslation } from "@/i18n";
 import type { ApplianceStatus } from "@/types/appliances";
@@ -155,10 +160,59 @@ const Appliances: React.FC = () => {
           </Grid>
 
           {filteredAppliances.length === 0 && (
-            <Box sx={{ textAlign: "center", py: 8 }}>
-              <Typography color="text.secondary">
-                {t("appliances.noAppliancesFound")}
-              </Typography>
+            <Box
+              sx={{
+                textAlign: "center",
+                py: 8,
+                px: 3,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {appliances.length === 0 ? (
+                <>
+                  <KitchenIcon
+                    sx={{
+                      fontSize: 64,
+                      mb: 2,
+                      color: "primary.main",
+                      opacity: 0.8,
+                    }}
+                  />
+                  <Typography variant="h5" color="text.primary" gutterBottom>
+                    {t("appliances.empty") || "Your appliance list is empty"}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    onClick={() => dialogs.setOpenAddAppliance(true)}
+                    sx={{
+                      mt: 2,
+                      bgcolor: "primary.main",
+                      "&:hover": { bgcolor: "primary.dark" },
+                    }}
+                  >
+                    {t("appliances.add") || "Add Appliance"}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <FilterListIcon
+                    sx={{
+                      fontSize: 64,
+                      mb: 2,
+                      color: "text.secondary",
+                      opacity: 0.5,
+                    }}
+                  />
+                  <Typography variant="h6" color="text.secondary">
+                    {t("appliances.noAppliancesFound") ||
+                      "No appliances found matching your filter."}
+                  </Typography>
+                </>
+              )}
             </Box>
           )}
         </>

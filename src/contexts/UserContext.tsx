@@ -1,7 +1,4 @@
-/* eslint-disable react-refresh/only-export-components */
 import React, {
-  createContext,
-  use,
   useState,
   useEffect,
   useCallback,
@@ -10,50 +7,29 @@ import React, {
 } from "react";
 
 import { supabase } from "@/supabaseClient";
-import type {
-  Language,
-  UserProfile,
-  UserContextType,
-  UserSettingsRow,
-} from "@/types/user";
+import type { Language, UserProfile, UserSettingsRow } from "@/types/user";
 
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { logInfo } from "@utils/errorReporting";
 
+import { useTranslation } from "../i18n";
 import { useAlert } from "./AlertContext";
 import { useAuth } from "./AuthContext";
+import { UserContext } from "./UserContext";
 
-import type { Session, PostgrestError } from "@supabase/supabase-js";
-
-// Re-exporting Session for convenience if needed by consumers, though they should ideally use simple types
-export const UserContext = createContext<
-  (UserContextType & { session: Session | null }) | undefined
->(undefined);
-
-/**
- * Hook to access user settings, profile, and preferences.
- *
- * @returns {UserContextType} The user context value.
- * @throws {Error} if used outside of UserProvider.
- */
-export const useUserContext = () => {
-  const context = use(UserContext);
-  if (context === undefined) {
-    throw new Error("useUserContext must be used within a UserProvider");
-  }
-  return context;
-};
+import type { PostgrestError } from "@supabase/supabase-js";
 
 /**
  * Provider component for user-specific settings and profile data.
  * Manages fetching and persisting user preferences to Supabase.
  */
-export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
+const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { session, userId, loading: authLoading } = useAuth();
   const { showError } = useAlert();
   const { handleError } = useErrorHandler();
+  const { t } = useTranslation();
 
   const [displayName, setDisplayName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
@@ -169,19 +145,37 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
           }
         }
       } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : String(err);
+        let msg = "Unknown error";
+        if (err instanceof Error) {
+          msg = err.message;
+        } else if (typeof err === "object" && err !== null) {
+          // Verify if it has a message property (like PostgrestError)
+          if ("message" in err) {
+            msg = String((err as { message: unknown }).message);
+          } else {
+            // Try to stringify, fallback to String(err) if it fails
+            try {
+              msg = JSON.stringify(err);
+            } catch {
+              msg = "Unknown error object";
+            }
+          }
+        } else {
+          msg = String(err);
+        }
+
         if (msg.includes("timed out")) {
           logInfo("User settings fetch timed out (suppressing UI alert)", {
             msg,
           });
           return;
         }
-        handleError(err, "Failed to fetch user settings: " + msg);
+        handleError(err, t("errors.fetchUserSettings", { error: msg }));
       } finally {
         setSettingsLoading(false);
       }
     },
-    [handleError]
+    [handleError, t]
   );
 
   useEffect(() => {
@@ -340,3 +334,5 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return <UserContext value={contextValue}>{children}</UserContext>;
 };
+
+export default UserProvider;

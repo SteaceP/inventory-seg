@@ -53,6 +53,14 @@ test.describe("Error Handling", () => {
     );
 
     // Either items exist or empty message shows
+    // Wait for either grid or empty message to appear
+    await page
+      .waitForSelector(
+        '.MuiDataGrid-root, .InventoryHeader-root, h4:has-text("Inventaire"), h4:has-text("Inventory")',
+        { timeout: 10000 }
+      )
+      .catch(() => {});
+
     const grid = page.getByRole("grid");
     const hasGrid = await grid.isVisible();
     const hasEmptyMessage = await emptyMessage.isVisible().catch(() => false);

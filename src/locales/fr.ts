@@ -65,6 +65,7 @@ const fr = {
   "inventory.notes": "Notes",
   "errors.uploadImage": "Erreur d'upload de l'image. Veuillez réessayer.",
   "errors.updateStock": "Erreur lors de la mise à jour du stock.",
+  "errors.updateLocation": "Échec de la mise à jour de l'emplacement du stock.",
   "errors.updateItem":
     "Échec de la mise à jour de l'article. Veuillez réessayer.",
   "errors.addItem": "Échec de l'ajout de l'article. Veuillez réessayer.",
@@ -81,6 +82,8 @@ const fr = {
   "errors.unexpected":
     "Une erreur inattendue est survenue. Veuillez réessayer.",
   "errors.network": "Erreur réseau. Veuillez vérifier votre connexion.",
+  "errors.fetchUserSettings":
+    "Échec de la récupération des paramètres utilisateur : {{error}}",
   "errors.unauthorized":
     "Vous n'avez pas la permission d'effectuer cette action.",
   "errors.rateLimit":
@@ -261,7 +264,10 @@ const fr = {
   "appliances.filter.operational": "Opérationnel",
   "appliances.filter.serviceNeeded": "Entretien requis",
   "appliances.filter.broken": "En panne",
-  "appliances.noAppliancesFound": "Aucun appareil trouvé dans cette catégorie.",
+  "appliances.noAppliancesFound":
+    "Aucune unité ne correspond à votre recherche ou filtre.",
+  "appliances.empty":
+    "Votre liste d'appareils est vide. Ajoutez votre première unité pour commencer.",
   "appliances.unknown": "Inconnu",
   "appliances.close": "Fermer",
   "appliances.cancel": "Annuler",
@@ -293,7 +299,10 @@ const fr = {
   "inventory.generateSku": "Générer SKU aléatoire",
   "inventory.cancel": "Annuler",
   "inventory.save": "Enregistrer",
-  "inventory.noItemsFound": "Aucun article trouvé dans cette catégorie.",
+  "inventory.noItemsFound":
+    "Aucun article ne correspond à votre recherche ou filtre.",
+  "inventory.empty":
+    "Votre inventaire est vide. Ajoutez votre premier article pour commencer.",
   "inventory.create": "Créer l'article",
   "inventory.categories.manage": "Gérer les Catégories",
   "inventory.categories.newName": "Nouveau nom de catégorie",

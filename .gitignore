@@ -34,6 +34,13 @@ wrangler.jsonc
 .wrangler.dev.vars*
 
 # ======================
+# Playwright
+# ======================
+/playwright/.auth
+/test-results
+/playwright-report
+
+# ======================
 # Environment Variables
 # ======================
 # Use for development secrets (MUI, Supabase local, etc.)
@@ -58,4 +65,3 @@ wrangler.jsonc
 *.njsproj
 *.sln
 *.sw?
-test-results*

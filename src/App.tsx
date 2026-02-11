@@ -23,7 +23,8 @@ import RealtimeNotifications from "./components/RealtimeNotifications";
 import { AlertProvider } from "./contexts/AlertContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { InventoryProvider } from "./contexts/InventoryContext";
-import { UserProvider, useUserContext } from "./contexts/UserContext";
+import { useUserContext } from "./contexts/UserContext.ts";
+import UserProvider from "./contexts/UserContext.tsx";
 import { useTranslation } from "./i18n";
 import { getTheme } from "./theme";
 

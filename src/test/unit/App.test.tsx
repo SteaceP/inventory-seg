@@ -81,11 +81,13 @@ vi.mock("../../pages/Dashboard", () => ({
 // Mock useUserContext to control auth state
 const mockUseUserContext = vi.fn();
 
-vi.mock("../../contexts/UserContext", () => ({
-  UserProvider: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  ),
+vi.mock("../../contexts/UserContext.ts", () => ({
   useUserContext: () => mockUseUserContext() as unknown,
+  UserContext: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
+vi.mock("../../contexts/UserContext.tsx", () => ({
+  default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 vi.mock("../../contexts/AlertContext", () => ({

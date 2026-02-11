@@ -63,6 +63,7 @@ const LocationDialog: React.FC<LocationDialogProps> = ({
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           placeholder="e.g. Warehouse A, Shelf 1"
+          slotProps={{ htmlInput: { "data-testid": "location-name-input" } }}
         />
 
         <TextField
@@ -100,6 +101,9 @@ const LocationDialog: React.FC<LocationDialogProps> = ({
             setFormData({ ...formData, description: e.target.value })
           }
           placeholder="Optional description of this location..."
+          slotProps={{
+            htmlInput: { "data-testid": "location-description-input" },
+          }}
         />
       </DialogContent>
       <DialogActions sx={{ p: 3 }}>

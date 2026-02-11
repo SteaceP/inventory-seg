@@ -74,15 +74,37 @@ describe("InventoryCategorizedGrid", () => {
     selectedItems: new Set<string>(),
     onToggleItem: vi.fn(),
     onEdit: vi.fn(),
+    isFiltered: true,
+    onAdd: vi.fn(),
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("renders empty state", () => {
-    render(<InventoryCategorizedGrid {...defaultProps} items={[]} />);
+  it("renders empty state when filtered", () => {
+    render(
+      <InventoryCategorizedGrid
+        {...defaultProps}
+        items={[]}
+        isFiltered={true}
+      />
+    );
     expect(screen.getByText("inventory.noItemsFound")).toBeInTheDocument();
+  });
+
+  it("renders empty state when not filtered (database empty)", () => {
+    render(
+      <InventoryCategorizedGrid
+        {...defaultProps}
+        items={[]}
+        isFiltered={false}
+      />
+    );
+    expect(screen.getByText("inventory.empty")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "inventory.add" })
+    ).toBeInTheDocument();
   });
 
   it("renders category sections for grouped items", () => {

@@ -40,6 +40,8 @@ const ActionCard: React.FC<ActionCardProps> = ({
     <Paper
       elevation={0}
       onClick={onClick}
+      role="button"
+      tabIndex={0}
       sx={{
         p: isMobile ? 1.5 : 2.5,
         borderRadius: isMobile ? 3 : 4,

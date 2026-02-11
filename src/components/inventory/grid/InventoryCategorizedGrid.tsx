@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 
+import AddIcon from "@mui/icons-material/Add";
 import CategoryIcon from "@mui/icons-material/Category";
+import InventoryIcon from "@mui/icons-material/Inventory";
 
 import { useTranslation } from "@/i18n";
 import type { InventoryItem } from "@/types/inventory";
@@ -26,6 +29,8 @@ interface InventoryCategorizedGridProps {
   onViewHistory?: (itemId: string, itemName: string) => void;
   compactView?: boolean;
   selectedCategory?: string | null;
+  isFiltered?: boolean;
+  onAdd?: () => void;
 }
 
 const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
@@ -38,6 +43,8 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
   onViewHistory,
   compactView = false,
   selectedCategory = null,
+  isFiltered = false,
+  onAdd,
 }) => {
   const { t } = useTranslation();
   const { categories, updateCategoryThreshold } = useInventoryContext();
@@ -64,13 +71,48 @@ const InventoryCategorizedGrid: React.FC<InventoryCategorizedGridProps> = ({
           alignItems: "center",
           justifyContent: "center",
           py: 8,
-          opacity: 0.6,
+          px: 3,
+          textAlign: "center",
         }}
       >
-        <CategoryIcon sx={{ fontSize: 48, mb: 2 }} />
-        <Typography variant="h6">
-          {t("inventory.noItemsFound") || "No items found"}
-        </Typography>
+        {isFiltered ? (
+          <>
+            <CategoryIcon
+              sx={{
+                fontSize: 64,
+                mb: 2,
+                color: "text.secondary",
+                opacity: 0.5,
+              }}
+            />
+            <Typography variant="h6" color="text.secondary" gutterBottom>
+              {t("inventory.noItemsFound") || "No items found"}
+            </Typography>
+          </>
+        ) : (
+          <>
+            <InventoryIcon
+              sx={{ fontSize: 64, mb: 2, color: "primary.main", opacity: 0.8 }}
+            />
+            <Typography variant="h5" color="text.primary" gutterBottom>
+              {t("inventory.empty") || "Your inventory is empty"}
+            </Typography>
+            {onAdd && (
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={onAdd}
+                sx={{
+                  mt: 2,
+                  bgcolor: "primary.main",
+                  "&:hover": { bgcolor: "primary.dark" },
+                }}
+              >
+                {t("inventory.add") || "Add Item"}
+              </Button>
+            )}
+          </>
+        )}
       </Box>
     );
   }

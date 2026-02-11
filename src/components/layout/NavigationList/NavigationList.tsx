@@ -1,7 +1,7 @@
 import React from "react";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, NavLink } from "react-router-dom";
 
 import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
@@ -56,10 +56,9 @@ const NavigationList: React.FC<NavigationListProps> = ({
             placement="right"
           >
             <ListItemButton
-              onClick={() => {
-                void navigate(item.path);
-                onNavigate();
-              }}
+              component={NavLink}
+              to={item.path}
+              onClick={onNavigate}
               selected={location.pathname === item.path}
               sx={{
                 mx: 1,

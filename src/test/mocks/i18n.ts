@@ -4,12 +4,27 @@ import { vi } from "vitest";
  * Centralized i18n mocking utilities
  */
 
-export const createMockTranslation = (customT?: (key: string) => string) => {
-  const t = customT || ((key: string) => key);
+// Create a stable mock instance at module level to prevent re-renders
+const stableMockInstance = () => {
+  const t = (key: string) => key;
   return {
     t,
-    lang: "en",
+    lang: "en" as const,
   };
+};
+
+// Single stable instance
+const mockInstance = stableMockInstance();
+
+export const createMockTranslation = (customT?: (key: string) => string) => {
+  if (customT) {
+    return {
+      t: customT,
+      lang: "en" as const,
+    };
+  }
+  // Return the stable instance
+  return mockInstance;
 };
 
 export const mockI18n = {
@@ -22,9 +37,9 @@ export const mockI18n = {
  */
 export const setupI18nMock = () => {
   vi.mock("@i18n", () => ({
-    useTranslation: () => createMockTranslation(),
+    useTranslation: () => mockInstance,
   }));
   vi.mock("@/i18n", () => ({
-    useTranslation: () => createMockTranslation(),
+    useTranslation: () => mockInstance,
   }));
 };

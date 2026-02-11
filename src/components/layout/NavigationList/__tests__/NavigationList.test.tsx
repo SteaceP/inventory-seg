@@ -1,4 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
@@ -23,6 +24,28 @@ vi.mock("react-router-dom", async () => {
     ...actual,
     useNavigate: () => mockNavigate,
     useLocation: () => ({ pathname: "/" }),
+    NavLink: ({
+      to,
+      onClick,
+      children,
+      ...props
+    }: {
+      to: string;
+      onClick?: (e: React.MouseEvent) => void;
+      children: React.ReactNode;
+    }) => (
+      <a
+        href={to}
+        onClick={(e) => {
+          e.preventDefault();
+          onClick?.(e);
+          mockNavigate(to);
+        }}
+        {...props}
+      >
+        {children}
+      </a>
+    ),
   };
 });
 
@@ -57,19 +80,22 @@ describe("NavigationList", () => {
     expect(screen.getByText("security.signOut")).toBeInTheDocument();
   });
 
-  it("calls navigate and onNavigate when an item is clicked", () => {
+  it("calls navigate and onNavigate when an item is clicked", async () => {
+    const user = userEvent.setup();
     render(
       <MemoryRouter>
         <NavigationList {...defaultProps} />
       </MemoryRouter>
     );
 
-    fireEvent.click(screen.getByText("Settings"));
+    // Click the button by role to ensure we hit the ListItemButton which has the onClick/NavLink
+    await user.click(screen.getByRole("link", { name: /Settings/i }));
     expect(mockNavigate).toHaveBeenCalledWith("/settings");
     expect(mockOnNavigate).toHaveBeenCalled();
   });
 
   it("calls signOut and navigates to login when logout is clicked", async () => {
+    const user = userEvent.setup();
     render(
       <MemoryRouter>
         <NavigationList {...defaultProps} />
@@ -77,7 +103,7 @@ describe("NavigationList", () => {
     );
 
     const logoutButton = screen.getByText("security.signOut");
-    fireEvent.click(logoutButton);
+    await user.click(logoutButton);
 
     expect(mockSupabaseClient.mocks.signOut).toHaveBeenCalled();
     await vi.waitFor(() => expect(mockNavigate).toHaveBeenCalledWith("/login"));

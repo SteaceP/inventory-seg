@@ -119,24 +119,31 @@ Implementation locations:
 
 #### Test Organization
 
-- **Location**: All e2e tests must be in `e2e/` directory at project root
+- **Location**: All e2e tests must be in `src/test/e2e/` directory
 - **Naming**: Use descriptive file names ending in `.spec.ts` (e.g., `inventory.spec.ts`, `login.spec.ts`)
 - **Structure**: Group related tests using `test.describe()` blocks
 
 #### Authentication
 
 - **Storage State**: Use Playwright's storage state feature to persist authentication across tests
-- **Setup File**: Create `e2e/auth.setup.ts` to handle login and save authentication state
+- **Setup File**: Create `src/test/e2e/global.setup.ts` to handle login and save authentication state
 - **Reuse Sessions**: Load saved authentication state in tests to avoid repeated logins
 - **Test Isolation**: Each test should be independent and not rely on state from other tests
 
 #### MUI Component Interactions
 
-- **Selectors**: Prefer `getByRole()`, `getByLabel()`, and `getByText()` over CSS selectors
-- **Autocomplete**: Use `fill()` followed by `press('ArrowDown')` and `press('Enter')` to select options
-- **Dialogs/Modals**: Wait for dialog to be visible before interacting: `await page.getByRole('dialog').waitFor()`
-- **Buttons**: Use `getByRole('button', { name: 'Button Text' })` for reliable selection
-- **Form Fields**: Use `getByLabel()` to select inputs by their label text
+- **Prioritize Semantic Locators**: Avoid CSS selectors targeting internal MUI class names. Leverage user-centric locators.
+  - Use `page.getByRole()` for elements with accessibility roles (button, textbox, menuitem).
+  - Use `page.getByLabel()` for form fields.
+  - Use `page.getByTestId()` for specific testing hooks. For MUI `TextField`, pass `data-testid` via `slotProps.htmlInput` (e.g., `<TextField slotProps={{ htmlInput: { "data-testid": "my-input" } }} />`).
+- **Handle Dynamic/Overlay Components**: MUI components like `Select` or `Modal` often render in a different part of the DOM.
+  - Use `page.getBy(...)` instead of `component.getBy(...)` for overlays.
+  - **MUI Select Pattern**: Click the trigger button/select, then click the option in the popover.
+    ```typescript
+    await page.getByRole('button', { name: 'Select Color' }).click();
+    await page.getByRole('option', { name: 'Red' }).click();
+    ```
+- **Wait for Actions**: Playwright's auto-waiting handles most timing issues, but for complex MUI components, ensure the element is visible and enabled.
 
 #### Best Practices
 

@@ -183,6 +183,9 @@ const CategorySection: React.FC<CategorySectionProps> = ({
                 e.stopPropagation();
                 onEditThreshold(category);
               }}
+              aria-label={
+                t("inventory.editCategoryThreshold") || "Edit Threshold"
+              }
               sx={{ color: "text.secondary", ml: 1 }}
             >
               <SettingsIcon fontSize="small" />

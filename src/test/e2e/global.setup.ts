@@ -64,12 +64,24 @@ setup("authenticate", async ({ page }) => {
 
   try {
     // Create user via Admin API
-    const { error } = await supabase.auth.admin.createUser({
+    const { data, error } = await supabase.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
     });
     if (error) throw error;
+
+    if (data.user) {
+      // Ensure user has admin role and French language
+      const { error: settingsError } = await supabase
+        .from("user_settings")
+        .upsert({
+          user_id: data.user.id,
+          role: "admin",
+          language: "fr",
+        });
+      if (settingsError) throw settingsError;
+    }
   } catch (err: unknown) {
     console.error("Failed to create test user via API. Error details:");
     if (err instanceof Error) {
@@ -95,7 +107,9 @@ setup("authenticate", async ({ page }) => {
   await page.goto("/login");
 
   // Check if we are already logged in
-  const dashboardHeader = page.getByRole("heading", { name: "Dashboard" });
+  const dashboardHeader = page.getByRole("heading", {
+    name: /tableau de bord|dashboard/i,
+  });
   if (await dashboardHeader.isVisible({ timeout: 2000 })) {
     await page.context().storageState({ path: authFile });
     return;
@@ -125,7 +139,9 @@ setup("authenticate", async ({ page }) => {
 
   // Wait for successful login (redirect to dashboard)
   await expect(page).toHaveURL("/", { timeout: 15000 });
-  await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible({
+  await expect(
+    page.getByRole("heading", { name: /tableau de bord|dashboard/i })
+  ).toBeVisible({
     timeout: 15000,
   });
 

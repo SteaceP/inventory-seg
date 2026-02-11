@@ -81,6 +81,42 @@ export const useInventoryStock = () => {
 
       if (error) throw error;
 
+      // Handle specific location update if provided
+      if (location) {
+        const currentItem = items.find((i) => i.id === itemId);
+        const oldStock = currentItem?.stock || 0;
+        const delta = newStock - oldStock;
+
+        if (delta !== 0) {
+          const locationEntry = currentItem?.stock_locations?.find(
+            (l) => l.location === location
+          );
+          const currentLocQty = locationEntry?.quantity || 0;
+          const newLocQty = Math.max(0, currentLocQty + delta);
+
+          const { error: locError } = await supabase
+            .from("inventory_stock_locations")
+            .upsert(
+              {
+                inventory_id: itemId,
+                location: location,
+                quantity: newLocQty,
+                parent_location:
+                  parentLocation || locationEntry?.parent_location,
+              },
+              { onConflict: "inventory_id,location" }
+            );
+
+          if (locError) {
+            console.error("Failed to update location stock:", locError);
+            // We don't throw here to avoid rolling back the main stock update,
+            // but strictly speaking we might want a transaction.
+            // For now, logging error is consistent with app pattern.
+            showError(t("errors.updateLocation") + ": " + locError.message);
+          }
+        }
+      }
+
       if (user) {
         const item = items.find((i) => i.id === itemId);
         const activityChanges: Record<

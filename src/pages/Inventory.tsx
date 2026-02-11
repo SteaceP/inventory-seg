@@ -143,7 +143,7 @@ const Inventory: React.FC = () => {
               items={filteredItems}
               selectedItems={selectedItems}
               onToggleItem={toggleItem}
-              onEdit={handleOpen}
+              onEdit={handleEdit}
               onAdjust={handleAdjust}
               onDelete={
                 role === "admin" ? (id) => handleDeleteClick(id) : undefined
@@ -154,6 +154,10 @@ const Inventory: React.FC = () => {
               }}
               compactView={compactView}
               selectedCategory={selectedCategory}
+              isFiltered={
+                searchQuery !== "" || !!selectedCategory || currentTab !== 0
+              }
+              onAdd={role === "admin" ? handleOpen : undefined}
             />
           </>
         )}

@@ -2,9 +2,13 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
+// NOTE: Global mock setup (likely from factories or indirect import) forces useTranslation
+// to return a mock where t(key) -> key. We accept this behavior for this test.
+
 import { mockSupabaseClient } from "@test/mocks";
 
-import { UserProvider, useUserContext } from "../UserContext";
+import { useUserContext } from "../UserContext.ts";
+import UserProvider from "../UserContext.tsx";
 
 // Hoist mocks
 const mocks = vi.hoisted(() => {
@@ -209,5 +213,68 @@ describe("UserContext", () => {
       expect.objectContaining({ language: "en", user_id: "test-user-id" }),
       expect.objectContaining({ onConflict: "user_id" })
     );
+  });
+
+  // ...
+
+  it("should handle non-standard error objects graciously", async () => {
+    // Auth: Logged In
+    mocks.useAuthMock.mockReturnValue({
+      session: mockSession,
+      userId: mockSession.user.id,
+      loading: false,
+    });
+
+    // Mock a weird error object from supabase
+    const weirdError = {
+      code: "500",
+      details: "Something went wrong",
+      hint: "Try again",
+      message: "Network Error",
+    };
+
+    mockSupabaseClient.mocks.single.mockRejectedValue(weirdError);
+
+    render(
+      <UserProvider>
+        <TestComponent />
+      </UserProvider>
+    );
+
+    // Wait for error handling
+    await waitFor(() => {
+      expect(mocks.handleError).toHaveBeenCalledWith(
+        weirdError,
+        "errors.fetchUserSettings"
+      );
+    });
+  });
+
+  it("should handle error objects without message", async () => {
+    // Auth: Logged In
+    mocks.useAuthMock.mockReturnValue({
+      session: mockSession,
+      userId: mockSession.user.id,
+      loading: false,
+    });
+
+    // Mock an opaque error object
+    const opaqueError = { some: "random", data: 123 };
+
+    mockSupabaseClient.mocks.single.mockRejectedValue(opaqueError);
+
+    render(
+      <UserProvider>
+        <TestComponent />
+      </UserProvider>
+    );
+
+    // Wait for error handling
+    await waitFor(() => {
+      expect(mocks.handleError).toHaveBeenCalledWith(
+        opaqueError,
+        "errors.fetchUserSettings"
+      );
+    });
   });
 });

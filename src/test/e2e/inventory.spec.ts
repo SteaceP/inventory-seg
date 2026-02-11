@@ -3,16 +3,23 @@ import { test, expect } from "@playwright/test";
 test.describe("Inventory Management", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/inventory");
+    // Wait for loading to finish using role
+    await page
+      .getByRole("progressbar")
+      .waitFor({ state: "hidden", timeout: 15000 })
+      .catch(() => {});
   });
 
   test("displays inventory list", async ({ page }) => {
     await expect(page).toHaveURL("/inventory");
     await expect(
-      page.getByRole("heading", { name: "Inventaire" })
+      page.getByRole("heading", { name: /inventaire|inventory/i })
     ).toBeVisible();
 
-    // Check for the DataGrid
-    await expect(page.getByRole("grid")).toBeVisible();
+    // Check for categorization sections (which act as our "list")
+    await expect(page.getByRole("heading", { level: 6 }).first()).toBeVisible({
+      timeout: 15000,
+    });
   });
 
   test("can create a new inventory item", async ({ page }) => {
@@ -21,53 +28,92 @@ test.describe("Inventory Management", () => {
     // Click Add button
     await page.getByRole("button", { name: /add|ajouter/i }).click();
 
-    // Fill dialog
+    // Fill dialog using test IDs
     await expect(page.getByRole("dialog")).toBeVisible();
-    await page.locator('input[name="name"]').fill(itemName);
-    await page.locator('input[name="sku"]').fill(`SKU-${Date.now()}`);
+    await page.getByTestId("item-name-input").fill(itemName);
+    await page.getByTestId("item-sku-input").fill(`SKU-${Date.now()}`);
     // Assuming Category is a select/combobox
     // Wait for category loading if needed
 
     // Submit
-    await page.getByRole("button", { name: /save|sauvegarder/i }).click();
+    const saveButton = page.getByRole("button", {
+      name: /save|enregistrer|sauvegarder/i,
+    });
+    await expect(saveButton).toBeVisible();
+    await saveButton.click();
 
-    // Verify item appears in list (might need search or filter)
-    await page.locator('input[type="search"]').fill(itemName);
-    await expect(page.getByRole("cell", { name: itemName })).toBeVisible();
+    // Verify item appears in list
+    await page
+      .getByRole("textbox", { name: /rechercher|search/i })
+      .fill(itemName);
+    await expect(page.getByText(itemName).first()).toBeVisible();
   });
 
   test("can edit an existing inventory item", async ({ page }) => {
-    // Find an edit button in the grid
-    const editButton = page
-      .getByRole("button", { name: /modifier|edit/i })
-      .first();
+    // Find an edit button in the grid - use getByLabel for better precision
+    let editButton = page.getByLabel(/modifier l'article|edit item/i).first();
+
+    // Ensure we have at least one item
+    if (!(await editButton.isVisible())) {
+      await page
+        .getByRole("button", { name: /add|ajouter/i })
+        .first()
+        .click();
+      await page.getByTestId("item-name-input").fill(`Test Item ${Date.now()}`);
+
+      // Handle category autocomplete
+      const categoryInput = page.getByTestId("item-category-input");
+      await categoryInput.click();
+      await page.waitForTimeout(500); // Wait for options
+
+      const firstOption = page.getByRole("option").first();
+      if (await firstOption.isVisible()) {
+        await firstOption.click();
+      } else {
+        // Fallback if no options (shouldn't happen with seeded data but good for robustness)
+        await categoryInput.fill("General");
+      }
+
+      await page
+        .getByRole("button", { name: /save|enregistrer|sauvegarder/i })
+        .first()
+        .click();
+      await page.waitForTimeout(1000);
+      editButton = page.getByLabel(/modifier l'article|edit item/i).first();
+    }
 
     if (await editButton.isVisible()) {
       await editButton.click();
 
-      // Wait for dialog
+      // Wait for dialog and ensure it's fully rendered
       await expect(page.getByRole("dialog")).toBeVisible();
+      await page.waitForTimeout(500);
 
       // Modify the name
-      const nameField = page.locator('input[name="name"]');
+      const nameField = page.getByTestId("item-name-input");
       const updatedName = `Updated Item ${Date.now()}`;
       await nameField.clear();
       await nameField.fill(updatedName);
 
       // Save changes
-      await page.getByRole("button", { name: /save|sauvegarder/i }).click();
+      await page
+        .getByRole("button", { name: /save|enregistrer|sauvegarder/i })
+        .click();
 
       await page.waitForTimeout(1000);
 
-      // Verify updated name appears
-      await expect(page.getByText(updatedName)).toBeVisible();
+      // Verify updated name appears - search for it to ensure visibility
+      await page
+        .getByRole("textbox", { name: /rechercher|search/i })
+        .fill(updatedName);
+      await expect(page.getByText(updatedName).first()).toBeVisible();
     }
   });
 
   test("can delete an inventory item", async ({ page }) => {
     // Find a delete button
     const deleteButton = page
-      .getByRole("button", { name: /supprimer|delete/i })
+      .getByRole("button", { name: /^supprimer$|^delete$/i })
       .first();
 
     if (await deleteButton.isVisible()) {
@@ -100,7 +146,7 @@ test.describe("Inventory Management", () => {
       await generateButton.click();
 
       // SKU field should be populated
-      const skuField = page.locator('input[name="sku"]');
+      const skuField = page.getByTestId("item-sku-input");
       const skuValue = await skuField.inputValue();
 
       expect(skuValue.length).toBeGreaterThan(0);
@@ -108,10 +154,11 @@ test.describe("Inventory Management", () => {
   });
 
   test("low stock threshold indicator is visible", async ({ page }) => {
-    // Look for low stock indicators in the grid
-    const lowStockIndicator = page.locator(
-      ".low-stock, [data-low-stock], .warning-icon"
-    );
+    // Look for low stock indicators using semantic markers or roles if available
+    // Fallback to data attribute if present, but avoid internal class names
+    const lowStockIndicator = page
+      .locator("[data-low-stock]")
+      .or(page.getByTitle(/stock bas|low stock/i));
 
     const count = await lowStockIndicator.count();
 
@@ -127,35 +174,25 @@ test.describe("Inventory Management", () => {
     await expect(page.getByRole("dialog")).toBeVisible();
 
     // Look for low stock threshold field
-    const thresholdField = page.locator(
-      'input[name="low_stock_threshold"], input[name="lowStockThreshold"]'
-    );
+    const thresholdField = page.getByTestId("item-threshold-input");
 
     if (await thresholdField.isVisible()) {
+      await thresholdField.focus();
       await thresholdField.fill("5");
       await expect(thresholdField).toHaveValue("5");
     }
   });
 
   test("can filter by category", async ({ page }) => {
-    // Look for category filter
-    const categoryFilter = page.getByLabel(/catégorie|category/i);
+    // The UI uses Chips for categories now, not a single select
+    const firstCategoryChip = page
+      .getByRole("button", { name: /.+/ }) // Matches any chip with a name (excluding "All")
+      .filter({ hasNot: page.getByText(/tout|all/i) })
+      .first();
 
-    if (await categoryFilter.isVisible()) {
-      await categoryFilter.click();
-
-      // Options should appear
+    if (await firstCategoryChip.isVisible()) {
+      await firstCategoryChip.click();
       await page.waitForTimeout(500);
-
-      // Select an option (if any exist)
-      const firstOption = page.getByRole("option").first();
-
-      if (await firstOption.isVisible()) {
-        await firstOption.click();
-
-        // Grid should update with filtered results
-        await page.waitForTimeout(500);
-      }
     }
   });
 

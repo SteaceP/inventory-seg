@@ -13,14 +13,14 @@ test.describe("Stock Locations", () => {
   });
 
   test("displays master location list", async ({ page }) => {
-    // Look for table or grid of locations
-    const locationsList = page.locator(
-      ".MuiTable-root, .MuiDataGrid-root, .MuiList-root"
-    );
+    // Look for table or grid of locations using roles
+    const locationsList = page
+      .getByRole("table")
+      .or(page.getByRole("grid"))
+      .or(page.getByRole("list"));
 
     // At least one location display element should be present
-    const count = await locationsList.count();
-    expect(count).toBeGreaterThan(0);
+    await expect(locationsList.first()).toBeVisible({ timeout: 10000 });
   });
 
   test("can create a new location", async ({ page }) => {
@@ -36,8 +36,7 @@ test.describe("Stock Locations", () => {
     await expect(page.getByRole("dialog")).toBeVisible();
 
     // Fill location name
-    const nameField = page.locator('input[name="name"]');
-    await nameField.fill(locationName);
+    await page.getByTestId("location-name-input").fill(locationName);
 
     // Save
     const saveButton = page.getByRole("button", {
@@ -46,11 +45,7 @@ test.describe("Stock Locations", () => {
     await saveButton.click();
 
     // Verify location appears in list
-    await page.waitForTimeout(1000);
-
-    // Search for the location or verify it's in the table
-    const newLocation = page.getByText(locationName);
-    await expect(newLocation).toBeVisible();
+    await expect(page.getByText(locationName)).toBeVisible();
   });
 
   test("can edit existing location", async ({ page }) => {
@@ -66,34 +61,31 @@ test.describe("Stock Locations", () => {
       await expect(page.getByRole("dialog")).toBeVisible();
 
       // Modify name field
-      const nameField = page.locator('input[name="name"]');
-      await nameField.fill(`Updated Location ${Date.now()}`);
+      await page
+        .getByTestId("location-name-input")
+        .fill(`Updated Location ${Date.now()}`);
 
       // Save
       const saveButton = page.getByRole("button", {
         name: /sauvegarder|save|enregistrer/i,
       });
       await saveButton.click();
-
-      await page.waitForTimeout(1000);
     }
   });
 
   test("hierarchical location structure is visible", async ({ page }) => {
-    // Look for tree view or hierarchical display
-    // Parent locations with child locations
-    const treeView = page.locator(".MuiTreeView-root, .location-hierarchy");
+    // Look for tree view or hierarchical display using role
+    const treeView = page.getByRole("tree");
 
     if (await treeView.isVisible()) {
       await expect(treeView).toBeVisible();
     } else {
-      // Alternative: look for indented rows or parent-child indicators
+      // Fallback to searching for hierarchy markers if tree role is not present
       const hierarchyIndicator = page.locator(
-        "[data-parent], .child-location, .nested-location"
+        "[data-parent], [data-testid='nested-location']"
       );
 
       const count = await hierarchyIndicator.count();
-      // Hierarchy indicators might exist
       if (count > 0) {
         expect(count).toBeGreaterThan(0);
       }
@@ -102,10 +94,11 @@ test.describe("Stock Locations", () => {
 
   test("can set parent location for hierarchy", async ({ page }) => {
     // Create a new location with parent
-    const addButton = page.getByRole("button", {
-      name: /ajouter|add|nouveau|new/i,
-    });
-    await addButton.click();
+    await page
+      .getByRole("button", {
+        name: /ajouter|add|nouveau|new/i,
+      })
+      .click();
 
     await expect(page.getByRole("dialog")).toBeVisible();
 
@@ -118,24 +111,26 @@ test.describe("Stock Locations", () => {
       // Should be able to select a parent
       await parentSelector.click();
 
-      // Options should appear
-      await page.waitForTimeout(500);
+      // Follow MUI Select pattern: click option in popover
+      const option = page.getByRole("option").first();
+      if (await option.isVisible()) {
+        await option.click();
+      }
     }
   });
 
   test("location description is editable", async ({ page }) => {
     // Click add to open dialog
-    const addButton = page.getByRole("button", {
-      name: /ajouter|add|nouveau|new/i,
-    });
-    await addButton.click();
+    await page
+      .getByRole("button", {
+        name: /ajouter|add|nouveau|new/i,
+      })
+      .click();
 
     await expect(page.getByRole("dialog")).toBeVisible();
 
     // Look for description field
-    const descriptionField = page.locator(
-      'input[name="description"], textarea[name="description"]'
-    );
+    const descriptionField = page.getByTestId("location-description-input");
 
     if (await descriptionField.isVisible()) {
       await descriptionField.fill("Test location description");

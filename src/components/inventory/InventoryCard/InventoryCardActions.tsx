@@ -72,6 +72,7 @@ const InventoryCardActions: React.FC<InventoryCardActionsProps> = ({
         <IconButton
           size="small"
           onClick={() => onAdjust?.(item)}
+          aria-label={t("inventory.manageStock") || "Manage stock"}
           sx={{
             bgcolor: alpha(theme.palette.success.main, 0.1),
             color: "success.main",
@@ -87,6 +88,7 @@ const InventoryCardActions: React.FC<InventoryCardActionsProps> = ({
               size="small"
               color="primary"
               onClick={() => onEdit(item)}
+              aria-label={t("inventory.edit") || "Edit item"}
               sx={{
                 bgcolor: alpha(theme.palette.primary.main, 0.1),
                 "&:hover": {
@@ -100,6 +102,7 @@ const InventoryCardActions: React.FC<InventoryCardActionsProps> = ({
               size="small"
               color="error"
               onClick={() => onDelete?.(item.id)}
+              aria-label={t("inventory.delete") || "Delete"}
               sx={{
                 bgcolor: alpha(theme.palette.error.main, 0.05),
                 "&:hover": {

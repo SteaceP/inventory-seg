@@ -20,7 +20,6 @@ mockPostgresClient.end = vi.fn().mockResolvedValue(undefined);
 export const createMockEnv = (): Env =>
   ({
     SUPABASE_URL: "mock-url",
-    SUPABASE_KEY: "mock-key",
     SUPABASE_SECRET_KEY: "mock-secret-key",
     VAPID_PUBLIC_KEY: "mock-vapid-public",
     VAPID_PRIVATE_KEY: "mock-vapid-private",

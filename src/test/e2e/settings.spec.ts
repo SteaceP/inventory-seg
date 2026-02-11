@@ -78,7 +78,9 @@ test.describe("Settings Page", () => {
   test("language preference is accessible", async ({ page }) => {
     // Language selector should be visible in settings
     // Look for either dropdown or radio buttons
-    const languageSection = page.getByText(/langue|language/i);
+    const languageSection = page.getByRole("heading", {
+      name: /langue|language/i,
+    });
     await expect(languageSection).toBeVisible();
   });
 
