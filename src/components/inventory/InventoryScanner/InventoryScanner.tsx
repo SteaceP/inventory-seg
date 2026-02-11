@@ -10,6 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 
 import CloseIcon from "@mui/icons-material/Close";
+import FlipCameraIosIcon from "@mui/icons-material/FlipCameraIos";
 
 import { useTranslation } from "@/i18n";
 
@@ -35,6 +36,10 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const onScanSuccessRef = useRef(onScanSuccess);
   const [isLoading, setIsLoading] = useState(false);
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
+  const [currentDeviceIndex, setCurrentDeviceIndex] = useState<number | null>(
+    null
+  );
 
   useEffect(() => {
     onScanSuccessRef.current = onScanSuccess;
@@ -42,37 +47,56 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
 
   useEffect(() => {
     if (!open) {
-      if (codeReaderRef.current) {
-        codeReaderRef.current.reset();
-        codeReaderRef.current = null;
-      }
-      setIsLoading(false);
+      setDevices([]);
+      setCurrentDeviceIndex(null);
       return;
     }
 
-    if (codeReaderRef.current) return;
+    const discoverDevices = async () => {
+      try {
+        const { BrowserMultiFormatReader } = await import("@zxing/library");
+        const reader = new BrowserMultiFormatReader();
+        const videoInputDevices = await reader.listVideoInputDevices();
+        setDevices(videoInputDevices);
 
-    const initScanner = async () => {
+        if (videoInputDevices.length > 0) {
+          const backCameraIndex = videoInputDevices.findIndex((device) =>
+            device.label.toLowerCase().includes("back")
+          );
+          setCurrentDeviceIndex(backCameraIndex !== -1 ? backCameraIndex : 0);
+        }
+      } catch (err) {
+        reportError(err, { context: "Scanner Discovery Error" });
+      }
+    };
+
+    void discoverDevices();
+  }, [open]);
+
+  useEffect(() => {
+    if (!open || currentDeviceIndex === null || devices.length === 0) {
+      return;
+    }
+
+    let isMounted = true;
+
+    const startScanner = async () => {
       try {
         setIsLoading(true);
 
-        // Lazy load the scanner library (390 kB) only when needed
         const { BrowserMultiFormatReader, NotFoundException } =
           await import("@zxing/library");
+
+        if (codeReaderRef.current) {
+          codeReaderRef.current.reset();
+        }
 
         const codeReader = new BrowserMultiFormatReader();
         codeReaderRef.current = codeReader;
 
-        const videoInputDevices = await codeReader.listVideoInputDevices();
-        if (videoInputDevices.length === 0) {
-          throw new Error("No camera found");
-        }
+        const selectedDevice = devices[currentDeviceIndex];
 
-        // Prefer environment (back) camera
-        const selectedDevice =
-          videoInputDevices.find((device) =>
-            device.label.toLowerCase().includes("back")
-          ) || videoInputDevices[0];
+        if (!isMounted) return;
 
         setIsLoading(false);
 
@@ -80,37 +104,58 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
           selectedDevice.deviceId,
           videoRef.current,
           (result, err) => {
-            if (result) {
+            if (result && isMounted) {
               codeReader.reset();
               codeReaderRef.current = null;
               onScanSuccessRef.current(result.getText());
             }
             if (err && !(err instanceof NotFoundException)) {
-              // Only report serious errors, not "not found" which triggers every frame
               reportError(err);
             }
           }
         );
+
+        // Re-discover devices after starting to get labels and full list if permissions were just granted
+        if (isMounted) {
+          try {
+            const updatedDevices = await codeReader.listVideoInputDevices();
+            if (updatedDevices.length !== devices.length) {
+              setDevices(updatedDevices);
+            }
+          } catch (err) {
+            reportError(err, { context: "Scanner Post-Start Discovery Error" });
+          }
+        }
       } catch (err) {
-        reportError(err, { context: "Scanner Error" });
-        setIsLoading(false);
-        onError(t("inventory.scanner.cameraError"));
-        onClose();
+        if (isMounted) {
+          reportError(err, { context: "Scanner Start Error" });
+          setIsLoading(false);
+          onError(t("inventory.scanner.cameraError"));
+          onClose();
+        }
       }
     };
 
     const timeoutId = setTimeout(() => {
-      void initScanner();
+      void startScanner();
     }, 300);
 
     return () => {
+      isMounted = false;
       clearTimeout(timeoutId);
       if (codeReaderRef.current) {
         codeReaderRef.current.reset();
         codeReaderRef.current = null;
       }
     };
-  }, [open, onClose, onError, t]);
+  }, [open, currentDeviceIndex, devices, onError, onClose, t]);
+
+  const handleSwitchCamera = () => {
+    if (devices.length <= 1) return;
+    setCurrentDeviceIndex((prev) =>
+      prev !== null ? (prev + 1) % devices.length : 0
+    );
+  };
 
   return (
     <Dialog
@@ -181,6 +226,32 @@ const InventoryScanner: React.FC<InventoryScannerProps> = ({
               objectFit: "cover",
             }}
           />
+
+          {/* Camera switch button */}
+          {devices.length > 1 && (
+            <IconButton
+              onClick={handleSwitchCamera}
+              disabled={isLoading}
+              sx={{
+                position: "absolute",
+                top: 8,
+                left: 8,
+                bgcolor: "rgba(0,0,0,0.5)",
+                color: "white",
+                "&:hover": {
+                  bgcolor: "rgba(0,0,0,0.7)",
+                },
+                zIndex: 30,
+              }}
+              title={t("inventory.scanner.switchCamera")}
+            >
+              {isLoading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                <FlipCameraIosIcon fontSize="small" />
+              )}
+            </IconButton>
+          )}
 
           {/* Loading overlay */}
           {isLoading && (

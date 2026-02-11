@@ -11,27 +11,22 @@ import { createMockTranslation } from "@test/mocks";
 import InventoryScanner from "../InventoryScanner";
 
 const { t } = createMockTranslation();
-vi.mock("@i18n", () => ({
+vi.mock("@/i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 
-// Mock Html5Qrcode
-const { mockStart, mockHtml5Qrcode } = vi.hoisted(() => {
-  const start = vi.fn();
-  const stop = vi.fn().mockResolvedValue(true);
+// Mock zxing library
+const mockListVideoInputDevices = vi.fn();
+const mockDecodeFromVideoDevice = vi.fn();
+const mockReset = vi.fn();
 
-  class MockHtml5Qrcode {
-    start = start;
-    stop = stop;
-    isScanning = false;
-  }
-
-  const mock = vi.fn().mockImplementation(() => new MockHtml5Qrcode());
-  return { mockStart: start, mockStop: stop, mockHtml5Qrcode: mock };
-});
-
-vi.mock("html5-qrcode", () => ({
-  Html5Qrcode: mockHtml5Qrcode,
+vi.mock("@zxing/library", () => ({
+  BrowserMultiFormatReader: vi.fn().mockImplementation(() => ({
+    listVideoInputDevices: mockListVideoInputDevices,
+    decodeFromVideoDevice: mockDecodeFromVideoDevice,
+    reset: mockReset,
+  })),
+  NotFoundException: class NotFoundException {},
 }));
 
 const theme = createTheme();
@@ -49,6 +44,9 @@ describe("InventoryScanner", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockListVideoInputDevices.mockResolvedValue([
+      { deviceId: "1", label: "Back Camera" },
+    ]);
   });
 
   it("renders correctly when open", () => {
@@ -60,27 +58,6 @@ describe("InventoryScanner", () => {
     expect(screen.getByText("inventory.cancel")).toBeInTheDocument();
   });
 
-  it.skip("initializes scanner when open", async () => {
-    // This test is skipped because it depends on internal setTimeout timing
-    // and html5-qrcode library initialization which is difficult to reliably test
-    // The core functionality is tested through the other tests
-    renderWithTheme(<InventoryScanner {...defaultProps} />);
-
-    // Wait for the setTimeout to trigger (300ms) with extended timeout
-    await waitFor(
-      () => {
-        expect(mockHtml5Qrcode).toHaveBeenCalledWith("reader");
-        expect(mockStart).toHaveBeenCalled();
-      },
-      { timeout: 2000 }
-    );
-  });
-
-  it("does not initialize scanner when closed", () => {
-    renderWithTheme(<InventoryScanner {...defaultProps} open={false} />);
-    expect(mockHtml5Qrcode).not.toHaveBeenCalled();
-  });
-
   it("calls onClose when cancel button is clicked", () => {
     renderWithTheme(<InventoryScanner {...defaultProps} />);
     const cancelButton = screen.getByText("inventory.cancel");
@@ -88,14 +65,70 @@ describe("InventoryScanner", () => {
     expect(defaultProps.onClose).toHaveBeenCalled();
   });
 
-  it("calls onClose when close icon is clicked", () => {
+  it("shows switch camera button when multiple devices are available", async () => {
+    mockListVideoInputDevices.mockResolvedValue([
+      { deviceId: "1", label: "Back Camera" },
+      { deviceId: "2", label: "Front Camera" },
+    ]);
+
     renderWithTheme(<InventoryScanner {...defaultProps} />);
-    // Close icon usually is a button
-    const buttons = screen.getAllByRole("button");
-    const closeIconButton = buttons[0];
-    fireEvent.click(closeIconButton);
-    expect(defaultProps.onClose).toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(
+        screen.getByTitle("inventory.scanner.switchCamera")
+      ).toBeInTheDocument();
+    });
   });
 
-  // Cleaning up mocks is handled by beforeEach/afterEach hooks if implicit, but we set explicit clear in beforeEach.
+  it("does not show switch camera button when only one device is available", async () => {
+    mockListVideoInputDevices.mockResolvedValue([
+      { deviceId: "1", label: "Back Camera" },
+    ]);
+
+    renderWithTheme(<InventoryScanner {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByTitle("inventory.scanner.switchCamera")
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("cycles through cameras when switch button is clicked", async () => {
+    const devices = [
+      { deviceId: "1", label: "Back Camera" },
+      { deviceId: "2", label: "Front Camera" },
+    ];
+    mockListVideoInputDevices.mockResolvedValue(devices);
+
+    renderWithTheme(<InventoryScanner {...defaultProps} />);
+
+    const switchButton = await screen.findByTitle(
+      "inventory.scanner.switchCamera"
+    );
+
+    // Initial call (after listVideoInputDevices)
+    await waitFor(() => {
+      expect(mockDecodeFromVideoDevice).toHaveBeenCalledWith(
+        "1",
+        expect.anything(),
+        expect.anything()
+      );
+    });
+
+    fireEvent.click(switchButton);
+
+    await waitFor(
+      () => {
+        expect(mockReset).toHaveBeenCalled();
+        const lastCall =
+          mockDecodeFromVideoDevice.mock.calls[
+            mockDecodeFromVideoDevice.mock.calls.length - 1
+          ];
+        console.log("Last decodeFromVideoDevice call:", lastCall);
+        expect(lastCall[0]).toBe("2");
+      },
+      { timeout: 3000 }
+    );
+  });
 });

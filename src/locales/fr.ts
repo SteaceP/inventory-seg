@@ -360,7 +360,9 @@ const fr = {
   "inventory.scanner.instructions": "Positionnez le code-barres dans le cadre",
   "inventory.scanner.cameraError":
     "Impossible de démarrer la caméra. Vérifiez les permissions.",
+  "inventory.scanner.switchCamera": "Changer de caméra",
   "inventory.scanner.notFound.title": "Article non trouvé",
+
   "inventory.scanner.notFound.message":
     "L'article avec le SKU {sku} n'a pas été trouvé dans l'inventaire.",
   "inventory.scanner.notFound.rescanHint":

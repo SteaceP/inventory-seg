@@ -345,7 +345,9 @@ const en = {
   "inventory.scanner.instructions": "Position the barcode within the frame",
   "inventory.scanner.cameraError":
     "Unable to start camera. Please check camera permissions.",
+  "inventory.scanner.switchCamera": "Switch Camera",
   "inventory.scanner.notFound.title": "Item Not Found",
+
   "inventory.scanner.notFound.message":
     "Item with SKU {sku} was not found in the inventory.",
   "inventory.scanner.notFound.rescanHint":
