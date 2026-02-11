@@ -70,6 +70,7 @@ const Login: React.FC = () => {
         "auth.login",
         "Sign In with Password",
         async () => {
+          let isMfaRequired = false;
           const { data, error: signInError } =
             await supabase.auth.signInWithPassword({
               email,
@@ -84,8 +85,13 @@ const Login: React.FC = () => {
             // Check if MFA is required
             if (signInError.message === "MFA challenge required") {
               // Get MFA factors
-              const { data: factorsData } =
+              const { data: factorsData, error: factorsError } =
                 await supabase.auth.mfa.listFactors();
+
+              if (factorsError) {
+                throw factorsError;
+              }
+
               if (factorsData?.totp && factorsData.totp.length > 0) {
                 const factor = factorsData.totp[0];
                 const challengeResponse: AuthMFAChallengeResponse =
@@ -96,9 +102,22 @@ const Login: React.FC = () => {
                   setMfaChallengeId(challengeResponse.data.id);
                   setMfaFactorId(factor.id);
                   setMfaRequired(true);
+                  isMfaRequired = true;
                   setLoading(false);
                   return;
                 }
+              } else {
+                // MFA is required but no factors found, this is an inconsistent state
+                logInfo(
+                  "[Login] MFA required but no enrollment factors found",
+                  {
+                    email,
+                  }
+                );
+                throw new Error(
+                  t("errors.mfaEnrollmentRequired") ||
+                    "MFA required but no enrollment factors found. Please contact support."
+                );
               }
             }
             throw signInError;
@@ -139,14 +158,24 @@ const Login: React.FC = () => {
                 setMfaChallengeId(challengeData.id);
                 setMfaFactorId(totpFactor.id);
                 setMfaRequired(true);
+                isMfaRequired = true;
                 setLoading(false);
                 return;
               }
+            } else {
+              // AAL2 achievable but no factors found
+              logInfo("[Login] AAL2 achievable but no factors found", {
+                email,
+              });
+              throw new Error(
+                t("errors.mfaFactorsMissing") ||
+                  "MFA is required but no enrollment factors were found."
+              );
             }
           }
 
           // If no MFA required, navigate to app
-          if (!mfaRequired && data?.session) {
+          if (!isMfaRequired && data?.session) {
             const from =
               (location.state as LocationState)?.from?.pathname || "/";
             void navigate(from, { replace: true });
@@ -162,9 +191,11 @@ const Login: React.FC = () => {
       turnstileRef.current?.reset();
       setCaptchaToken(undefined);
     } finally {
-      if (!mfaRequired) {
-        setLoading(false);
-      }
+      // Need a way to check if MFA was triggered within this scope
+      // Using mfaRequired state might be stale due to setMfaRequired being async
+      // but the local isMfaRequired handles it for the current execution.
+      // However, finally runs after the measureOperation.
+      setLoading(false);
     }
   };
 

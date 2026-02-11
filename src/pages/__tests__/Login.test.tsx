@@ -217,6 +217,43 @@ describe("Login Page", () => {
     });
   });
 
+  it("shows error and does not redirect when authentication level is aal2 but no factors found", async () => {
+    mockSupabaseClient.mocks.signInWithPassword.mockResolvedValueOnce({
+      data: { session: { user: { id: "test" } } },
+      error: null,
+    });
+    mockSupabaseClient.mocks.getAuthenticatorAssuranceLevel.mockResolvedValueOnce(
+      {
+        data: { currentLevel: "aal1", nextLevel: "aal2" },
+        error: null,
+      }
+    );
+    mockSupabaseClient.mocks.listFactors.mockResolvedValueOnce({
+      data: { totp: [] },
+      error: null,
+    });
+
+    render(<Login />);
+
+    fireEvent.change(screen.getByLabelText(/login.email/i), {
+      target: { value: "test@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText(/login.password/i), {
+      target: { value: "password123" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /login.signIn/i }));
+
+    await waitFor(() => {
+      expect(handleError).toHaveBeenCalledWith(
+        expect.any(Error),
+        "errors.login",
+        expect.any(Object)
+      );
+      expect(mockNavigate).not.toHaveBeenCalled();
+    });
+  });
+
   it("handles successful MFA verification", async () => {
     // 1. Setup MFA prompt state
     mockSupabaseClient.mocks.signInWithPassword.mockResolvedValueOnce({
