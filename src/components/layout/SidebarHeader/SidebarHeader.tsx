@@ -37,7 +37,11 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({
         alignItems: "center",
         justifyContent: collapsed && !isMobile ? "center" : "space-between",
         px: collapsed && !isMobile ? 0 : 2,
-        minHeight: compactView ? "48px !important" : "64px !important",
+        minHeight: {
+          xs: `calc(${compactView ? "48px" : "56px"} + env(safe-area-inset-top)) !important`,
+          sm: `${compactView ? "48px" : "64px"} !important`,
+        },
+        pt: isMobile ? "env(safe-area-inset-top)" : 0,
       }}
     >
       <Box

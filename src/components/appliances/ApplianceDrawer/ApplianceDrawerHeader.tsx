@@ -31,7 +31,16 @@ const ApplianceDrawerHeader: React.FC<ApplianceDrawerHeaderProps> = ({
         borderColor: "divider",
       }}
     >
-      <Toolbar sx={{ justifyContent: "space-between" }}>
+      <Toolbar
+        sx={{
+          justifyContent: "space-between",
+          minHeight: {
+            xs: "calc(56px + env(safe-area-inset-top)) !important",
+            sm: "64px !important",
+          },
+          pt: { xs: "env(safe-area-inset-top)", sm: 0 },
+        }}
+      >
         <Typography variant="h6" fontWeight="bold">
           {name}
         </Typography>

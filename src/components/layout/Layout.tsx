@@ -198,7 +198,9 @@ const Layout: React.FC = () => {
             : { xs: 2, sm: 3, md: 4 },
           pb: 8, // Add padding to prevent FAB overlap
           width: { sm: `calc(100% - ${currentDrawerWidth}px)` },
-          mt: isMobile ? (compactView ? "48px" : "64px") : 0,
+          mt: isMobile
+            ? `calc(${compactView ? "48px" : "56px"} + env(safe-area-inset-top))`
+            : 0,
           maxWidth: "100%",
           overflowX: "hidden",
         }}

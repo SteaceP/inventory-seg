@@ -42,17 +42,24 @@ const MobileAppBar: React.FC<MobileAppBarProps> = ({
     >
       <Toolbar
         sx={{
-          minHeight: compactView ? "48px !important" : "64px !important",
-          px: { xs: 1, sm: 2 },
+          minHeight: {
+            xs: `calc(${compactView ? "48px" : "56px"} + env(safe-area-inset-top)) !important`,
+            sm: `${compactView ? "48px" : "64px"} !important`,
+          },
+          px: {
+            xs: `calc(8px + env(safe-area-inset-left))`,
+            sm: 2,
+          },
+          pt: { xs: "env(safe-area-inset-top)", sm: 0 },
         }}
       >
         <IconButton
           color="inherit"
           aria-label="open drawer"
-          edge="start"
           onClick={onToggle}
           sx={{
             mr: { xs: 1, sm: 2 },
+            ml: { xs: 0.5, sm: 0 },
             color: "primary.main",
           }}
         >
