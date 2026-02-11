@@ -8,16 +8,16 @@
   "assets": {
     "directory": "dist/client",
     "not_found_handling": "single-page-application",
-    "run_worker_first": ["/api/*"],
+    "run_worker_first": ["/api/*"]
   },
   "triggers": {
-    "crons": ["0 13 * * *"],
+    "crons": ["0 13 * * *"]
   },
   "routes": [
     {
       "pattern": "${APP_DOMAIN}",
-      "custom_domain": true,
-    },
+      "custom_domain": true
+    }
   ],
   "vars": {
     "VAPID_PUBLIC_KEY": "${VAPID_PUBLIC_KEY}",
@@ -27,44 +27,44 @@
     "ADMIN_EMAIL": "${ADMIN_EMAIL}",
     "SUPABASE_URL": "${SUPABASE_URL}",
     "APP_URL": "${APP_URL}",
-    "ALLOWED_ORIGIN": "${ALLOWED_ORIGIN}",
+    "ALLOWED_ORIGIN": "${ALLOWED_ORIGIN}"
   },
   "hyperdrive": [
     {
       "binding": "HYPERDRIVE",
       "id": "${HYPERDRIVE_ID}",
-      "localConnectionString": "${HYPERDRIVE_LOCAL_CONNECTION_STRING}",
-    },
+      "localConnectionString": "${HYPERDRIVE_LOCAL_CONNECTION_STRING}"
+    }
   ],
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "${D1_DATABASE_NAME}",
-      "database_id": "${D1_DATABASE_ID}",
-    },
+      "database_id": "${D1_DATABASE_ID}"
+    }
   ],
 
   "observability": {
-    "enabled": true,
+    "enabled": true
   },
   "ai": {
     "binding": "AI_SERVICE",
-    "remote": true,
+    "remote": true
   },
   "env": {
     "dev": {
       "vars": {
         "SUPABASE_URL": "${SUPABASE_URL}",
         "APP_URL": "${APP_URL}",
-        "ALLOWED_ORIGIN": "${ALLOWED_ORIGIN}",
-      },
+        "ALLOWED_ORIGIN": "${ALLOWED_ORIGIN}"
+      }
     },
     "preview": {
       "vars": {
         "SUPABASE_URL": "${SUPABASE_URL}",
         "APP_URL": "${APP_URL}",
-        "ALLOWED_ORIGIN": "${ALLOWED_ORIGIN}",
-      },
-    },
-  },
+        "ALLOWED_ORIGIN": "${ALLOWED_ORIGIN}"
+      }
+    }
+  }
 }
