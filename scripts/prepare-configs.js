@@ -41,6 +41,7 @@ const env = {
   ...(isCI ? loadEnvFile(path.join(rootDir, ".act.env")) : {}), // CI / Local ACT
   ...loadEnvFile(path.join(rootDir, ".prod.vars")), // Production Infrastructure
   ...process.env, // Final Overrides
+  AI_REMOTE: isCI ? "false" : "true",
 };
 
 // Derive extracted values
@@ -91,6 +92,17 @@ function processTemplate(templateName, outputName) {
     missingVars.forEach((v) => console.error(`  - ${v}`));
     console.error(`\nPlease add them to your .env.local or .dev.vars file.`);
     process.exit(1);
+  }
+
+  // Post-process to convert quoted boolean/number placeholders back to literals
+  content = content.replace(/"(true|false)"/g, "$1");
+
+  // Add schema back to wrangler.jsonc if missing
+  if (outputName === "wrangler.jsonc" && !content.includes("$schema")) {
+    content = content.replace(
+      "{",
+      '{\n  "$schema": "node_modules/wrangler/config-schema.json",'
+    );
   }
 
   fs.writeFileSync(outputPath, content);
