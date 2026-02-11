@@ -22,7 +22,7 @@ vi.mock("@utils/activityUtils", () => ({
   getStockChange: vi.fn(() => null),
 }));
 
-const { mockFrom, mockLimit, mockIn, mockT } = vi.hoisted(() => {
+const { mockFrom, mockIn, mockT } = vi.hoisted(() => {
   const builder = {
     select: vi.fn().mockReturnThis(),
     eq: vi.fn().mockReturnThis(),
@@ -30,14 +30,10 @@ const { mockFrom, mockLimit, mockIn, mockT } = vi.hoisted(() => {
       .fn()
       .mockImplementation(() => Promise.resolve({ data: [], error: null })),
     order: vi.fn().mockReturnThis(),
-    limit: vi
-      .fn()
-      .mockImplementation(() => Promise.resolve({ data: [], error: null })),
   };
 
   return {
     mockFrom: vi.fn(() => builder),
-    mockLimit: builder.limit,
     mockIn: builder.in,
     mockT: vi.fn((key: string) => key),
   };
@@ -46,12 +42,24 @@ const { mockFrom, mockLimit, mockIn, mockT } = vi.hoisted(() => {
 vi.mock("@/supabaseClient", () => ({
   supabase: {
     from: mockFrom,
+    auth: {
+      getSession: vi.fn(() =>
+        Promise.resolve({
+          data: { session: { access_token: "mock-token" } },
+          error: null,
+        })
+      ),
+    },
   },
 }));
 
 vi.mock("@/i18n", () => ({
   useTranslation: () => ({ t: mockT, lang: "en" }),
 }));
+
+// Global fetch mock
+const mockFetch = vi.fn();
+global.fetch = mockFetch;
 
 describe("StockHistoryDialog", () => {
   const defaultProps = {
@@ -65,9 +73,9 @@ describe("StockHistoryDialog", () => {
     vi.clearAllMocks();
 
     // Default success responses
-    mockLimit.mockResolvedValue({
-      data: [],
-      error: null,
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve([]),
     });
     mockIn.mockResolvedValue({
       data: [],
@@ -88,7 +96,7 @@ describe("StockHistoryDialog", () => {
   });
 
   it("shows loading state", async () => {
-    mockLimit.mockReturnValue(new Promise(() => {}));
+    mockFetch.mockReturnValue(new Promise(() => {}));
     render(<StockHistoryDialog {...defaultProps} />);
     await waitFor(() => {
       expect(screen.getByRole("progressbar")).toBeInTheDocument();
@@ -96,9 +104,9 @@ describe("StockHistoryDialog", () => {
   });
 
   it("shows empty state when no history", async () => {
-    mockLimit.mockResolvedValue({
-      data: [],
-      error: null,
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve([]),
     });
 
     render(<StockHistoryDialog {...defaultProps} />);
@@ -120,9 +128,9 @@ describe("StockHistoryDialog", () => {
       },
     ];
 
-    mockLimit.mockResolvedValue({
-      data: mockActivity,
-      error: null,
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockActivity),
     });
 
     mockIn.mockResolvedValue({
@@ -133,7 +141,12 @@ describe("StockHistoryDialog", () => {
     render(<StockHistoryDialog {...defaultProps} />);
 
     // Check if fetch was called
-    expect(mockFrom).toHaveBeenCalledWith("inventory_activity");
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.stringContaining("/api/activity?itemId=123"),
+        expect.any(Object)
+      );
+    });
 
     await waitFor(() => {
       expect(screen.getByText("Activity: created")).toBeInTheDocument();
@@ -141,17 +154,16 @@ describe("StockHistoryDialog", () => {
   });
 
   it("handles error when fetching history", async () => {
-    const error = { message: "Fetch failed" };
-    mockLimit.mockResolvedValueOnce({
-      data: null,
-      error: error,
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
     });
 
     render(<StockHistoryDialog {...defaultProps} />);
 
     await waitFor(() => {
       expect(mockHandleError).toHaveBeenCalledWith(
-        error,
+        expect.any(Error),
         expect.stringContaining("errors.loadActivity")
       );
     });

@@ -25,6 +25,10 @@ vi.mock("@i18n", () => ({
   useTranslation: () => ({ t }),
 }));
 
+// Global fetch mock
+const mockFetch = vi.fn();
+global.fetch = mockFetch;
+
 vi.mock("@hooks/useErrorHandler", () => ({
   useErrorHandler: () => ({
     handleError: mocks.handleError,
@@ -102,32 +106,18 @@ describe("InventoryDrawer", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // Local mock for limit to bypass mysterious undefined error
-    const mockLimit = vi.fn();
-    mockSupabaseClient.mocks.limit = mockLimit; // Also assign it back if needed, but primarily use local
+    // Set mock session
+    mockSupabaseClient.helpers.setAuthSession({ access_token: "mock-token" });
+
+    // Mock fetch for activity log
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockActivity),
+    });
 
     mockSupabaseClient.mocks.from.mockReturnValue({
       select: mockSupabaseClient.mocks.select,
     });
-
-    mockSupabaseClient.mocks.select.mockReturnValue({
-      eq: mockSupabaseClient.mocks.eq,
-    });
-
-    mockSupabaseClient.mocks.eq.mockReturnValue({
-      order: mockSupabaseClient.mocks.order,
-    });
-
-    mockSupabaseClient.mocks.order.mockReturnValue({
-      limit: mockLimit,
-    });
-
-    mockLimit.mockReturnValue(
-      Promise.resolve({
-        data: mockActivity,
-        error: null,
-      })
-    );
   });
 
   it("renders nothing when item is null", () => {
@@ -173,8 +163,9 @@ describe("InventoryDrawer", () => {
     render(<InventoryDrawer {...defaultProps} />);
 
     await waitFor(() => {
-      expect(mockSupabaseClient.mocks.from).toHaveBeenCalledWith(
-        "inventory_activity"
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.stringContaining("/api/activity?itemId=item1"),
+        expect.any(Object)
       );
     });
 
@@ -182,24 +173,15 @@ describe("InventoryDrawer", () => {
   });
 
   it("handles fetch activity error", async () => {
-    // The original test used an Error object for the mock, but the instruction changes it to a string.
-    // We'll adjust the expected error in handleError to match the new mock.
-    const mockLimit = vi.fn();
-    mockSupabaseClient.mocks.order.mockReturnValue({
-      limit: mockLimit,
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
     });
-
-    mockLimit.mockReturnValue(
-      Promise.resolve({
-        data: [],
-        error: "Fetch Error",
-      })
-    );
     render(<InventoryDrawer {...defaultProps} />);
 
     await waitFor(() => {
       expect(mocks.handleError).toHaveBeenCalledWith(
-        "Fetch Error", // Expecting the string error from the mock
+        expect.any(Error),
         expect.stringContaining("errors.loadActivity")
       );
     });
@@ -209,7 +191,7 @@ describe("InventoryDrawer", () => {
     render(<InventoryDrawer {...defaultProps} />);
 
     await waitFor(() => {
-      expect(mockSupabaseClient.mocks.from).toHaveBeenCalled();
+      expect(mockFetch).toHaveBeenCalled();
     });
 
     // Manage Stock / Adjust Stock

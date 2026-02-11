@@ -30,15 +30,22 @@ const InventoryActivityLog: React.FC<InventoryActivityLogProps> = ({
     if (!itemId) return;
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("inventory_activity")
-        .select("*")
-        .eq("inventory_id", itemId)
-        .order("created_at", { ascending: false })
-        .limit(3);
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-      if (error) throw error;
-      setActivity((data as ActivityLog[]) || []);
+      const response = await fetch(
+        `/api/activity?itemId=${itemId}&pageSize=3`,
+        {
+          headers: {
+            Authorization: `Bearer ${session?.access_token}`,
+          },
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to fetch activity");
+      const data = (await response.json()) as ActivityLog[];
+      setActivity(data || []);
     } catch (err: unknown) {
       handleError(
         err,

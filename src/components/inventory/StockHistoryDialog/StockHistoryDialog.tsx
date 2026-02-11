@@ -61,14 +61,19 @@ const StockHistoryDialog: React.FC<StockHistoryDialogProps> = ({
 
     try {
       setLoading(true);
-      const { data: activityData, error: activityError } = await supabase
-        .from("inventory_activity")
-        .select("*")
-        .eq("inventory_id", itemId)
-        .order("created_at", { ascending: false })
-        .limit(100);
 
-      if (activityError) throw activityError;
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      const response = await fetch(`/api/activity?itemId=${itemId}`, {
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch activity");
+      const activityData = (await response.json()) as ActivityQueryResult[];
 
       // Extract unique user IDs
       const userIds = [
@@ -99,14 +104,14 @@ const StockHistoryDialog: React.FC<StockHistoryDialogProps> = ({
         }
       }
 
-      const formattedData = (
-        (activityData as unknown as ActivityQueryResult[]) || []
-      ).map((item: ActivityQueryResult) => ({
-        ...item,
-        user_display_name: item.user_id
-          ? userNames[item.user_id] || "Unknown User"
-          : "System",
-      })) as InventoryActivity[];
+      const formattedData = (activityData || []).map(
+        (item: ActivityQueryResult) => ({
+          ...item,
+          user_display_name: item.user_id
+            ? userNames[item.user_id] || "Unknown User"
+            : "System",
+        })
+      ) as InventoryActivity[];
 
       setActivities(formattedData);
     } catch (err: unknown) {

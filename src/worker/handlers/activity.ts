@@ -65,9 +65,16 @@ export async function handleActivityLogGet(
     const endDate = url.searchParams.get("endDate");
     const location = url.searchParams.get("location");
     const actionType = url.searchParams.get("actionType");
+    const inventoryId =
+      url.searchParams.get("inventoryId") || url.searchParams.get("itemId");
 
     let query = `SELECT * FROM inventory_activity WHERE 1=1`;
     const params: unknown[] = [];
+
+    if (inventoryId) {
+      query += ` AND inventory_id = ?`;
+      params.push(inventoryId);
+    }
 
     if (actionFilter !== "all" && actionFilter !== "stock") {
       query += ` AND action = ?`;
