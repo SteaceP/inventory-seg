@@ -10,6 +10,7 @@ public/
 *.md
 package-lock.json
 wrangler.jsonc
+wrangler.template.jsonc
 src/types/database.types.ts
 .wrangler/
 coverage/

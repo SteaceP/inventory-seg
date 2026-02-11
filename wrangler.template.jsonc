@@ -3,15 +3,20 @@
   "name": "${WORKER_NAME}",
   "main": "src/worker.ts",
   "compatibility_date": "2026-01-02",
-  "compatibility_flags": ["nodejs_compat"],
-
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "assets": {
     "directory": "dist/client",
     "not_found_handling": "single-page-application",
-    "run_worker_first": ["/api/*"]
+    "run_worker_first": [
+      "/api/*"
+    ]
   },
   "triggers": {
-    "crons": ["0 13 * * *"]
+    "crons": [
+      "0 13 * * *"
+    ]
   },
   "routes": [
     {
@@ -43,7 +48,6 @@
       "database_id": "${D1_DATABASE_ID}"
     }
   ],
-
   "observability": {
     "enabled": true
   },
