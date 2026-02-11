@@ -96,14 +96,16 @@ Implementation locations:
 
 ## Testing Guidelines
 
-### Material UI (MUI) Testing
+### Unit Testing (Vitest)
+
+#### Material UI (MUI) Testing
 
 - **Requirement**: Use real MUI components in tests to ensure high fidelity and accessibility tree verification.
 - **Render Utility**: ALWAYS import `render`, `screen`, `fireEvent`, and `waitFor` from `@test/test-utils` (which provides the necessary `ThemeProvider`).
 - **Forbidden**: Do NOT mock `@mui/material` or its sub-components globally or locally in test files.
 - **Queries**: Prioritize querying by ARIA roles (`getByRole`), labels (`getByLabelText`), or text (`getByText`) to simulate real user interactions.
 
-### Centralized Mocks
+#### Centralized Mocks
 
 - **Requirement**: ALWAYS use the centralized mock utilities in `src/test/mocks/` for non-UI logic:
   - Contexts (`createMockUserContext`, `createMockInventoryContext`, etc.)
@@ -112,3 +114,35 @@ Implementation locations:
   - External browser APIs (Storage, Router)
 - **Forbidden**: Do NOT create manual, inline mocks for these services unless absolutely necessary for a specific edge case.
 - **Data Factories**: Use factories (`createMockInventoryItem`, `createMockCategory`, etc.) for generating test data instead of plain object literals.
+
+### E2E Testing (Playwright)
+
+#### Test Organization
+
+- **Location**: All e2e tests must be in `e2e/` directory at project root
+- **Naming**: Use descriptive file names ending in `.spec.ts` (e.g., `inventory.spec.ts`, `login.spec.ts`)
+- **Structure**: Group related tests using `test.describe()` blocks
+
+#### Authentication
+
+- **Storage State**: Use Playwright's storage state feature to persist authentication across tests
+- **Setup File**: Create `e2e/auth.setup.ts` to handle login and save authentication state
+- **Reuse Sessions**: Load saved authentication state in tests to avoid repeated logins
+- **Test Isolation**: Each test should be independent and not rely on state from other tests
+
+#### MUI Component Interactions
+
+- **Selectors**: Prefer `getByRole()`, `getByLabel()`, and `getByText()` over CSS selectors
+- **Autocomplete**: Use `fill()` followed by `press('ArrowDown')` and `press('Enter')` to select options
+- **Dialogs/Modals**: Wait for dialog to be visible before interacting: `await page.getByRole('dialog').waitFor()`
+- **Buttons**: Use `getByRole('button', { name: 'Button Text' })` for reliable selection
+- **Form Fields**: Use `getByLabel()` to select inputs by their label text
+
+#### Best Practices
+
+- **Wait for Navigation**: Use `waitForURL()` after actions that trigger navigation
+- **Assertions**: Use Playwright's built-in `expect()` with auto-waiting capabilities
+- **Screenshots**: Capture screenshots on failure for debugging (configured in `playwright.config.ts`)
+- **Parallel Execution**: Tests run in parallel by default; ensure tests are isolated
+- **Visual Regression**: Consider using `expect(page).toHaveScreenshot()` for visual testing
+- **Page Object Model**: For complex flows, consider using Page Object Model pattern to reduce duplication

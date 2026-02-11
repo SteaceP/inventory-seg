@@ -35,6 +35,7 @@ A standalone inventory management application built with a modern tech stack, de
 - **Backend & Database**: [Supabase](https://supabase.com/) (PostgreSQL, Auth, Storage, Realtime), [Cloudflare Workers AI](https://developers.cloudflare.com/workers-ai/)
 - **State Management**: React Context API
 - **Internationalization**: Custom i18n implementation
+- **Testing**: [Vitest](https://vitest.dev/) (unit), [Playwright](https://playwright.dev/) (e2e), [React Testing Library](https://testing-library.com/react)
 
 ## 🚀 Getting Started
 
@@ -79,7 +80,7 @@ A standalone inventory management application built with a modern tech stack, de
    # Supabase
    VITE_SUPABASE_URL=https://your-project.supabase.co
    VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key_here
-   SUPABASE_SECRET_KEY=your_service_role_key_here
+   SUPABASE_SECRET_KEY=your_supabase_secret_key_here
 
    # Push Notifications
    VITE_VAPID_PUBLIC_KEY=your_vapid_public_key_here
@@ -163,7 +164,7 @@ These must be set directly on the Cloudflare Worker dashboard (**Settings > Vari
 
 | Secret Name | Purpose |
 | :--- | :--- |
-| `SUPABASE_SECRET_KEY` | **Service Role** key for backend DB access. |
+| `SUPABASE_SECRET_KEY` | Secret key for backend database access (bypasses RLS). |
 | `BREVO_API_KEY` | API key for sending notifications. |
 | `VAPID_PRIVATE_KEY` | Private key for push notification signing. |
 | `SENTRY_DSN` | Sentry DSN for the worker logic. |

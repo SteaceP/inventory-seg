@@ -9,6 +9,7 @@ const SENTRY_DSN: string = String(import.meta.env.VITE_SENTRY_DSN || "");
 
 Sentry.init({
   dsn: SENTRY_DSN,
+  enabled: import.meta.env.PROD,
   integrations: [
     Sentry.browserTracingIntegration(),
     Sentry.replayIntegration(),

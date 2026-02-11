@@ -21,7 +21,7 @@ export const createMockEnv = (): Env =>
   ({
     SUPABASE_URL: "mock-url",
     SUPABASE_KEY: "mock-key",
-    SUPABASE_SERVICE_ROLE_KEY: "mock-service-key",
+    SUPABASE_SECRET_KEY: "mock-secret-key",
     VAPID_PUBLIC_KEY: "mock-vapid-public",
     VAPID_PRIVATE_KEY: "mock-vapid-private",
     BREVO_API_KEY: "mock-brevo",

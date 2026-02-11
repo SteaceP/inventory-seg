@@ -4,7 +4,9 @@ description: How to run tests with Vitest
 
 # Running Tests
 
-This project uses Vitest for testing both frontend (React) and worker (Cloudflare) code.
+This project uses multiple testing frameworks:
+- **Vitest**: Unit tests for frontend (React) and worker (Cloudflare) code
+- **Playwright**: End-to-end (e2e) tests for full user flows
 
 ## Quick Start
 
@@ -62,6 +64,113 @@ pnpm run test:worker:run
 
 ```bash
 pnpm run test:worker
+```
+
+## E2E Tests (Playwright)
+
+Playwright tests simulate real user interactions in a browser environment.
+
+### Run E2E Tests
+
+```bash
+// turbo
+pnpm run test:e2e
+```
+
+### Run E2E Tests with UI Mode
+
+For interactive debugging and development:
+
+```bash
+pnpm run test:e2e:ui
+```
+
+### E2E Test Features
+
+- **Browser Support**: Tests run on Chromium, Firefox, and WebKit
+- **Parallel Execution**: Tests run in parallel for faster completion
+- **Screenshots on Failure**: Automatically captures screenshots when tests fail
+- **Video Recording**: Optional video recording for debugging
+- **Trace Files**: Generate trace files for detailed debugging
+
+### Writing E2E Tests
+
+E2E tests should be placed in the `e2e/` directory with `.spec.ts` extension.
+
+#### Example E2E Test
+
+```typescript
+import { test, expect } from '@playwright/test';
+
+test('user can add inventory item', async ({ page }) => {
+  // Navigate to inventory page
+  await page.goto('/inventory');
+  
+  // Click add button
+  await page.getByRole('button', { name: 'Add Item' }).click();
+  
+  // Fill form
+  await page.getByLabel('Item Name').fill('Test Item');
+  await page.getByLabel('Quantity').fill('10');
+  
+  // Submit
+  await page.getByRole('button', { name: 'Save' }).click();
+  
+  // Verify item appears
+  await expect(page.getByText('Test Item')).toBeVisible();
+});
+```
+
+#### Authentication in E2E Tests
+
+Use storage state to persist authentication:
+
+```typescript
+// e2e/auth.setup.ts
+import { test as setup } from '@playwright/test';
+
+setup('authenticate', async ({ page }) => {
+  await page.goto('/login');
+  await page.getByLabel('Email').fill('test@example.com');
+  await page.getByLabel('Password').fill('password');
+  await page.getByRole('button', { name: 'Login' }).click();
+  
+  // Save authentication state
+  await page.context().storageState({ path: 'e2e/.auth/user.json' });
+});
+```
+
+Then use in tests:
+
+```typescript
+import { test } from '@playwright/test';
+
+test.use({ storageState: 'e2e/.auth/user.json' });
+
+test('authenticated user can access dashboard', async ({ page }) => {
+  await page.goto('/dashboard');
+  // Test authenticated features
+});
+```
+
+### Debugging E2E Tests
+
+#### Run in Headed Mode
+
+```bash
+pnpm run test:e2e --headed
+```
+
+#### Debug Specific Test
+
+```bash
+pnpm run test:e2e --debug inventory.spec.ts
+```
+
+#### View Playwright Trace
+
+```bash
+npx playwright show-trace trace.zip
 ```
 
 

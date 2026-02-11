@@ -39,17 +39,17 @@ const loadEnv = () => {
 setup("authenticate", async ({ page }) => {
   loadEnv();
 
-  const supabaseUrl = process.env.VITE_SUPABASE_URL || "http://127.0.0.1:54321";
-  const supabaseServiceKey =
-    process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseUrl =
+    process.env.VITE_SUPABASE_URL || "https://127.0.0.1:54321";
+  const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
 
-  if (!supabaseServiceKey) {
+  if (!supabaseSecretKey) {
     throw new Error(
-      "SUPABASE_SECRET_KEY or SUPABASE_SERVICE_ROLE_KEY is required in .env.local for E2E tests."
+      "SUPABASE_SECRET_KEY is required in .env.local for E2E tests."
     );
   }
 
-  const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+  const supabase = createClient(supabaseUrl, supabaseSecretKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,

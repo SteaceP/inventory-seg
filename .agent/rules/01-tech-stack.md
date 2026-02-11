@@ -40,6 +40,12 @@ trigger: always_on
   - `eslint-plugin-react-hooks`
   - `eslint-plugin-react-refresh`
 
+### Testing
+
+- **Unit Testing**: Vitest with React Testing Library
+- **E2E Testing**: Playwright
+- **Worker Testing**: `@cloudflare/vitest-pool-workers`
+
 ## Localization
 
 - **Region**: Canada
