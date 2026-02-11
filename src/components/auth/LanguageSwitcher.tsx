@@ -46,8 +46,12 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
           },
         }}
       >
-        <ToggleButton value="fr">FR</ToggleButton>
-        <ToggleButton value="en">EN</ToggleButton>
+        <ToggleButton value="fr" aria-label="FR">
+          FR
+        </ToggleButton>
+        <ToggleButton value="en" aria-label="EN">
+          EN
+        </ToggleButton>
       </ToggleButtonGroup>
     </Box>
   );
