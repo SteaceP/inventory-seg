@@ -7,32 +7,36 @@ test.describe("Appliance Management", () => {
 
   test("displays appliances list", async ({ page }) => {
     await expect(page).toHaveURL("/appliances");
-    await expect(
-      page.getByRole("heading", { name: /appliances|appareils/i })
-    ).toBeVisible();
+    await expect(page.getByText(/appliances|appareils/i).first()).toBeVisible();
   });
 
   test("can create a new appliance", async ({ page }) => {
     const applianceName = `Test Fridge ${Date.now()}`;
 
     // Click Add button
-    await page.getByRole("button", { name: /add|ajouter/i }).click();
+    await page
+      .getByRole("button", { name: /add|ajouter/i })
+      .first()
+      .click();
 
     // Fill dialog
     await expect(page.getByRole("dialog")).toBeVisible({ timeout: 10000 });
-    const nameField = page.locator('input[name="name"]');
+
+    // Use label-based locators since MUI TextField doesn't always have 'name' attribute
+    const nameField = page.getByLabel(/nom|name/i).first();
     await expect(nameField).toBeVisible();
     await nameField.fill(applianceName);
-    await page.locator('input[name="brand"]').fill("Samsung");
-    await page.locator('input[name="model"]').fill("RF28");
 
-    // Submit
-    await page.getByRole("button", { name: /save|sauvegarder/i }).click();
+    await page.getByLabel(/marque|brand/i).fill("Samsung");
+    await page.getByLabel(/modèle|model/i).fill("RF28");
 
-    // Verify item appears
-    // If there is a search filter
-    // await page.getByPlaceholder(/search|rechercher/i).fill(applianceName);
-    // await expect(page.getByText(applianceName)).toBeVisible();
+    // Submit - The save button text depends on t("appliances.add") for new items
+    await page
+      .getByRole("button", { name: /^ajouter un appareil$|^add appliance$/i })
+      .click();
+
+    // Verify item appears (optional, but good practice)
+    await expect(page.getByText(applianceName)).toBeVisible({ timeout: 10000 });
   });
 
   test("can edit an existing appliance", async ({ page }) => {
@@ -48,12 +52,14 @@ test.describe("Appliance Management", () => {
       await expect(page.getByRole("dialog")).toBeVisible();
 
       // Modify the brand
-      const brandField = page.locator('input[name="brand"]');
+      const brandField = page.getByLabel(/marque|brand/i);
       await brandField.clear();
       await brandField.fill("Updated Brand");
 
-      // Save changes
-      await page.getByRole("button", { name: /save|sauvegarder/i }).click();
+      // Save changes - For edits, it uses t("common.save")
+      await page
+        .getByRole("button", { name: /save|sauvegarder|enregistrer/i })
+        .click();
 
       await page.waitForTimeout(1000);
     }
@@ -79,21 +85,19 @@ test.describe("Appliance Management", () => {
         // Fill repair form
         await expect(page.getByRole("dialog")).toBeVisible();
 
-        const descriptionField = page.locator(
-          'input[name="description"], textarea[name="description"]'
-        );
+        const descriptionField = page.getByLabel(/description/i);
         if (await descriptionField.isVisible()) {
           await descriptionField.fill("Test repair description");
         }
 
-        const costField = page.locator('input[name="cost"]');
+        const costField = page.getByLabel(/coût|cost/i);
         if (await costField.isVisible()) {
           await costField.fill("150.00");
         }
 
         // Save repair
         const saveButton = page.getByRole("button", {
-          name: /save|sauvegarder/i,
+          name: /enregistrer|save|sauvegarder/i,
         });
         await saveButton.click();
 
@@ -104,9 +108,8 @@ test.describe("Appliance Management", () => {
 
   test("warranty expiry indicators are visible", async ({ page }) => {
     // Look for warranty status or expiry indicators
-    const warrantyIndicator = page.locator(
-      ".warranty-status, [data-warranty], .expiry-warning"
-    );
+    // MUI might use specific classes or text
+    const warrantyIndicator = page.getByText(/garantie|warranty/i);
 
     const count = await warrantyIndicator.count();
 
@@ -141,7 +144,9 @@ test.describe("Appliance Management", () => {
           await needsServiceOption.click();
 
           // Save
-          await page.getByRole("button", { name: /save|sauvegarder/i }).click();
+          await page
+            .getByRole("button", { name: /save|sauvegarder|enregistrer/i })
+            .click();
 
           await page.waitForTimeout(1000);
         }
@@ -151,24 +156,31 @@ test.describe("Appliance Management", () => {
 
   test("appliance photo upload is accessible", async ({ page }) => {
     // Open add dialog
-    await page.getByRole("button", { name: /add|ajouter/i }).click();
+    await page
+      .getByRole("button", { name: /add|ajouter/i })
+      .first()
+      .click();
     await expect(page.getByRole("dialog")).toBeVisible();
 
     // Look for photo upload button or input
-    const photoInput = page.locator('input[type="file"], input[name="photo"]');
+    // The input[type="file"] is often hidden, look for the button text
+    const uploadTrigger = page.getByText(/photo|image/i);
 
-    if (await photoInput.isVisible()) {
-      await expect(photoInput).toBeVisible();
+    if (await uploadTrigger.isVisible()) {
+      await expect(uploadTrigger.first()).toBeVisible();
     }
   });
 
   test("can set purchase date and warranty", async ({ page }) => {
     // Open add dialog
-    await page.getByRole("button", { name: /add|ajouter/i }).click();
+    await page
+      .getByRole("button", { name: /add|ajouter/i })
+      .first()
+      .click();
     await expect(page.getByRole("dialog")).toBeVisible();
 
     // Purchase date field
-    const purchaseDateField = page.locator('input[name="purchase_date"]');
+    const purchaseDateField = page.getByLabel(/achat|purchase/i);
 
     if (await purchaseDateField.isVisible()) {
       await purchaseDateField.fill("2026-01-01");
@@ -176,7 +188,9 @@ test.describe("Appliance Management", () => {
     }
 
     // Warranty expiry field
-    const warrantyField = page.locator('input[name="warranty_expiry"]');
+    const warrantyField = page.getByLabel(
+      /échéance garantie|warranty expiration/i
+    );
 
     if (await warrantyField.isVisible()) {
       await warrantyField.fill("2027-01-01");

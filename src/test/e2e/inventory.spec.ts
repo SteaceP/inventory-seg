@@ -43,10 +43,11 @@ test.describe("Inventory Management", () => {
     await saveButton.click();
 
     // Verify item appears in list
-    await page
-      .getByRole("textbox", { name: /rechercher|search/i })
-      .fill(itemName);
-    await expect(page.getByText(itemName).first()).toBeVisible();
+    // Use placeholder-based match or aria-label for search
+    await page.getByPlaceholder(/search|rechercher/i).fill(itemName);
+    await expect(page.getByText(itemName).first()).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test("can edit an existing inventory item", async ({ page }) => {
@@ -64,7 +65,7 @@ test.describe("Inventory Management", () => {
       // Handle category autocomplete
       const categoryInput = page.getByTestId("item-category-input");
       await categoryInput.click();
-      await page.waitForTimeout(500); // Wait for options
+      await page.waitForTimeout(1000); // Wait for options
 
       const firstOption = page.getByRole("option").first();
       if (await firstOption.isVisible()) {
@@ -72,12 +73,21 @@ test.describe("Inventory Management", () => {
       } else {
         // Fallback if no options (shouldn't happen with seeded data but good for robustness)
         await categoryInput.fill("General");
+        await page.keyboard.press("Enter");
       }
 
       await page
-        .getByRole("button", { name: /save|enregistrer|sauvegarder/i })
+        .getByRole("button", {
+          name: /save|enregistrer|sauvegarder|enregistrer/i,
+        })
         .first()
         .click();
+
+      // Wait for progress bar to disappear after save
+      await page
+        .getByRole("progressbar")
+        .waitFor({ state: "hidden", timeout: 10000 })
+        .catch(() => {});
       await page.waitForTimeout(1000);
       editButton = page.getByLabel(/modifier l'article|edit item/i).first();
     }
@@ -87,7 +97,7 @@ test.describe("Inventory Management", () => {
 
       // Wait for dialog and ensure it's fully rendered
       await expect(page.getByRole("dialog")).toBeVisible();
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(1000);
 
       // Modify the name
       const nameField = page.getByTestId("item-name-input");
@@ -100,13 +110,16 @@ test.describe("Inventory Management", () => {
         .getByRole("button", { name: /save|enregistrer|sauvegarder/i })
         .click();
 
+      // Wait for dialog to disappear
+      await expect(page.getByRole("dialog")).toBeHidden({ timeout: 10000 });
+
       await page.waitForTimeout(1000);
 
       // Verify updated name appears - search for it to ensure visibility
-      await page
-        .getByRole("textbox", { name: /rechercher|search/i })
-        .fill(updatedName);
-      await expect(page.getByText(updatedName).first()).toBeVisible();
+      await page.getByPlaceholder(/search|rechercher/i).fill(updatedName);
+      await expect(page.getByText(updatedName).first()).toBeVisible({
+        timeout: 15000,
+      });
     }
   });
 

@@ -47,107 +47,94 @@ test.describe("Error Handling", () => {
     await page.goto("/inventory");
 
     // If inventory is empty, should show a message
-    // Look for "no items" or "empty" message
+    // Use the actual translation keys for empty states
     const emptyMessage = page.getByText(
-      /aucun|no items|vide|empty|pas de données|no data/i
+      /Your inventory is empty|Votre inventaire est vide/i
     );
 
-    // Either items exist or empty message shows
-    // Wait for either grid or empty message to appear
-    await page
-      .waitForSelector(
-        '.MuiDataGrid-root, .InventoryHeader-root, h4:has-text("Inventaire"), h4:has-text("Inventory")',
-        { timeout: 10000 }
-      )
-      .catch(() => {});
+    // Wait for the main page content to load
+    await expect(
+      page.getByRole("heading", { name: /inventaire|inventory/i })
+    ).toBeVisible({ timeout: 15000 });
 
-    const grid = page.getByRole("grid");
-    const hasGrid = await grid.isVisible();
+    // In the new card-based UI, we don't have a grid role for empty state
+    // Check if either cards are present OR the empty message is visible
+    const cards = page.locator(".MuiCard-root");
+    const count = await cards.count();
     const hasEmptyMessage = await emptyMessage.isVisible().catch(() => false);
 
-    // One of these should be true
-    expect(hasGrid || hasEmptyMessage).toBeTruthy();
+    // One of these should be true: either we have items or an empty message
+    expect(count > 0 || hasEmptyMessage).toBeTruthy();
   });
 
   test("handles duplicate SKU error", async ({ page }) => {
     await page.goto("/inventory");
 
-    // Create first item
-    await page.getByRole("button", { name: /ajouter|add/i }).click();
+    // Click Add button
+    await page
+      .getByRole("button", { name: /ajouter|add/i })
+      .first()
+      .click();
     await expect(page.getByRole("dialog")).toBeVisible();
 
     const duplicateSKU = `DUP-SKU-${Date.now()}`;
 
-    await page.locator('input[name="name"]').fill("Test Item 1");
-    await page.locator('input[name="sku"]').fill(duplicateSKU);
+    // Use getByLabel or TestID
+    await page.getByLabel(/nom|name/i).fill("Test Item 1");
+    // SKU generation might pop up, just fill it - use textbox role to avoid button collision
+    await page
+      .getByRole("textbox", { name: /sku|barcode/i })
+      .fill(duplicateSKU);
 
-    let saveButton = page.getByRole("button", {
-      name: /sauvegarder|save|enregistrer/i,
-    });
-    await saveButton.click();
+    await page
+      .getByRole("button", { name: /save|enregistrer|sauvegarder/i })
+      .click();
 
-    await page.waitForTimeout(1500);
+    // Wait for save to complete and toast/modal to close
+    await page.waitForTimeout(2000);
 
     // Try to create another item with same SKU
-    const addButton = page.getByRole("button", { name: /ajouter|add/i });
-    if (await addButton.isVisible()) {
-      await addButton.click();
-      await expect(page.getByRole("dialog")).toBeVisible();
+    await page
+      .getByRole("button", { name: /ajouter|add/i })
+      .first()
+      .click();
+    await expect(page.getByRole("dialog")).toBeVisible();
 
-      await page.locator('input[name="name"]').fill("Test Item 2");
-      await page.locator('input[name="sku"]').fill(duplicateSKU);
+    await page.getByLabel(/nom|name/i).fill("Test Item 2");
+    await page
+      .getByRole("textbox", { name: /sku|barcode/i })
+      .fill(duplicateSKU);
 
-      saveButton = page.getByRole("button", {
-        name: /sauvegarder|save|enregistrer/i,
-      });
-      await saveButton.click();
+    await page
+      .getByRole("button", { name: /save|enregistrer|sauvegarder/i })
+      .click();
 
-      await page.waitForTimeout(1000);
+    await page.waitForTimeout(1000);
 
-      // Should show error about duplicate SKU
-      const errorMsg = page.getByText(/existe|exists|duplicate|déjà|already/i);
-      const hasError = await errorMsg.isVisible().catch(() => false);
-
-      if (hasError) {
-        await expect(errorMsg).toBeVisible();
-      }
-    }
+    // Should show error about duplicate SKU - matches t("errors.duplicateSku")
+    const errorMsg = page.getByText(/existe|exists|already/i);
+    await expect(errorMsg.first()).toBeVisible({ timeout: 10000 });
   });
 
   test("handles network errors gracefully", async ({ page }) => {
     // Go offline
     await page.context().setOffline(true);
 
-    await page.goto("/inventory");
+    try {
+      await page.goto("/inventory");
+    } catch {
+      // Expected failure when navigating offline
+    }
 
-    // Try to add an item while offline
-    const addButton = page.getByRole("button", { name: /ajouter|add/i });
+    // Attempting to interact while offline
+    const offlineMsg = page.getByText(
+      /network|réseau|connexion|connection|offline|hors ligne/i
+    );
+    // Our app might show a specific offline indicator
+    const hasError = await offlineMsg.isVisible().catch(() => false);
 
-    if (await addButton.isVisible()) {
-      await addButton.click();
-
-      // Dialog might open
-      const dialog = page.getByRole("dialog");
-      if (await dialog.isVisible()) {
-        await page.locator('input[name="name"]').fill("Offline Test");
-
-        const saveButton = page.getByRole("button", {
-          name: /sauvegarder|save/i,
-        });
-        await saveButton.click();
-
-        await page.waitForTimeout(1000);
-
-        // Should show network error
-        const errorMsg = page.getByText(
-          /network|réseau|connexion|connection|erreur|error/i
-        );
-        const hasError = await errorMsg.isVisible().catch(() => false);
-
-        if (hasError) {
-          await expect(errorMsg).toBeVisible();
-        }
-      }
+    if (hasError) {
+      await expect(offlineMsg.first()).toBeVisible();
     }
 
     // Go back online
@@ -157,32 +144,19 @@ test.describe("Error Handling", () => {
   test("invalid form data shows validation messages", async ({ page }) => {
     await page.goto("/inventory");
 
-    await page.getByRole("button", { name: /ajouter|add/i }).click();
+    await page
+      .getByRole("button", { name: /ajouter|add/i })
+      .first()
+      .click();
     await expect(page.getByRole("dialog")).toBeVisible();
 
-    // Enter invalid data (negative stock, for example)
-    await page.locator('input[name="name"]').fill("Invalid Item");
+    // Required field validation check
+    await page
+      .getByRole("button", { name: /save|enregistrer|sauvegarder/i })
+      .click();
 
-    const stockField = page.locator('input[name="stock"]');
-    if (await stockField.isVisible()) {
-      await stockField.fill("-10"); // Invalid negative stock
-
-      const saveButton = page.getByRole("button", {
-        name: /sauvegarder|save/i,
-      });
-      await saveButton.click();
-
-      await page.waitForTimeout(500);
-
-      // Should show validation error
-      const errorMsg = page.getByText(
-        /invalide|invalid|positif|positive|supérieur|greater/i
-      );
-      const hasError = await errorMsg.isVisible().catch(() => false);
-
-      if (hasError) {
-        await expect(errorMsg).toBeVisible();
-      }
-    }
+    // Should show validation error for missing name
+    const errorMsg = page.getByText(/requis|required/i);
+    await expect(errorMsg.first()).toBeVisible();
   });
 });
