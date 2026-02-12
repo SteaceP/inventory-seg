@@ -103,7 +103,11 @@ const AppContent = () => {
 
   const theme = getTheme(darkMode ? "dark" : "light");
 
-  if (loading) {
+  const location = useLocation();
+  const isAuthPage =
+    location.pathname === "/login" || location.pathname === "/signup";
+
+  if (loading && !isAuthPage) {
     return (
       <ThemeProvider theme={theme}>
         <CssBaseline />
