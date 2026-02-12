@@ -55,7 +55,7 @@ A standalone inventory management application built with a modern tech stack, de
    ```
 
 2. **Prepare Configuration Files**:
-   Generate `package.json` and `wrangler.jsonc` from templates using environment variables:
+   Generate `package.json` and `wrangler.toml` from templates using environment variables:
 
    ```bash
    node scripts/prepare-configs.js
@@ -105,7 +105,7 @@ A standalone inventory management application built with a modern tech stack, de
 This application is deployed as a single Cloudflare Worker using the **Workers with Assets** feature (no separate Cloudflare Pages project required).
 
 1. **Configure Environment Variables**:
-   Set your production variables in the Cloudflare Dashboard (Settings -> Variables) or in `wrangler.jsonc` (not recommended for secrets).
+   Set your production variables in the Cloudflare Dashboard (Settings -> Variables) or in `wrangler.toml` (not recommended for secrets).
 
 2. **Deploy via Wrangler**:
 
@@ -124,7 +124,7 @@ This application is deployed as a single Cloudflare Worker using the **Workers w
    ```
 
 - Deploy with `pnpm run deploy`
-- Your assets are automatically handled in the `dist/client` directory as configured in `wrangler.jsonc`.
+- Your assets are automatically handled in the `dist/client` directory as configured in `wrangler.toml`.
 
 ### 🔐 Configuration & Secret Management
 

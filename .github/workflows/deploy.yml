@@ -31,7 +31,6 @@ jobs:
       VAPID_PUBLIC_KEY: ${{ vars.VITE_VAPID_PUBLIC_KEY }}
       BREVO_SENDER_EMAIL: ${{ vars.BREVO_SENDER_EMAIL }}
       SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
-      # Production Infra (for wrangler.jsonc generation)
       HYPERDRIVE_ID: ${{ vars.HYPERDRIVE_ID }}
       HYPERDRIVE_LOCAL_CONNECTION_STRING: ${{ vars.HYPERDRIVE_LOCAL_CONNECTION_STRING }}
       D1_DATABASE_NAME: ${{ vars.D1_DATABASE_NAME }}
@@ -65,9 +64,72 @@ jobs:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
 
+  deploy-preview:
+    name: Deploy Preview
+    needs: checks
+    runs-on: ubuntu-latest
+    outputs:
+      deployment-url: ${{ steps.wrangler.outputs.deployment-url }}
+    env:
+      PACKAGE_NAME: ${{ vars.PACKAGE_NAME }}
+      PACKAGE_AUTHOR: ${{ vars.PACKAGE_AUTHOR }}
+      GH_USERNAME: ${{ vars.GH_USERNAME }}
+      REPO_NAME: ${{ vars.REPO_NAME }}
+      WORKER_NAME: ${{ vars.WORKER_NAME }}
+      COMPANY_NAME: ${{ vars.COMPANY_NAME }}
+      ADMIN_EMAIL: ${{ vars.ADMIN_EMAIL }}
+      APP_URL: ${{ vars.APP_URL }}
+      ALLOWED_ORIGIN: ${{ vars.ALLOWED_ORIGIN || vars.APP_URL }}
+      SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+      VITE_APP_NAME: ${{ vars.VITE_APP_NAME }}
+      VITE_COMPANY_NAME: ${{ vars.COMPANY_NAME }}
+      VITE_COMPANY_URL: ${{ vars.VITE_COMPANY_URL }}
+      VAPID_PUBLIC_KEY: ${{ vars.VITE_VAPID_PUBLIC_KEY }}
+      BREVO_SENDER_EMAIL: ${{ vars.BREVO_SENDER_EMAIL }}
+      SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
+      HYPERDRIVE_ID: ${{ vars.HYPERDRIVE_ID }}
+      HYPERDRIVE_LOCAL_CONNECTION_STRING: ${{ vars.HYPERDRIVE_LOCAL_CONNECTION_STRING }}
+      D1_DATABASE_NAME: ${{ vars.D1_DATABASE_NAME }}
+      D1_DATABASE_ID: ${{ vars.D1_DATABASE_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Prepare Configuration Files
+        run: node scripts/prepare-configs.js
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_VAPID_PUBLIC_KEY: ${{ vars.VITE_VAPID_PUBLIC_KEY }}
+          VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          VITE_TURNSTILE_SITE_KEY: ${{ vars.VITE_TURNSTILE_SITE_KEY }}
+
+      - name: Deploy Preview
+        id: wrangler
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --env preview
+
   e2e:
     name: E2E Tests (Playwright)
-    needs: checks
+    needs: deploy-preview
     runs-on: ubuntu-latest
     env:
       PACKAGE_NAME: ${{ vars.PACKAGE_NAME }}
@@ -78,12 +140,14 @@ jobs:
       APP_URL: ${{ vars.APP_URL }}
       VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
       VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+      SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
       VITE_APP_NAME: ${{ vars.VITE_APP_NAME }}
       VITE_COMPANY_NAME: ${{ vars.COMPANY_NAME }}
       VITE_COMPANY_URL: ${{ vars.VITE_COMPANY_URL }}
       VAPID_PUBLIC_KEY: ${{ vars.VITE_VAPID_PUBLIC_KEY }}
       SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
       VITE_TURNSTILE_SITE_KEY: ${{ vars.VITE_TURNSTILE_SITE_KEY }}
+      PLAYWRIGHT_BASE_URL: ${{ needs.deploy-preview.outputs.deployment-url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -117,12 +181,13 @@ jobs:
           path: playwright-report/
           retention-days: 7
 
-  deploy:
-    name: Build & Deploy
+  deploy-production:
+    name: Build & Deploy Production
     needs: [checks, e2e]
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
-      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
+      name: production
       url: ${{ steps.wrangler.outputs.deployment-url }}
     env:
       PACKAGE_NAME: ${{ vars.PACKAGE_NAME }}
@@ -175,10 +240,10 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           VITE_TURNSTILE_SITE_KEY: ${{ vars.VITE_TURNSTILE_SITE_KEY }}
 
-      - name: Deploy
+      - name: Deploy Production
         id: wrangler
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy ${{ github.ref == 'refs/heads/main' && '--env production' || '--env preview' }}
+          command: deploy --env production

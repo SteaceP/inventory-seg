@@ -140,7 +140,7 @@ export default defineConfig(({ mode }) => {
       react(),
 
       cloudflare({
-        configPath: "./wrangler.jsonc",
+        configPath: "./wrangler.toml",
         persistState: true,
       }),
 

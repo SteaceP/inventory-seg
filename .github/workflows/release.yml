@@ -31,7 +31,7 @@ jobs:
       VAPID_PUBLIC_KEY: ${{ vars.VITE_VAPID_PUBLIC_KEY }}
       BREVO_SENDER_EMAIL: ${{ vars.BREVO_SENDER_EMAIL }}
       SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
-      # Production Infra (for wrangler.jsonc generation)
+      # Production Infra (for wrangler.toml generation)
       HYPERDRIVE_ID: ${{ vars.HYPERDRIVE_ID }}
       HYPERDRIVE_LOCAL_CONNECTION_STRING: ${{ vars.HYPERDRIVE_LOCAL_CONNECTION_STRING }}
       D1_DATABASE_NAME: ${{ vars.D1_DATABASE_NAME }}

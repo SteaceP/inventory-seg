@@ -94,21 +94,14 @@ function processTemplate(templateName, outputName) {
     process.exit(1);
   }
 
-  // Post-process to convert quoted boolean/number placeholders back to literals
+  // No post-processing needed for TOML unless specific literals are required
+  // But we can keep the boolean conversion if we want to support both or ensure TOML literals
   content = content.replace(/"(true|false)"/g, "$1");
-
-  // Add schema back to wrangler.jsonc if missing
-  if (outputName === "wrangler.jsonc" && !content.includes("$schema")) {
-    content = content.replace(
-      "{",
-      '{\n  "$schema": "node_modules/wrangler/config-schema.json",'
-    );
-  }
 
   fs.writeFileSync(outputPath, content);
   console.log(`Successfully generated ${outputName} from template`);
 }
 
 // Process all templates
-processTemplate("wrangler.template.jsonc", "wrangler.jsonc");
+processTemplate("wrangler.template.toml", "wrangler.toml");
 processTemplate("package.template.json", "package.json");

@@ -30,6 +30,7 @@ pnpm-lock.yaml
 # ======================
 .wrangler
 wrangler.jsonc
+wrangler.toml
 .dev.vars
 .wrangler.dev.vars*
 
