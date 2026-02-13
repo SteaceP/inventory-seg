@@ -105,10 +105,12 @@ export const useInventoryActions = ({
         }
 
         if (sanitizedData.stock_locations) {
-          await supabase
+          const { error: delError } = await supabase
             .from("inventory_stock_locations")
             .delete()
             .eq("inventory_id", editingItem.id);
+
+          if (delError) throw delError;
 
           const locationsToInsert = sanitizedData.stock_locations
             .filter((l) => l.location && l.location.trim() !== "")
@@ -120,9 +122,11 @@ export const useInventoryActions = ({
             }));
 
           if (locationsToInsert.length > 0) {
-            await supabase
+            const { error: insError } = await supabase
               .from("inventory_stock_locations")
               .insert(locationsToInsert);
+
+            if (insError) throw insError;
           }
         }
       } else {
@@ -174,9 +178,11 @@ export const useInventoryActions = ({
               }));
 
             if (locationsToInsert.length > 0) {
-              await supabase
+              const { error: locInsError } = await supabase
                 .from("inventory_stock_locations")
                 .insert(locationsToInsert);
+
+              if (locInsError) throw locInsError;
             }
           }
         }
