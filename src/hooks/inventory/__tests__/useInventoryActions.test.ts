@@ -241,4 +241,105 @@ describe("useInventoryActions", () => {
     expect(ActivityUtils.logActivity).toHaveBeenCalled();
     expect(mockSetOpen).toHaveBeenCalledWith(false);
   });
+
+  it("should update existing item with stock locations successfully", async () => {
+    const editingItem = mockItems[0];
+    const stockLocations = [
+      {
+        id: "loc-1",
+        inventory_id: editingItem.id,
+        location: "Warehouse A",
+        quantity: 8,
+        parent_location: null,
+      },
+    ];
+    const { result } = renderHook(() =>
+      useInventoryActions({
+        ...defaultProps,
+        editingItem: editingItem,
+        formData: {
+          ...editingItem,
+          stock: 8,
+          stock_locations: stockLocations,
+        },
+      })
+    );
+
+    const mockDeleteEq = vi.fn().mockResolvedValue({ error: null });
+    const mockUpdateEq = vi.fn().mockResolvedValue({ error: null });
+    const mockInsert = vi.fn().mockResolvedValue({ error: null });
+    const mockUpdate = vi.fn().mockReturnValue({ eq: mockUpdateEq });
+    const mockDelete = vi.fn().mockReturnValue({ eq: mockDeleteEq });
+
+    vi.mocked(supabase.from).mockReturnValue({
+      update: mockUpdate,
+      delete: mockDelete,
+      insert: mockInsert,
+    } as any);
+
+    await act(async () => {
+      await result.current.handleSave();
+    });
+
+    // Verify stock locations were deleted and re-inserted
+    expect(mockDelete).toHaveBeenCalled();
+    expect(mockInsert).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({
+          inventory_id: editingItem.id,
+          location: "Warehouse A",
+          quantity: 8,
+        }),
+      ])
+    );
+    expect(mockSetOpen).toHaveBeenCalledWith(false);
+  });
+
+  it("should show error when stock location insert fails during edit", async () => {
+    const editingItem = mockItems[0];
+    const stockLocations = [
+      {
+        id: "loc-1",
+        inventory_id: editingItem.id,
+        location: "Warehouse A",
+        quantity: 5,
+        parent_location: null,
+      },
+    ];
+    const { result } = renderHook(() =>
+      useInventoryActions({
+        ...defaultProps,
+        editingItem: editingItem,
+        formData: {
+          ...editingItem,
+          stock: 5,
+          stock_locations: stockLocations,
+        },
+      })
+    );
+
+    const insertError = { message: "RLS policy violation", code: "42501" };
+    const mockDeleteEq = vi.fn().mockResolvedValue({ error: null });
+    const mockUpdateEq = vi.fn().mockResolvedValue({ error: null });
+    const mockInsert = vi.fn().mockResolvedValue({ error: insertError });
+    const mockUpdate = vi.fn().mockReturnValue({ eq: mockUpdateEq });
+    const mockDelete = vi.fn().mockReturnValue({ eq: mockDeleteEq });
+
+    vi.mocked(supabase.from).mockReturnValue({
+      update: mockUpdate,
+      delete: mockDelete,
+      insert: mockInsert,
+    } as any);
+
+    await act(async () => {
+      await result.current.handleSave();
+    });
+
+    // Verify error was surfaced to user
+    expect(mockShowError).toHaveBeenCalledWith(
+      expect.stringContaining("RLS policy violation")
+    );
+    // Dialog should NOT close on error
+    expect(mockSetOpen).not.toHaveBeenCalledWith(false);
+  });
 });
