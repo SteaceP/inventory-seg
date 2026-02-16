@@ -2,7 +2,7 @@ import postgres from "postgres";
 
 import { getUser } from "../auth";
 import { reportError } from "../errorReporting";
-import { getSecurityHeaders } from "../helpers";
+import { createResponse } from "../helpers";
 
 import type {
   Env,
@@ -15,21 +15,13 @@ export async function handleAssistantChat(
   request: Request,
   env: Env
 ): Promise<Response> {
-  const origin = request.headers.get("Origin") || "";
-  const securityHeaders = getSecurityHeaders(origin);
-  const headers = new Headers(securityHeaders);
-  headers.set("Content-Type", "application/json");
-
   let sql: ReturnType<typeof postgres> | undefined;
 
   try {
     // 1. Authenticate user
     const user = await getUser(request, env);
     if (!user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers,
-      });
+      return createResponse({ error: "Unauthorized" }, 401, env, request);
     }
 
     const body: ChatRequest = await request.json();
@@ -142,10 +134,7 @@ export async function handleAssistantChat(
       }
     }
 
-    return new Response(JSON.stringify({ response: finalResponse }), {
-      status: 200,
-      headers,
-    });
+    return createResponse({ response: finalResponse }, 200, env, request);
   } catch (error: unknown) {
     let errorMessage = "Unknown error";
     if (error instanceof Error) {
@@ -154,15 +143,11 @@ export async function handleAssistantChat(
       errorMessage = error;
     }
 
-    return new Response(
-      JSON.stringify({
-        error: "Failed to generate AI response",
-        details: errorMessage,
-      }),
-      {
-        status: 500,
-        headers,
-      }
+    return createResponse(
+      { error: "Failed to generate AI response", details: errorMessage },
+      500,
+      env,
+      request
     );
   } finally {
     if (sql) await sql.end();

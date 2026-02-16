@@ -37,6 +37,13 @@ vi.mock("../helpers", () => ({
       status,
     } as unknown as Response)
   ),
+  safeJsonParse: vi.fn((str: string, fallback: unknown) => {
+    try {
+      return JSON.parse(str) as unknown;
+    } catch {
+      return fallback;
+    }
+  }),
 }));
 
 describe("Stats Route Handlers", () => {

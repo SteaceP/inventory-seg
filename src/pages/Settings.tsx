@@ -68,11 +68,6 @@ const Settings: React.FC = () => {
     }));
   }, [displayName, avatarUrl, darkMode, compactView, language]);
 
-  useEffect(() => {
-    // Update local state when context changes (instant feedback)
-    setSettings((prev) => ({ ...prev, darkMode, compactView }));
-  }, [darkMode, compactView]);
-
   const languageChangeRef = useRef(false);
 
   useEffect(() => {
@@ -134,7 +129,7 @@ const Settings: React.FC = () => {
         data: { publicUrl },
       } = supabase.storage.from("avatars").getPublicUrl(filePath);
 
-      setSettings({ ...settings, avatarUrl: publicUrl });
+      setSettings((prev) => ({ ...prev, avatarUrl: publicUrl }));
       setUserProfile({ avatarUrl: publicUrl });
 
       // Update database immediately for avatar
@@ -206,7 +201,7 @@ const Settings: React.FC = () => {
             avatarUrl={settings.avatarUrl}
             email={settings.email}
             onDisplayNameChange={(name) =>
-              setSettings({ ...settings, displayName: name })
+              setSettings((prev) => ({ ...prev, displayName: name }))
             }
             onAvatarChange={(file) => void handleAvatarUpload(file)}
           />
@@ -221,10 +216,10 @@ const Settings: React.FC = () => {
             darkMode={settings.darkMode}
             compactView={settings.compactView}
             onDarkModeChange={(enabled) =>
-              setSettings({ ...settings, darkMode: enabled })
+              setSettings((prev) => ({ ...prev, darkMode: enabled }))
             }
             onCompactViewChange={(enabled) =>
-              setSettings({ ...settings, compactView: enabled })
+              setSettings((prev) => ({ ...prev, compactView: enabled }))
             }
           />
         </Grid>
@@ -259,7 +254,7 @@ const Settings: React.FC = () => {
                   // mark that the language change originated from the UI so the
                   // settings loader won't immediately overwrite it from the DB
                   languageChangeRef.current = true;
-                  setSettings({ ...settings, language: val });
+                  setSettings((prev) => ({ ...prev, language: val }));
                   void setLanguage(val);
                 }}
               >

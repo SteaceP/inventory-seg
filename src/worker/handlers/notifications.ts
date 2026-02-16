@@ -168,6 +168,15 @@ export async function handleLowStockAlert(
     }
 
     // --- 0. FETCH USER SETTINGS (LANGUAGE) ---
+    if (!env.HYPERDRIVE) {
+      return createResponse(
+        { error: "Database connection not configured" },
+        500,
+        env,
+        request
+      );
+    }
+
     let language = "en";
     sql = postgres(env.HYPERDRIVE.connectionString);
     try {

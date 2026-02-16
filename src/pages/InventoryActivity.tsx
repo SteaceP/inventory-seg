@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
@@ -146,15 +146,21 @@ const InventoryActivityPage: React.FC = () => {
   }, [fetchHistory, hasMore, loadingMore, page]);
 
   // Infinite scroll observer
+  const observerInstanceRef = useRef<IntersectionObserver | null>(null);
   const observerRef = useCallback(
     (node: HTMLDivElement | null) => {
-      if (loading || loadingMore) return;
+      if (observerInstanceRef.current) {
+        observerInstanceRef.current.disconnect();
+        observerInstanceRef.current = null;
+      }
+      if (loading || loadingMore || !node) return;
       const observer = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMore) {
           loadMore();
         }
       });
-      if (node) observer.observe(node);
+      observer.observe(node);
+      observerInstanceRef.current = observer;
     },
     [hasMore, loadMore, loading, loadingMore]
   );

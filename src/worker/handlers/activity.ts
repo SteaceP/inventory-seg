@@ -1,7 +1,17 @@
-import { verifyAuth } from "../auth";
-import { createResponse } from "../helpers";
+import { getUser } from "../auth";
+import { createResponse, safeJsonParse } from "../helpers";
+import { validateItemName } from "../validators";
 
 import type { Env } from "../types";
+
+const VALID_ACTIONS = [
+  "created",
+  "updated",
+  "deleted",
+  "stock_adjusted",
+  "moved",
+  "created_appliance",
+];
 
 /**
  * Handle activity log POST - creates a new activity entry
@@ -11,17 +21,32 @@ export async function handleActivityLogPost(
   env: Env
 ): Promise<Response> {
   try {
-    if (!(await verifyAuth(request, env))) {
+    const user = await getUser(request, env);
+    if (!user) {
       return createResponse({ error: "Unauthorized" }, 401, env, request);
     }
 
     const body: {
       inventory_id: string;
-      user_id: string;
       action: string;
       item_name: string;
       changes: unknown;
     } = await request.json();
+
+    if (!body.inventory_id || typeof body.inventory_id !== "string") {
+      return createResponse(
+        { error: "Invalid inventory_id" },
+        400,
+        env,
+        request
+      );
+    }
+    if (!body.action || !VALID_ACTIONS.includes(body.action)) {
+      return createResponse({ error: "Invalid action" }, 400, env, request);
+    }
+    if (!validateItemName(body.item_name)) {
+      return createResponse({ error: "Invalid item_name" }, 400, env, request);
+    }
 
     const id = crypto.randomUUID();
     await env.DB.prepare(
@@ -31,7 +56,7 @@ export async function handleActivityLogPost(
       .bind(
         id,
         body.inventory_id,
-        body.user_id,
+        user.id,
         body.action,
         body.item_name,
         JSON.stringify(body.changes)
@@ -52,13 +77,20 @@ export async function handleActivityLogGet(
   env: Env
 ): Promise<Response> {
   try {
-    if (!(await verifyAuth(request, env))) {
+    const user = await getUser(request, env);
+    if (!user) {
       return createResponse({ error: "Unauthorized" }, 401, env, request);
     }
 
     const url = new URL(request.url);
-    const page = parseInt(url.searchParams.get("page") || "0");
-    const pageSize = parseInt(url.searchParams.get("pageSize") || "10");
+    const page = Math.max(
+      0,
+      parseInt(url.searchParams.get("page") || "0") || 0
+    );
+    const pageSize = Math.min(
+      100,
+      Math.max(1, parseInt(url.searchParams.get("pageSize") || "10") || 10)
+    );
     const actionFilter = url.searchParams.get("actionFilter") || "all";
     const searchTerm = url.searchParams.get("searchTerm") || "";
     const startDate = url.searchParams.get("startDate");
@@ -118,7 +150,7 @@ export async function handleActivityLogGet(
     // Parse JSON changes
     const formattedResults = results.map((r) => ({
       ...r,
-      changes: JSON.parse(r.changes as string) as Record<string, unknown>,
+      changes: safeJsonParse<Record<string, unknown>>(r.changes as string, {}),
     }));
 
     return createResponse(formattedResults, 200, env, request);

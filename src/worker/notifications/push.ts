@@ -52,6 +52,7 @@ export async function broadcastPush(
       requireInteraction: options.requireInteraction ?? true,
     });
 
+    const cleanupPromises: Promise<unknown>[] = [];
     await Promise.allSettled(
       subscriptions.map((sub) =>
         webpush
@@ -59,15 +60,18 @@ export async function broadcastPush(
           .catch((error: unknown) => {
             const status = (error as { statusCode?: number })?.statusCode;
             if (status === 410 || status === 404) {
-              void sql`
-                DELETE FROM push_subscriptions WHERE id = ${sub.id}
-              `.catch((err: unknown) => {
-                reportError(err);
-              });
+              cleanupPromises.push(
+                sql`
+                  DELETE FROM push_subscriptions WHERE id = ${sub.id}
+                `.catch((err: unknown) => {
+                  reportError(err);
+                })
+              );
             }
           })
       )
     );
+    await Promise.allSettled(cleanupPromises);
   } finally {
     await sql.end();
   }

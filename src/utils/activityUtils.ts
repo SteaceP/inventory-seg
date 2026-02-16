@@ -7,8 +7,8 @@ import type { InventoryActivity } from "@/types/activity";
  * @returns An object with diff, old/new levels, and a color recommendation, or null if no change.
  */
 export const getStockChange = (changes: InventoryActivity["changes"]) => {
-  const oldStock = (changes?.old_stock as number) ?? 0;
-  const newStock = (changes?.stock as number) ?? 0;
+  const oldStock = Number(changes?.old_stock) || 0;
+  const newStock = Number(changes?.stock) || 0;
   const diff = newStock - oldStock;
 
   if (diff === 0) return null;
@@ -118,12 +118,13 @@ export const logActivity = async (
   session: { access_token: string } | null,
   handleError: (error: unknown) => void
 ) => {
+  if (!session?.access_token) return;
   try {
     await fetch("/api/activity", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${session?.access_token}`,
+        Authorization: `Bearer ${session.access_token}`,
       },
       body: JSON.stringify(activity),
     });

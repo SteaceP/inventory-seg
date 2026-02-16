@@ -26,6 +26,8 @@ export const createMockEnv = (): Env =>
     BREVO_API_KEY: "mock-brevo",
     BREVO_SENDER_EMAIL: "mock@test.com",
     SENTRY_DSN: "mock-dsn",
+    APP_URL: "http://localhost",
+    ALLOWED_ORIGIN: "http://localhost",
     HYPERDRIVE: { connectionString: "postgres://mock" },
     DB: {} as D1Database,
     AI_SERVICE: {

@@ -280,6 +280,7 @@ async function sendNotification(
       tag: `reorder-${supplier}-${Date.now()}`,
     });
 
+    const cleanupPromises: Promise<unknown>[] = [];
     await Promise.allSettled(
       subs.map((sub) =>
         webpush
@@ -287,14 +288,16 @@ async function sendNotification(
           .catch((err: unknown) => {
             const status = (err as { statusCode?: number }).statusCode;
             if (status === 410 || status === 404) {
-              // cleanup
-              void sql`DELETE FROM push_subscriptions WHERE id = ${sub.id}`.catch(
-                (e: unknown) => reportError(e)
+              cleanupPromises.push(
+                sql`DELETE FROM push_subscriptions WHERE id = ${sub.id}`.catch(
+                  (e: unknown) => reportError(e)
+                )
               );
             }
           })
       )
     );
+    await Promise.allSettled(cleanupPromises);
   } catch (err) {
     reportError(err, { context: "Notification failed" });
   }

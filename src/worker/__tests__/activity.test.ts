@@ -30,7 +30,7 @@ vi.mock("postgres", () => {
 
 // Mock Auth
 vi.mock("../auth", () => ({
-  verifyAuth: vi.fn().mockResolvedValue(true),
+  getUser: vi.fn().mockResolvedValue({ id: "user1", email: "test@test.com" }),
 }));
 
 // Mock Helpers
@@ -41,6 +41,13 @@ vi.mock("../helpers", () => ({
       status,
     } as unknown as Response)
   ),
+  safeJsonParse: vi.fn((str: string, fallback: unknown) => {
+    try {
+      return JSON.parse(str) as unknown;
+    } catch {
+      return fallback;
+    }
+  }),
 }));
 
 describe("Activity Route Handlers", () => {
@@ -68,7 +75,6 @@ describe("Activity Route Handlers", () => {
     it("should create activity log entry", async () => {
       const body = {
         inventory_id: "123",
-        user_id: "user1",
         action: "created",
         item_name: "Test Item",
         changes: { stock: 10 },
@@ -76,6 +82,7 @@ describe("Activity Route Handlers", () => {
 
       request = {
         json: vi.fn().mockResolvedValue(body),
+        headers: new Headers({ Authorization: "Bearer mock-token" }),
       } as unknown as Request;
 
       await handleActivityLogPost(request, env);
@@ -97,6 +104,7 @@ describe("Activity Route Handlers", () => {
     it("should fetch activity logs with filters", async () => {
       request = {
         url: "http://localhost/api/activity?page=0&pageSize=10&actionFilter=created",
+        headers: new Headers({ Authorization: "Bearer mock-token" }),
       } as unknown as Request;
 
       await handleActivityLogGet(request, env);

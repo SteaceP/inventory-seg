@@ -29,8 +29,9 @@ export const useInventoryFilter = ({
     if (newValue) {
       setSearchParams({ filter: "lowStock" });
     } else {
-      searchParams.delete("filter");
-      setSearchParams(searchParams);
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete("filter");
+      setSearchParams(newParams);
     }
   };
 

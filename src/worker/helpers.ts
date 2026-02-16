@@ -14,12 +14,24 @@ export function getSecurityHeaders(
     "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS, DELETE",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Max-Age": "86400",
     "X-Frame-Options": "DENY",
     "X-Content-Type-Options": "nosniff",
     "Referrer-Policy": "strict-origin-when-cross-origin",
     "Content-Security-Policy": "default-src 'none'; frame-ancestors 'none';",
     "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
   };
+}
+
+/**
+ * Safely parses JSON, returning a fallback value on failure
+ */
+export function safeJsonParse<T = unknown>(str: string, fallback: T): T {
+  try {
+    return JSON.parse(str) as T;
+  } catch {
+    return fallback;
+  }
 }
 
 /**

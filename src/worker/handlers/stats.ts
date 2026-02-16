@@ -1,5 +1,5 @@
 import { verifyAuth } from "../auth";
-import { createResponse } from "../helpers";
+import { createResponse, safeJsonParse } from "../helpers";
 
 import type { Env } from "../types";
 
@@ -35,10 +35,10 @@ export async function handleDashboardStats(
 
     results.forEach((row) => {
       const action = row.action as string;
-      const changes = JSON.parse(row.changes as string) as Record<
-        string,
-        unknown
-      >;
+      const changes = safeJsonParse<Record<string, unknown>>(
+        row.changes as string,
+        {}
+      );
 
       if (action === "created") {
         stockIn += getNumber(changes, "stock");
@@ -101,10 +101,10 @@ export async function handleReportStats(
     const aggregation: Record<string, number> = {};
 
     results.forEach((row) => {
-      const changes = JSON.parse(row.changes as string) as {
+      const changes = safeJsonParse<{
         old_stock?: unknown;
         stock?: unknown;
-      };
+      }>(row.changes as string, {});
       const oldStock = Number(changes.old_stock) || 0;
       const newStock = Number(changes.stock) || 0;
       const count = Math.abs(newStock - oldStock);

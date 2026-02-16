@@ -29,8 +29,8 @@ export function getTranslation(
   key: string,
   params: Record<string, string> = {}
 ): string {
-  const langUpper = lang.toLowerCase();
-  const t = translations[langUpper] || translations.en;
+  const langLower = lang.toLowerCase();
+  const t = translations[langLower] || translations.en;
   let text = t[key] || translations.en[key] || key;
 
   for (const [param, value] of Object.entries(params)) {

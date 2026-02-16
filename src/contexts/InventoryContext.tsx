@@ -67,6 +67,9 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
     >
   >({});
   const [editingId, setEditingIdState] = useState<string | null>(null);
+  const editingIdRef = useRef<string | null>(null);
+  const fetchInventoryRef = useRef<(() => Promise<void>) | null>(null);
+  const presenceChannelRef = useRef<RealtimeChannel | null>(null);
 
   const isFetching = useRef(false);
 
@@ -116,6 +119,8 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
       isFetching.current = false;
     }
   }, [t, showError]);
+
+  fetchInventoryRef.current = fetchInventory;
 
   const updateCategoryThreshold = useCallback(
     async (name: string, threshold: number | null) => {
@@ -209,6 +214,8 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
       },
     });
 
+    presenceChannelRef.current = channel;
+
     channel
       .on("presence", { event: "sync" }, () => {
         const newState = channel.presenceState();
@@ -226,33 +233,48 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
         setPresence(simplifiedPresence);
       })
       .on("broadcast", { event: "inventory-updated" }, () => {
-        void fetchInventory();
+        void fetchInventoryRef.current?.();
       })
       .subscribe((status) => {
         if ((status as string) === "SUBSCRIBED") {
           void channel.track({
             userId,
             displayName: displayName || "Anonymous",
-            editingId: editingId,
+            editingId: editingIdRef.current,
           });
         }
       });
 
     return () => {
+      presenceChannelRef.current = null;
       void channel.unsubscribe();
     };
-  }, [userId, displayName, editingId, fetchInventory]);
+  }, [userId, displayName]);
+
+  // Track editingId changes on the existing presence channel
+  useEffect(() => {
+    editingIdRef.current = editingId;
+    if (presenceChannelRef.current) {
+      void presenceChannelRef.current.track({
+        userId,
+        displayName: displayName || "Anonymous",
+        editingId,
+      });
+    }
+  }, [editingId, userId, displayName]);
 
   const setEditingId = useCallback((id: string | null) => {
     setEditingIdState(id);
   }, []);
 
   const broadcastInventoryChange = useCallback(() => {
-    void supabase.channel("inventory-sync").send({
-      type: "broadcast",
-      event: "inventory-updated",
-      payload: { timestamp: new Date().toISOString() },
-    });
+    if (presenceChannelRef.current) {
+      void presenceChannelRef.current.send({
+        type: "broadcast",
+        event: "inventory-updated",
+        payload: { timestamp: new Date().toISOString() },
+      });
+    }
   }, []);
 
   const contextValue = useMemo(

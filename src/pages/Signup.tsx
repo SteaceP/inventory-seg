@@ -19,18 +19,11 @@ import { supabase } from "@/supabaseClient";
 import { useUserContext } from "@contexts/UserContext";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { usePerformance } from "@hooks/usePerformance";
-import { logInfo } from "@utils/errorReporting";
 
 // Cloudflare Turnstile Site Key
 // In development, we use the "Always Pass" test key if the environment variable is missing
 const TURNSTILE_SITE_KEY =
   import.meta.env.VITE_TURNSTILE_SITE_KEY || "1x00000000000000000000AA";
-
-if (!TURNSTILE_SITE_KEY) {
-  logInfo(
-    "[Turnstile] Warning: VITE_TURNSTILE_SITE_KEY is not defined. Falling back to test key."
-  );
-}
 
 const Signup: React.FC = () => {
   const [email, setEmail] = useState("");

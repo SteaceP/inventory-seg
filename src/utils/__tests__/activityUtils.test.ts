@@ -311,6 +311,23 @@ describe("logActivity", () => {
     expect(handleError).not.toHaveBeenCalled();
   });
 
+  it("should skip fetch when session is null", async () => {
+    const handleError = vi.fn();
+
+    const mockActivity = {
+      inventory_id: "1",
+      user_id: "u1",
+      action: "test",
+      item_name: "item",
+      changes: {},
+    };
+
+    await logActivity(mockActivity, null, handleError);
+
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(handleError).not.toHaveBeenCalled();
+  });
+
   it("should handle error during fetch", async () => {
     const error = new Error("Network error");
     mockFetch.mockRejectedValueOnce(error);
@@ -325,7 +342,11 @@ describe("logActivity", () => {
       changes: {},
     };
 
-    await logActivity(mockActivity, null, handleError);
+    await logActivity(
+      mockActivity,
+      { access_token: "valid-token" },
+      handleError
+    );
 
     expect(handleError).toHaveBeenCalledWith(error);
   });

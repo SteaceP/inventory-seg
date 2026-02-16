@@ -46,6 +46,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const { handleError } = useErrorHandler();
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const loadingRef = useRef(true);
   const prevUserIdRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -66,7 +67,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       } catch (err) {
         handleError(err, "Failed to initialize auth session");
       } finally {
-        if (isMounted) setLoading(false);
+        if (isMounted) {
+          loadingRef.current = false;
+          setLoading(false);
+        }
       }
     };
 
@@ -74,17 +78,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Safety net for loading state
     const safetyTimeout = setTimeout(() => {
-      if (isMounted && loading) setLoading(false);
+      if (isMounted && loadingRef.current) {
+        loadingRef.current = false;
+        setLoading(false);
+      }
     }, 3000);
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      // Only update if session actually changed or we need to handle specific events
-      // For now, simpler equality check or just setting it is fine as React generic bail-out applies
       if (isMounted) {
         setSession(newSession);
-        // If we went from no user to user, or user changed, we might want to ensure loading is false
+        loadingRef.current = false;
         setLoading(false);
       }
     });
@@ -94,7 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       clearTimeout(safetyTimeout);
       subscription.unsubscribe();
     };
-  }, [handleError, loading]);
+  }, [handleError]);
 
   const value = useMemo(
     () => ({

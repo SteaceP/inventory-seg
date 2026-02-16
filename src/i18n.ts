@@ -36,7 +36,7 @@ export function useTranslation() {
       let translation = translations[language || "fr"][key] || key;
       if (params) {
         Object.entries(params).forEach(([k, v]) => {
-          translation = translation.replace(`{{${k}}}`, String(v));
+          translation = translation.split(`{{${k}}}`).join(String(v));
         });
       }
       return translation;

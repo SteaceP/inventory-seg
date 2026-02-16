@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -33,11 +33,25 @@ const ApplianceDialog: React.FC<ApplianceDialogProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  // Derive a stable key from initialData to detect when it changes.
+  // When the key changes, React will re-initialize useState.
+  const dataKey = useMemo(() => initialData.id ?? "", [initialData.id]);
+  const [prevKey, setPrevKey] = useState(dataKey);
   const [formData, setFormData] = useState<Partial<Appliance>>({
     status: "functional",
     expected_life: 10,
     ...initialData,
   });
+
+  // Reset form data when initialData changes (different appliance selected)
+  if (dataKey !== prevKey) {
+    setPrevKey(dataKey);
+    setFormData({
+      status: "functional",
+      expected_life: 10,
+      ...initialData,
+    });
+  }
 
   const isEdit = !!initialData.id;
 

@@ -49,7 +49,7 @@ export default Sentry.withSentry(
 
       // Route API requests to handlers
       if (url.pathname === "/api/activity" && request.method === "POST") {
-        return handleActivityLogPost(request, env);
+        return handleActivityLogPost(request, instrumentedEnv);
       }
 
       if (url.pathname === "/api/activity" && request.method === "GET") {
@@ -82,7 +82,7 @@ export default Sentry.withSentry(
       }
 
       if (url.pathname === "/api/assistant/chat" && request.method === "POST") {
-        return handleAssistantChat(request, env);
+        return handleAssistantChat(request, instrumentedEnv);
       }
 
       // For non-API routes, return null to let the Vite plugin's
