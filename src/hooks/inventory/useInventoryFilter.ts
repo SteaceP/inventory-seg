@@ -19,13 +19,12 @@ export const useInventoryFilter = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const [isLowStockFilter, setIsLowStockFilter] = useState(
-    () => searchParams.get("filter") === "lowStock"
-  );
+  // Read filter state directly from URL params
+  const filterParam = searchParams.get("filter");
+  const isLowStockFilter = filterParam === "lowStock";
 
   const toggleLowStockFilter = () => {
     const newValue = !isLowStockFilter;
-    setIsLowStockFilter(newValue);
     if (newValue) {
       setSearchParams({ filter: "lowStock" });
     } else {
@@ -54,7 +53,7 @@ export const useInventoryFilter = ({
       const effectiveThreshold =
         item.low_stock_threshold ?? categoryThreshold ?? globalThreshold;
 
-      if (isLowStockFilter) {
+      if (filterParam === "lowStock") {
         return (
           matchesSearch &&
           (item.stock || 0) <= effectiveThreshold &&
@@ -62,7 +61,7 @@ export const useInventoryFilter = ({
         );
       }
 
-      if (searchParams.get("filter") === "outOfStock") {
+      if (filterParam === "outOfStock") {
         return matchesSearch && (item.stock || 0) === 0;
       }
 
@@ -72,10 +71,9 @@ export const useInventoryFilter = ({
     items,
     searchQuery,
     selectedCategory,
-    isLowStockFilter,
+    filterParam,
     categories,
     globalThreshold,
-    searchParams,
   ]);
 
   return {

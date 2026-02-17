@@ -155,6 +155,9 @@ describe("useInventoryFilter", () => {
   });
 
   it("should filter by low stock (hierarchy test)", () => {
+    // Set URL param manually before rendering
+    mockSearchParams.set("filter", "lowStock");
+
     const { result } = renderHook(() =>
       useInventoryFilter({
         items: mockItems,
@@ -163,22 +166,7 @@ describe("useInventoryFilter", () => {
       })
     );
 
-    // Toggle low stock
-    act(() => {
-      result.current.toggleLowStockFilter();
-    });
-
-    expect(mockSetSearchParams).toHaveBeenCalledWith({ filter: "lowStock" });
     expect(result.current.isLowStockFilter).toBe(true);
-
-    // Should include:
-    // Apple (stock 10 <= item thresh 15)
-    // Carrot (stock 2 <= global thresh 3)
-    // Should NOT include:
-    // Banana (stock 20 > cat thresh 5)
-    // Empty Box (stock 0)
-    // Check code: (item.stock || 0) <= effectiveThreshold && (item.stock || 0) > 0
-    // So Empty Box is EXCLUDED.
 
     expect(result.current.filteredItems).toHaveLength(2);
     expect(result.current.filteredItems.map((i) => i.name)).toEqual(
