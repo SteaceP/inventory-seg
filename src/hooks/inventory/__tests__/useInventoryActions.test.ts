@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-
 import { renderHook, act, cleanup } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
@@ -116,16 +114,11 @@ describe("useInventoryActions", () => {
   it("should handle handleImageUpload success", async () => {
     const { result } = renderHook(() => useInventoryActions(defaultProps));
 
-    // Setup Storage Mock
-    const mockUpload = vi.fn().mockResolvedValue({ error: null });
-    const mockGetPublicUrl = vi
-      .fn()
-      .mockReturnValue({ data: { publicUrl: "http://url.com" } });
-
-    vi.mocked(supabase.storage.from).mockReturnValue({
-      upload: mockUpload,
-      getPublicUrl: mockGetPublicUrl,
-    } as any);
+    // Setup Fetch Mock for Worker Upload
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ url: "http://url.com" }),
+    } as Response);
 
     const file = new File(["content"], "test.png", { type: "image/png" });
     const event = {
@@ -136,7 +129,10 @@ describe("useInventoryActions", () => {
       await result.current.handleImageUpload(event);
     });
 
-    expect(mockUpload).toHaveBeenCalled();
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining("/api/storage/upload"),
+      expect.any(Object)
+    );
     expect(mockSetFormData).toHaveBeenCalled();
   });
 

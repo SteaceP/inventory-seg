@@ -21,6 +21,7 @@ describe("worker/auth", () => {
     APP_URL: "https://app.example.com",
     COMPANY_NAME: "Test Company",
     ADMIN_EMAIL: "admin@example.com",
+    SEG_INVENTORY_DATA: {} as R2Bucket,
   } as const;
 
   beforeEach(() => {

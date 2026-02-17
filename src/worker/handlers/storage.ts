@@ -18,7 +18,7 @@ export async function handleStorageUpload(
     }
 
     const formData = await request.formData();
-    const file = formData.get("file") as File;
+    const file = formData.get("file") as unknown as File;
     const bucketName = formData.get("bucket");
     const fileName = formData.get("fileName");
 

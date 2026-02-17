@@ -43,6 +43,7 @@ describe("ApplianceDialog", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockSupabaseClient.helpers.setStorageUploadSuccess("image.jpg");
+    mockSupabaseClient.helpers.setAuthSession({ access_token: "valid-token" });
   });
 
   it("renders correctly in add mode", () => {
@@ -102,6 +103,15 @@ describe("ApplianceDialog", () => {
   it("handles image upload", async () => {
     renderWithTheme(<ApplianceDialog {...defaultProps} />);
 
+    // Mock fetch for worker upload
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ url: "http://example.com/image.jpg" }),
+    } as Response);
+
+    // Mock validateImageFile to succeed
+    vi.mocked(generateSecureId).mockReturnValue("secure-id");
+
     const file = new File(["dummy content"], "example.png", {
       type: "image/png",
     });
@@ -113,13 +123,10 @@ describe("ApplianceDialog", () => {
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
-      // Check if upload was initiated
-      // mockSupabaseClient.client.storage.from() is mocked to return the storage mock object
-      // which has upload method.
-      // But the test called `supabase.storage.from("...").upload(...)`
-      // mockSupabaseClient makes `from` return a mock object that has `upload`.
-      // The `mockSupabaseClient.mocks.upload` is that upload function.
-      expect(mockSupabaseClient.mocks.upload).toHaveBeenCalled();
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining("/api/storage/upload"),
+        expect.any(Object)
+      );
     });
   });
 });

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React from "react";
 
 import { renderHook, act } from "@testing-library/react";
@@ -14,6 +15,8 @@ vi.mock("@/i18n", () => ({
     t: (key: string) => key,
     lang: "en",
   }),
+
+  Trans: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 // Mock supabaseClient
@@ -38,13 +41,17 @@ describe("useInventoryImage", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    global.fetch = vi.fn();
+    // Setup valid session for all tests
+    mockClient.helpers.setAuthSession({ access_token: "valid-token" });
   });
 
   it("should handle successful image upload", async () => {
-    mockClient.mocks.upload.mockResolvedValue({ data: {}, error: null });
-    mockClient.mocks.getPublicUrl.mockReturnValue({
-      data: { publicUrl: "http://example.com/mock-file.png" },
-    });
+    // Mock successful fetch response
+    vi.mocked(global.fetch).mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ url: "http://example.com/mock-file.png" }),
+    } as Response);
 
     const { result } = renderHook(() => useInventoryImage(setFormData));
 
@@ -55,7 +62,17 @@ describe("useInventoryImage", () => {
       await result.current.handleImageUpload(event);
     });
 
-    expect(mockClient.mocks.upload).toHaveBeenCalled();
+    // Check if fetch was called with correct arguments
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining("/api/storage/upload"),
+      expect.objectContaining({
+        method: "POST",
+        headers: expect.objectContaining({
+          Authorization: "Bearer valid-token",
+        }),
+        body: expect.any(FormData),
+      })
+    );
 
     // Handle functional update
     expect(setFormData).toHaveBeenCalledWith(expect.any(Function));
@@ -69,10 +86,11 @@ describe("useInventoryImage", () => {
   });
 
   it("should handle upload error", async () => {
-    mockClient.mocks.upload.mockResolvedValue({
-      data: null,
-      error: new Error("Upload failed"),
-    });
+    // Mock failed fetch response
+    vi.mocked(global.fetch).mockResolvedValue({
+      ok: false,
+      json: () => Promise.resolve({ error: "Upload failed" }),
+    } as Response);
 
     const { result } = renderHook(() => useInventoryImage(setFormData));
 
@@ -83,7 +101,9 @@ describe("useInventoryImage", () => {
       await result.current.handleImageUpload(event);
     });
 
-    expect(mockAlert.showError).toHaveBeenCalled();
+    expect(mockAlert.showError).toHaveBeenCalledWith(
+      expect.stringContaining("Upload failed")
+    );
     expect(result.current.uploading).toBe(false);
   });
 
