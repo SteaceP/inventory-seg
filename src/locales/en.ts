@@ -100,6 +100,7 @@ const en = {
   "signup.invalidDomain": "Email must end with @s-e-g.ca",
   "signup.success":
     "Account created! Please check your email for a confirmation link.",
+  "errors.signup": "Sign up failed. Please try again.",
 
   // Settings / Layout
   "layout.settings": "Settings",

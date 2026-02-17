@@ -108,6 +108,7 @@ const fr = {
   "signup.invalidDomain": "Le courriel doit se terminer par @s-e-g.ca",
   "signup.success":
     "Compte créé ! Veuillez vérifier votre courriel pour le lien de confirmation.",
+  "errors.signup": "L'inscription a échoué. Veuillez réessayer.",
 
   // Security
   "security.signOut": "Se déconnecter",
