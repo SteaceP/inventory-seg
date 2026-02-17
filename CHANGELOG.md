@@ -1,3 +1,16 @@
+# [1.3.0](https://github.com/SteaceP/inventory-seg/compare/v1.2.0...v1.3.0) (2026-02-17)
+
+
+### Bug Fixes
+
+* untrack auto-generated package.json and pnpm-lock.yaml and sync updates to template ([de98d56](https://github.com/SteaceP/inventory-seg/commit/de98d5649bb0d6f849b6e8fd303b4c3145b52a26))
+
+
+### Features
+
+* add inventory seed data and fix inventory stock total trigger type casting ([c3b79ea](https://github.com/SteaceP/inventory-seg/commit/c3b79ea16cdb2d6dbec5c730410ef00d7d908f33))
+* add signup error message translation ([5addc85](https://github.com/SteaceP/inventory-seg/commit/5addc85d992f89bdb72d21da49af3e4eebb94207))
+
 # [1.2.0](https://github.com/SteaceP/inventory-seg/compare/v1.1.0...v1.2.0) (2026-02-17)
 
 
