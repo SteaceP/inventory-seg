@@ -41,7 +41,7 @@ const env = {
   ...(isCI ? loadEnvFile(path.join(rootDir, ".act.env")) : {}), // CI / Local ACT
   ...loadEnvFile(path.join(rootDir, ".prod.vars")), // Production Infrastructure
   ...process.env, // Final Overrides
-  AI_REMOTE: process.env.AI_REMOTE || (isCI ? "false" : "true"),
+  AI_REMOTE: process.env.AI_REMOTE || "false",
 };
 
 // Derive extracted values
