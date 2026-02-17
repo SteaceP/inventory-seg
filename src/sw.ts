@@ -20,13 +20,10 @@ declare let self: ServiceWorkerGlobalScope & {
   __WB_MANIFEST: (string | { url: string; revision: string | null })[];
 };
 
-// Cleanup old caches from the previous manual implementation
+// Cleanup old caches
 cleanupOutdatedCaches();
 
-// --- Bypassing ---
-
-// 0. Bypass Vite internal development paths and node_modules
-// This prevents the SW from intercepting logic during dev that it shouldn't touch
+// Bypass Vite internal paths
 registerRoute(
   ({ url }) =>
     url.pathname.startsWith("/@vite") ||
@@ -36,10 +33,9 @@ registerRoute(
 );
 
 // Precaching Vite assets
-// In development, this might be empty or contain only a few static assets
 precacheAndRoute(self.__WB_MANIFEST || []);
 
-// 1. Supabase Images (Stale-While-Revalidate)
+// 1. Supabase Images
 registerRoute(
   ({ url }: { url: URL }) =>
     url.pathname.includes("/storage/v1/object/public/inventory-images"),
@@ -57,7 +53,7 @@ registerRoute(
   })
 );
 
-// 2. Supabase API (Network-First)
+// 2. Supabase API
 const API_URL_SIGNATURES = [
   "/rest/v1/inventory",
   "/rest/v1/appliances",
@@ -82,7 +78,7 @@ registerRoute(
   })
 );
 
-// 3. Google Fonts (Cache-First for fonts, Stale-While-Revalidate for CSS)
+// 3. Google Fonts
 registerRoute(
   ({ url }: { url: URL }) => url.hostname === "fonts.gstatic.com",
   new CacheFirst({
@@ -106,8 +102,7 @@ registerRoute(
   })
 );
 
-// 4. SPA Navigation (Fallback to index.html)
-// Use a more resilient approach for navigation
+// 4. SPA Navigation
 registerRoute(
   new NavigationRoute(async (params) => {
     // Try to serve the precached index.html if possible (Production)
@@ -133,8 +128,6 @@ registerRoute(
     });
   })
 );
-
-// --- Custom Logic (Push & Notifications) ---
 
 self.addEventListener("push", (event: PushEvent) => {
   if (!event.data) return;

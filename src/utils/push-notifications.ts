@@ -1,6 +1,6 @@
 import { supabase } from "@/supabaseClient";
 
-// Helper to get device info (inlined to avoid circular dependencies/mocking issues)
+// Helper to get device info
 const getDeviceInfo = (): string => {
   try {
     const ua = navigator.userAgent;
@@ -45,7 +45,6 @@ export async function subscribeToPush() {
 
   const registration = await navigator.serviceWorker.ready;
 
-  // Check if we already have a subscription
   let subscription = await registration.pushManager.getSubscription();
 
   if (!subscription) {
@@ -62,7 +61,6 @@ export async function subscribeToPush() {
     });
   }
 
-  // Save subscription to Supabase
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -95,7 +93,6 @@ export async function unsubscribeFromPush() {
   if (subscription) {
     await subscription.unsubscribe();
 
-    // Remove from Supabase
     const {
       data: { user },
     } = await supabase.auth.getUser();

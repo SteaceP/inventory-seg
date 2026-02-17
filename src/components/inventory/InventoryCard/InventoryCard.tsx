@@ -14,6 +14,7 @@ import type { InventoryItem } from "@/types/inventory";
 
 import { useInventoryContext } from "@contexts/InventoryContext";
 import { useUserContext } from "@contexts/UserContext";
+import { calculateEffectiveThreshold } from "@utils/inventoryUtils";
 
 // Sub-components
 import InventoryCardActions from "./InventoryCardActions";
@@ -50,8 +51,11 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
     (c) => c.name === item.category
   )?.low_stock_threshold;
 
-  const effectiveThreshold =
-    item.low_stock_threshold ?? categoryThreshold ?? globalThreshold;
+  const effectiveThreshold = calculateEffectiveThreshold(
+    item.low_stock_threshold,
+    categoryThreshold,
+    globalThreshold
+  );
 
   const isLowStock = (item.stock || 0) <= effectiveThreshold;
   const isOutOfStock = (item.stock || 0) === 0;

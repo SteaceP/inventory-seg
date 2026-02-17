@@ -173,6 +173,7 @@ const Signup: React.FC = () => {
                   togglePassword: t("common.togglePassword"),
                   createAccount: t("signup.createAccount"),
                   creatingAccount: t("signup.creatingAccount"),
+                  captchaError: t("common.captchaError") || "CAPTCHA failed",
                 }}
                 isDev={import.meta.env.DEV}
                 onSubmit={(e: React.SyntheticEvent<HTMLFormElement>) => {

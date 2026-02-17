@@ -6,6 +6,7 @@ import type { InventoryItem } from "@/types/inventory";
 
 import { useInventoryContext } from "@contexts/InventoryContext";
 import { useUserContext } from "@contexts/UserContext";
+import { getBarcodeFormat } from "@utils/inventoryUtils";
 
 import { useInventoryActions } from "./inventory/useInventoryActions";
 import { useInventoryFilter } from "./inventory/useInventoryFilter";
@@ -211,13 +212,7 @@ export const useInventoryPage = () => {
     setSelectedItems(newSelected);
   };
 
-  const getBarcodeFormat = (sku: string) => {
-    const cleanSku = sku.trim();
-    if (/^\d{12}$/.test(cleanSku)) return "UPC" as const;
-    if (/^\d{13}$/.test(cleanSku)) return "EAN13" as const;
-    if (/^\d{8}$/.test(cleanSku)) return "EAN8" as const;
-    return "CODE128" as const;
-  };
+  // getBarcodeFormat moved to inventoryUtils.ts
 
   return {
     items,

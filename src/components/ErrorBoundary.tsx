@@ -8,7 +8,14 @@ import Typography from "@mui/material/Typography";
 
 import ErrorIcon from "@mui/icons-material/ErrorOutline";
 
-import type { ErrorBoundaryProps, ErrorBoundaryState } from "@/types/ui";
+export interface ErrorBoundaryProps {
+  children: React.ReactNode;
+}
+
+export interface ErrorBoundaryState {
+  hasError: boolean;
+  error?: Error;
+}
 
 class ErrorBoundary extends React.Component<
   ErrorBoundaryProps,

@@ -13,7 +13,6 @@ import StopIcon from "@mui/icons-material/Stop";
 
 import { useTranslation } from "@/i18n";
 import type {
-  ChatInputProps,
   SpeechRecognitionEvent,
   SpeechRecognitionErrorEvent,
   SpeechRecognition,
@@ -21,6 +20,13 @@ import type {
 } from "@/types/assistant";
 
 import { useErrorHandler } from "@hooks/useErrorHandler";
+
+interface ChatInputProps {
+  input: string;
+  setInput: React.Dispatch<React.SetStateAction<string>>;
+  onSend: () => void;
+  loading: boolean;
+}
 
 // Helper for browser support
 const SpeechRecognition =

@@ -11,7 +11,33 @@ import TextField from "@mui/material/TextField";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
-import type { LoginFormProps } from "@/types/auth";
+import type { TurnstileInstance } from "@marsidev/react-turnstile";
+
+export interface LoginFormProps {
+  email: string;
+  onEmailChange: (value: string) => void;
+  password: string;
+  onPasswordChange: (value: string) => void;
+  showPassword: boolean;
+  onTogglePassword: () => void;
+  loading: boolean;
+  captchaToken: string | undefined;
+  onCaptchaSuccess: (token: string) => void;
+  onCaptchaError: () => void;
+  onCaptchaExpire: () => void;
+  turnstileRef: React.RefObject<TurnstileInstance | null>;
+  turnstileSiteKey: string;
+  labels: {
+    email: string;
+    password: string;
+    togglePassword: string;
+    signIn: string;
+    signingIn: string;
+    captchaError: string;
+  };
+  isDev: boolean;
+  onSubmit?: (e: React.SyntheticEvent<HTMLFormElement>) => void | Promise<void>;
+}
 
 const LoginForm: React.FC<LoginFormProps> = ({
   email,

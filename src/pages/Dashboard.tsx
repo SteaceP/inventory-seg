@@ -36,6 +36,11 @@ import { useUserContext } from "@contexts/UserContext";
 import { useInventoryActions } from "@hooks/inventory/useInventoryActions";
 import { useInventoryForm } from "@hooks/inventory/useInventoryForm";
 import { useErrorHandler } from "@hooks/useErrorHandler";
+import {
+  getBarcodeFormat,
+  calculateEffectiveThreshold,
+} from "@utils/inventoryUtils";
+import { resolvePaletteColor } from "@utils/muiUtils";
 
 interface StatCardProps {
   title: string;
@@ -48,23 +53,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => {
   const { compactView } = useUserContext();
   const theme = useTheme();
 
-  // Helper to resolve nested palette colors (e.g., "status.success")
-  const resolveColor = (path: string) => {
-    const parts = path.split(".");
-    /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
-    let current: any = theme.palette;
-    for (const part of parts) {
-      if (current[part]) {
-        current = current[part];
-      } else {
-        return path; // Fallback to path itself (e.g. if it's a hex)
-      }
-    }
-    return typeof current === "string" ? current : path;
-    /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access */
-  };
-
-  const resolvedColor = resolveColor(color);
+  const resolvedColor = resolvePaletteColor(theme, color);
 
   return (
     <Paper
@@ -222,9 +211,12 @@ const Dashboard: React.FC = () => {
         const categoryThreshold = contextCategories.find(
           (c) => c.name === item.category
         )?.low_stock_threshold;
-        const effectiveThreshold =
-          item.low_stock_threshold ?? categoryThreshold ?? lowStockThreshold;
-        return (item.stock || 0) <= (effectiveThreshold || 0);
+        const effectiveThreshold = calculateEffectiveThreshold(
+          item.low_stock_threshold,
+          categoryThreshold,
+          lowStockThreshold
+        );
+        return (item.stock || 0) <= effectiveThreshold;
       })
       .map((item) => ({
         id: item.id,
@@ -307,13 +299,7 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const getBarcodeFormat = (sku: string) => {
-    const cleanSku = sku.trim();
-    if (/^\d{12}$/.test(cleanSku)) return "UPC" as const;
-    if (/^\d{13}$/.test(cleanSku)) return "EAN13" as const;
-    if (/^\d{8}$/.test(cleanSku)) return "EAN8" as const;
-    return "CODE128" as const;
-  };
+  // getBarcodeFormat moved to inventoryUtils.ts
 
   return (
     <>

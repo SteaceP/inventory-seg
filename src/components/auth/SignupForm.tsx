@@ -11,7 +11,46 @@ import TextField from "@mui/material/TextField";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
-import type { SignupFormProps } from "@/types/auth";
+import type { TurnstileInstance } from "@marsidev/react-turnstile";
+
+/**
+ * Props for the signup credentials form.
+ */
+interface SignupFormProps {
+  displayName: string;
+  onDisplayNameChange: (value: string) => void;
+  email: string;
+  onEmailChange: (value: string) => void;
+  password: string;
+  onPasswordChange: (value: string) => void;
+  /** Toggle visibility of password characters */
+  showPassword: boolean;
+  onTogglePassword: () => void;
+  /** Form submission state */
+  loading: boolean;
+  /** Cloudflare Turnstile token */
+  captchaToken: string | undefined;
+  onCaptchaSuccess: (token: string) => void;
+  onCaptchaError: () => void;
+  onCaptchaExpire: () => void;
+  /** Ref to Turnstile instance for resetting */
+  turnstileRef: React.RefObject<TurnstileInstance | null>;
+  turnstileSiteKey: string;
+  /** Localized text for form elements */
+  labels: {
+    displayName: string;
+    email: string;
+    password: string;
+    togglePassword: string;
+    createAccount: string;
+    creatingAccount: string;
+    captchaError: string;
+  };
+  /** Development mode flag for skipping captcha */
+  isDev: boolean;
+  /** Callback for form submission */
+  onSubmit?: (e: React.SyntheticEvent<HTMLFormElement>) => void | Promise<void>;
+}
 
 const SignupForm: React.FC<SignupFormProps> = ({
   displayName,

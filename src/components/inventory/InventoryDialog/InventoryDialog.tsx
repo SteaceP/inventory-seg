@@ -18,6 +18,7 @@ import type { InventoryItem } from "@/types/inventory";
 
 import { useInventoryContext } from "@contexts/InventoryContext";
 import { useUserContext } from "@contexts/UserContext";
+import { calculateEffectiveThreshold } from "@utils/inventoryUtils";
 
 import ImageUploadField from "../shared/ImageUploadField";
 import LazyBarcode from "../shared/LazyBarcode";
@@ -63,7 +64,11 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
     (c) => c.name === formData.category
   )?.low_stock_threshold;
 
-  const effectiveBaseThreshold = categoryThreshold ?? globalThreshold ?? 0;
+  const effectiveBaseThreshold = calculateEffectiveThreshold(
+    null,
+    categoryThreshold,
+    globalThreshold
+  );
 
   return (
     <Dialog

@@ -29,6 +29,7 @@ import type { InventoryActivity } from "@/types/activity";
 
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { getActivityNarrative, getStockChange } from "@utils/activityUtils";
+import { formatDate } from "@utils/formatUtils";
 
 const InventoryActivityPage: React.FC = () => {
   const { t } = useTranslation();
@@ -165,16 +166,7 @@ const InventoryActivityPage: React.FC = () => {
     [hasMore, loadMore, loading, loadingMore]
   );
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString(undefined, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+  // formatDate moved to formatUtils.ts
 
   const getActionIcon = (
     action: string,

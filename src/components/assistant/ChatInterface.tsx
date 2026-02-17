@@ -17,7 +17,7 @@ import DeleteIcon from "@mui/icons-material/DeleteOutline";
 import RobotIcon from "@mui/icons-material/SmartToy";
 
 import { useTranslation } from "@/i18n";
-import type { Message, ChatInterfaceProps } from "@/types/assistant";
+import type { Message } from "@/types/assistant";
 
 import { useUserContext } from "@contexts/UserContext";
 import { useErrorHandler } from "@hooks/useErrorHandler";
@@ -26,6 +26,10 @@ import { usePerformance } from "@hooks/usePerformance";
 import ChatInput from "./ChatInput";
 import ChatMessage from "./ChatMessage";
 import WelcomeView from "./WelcomeView";
+
+interface ChatInterfaceProps {
+  onClose?: () => void;
+}
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ onClose }) => {
   const [messages, setMessages] = useState<Message[]>(() => {

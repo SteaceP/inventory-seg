@@ -58,7 +58,6 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       setMfaEnabledState(false);
       setSettingsLoading(false); // No user means no settings to load
     } else {
-      // User logged in, start loading settings
       setSettingsLoading(true);
     }
   }, [userId]);
@@ -74,7 +73,6 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({
           );
         });
 
-        // Actual fetch promise
         const fetchPromise = supabase
           .from("user_settings")
           .select(
@@ -89,7 +87,6 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({
         };
 
         try {
-          // Race them
           result = (await Promise.race([fetchPromise, timeoutPromise])) as {
             data: UserSettingsRow | null;
             error: PostgrestError | null;
@@ -102,7 +99,6 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
         if (error) {
           if (error.code === "PGRST116") {
-            // Create default settings row
             const { error: insertError } = await supabase
               .from("user_settings")
               .insert({
@@ -119,7 +115,6 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({
               throw insertError;
             }
 
-            // Retry fetch
             return fetchUserSettings(uid);
           }
           throw error;

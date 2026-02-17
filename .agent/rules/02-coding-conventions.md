@@ -91,8 +91,13 @@ Implementation locations:
 ## TypeScript Best Practices
 
 - **Strict Typing**: NEVER use the `any` type. Use `unknown`, proper interfaces, or generics instead.
-- **Centralized Types**: ALWAYS place global types and interfaces in the `src/types/` directory to ensure consistency and reusability across the codebase.
 - **Type Exhaustiveness**: Ensure all switches/conditionals cover all possible types.
+- **Centralized Types**: Follow these rules for type organization:
+  - **Hook Prop Interfaces**: SHOULD remain co-located with hooks (e.g., `UseInventoryFilterProps` in `useInventoryFilter.ts`)
+  - **Shared Business Logic Types**: MUST be in appropriate `src/types/` files (e.g., `InventoryItem`, `UserProfile`)
+  - **Component Prop Interfaces**: SHOULD remain co-located with components (e.g., `InventoryCardProps` in `InventoryCard.tsx`)
+  - **Context Types**: MUST be in `src/types/` (e.g., `InventoryContextType`, `UserContextType`, `AlertContextType`)
+  - **Database Types**: Auto-generated in `src/types/database.types.ts` via Supabase CLI
 
 ## Testing Guidelines
 

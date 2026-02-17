@@ -13,6 +13,7 @@ import BackIcon from "@mui/icons-material/ArrowBack";
 import CloseIcon from "@mui/icons-material/Close";
 
 import { useTranslation } from "@/i18n";
+import type { InventoryItem } from "@/types/inventory";
 
 import { useInventoryContext } from "@contexts/InventoryContext";
 
@@ -21,11 +22,24 @@ import AdjustmentModeSelector from "./AdjustmentModeSelector";
 import AdjustmentQuickInfo from "./AdjustmentQuickInfo";
 import LocationSelector from "./LocationSelector";
 
-import type {
-  StockAdjustmentDialogProps,
-  Mode,
-  SelectedLocation,
-} from "./types";
+import type { Mode, SelectedLocation } from "./types";
+
+interface StockAdjustmentDialogProps {
+  open: boolean;
+  item: InventoryItem | null;
+  isMobile: boolean;
+  onClose: () => void;
+  onSave: (
+    itemId: string,
+    newStock: number,
+    location?: string,
+    actionType?: "add" | "remove",
+    parentLocation?: string,
+    recipient?: string,
+    destination_location?: string
+  ) => void;
+  loading?: boolean;
+}
 
 const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
   open,

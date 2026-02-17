@@ -26,6 +26,7 @@ import { supabase } from "@/supabaseClient";
 
 import { useInventoryContext } from "@contexts/InventoryContext";
 import { useErrorHandler } from "@hooks/useErrorHandler";
+import { generateMonthOptions, formatDate } from "@utils/formatUtils";
 
 const ReportsPage: React.FC = () => {
   const { t, lang } = useTranslation();
@@ -119,22 +120,7 @@ const ReportsPage: React.FC = () => {
   }, [locations]);
 
   // Generate translated month options for the last 24 months
-  const monthOptions = useMemo(() => {
-    const options: { value: string; label: string }[] = [];
-    const now = new Date();
-    const locale = lang === "fr" ? "fr-FR" : "en-US";
-
-    for (let i = 0; i < 24; i++) {
-      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const value = date.toISOString().substring(0, 7); // YYYY-MM
-      const label = new Intl.DateTimeFormat(locale, {
-        month: "long",
-        year: "numeric",
-      }).format(date);
-      options.push({ value, label });
-    }
-    return options;
-  }, [lang]);
+  const monthOptions = useMemo(() => generateMonthOptions(lang), [lang]);
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -251,7 +237,11 @@ const ReportsPage: React.FC = () => {
             sx={{ mt: 1 }}
           >
             {t("reports.generatedOn", {
-              date: new Date().toLocaleDateString(),
+              date: formatDate(new Date(), {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              }),
             })}
           </Typography>
           <Divider sx={{ my: 3 }} />

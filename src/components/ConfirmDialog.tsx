@@ -8,7 +8,21 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
 import { useTranslation } from "@/i18n";
-import type { ConfirmDialogProps } from "@/types/ui";
+
+interface ConfirmDialogProps {
+  open: boolean;
+  title: string;
+  content: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+  confirmColor?:
+    | "primary"
+    | "secondary"
+    | "error"
+    | "info"
+    | "success"
+    | "warning";
+}
 
 const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   open,

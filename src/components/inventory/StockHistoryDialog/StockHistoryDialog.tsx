@@ -19,6 +19,7 @@ import { supabase } from "@/supabaseClient";
 import type { InventoryActivity, ActivityAction } from "@/types/activity";
 
 import { useErrorHandler } from "@hooks/useErrorHandler";
+import { formatDate } from "@utils/formatUtils";
 
 import StockHistoryItem from "./StockHistoryItem";
 
@@ -134,16 +135,7 @@ const StockHistoryDialog: React.FC<StockHistoryDialogProps> = ({
     window.print();
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString(undefined, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+  // formatDate moved to formatUtils.ts
 
   return (
     <Dialog

@@ -151,8 +151,7 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
       if (subscriptionRef.current) void subscriptionRef.current.unsubscribe();
 
       if (navigator.onLine) {
-        // Use the centralized 'app-activity' broadcast channel instead of postgres_changes
-        // This is significantly more performant and eliminates slow subscription-time queries
+        // Broadcast channel for collaborative state sync
         subscriptionRef.current = supabase
           .channel("app-activity", { config: { private: true } })
           .on("broadcast", { event: "*" }, (envelope) => {
@@ -202,7 +201,6 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, [fetchInventory]);
 
-  // Presence and Sync Channel
   useEffect(() => {
     if (!userId || !navigator.onLine) return;
 
@@ -251,7 +249,6 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, [userId, displayName]);
 
-  // Track editingId changes on the existing presence channel
   useEffect(() => {
     editingIdRef.current = editingId;
     if (presenceChannelRef.current) {

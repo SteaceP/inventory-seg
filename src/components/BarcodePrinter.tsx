@@ -5,9 +5,17 @@ import ReactDOM from "react-dom";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
-import type { BarcodePrinterProps } from "@/types/inventory";
-
 import LazyBarcode from "./inventory/shared/LazyBarcode";
+
+interface PrintItem {
+  name: string;
+  sku: string;
+  category: string;
+}
+
+interface BarcodePrinterProps {
+  items: PrintItem[];
+}
 
 const BarcodePrinter: React.FC<BarcodePrinterProps> = ({ items }) => {
   if (items.length === 0) return null;

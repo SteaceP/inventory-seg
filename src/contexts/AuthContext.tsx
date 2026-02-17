@@ -76,7 +76,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     void initSession();
 
-    // Safety net for loading state
     const safetyTimeout = setTimeout(() => {
       if (isMounted && loadingRef.current) {
         loadingRef.current = false;

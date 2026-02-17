@@ -5,7 +5,10 @@ import { Link as RouterLink } from "react-router-dom";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 
-import type { LoginFooterProps } from "@/types/auth";
+interface LoginFooterProps {
+  noAccountText: string;
+  noAccountLinkText: string;
+}
 
 const LoginFooter: React.FC<LoginFooterProps> = ({
   noAccountText,

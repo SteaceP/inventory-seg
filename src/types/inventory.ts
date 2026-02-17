@@ -75,39 +75,9 @@ export interface ActivityLog {
 /** UI mode for the stock adjustment dialog */
 export type StockAdjustmentMode = "menu" | "add" | "remove" | "selectLocation";
 
-/** Props for the stock adjustment modal */
-export interface StockAdjustmentDialogProps {
-  open: boolean;
-  item: InventoryItem | null;
-  isMobile: boolean;
-  onClose: () => void;
-  onSave: (
-    itemId: string,
-    newStock: number,
-    location?: string,
-    actionType?: "add" | "remove",
-    parentLocation?: string,
-    recipient?: string,
-    destination_location?: string
-  ) => void;
-  loading?: boolean;
-}
-
 /** Helper interface for tracking location selections in UI */
 export interface SelectedLocation {
   location: string;
   quantity: number;
   parent_location?: string;
-}
-
-/** Data required to print a barcode label */
-export interface PrintItem {
-  name: string;
-  sku: string;
-  category: string;
-}
-
-/** Props for the barcode printer component */
-export interface BarcodePrinterProps {
-  items: PrintItem[];
 }

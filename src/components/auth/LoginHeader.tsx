@@ -3,7 +3,10 @@ import React from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
-import type { LoginHeaderProps } from "@/types/auth";
+interface LoginHeaderProps {
+  /** Text to display in the header */
+  title: string;
+}
 
 const LoginHeader: React.FC<LoginHeaderProps> = ({ title }) => {
   return (

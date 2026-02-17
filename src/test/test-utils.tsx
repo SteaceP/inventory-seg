@@ -17,9 +17,18 @@ import { MemoryRouter } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 
 import { AlertProvider } from "@/contexts/AlertContext";
-import type { CustomRenderOptions } from "@/types/testing";
 
 import { getTheme } from "../theme";
+
+export interface CustomRenderOptions extends RenderOptions {
+  includeRouter?: boolean;
+  includeAlerts?: boolean;
+}
+
+export interface MockSupabaseResponse<T> {
+  data: T | null;
+  error: { message: string } | null;
+}
 
 /**
  * Custom theme for tests using the actual theme generation logic

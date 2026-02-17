@@ -43,10 +43,8 @@ describe("InventorySearch", () => {
 
     fireEvent.change(input, { target: { value: "test" } });
 
-    // Input should update immediately
     expect(input).toHaveValue("test");
 
-    // Callback should not be called yet
     expect(handleChange).not.toHaveBeenCalled();
 
     // Fast-forward time

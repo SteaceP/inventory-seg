@@ -13,6 +13,7 @@ import { supabase } from "@/supabaseClient";
 import type { ActivityLog } from "@/types/inventory";
 
 import { useErrorHandler } from "@hooks/useErrorHandler";
+import { formatDate } from "@utils/formatUtils";
 
 interface InventoryActivityLogProps {
   itemId: string;
@@ -95,9 +96,7 @@ const InventoryActivityLog: React.FC<InventoryActivityLogProps> = ({
                   variant="body2"
                   color="text.primary"
                 >
-                  {log.created_at
-                    ? new Date(log.created_at).toLocaleString()
-                    : ""}
+                  {formatDate(log.created_at)}
                 </Typography>
                 {log.changes && (
                   <Box component="span" sx={{ display: "block" }}>

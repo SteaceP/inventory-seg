@@ -11,7 +11,12 @@ import Typography from "@mui/material/Typography";
 import PersonIcon from "@mui/icons-material/Person";
 import RobotIcon from "@mui/icons-material/SmartToy";
 
-import type { ChatMessageProps } from "@/types/assistant";
+import type { Message } from "@/types/assistant";
+
+interface ChatMessageProps {
+  message: Message;
+  avatarUrl: string | null;
+}
 
 const ChatMessage: React.FC<ChatMessageProps> = ({ message, avatarUrl }) => {
   const theme = useTheme();

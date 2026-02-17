@@ -2,11 +2,9 @@ import React, { useState } from "react";
 
 import { describe, it, expect, vi } from "vitest";
 
-import type { LoginFormProps } from "@/types/auth";
-
 import { render, screen, fireEvent } from "@test/test-utils";
 
-import LoginForm from "../LoginForm";
+import LoginForm, { type LoginFormProps } from "../LoginForm";
 
 // Wrapper component to handle state for controlled inputs
 const LoginFormWrapper = (props: Partial<LoginFormProps>) => {

@@ -6,7 +6,13 @@ import { useTheme, alpha } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-import type { ActionCardProps } from "@/types/ui";
+interface ActionCardProps {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  onClick: () => void;
+  color?: string;
+}
 
 const ActionCard: React.FC<ActionCardProps> = ({
   title,

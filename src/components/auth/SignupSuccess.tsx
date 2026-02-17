@@ -7,7 +7,16 @@ import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 
-import type { SignupSuccessProps } from "@/types/auth";
+interface SignupSuccessProps {
+  /** Title message (e.g., "Account Created!") */
+  title: string;
+  /** Success description or next steps */
+  successMessage: string;
+  /** Text for the sign-in button */
+  signInLabel: string;
+  /** Callback when user clicks sign in */
+  onSignInClick: () => void;
+}
 
 const SignupSuccess: React.FC<SignupSuccessProps> = ({
   title,
