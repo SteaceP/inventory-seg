@@ -9,6 +9,8 @@ import {
   handleTestPush,
   handleLowStockAlert,
   handleAssistantChat,
+  handleStorageUpload,
+  handleStorageGet,
 } from "./worker/routes";
 import { handleScheduled } from "./worker/scheduled";
 
@@ -83,6 +85,14 @@ export default Sentry.withSentry(
 
       if (url.pathname === "/api/assistant/chat" && request.method === "POST") {
         return handleAssistantChat(request, instrumentedEnv);
+      }
+
+      if (url.pathname === "/api/storage/upload" && request.method === "POST") {
+        return handleStorageUpload(request, instrumentedEnv);
+      }
+
+      if (url.pathname.startsWith("/storage/")) {
+        return handleStorageGet(request, instrumentedEnv);
       }
 
       // For non-API routes, return null to let the Vite plugin's

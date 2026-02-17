@@ -40,19 +40,41 @@ const ApplianceImageUpload: React.FC<ApplianceImageUploadProps> = ({
       validateImageFile(file);
       const ext = getExtensionFromMimeType(file.type);
       const fileName = generateSecureFileName(ext);
-      const filePath = `${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("appliance-images")
-        .upload(filePath, file);
+      // Prepare form data for worker upload
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("bucket", "appliance-images");
+      formData.append("fileName", fileName);
 
-      if (uploadError) throw uploadError;
-
+      // Get session for authentication
       const {
-        data: { publicUrl },
-      } = supabase.storage.from("appliance-images").getPublicUrl(filePath);
+        data: { session },
+      } = await supabase.auth.getSession();
 
-      onUploadSuccess(publicUrl);
+      if (!session) {
+        throw new Error("No active session");
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_WORKER_URL || ""}/api/storage/upload`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = (await response.json()) as { error?: string };
+        throw new Error(errorData.error || "Upload failed");
+      }
+
+      const { url } = (await response.json()) as { url: string };
+
+      onUploadSuccess(url);
     } catch (err: unknown) {
       handleError(err, t("appliances.errorUploadingImage"));
     } finally {

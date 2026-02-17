@@ -29,19 +29,41 @@ export const useInventoryImage = (
       validateImageFile(file);
       const ext = getExtensionFromMimeType(file.type);
       const fileName = generateSecureFileName(ext);
-      const filePath = fileName;
 
-      const { error: uploadError } = await supabase.storage
-        .from("inventory-images")
-        .upload(filePath, file);
+      // Prepare form data for worker upload
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("bucket", "inventory-images");
+      formData.append("fileName", fileName);
 
-      if (uploadError) throw uploadError;
-
+      // Get session for authentication
       const {
-        data: { publicUrl },
-      } = supabase.storage.from("inventory-images").getPublicUrl(filePath);
+        data: { session },
+      } = await supabase.auth.getSession();
 
-      setFormData((prev) => ({ ...prev, image_url: publicUrl }));
+      if (!session) {
+        throw new Error("No active session");
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_WORKER_URL || ""}/api/storage/upload`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = (await response.json()) as { error?: string };
+        throw new Error(errorData.error || "Upload failed");
+      }
+
+      const { url } = (await response.json()) as { url: string };
+
+      setFormData((prev) => ({ ...prev, image_url: url }));
     } catch (err: unknown) {
       showError(t("errors.uploadImage") + ": " + (err as Error).message);
     } finally {

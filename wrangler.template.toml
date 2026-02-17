@@ -26,6 +26,7 @@ ADMIN_EMAIL = "${ADMIN_EMAIL}"
 SUPABASE_URL = "${SUPABASE_URL}"
 APP_URL = "${APP_URL}"
 ALLOWED_ORIGIN = "${ALLOWED_ORIGIN}"
+R2_BUCKET_NAME = "${R2_BUCKET_NAME}"
 
 [[hyperdrive]]
 binding = "HYPERDRIVE"
@@ -39,6 +40,10 @@ database_id = "${D1_DATABASE_ID}"
 
 [observability]
 enabled = true
+
+[[r2_buckets]]
+binding = "SEG_INVENTORY_DATA"
+bucket_name = "${R2_BUCKET_NAME}"
 
 [ai]
 binding = "AI_SERVICE"

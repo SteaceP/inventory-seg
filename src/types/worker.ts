@@ -1,7 +1,7 @@
 /**
  * Shared types for the Cloudflare Worker
  */
-import type { Ai, D1Database } from "@cloudflare/workers-types";
+import type { Ai, D1Database, R2Bucket } from "@cloudflare/workers-types";
 
 /** Environment variables and bindings for the Cloudflare Worker */
 export interface Env {
@@ -24,6 +24,8 @@ export interface Env {
   DB: D1Database;
   /** AI Service binding for Llama analysis */
   AI_SERVICE: Ai;
+  /** R2 bucket for all inventory data (images, etc) */
+  SEG_INVENTORY_DATA: R2Bucket;
 }
 
 /** Payload for low stock notification requests */
