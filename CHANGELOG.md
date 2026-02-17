@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/SteaceP/inventory-seg/compare/v1.1.0...v1.2.0) (2026-02-17)
+
+
+### Features
+
+* derive low stock filter state directly from URL search parameters instead of internal state ([1839011](https://github.com/SteaceP/inventory-seg/commit/1839011618fd638415772e7431d9b5d5c1c3c941))
+
 # [1.1.0](https://github.com/SteaceP/inventory-seg/compare/v1.0.0...v1.1.0) (2026-02-17)
 
 
