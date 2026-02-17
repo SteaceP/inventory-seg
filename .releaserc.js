@@ -1,7 +1,16 @@
 export default {
   branches: ["main"],
   plugins: [
-    "@semantic-release/commit-analyzer",
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        releaseRules: [
+          { type: "feat", release: "patch" },
+          { type: "fix", release: "patch" },
+          { type: "perf", release: "patch" },
+        ],
+      },
+    ],
     "@semantic-release/release-notes-generator",
     [
       "@semantic-release/changelog",
