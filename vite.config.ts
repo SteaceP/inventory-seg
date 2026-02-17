@@ -142,6 +142,10 @@ export default defineConfig(({ mode }) => {
       cloudflare({
         configPath: "./wrangler.toml",
         persistState: true,
+        remoteBindings:
+          !process.env.VITE_TEST &&
+          !process.env.NO_MKCERT &&
+          env.AI_REMOTE !== "false",
       }),
 
       // Only run Sentry upload on production builds
@@ -182,7 +186,9 @@ export default defineConfig(({ mode }) => {
       svgr(),
 
       // HTTPS cert for development only
-      ...(isDev ? [mkcert()] : []),
+      ...(isDev && !process.env.NO_MKCERT && !process.env.VITE_TEST
+        ? [mkcert()]
+        : []),
 
       // Font loading - only in production builds
       // In dev, fonts load from CDN directly

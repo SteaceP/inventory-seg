@@ -18,7 +18,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || "https://localhost:5173",
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:5173",
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
@@ -48,10 +48,16 @@ export default defineConfig({
   webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined
     : {
-        command: "pnpm run dev",
-        url: "https://localhost:5173",
+        command: "AI_REMOTE=false pnpm run dev",
+        url: "http://localhost:5173",
         reuseExistingServer: !process.env.CI,
         timeout: 120 * 1000,
         ignoreHTTPSErrors: true,
+        env: {
+          NO_MKCERT: "true",
+          VITE_TEST: "true",
+          AI_REMOTE: "false",
+          GITHUB_ACTIONS: "true",
+        },
       },
 });
