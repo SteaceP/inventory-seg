@@ -1,3 +1,25 @@
+# [1.1.0](https://github.com/SteaceP/inventory-seg/compare/v1.0.0...v1.1.0) (2026-02-17)
+
+
+### Bug Fixes
+
+* adjust mobile layout and headers to respect safe area insets ([2094c37](https://github.com/SteaceP/inventory-seg/commit/2094c373d617c8179d59c75b68619db5523f1de3))
+* prevent loading screen from showing on authentication pages ([914515f](https://github.com/SteaceP/inventory-seg/commit/914515f4cb0237e2b70407ef01dcf441963dc4f7))
+
+
+### Features
+
+* add local postgres and d1 database setup for e2e tests in ci workflow ([81edd91](https://github.com/SteaceP/inventory-seg/commit/81edd91380e395a92e781ba3c943b4ec85ba49cc))
+* configure project for playwright and ci testing by adjusting environment variables and disabling https ([4afc276](https://github.com/SteaceP/inventory-seg/commit/4afc2762c25a4c333ff2214f6288fc44f0f3670e))
+* dynamically configure AI remote binding and enhance wrangler config generation with schema and boolean handling ([96daa12](https://github.com/SteaceP/inventory-seg/commit/96daa120c59485f3bd4a8e559e8c82d7b1fce25a))
+* handle and test cases where MFA is required but no factors are enrolled during login ([c2188de](https://github.com/SteaceP/inventory-seg/commit/c2188de444f77ccc9ebd5800506a1ff8e288fc5b))
+* implement comprehensive e2e testing with playwright and refine inventory empty states ([e029426](https://github.com/SteaceP/inventory-seg/commit/e029426156b6a7e63b93502f8a5dd5fd8da26271))
+* implement multi-factor authentication flow for login and refactor auth forms to accept an onSubmit prop ([fa5a3e7](https://github.com/SteaceP/inventory-seg/commit/fa5a3e73554d1003f6d2eb55b890ff2037a649ce))
+* implement wrangler.toml configuration and add deploy preview workflow ([ebed7e2](https://github.com/SteaceP/inventory-seg/commit/ebed7e2b8c049818b97510996a9556661bf8fe41))
+* introduce playwright for end-to-end testing and refactor unit test mocks for supabase ([de7e4d5](https://github.com/SteaceP/inventory-seg/commit/de7e4d51b8d1ddbb150aa10cff7c062a707bc726))
+* introduce user context and refactor e2e tests to use semantic locators and updated conventions ([b6b8057](https://github.com/SteaceP/inventory-seg/commit/b6b8057ab0708928e86283729eaf2e21b86ef035))
+* **inventory-scanner:** add camera switching functionality to inventory scanner ([4198c92](https://github.com/SteaceP/inventory-seg/commit/4198c9269200820ef8b65c0788d8eb77d4a9e206))
+
 # 1.0.0 (2026-02-09)
 
 
