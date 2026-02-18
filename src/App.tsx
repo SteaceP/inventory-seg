@@ -91,13 +91,18 @@ const AppContent = () => {
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
+    const handleChunkError = () => {
+      window.location.reload();
+    };
 
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
+    window.addEventListener("vite:preloadError", handleChunkError);
 
     return () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("vite:preloadError", handleChunkError);
     };
   }, []);
 
