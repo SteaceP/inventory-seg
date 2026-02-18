@@ -35,6 +35,7 @@ jobs:
       HYPERDRIVE_LOCAL_CONNECTION_STRING: ${{ vars.HYPERDRIVE_LOCAL_CONNECTION_STRING }}
       D1_DATABASE_NAME: ${{ vars.D1_DATABASE_NAME }}
       D1_DATABASE_ID: ${{ vars.D1_DATABASE_ID }}
+      R2_BUCKET_NAME: "inventory-seg"
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -91,6 +92,7 @@ jobs:
       HYPERDRIVE_LOCAL_CONNECTION_STRING: ${{ vars.HYPERDRIVE_LOCAL_CONNECTION_STRING }}
       D1_DATABASE_NAME: ${{ vars.D1_DATABASE_NAME }}
       D1_DATABASE_ID: ${{ vars.D1_DATABASE_ID }}
+      R2_BUCKET_NAME: "inventory-seg"
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -150,6 +152,7 @@ jobs:
       PLAYWRIGHT_BASE_URL: http://localhost:5173
       POSTGRES_URL: postgresql://postgres:postgres@localhost:5432/postgres
       HYPERDRIVE_LOCAL_CONNECTION_STRING: postgresql://postgres:postgres@localhost:5432/postgres
+      R2_BUCKET_NAME: "inventory-seg"
     services:
       postgres:
         image: postgres:17
@@ -242,6 +245,7 @@ jobs:
       HYPERDRIVE_LOCAL_CONNECTION_STRING: ${{ vars.HYPERDRIVE_LOCAL_CONNECTION_STRING }}
       D1_DATABASE_NAME: ${{ vars.D1_DATABASE_NAME }}
       D1_DATABASE_ID: ${{ vars.D1_DATABASE_ID }}
+      R2_BUCKET_NAME: "inventory-seg"
     steps:
       - name: Checkout
         uses: actions/checkout@v6
