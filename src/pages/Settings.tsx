@@ -107,9 +107,11 @@ const Settings: React.FC = () => {
   const handleAvatarUpload = async (file: File) => {
     try {
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("No user found");
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session || !session.user) throw new Error("No user found");
+
+      const user = session.user;
 
       // Validate file type and size
       validateImageFile(file);
@@ -117,17 +119,30 @@ const Settings: React.FC = () => {
       // Get proper extension from MIME type
       const ext = getExtensionFromMimeType(file.type);
       const fileName = generateSecureFileName(ext);
-      const filePath = `avatars/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, file);
+      // Prepare form data for worker upload
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("bucket", "avatars");
+      formData.append("fileName", fileName);
 
-      if (uploadError) throw uploadError;
+      const response = await fetch(
+        `${import.meta.env.VITE_WORKER_URL || ""}/api/storage/upload`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: formData,
+        }
+      );
 
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("avatars").getPublicUrl(filePath);
+      if (!response.ok) {
+        const errorData = (await response.json()) as { error?: string };
+        throw new Error(errorData.error || "Upload failed");
+      }
+
+      const { url: publicUrl } = (await response.json()) as { url: string };
 
       setSettings((prev) => ({ ...prev, avatarUrl: publicUrl }));
       setUserProfile({ avatarUrl: publicUrl });
