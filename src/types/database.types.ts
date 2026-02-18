@@ -349,9 +349,11 @@ export type Database = {
         Row: {
           avatar_url: string | null
           compact_view: boolean | null
+          created_at: string | null
           dark_mode: boolean | null
           display_name: string | null
           email_alerts: boolean | null
+          id: string
           language: string | null
           low_stock_threshold: number | null
           mfa_enabled: boolean | null
@@ -363,9 +365,11 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           compact_view?: boolean | null
+          created_at?: string | null
           dark_mode?: boolean | null
           display_name?: string | null
           email_alerts?: boolean | null
+          id?: string
           language?: string | null
           low_stock_threshold?: number | null
           mfa_enabled?: boolean | null
@@ -377,9 +381,11 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           compact_view?: boolean | null
+          created_at?: string | null
           dark_mode?: boolean | null
           display_name?: string | null
           email_alerts?: boolean | null
+          id?: string
           language?: string | null
           low_stock_threshold?: number | null
           mfa_enabled?: boolean | null
