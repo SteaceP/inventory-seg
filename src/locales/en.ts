@@ -1,5 +1,6 @@
 const en = {
   "app.title": import.meta.env.VITE_APP_NAME,
+  "app.menuTitle": "Inventory",
   "menu.dashboard": "Dashboard",
   "menu.inventory": "Inventory",
   "menu.activity": "Activity Log",

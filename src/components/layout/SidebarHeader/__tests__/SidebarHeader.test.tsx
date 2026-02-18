@@ -23,20 +23,20 @@ describe("SidebarHeader", () => {
   it("renders correctly when expanded", () => {
     render(<SidebarHeader {...defaultProps} />);
     expect(screen.getByAltText("Logo")).toBeInTheDocument();
-    expect(screen.getByText("app.title")).toBeInTheDocument();
+    expect(screen.getByText("app.menuTitle")).toBeInTheDocument();
     expect(screen.getByLabelText("collapse menu")).toBeInTheDocument();
   });
 
   it("renders correctly when collapsed", () => {
     render(<SidebarHeader {...defaultProps} collapsed={true} />);
     expect(screen.getByAltText("Logo")).toBeInTheDocument();
-    expect(screen.queryByText("app.title")).not.toBeInTheDocument();
+    expect(screen.queryByText("app.menuTitle")).not.toBeInTheDocument();
     expect(screen.getByLabelText("expand menu")).toBeInTheDocument();
   });
 
   it("renders correctly on mobile", () => {
     render(<SidebarHeader {...defaultProps} isMobile={true} />);
-    expect(screen.getByText("app.title")).toBeVisible();
+    expect(screen.getByText("app.menuTitle")).toBeVisible();
     expect(screen.getByLabelText("close menu")).toBeInTheDocument();
   });
 

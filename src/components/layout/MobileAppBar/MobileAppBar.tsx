@@ -103,7 +103,7 @@ const MobileAppBar: React.FC<MobileAppBarProps> = ({
             whiteSpace: "normal",
           }}
         >
-          {t("app.title").toUpperCase()}
+          {t("app.menuTitle").toUpperCase()}
         </Typography>
       </Toolbar>
     </AppBar>

@@ -75,7 +75,7 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({
               minWidth: 0,
             }}
           >
-            {t("app.title")}
+            {t("app.menuTitle")}
           </Typography>
         )}
       </Box>

@@ -29,7 +29,7 @@ describe("MobileAppBar", () => {
   it("renders correctly", () => {
     renderWithTheme(<MobileAppBar {...defaultProps} />);
     expect(screen.getByAltText("Logo")).toBeInTheDocument();
-    expect(screen.getByText(/APP.TITLE/i)).toBeInTheDocument();
+    expect(screen.getByText(/APP.MENUTITLE/i)).toBeInTheDocument();
   });
 
   it("calls onToggle when menu button is clicked", () => {
