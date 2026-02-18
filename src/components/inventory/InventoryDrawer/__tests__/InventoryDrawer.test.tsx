@@ -125,16 +125,21 @@ describe("InventoryDrawer", () => {
     expect(screen.queryByTestId("inventory-drawer")).not.toBeInTheDocument();
   });
 
-  it("renders item details correctly", () => {
+  it("renders item details correctly", async () => {
     render(<InventoryDrawer {...defaultProps} />);
 
     expect(screen.getByText("Test Item")).toBeInTheDocument();
     expect(screen.getByText("SKU123")).toBeInTheDocument();
     expect(screen.getByText("Test Category")).toBeInTheDocument();
     expect(screen.getAllByText("8").length).toBeGreaterThan(0);
+
+    // Wait for the activity fetch to complete to avoid "act" warnings
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalled();
+    });
   });
 
-  it("renders stock locations", () => {
+  it("renders stock locations", async () => {
     // Mock item with locations
     const itemWithLocations = {
       ...mockItem,
@@ -157,6 +162,11 @@ describe("InventoryDrawer", () => {
 
     expect(screen.getByText("Warehouse A")).toBeInTheDocument();
     expect(screen.getAllByText("8").length).toBeGreaterThan(0);
+
+    // Wait for the activity fetch to complete to avoid "act" warnings
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalled();
+    });
   });
 
   it("fetches and renders activity log", async () => {

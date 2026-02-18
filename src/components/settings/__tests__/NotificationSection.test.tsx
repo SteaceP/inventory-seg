@@ -108,12 +108,17 @@ describe("NotificationSection", () => {
     });
   });
 
-  it("should render notification titles and switches", () => {
+  it("should render notification titles and switches", async () => {
     render(<NotificationSection />);
 
     expect(screen.getByText(/notifications.title/i)).toBeInTheDocument();
     expect(screen.getByText(/notifications.pushEnabled/i)).toBeInTheDocument();
     expect(screen.getByText(/notifications.emailAlerts/i)).toBeInTheDocument();
+
+    // Wait for settings fetch to complete
+    await waitFor(() => {
+      expect(mockSupabaseClient.mocks.single).toHaveBeenCalled();
+    });
   });
 
   it("should toggle push notifications", async () => {

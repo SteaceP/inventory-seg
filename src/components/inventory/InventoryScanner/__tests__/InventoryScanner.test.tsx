@@ -125,7 +125,6 @@ describe("InventoryScanner", () => {
           mockDecodeFromVideoDevice.mock.calls[
             mockDecodeFromVideoDevice.mock.calls.length - 1
           ];
-        console.log("Last decodeFromVideoDevice call:", lastCall);
         expect(lastCall[0]).toBe("2");
       },
       { timeout: 3000 }

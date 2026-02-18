@@ -40,7 +40,23 @@ const LoginFormWrapper = (props: Partial<LoginFormProps>) => {
   };
 
   return <LoginForm {...defaultProps} />;
+  return <LoginForm {...defaultProps} />;
 };
+
+// Mock Turnstile to avoid script loading issues in JSDOM
+vi.mock("@marsidev/react-turnstile", () => ({
+  Turnstile: ({ onSuccess }: { onSuccess: (token: string) => void }) => (
+    <div data-testid="turnstile-mock">
+      <button
+        type="button"
+        onClick={() => onSuccess("mock-captcha-token")}
+        data-testid="turnstile-success-trigger"
+      >
+        Complete Captcha
+      </button>
+    </div>
+  ),
+}));
 
 describe("LoginForm Component", () => {
   it("should render email and password fields", () => {
