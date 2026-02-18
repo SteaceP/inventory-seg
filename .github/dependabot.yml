@@ -42,3 +42,6 @@ updates:
       all-actions:
         patterns:
           - "*"
+    ignore:
+      - dependency-name: "actions/checkout"
+      - dependency-name: "actions/setup-node"
