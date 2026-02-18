@@ -9,6 +9,7 @@ import {
   handleTestPush,
   handleLowStockAlert,
   handleAssistantChat,
+  handleVoiceChat,
   handleStorageUpload,
   handleStorageGet,
 } from "./worker/routes";
@@ -85,6 +86,13 @@ export default Sentry.withSentry(
 
       if (url.pathname === "/api/assistant/chat" && request.method === "POST") {
         return handleAssistantChat(request, instrumentedEnv);
+      }
+
+      if (
+        url.pathname === "/api/assistant/voice-chat" &&
+        request.method === "POST"
+      ) {
+        return handleVoiceChat(request, instrumentedEnv);
       }
 
       if (url.pathname === "/api/storage/upload" && request.method === "POST") {

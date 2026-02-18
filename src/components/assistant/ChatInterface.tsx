@@ -2,8 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 
 import { AnimatePresence } from "framer-motion";
 
-// Sub-components
-
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -26,6 +24,7 @@ import { usePerformance } from "@hooks/usePerformance";
 import ChatInput from "./ChatInput";
 import ChatMessage from "./ChatMessage";
 import WelcomeView from "./WelcomeView";
+import { AudioPlayer } from "../AudioPlayer";
 
 interface ChatInterfaceProps {
   onClose?: () => void;
@@ -41,6 +40,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onClose }) => {
     }
   });
   const [input, setInput] = useState("");
+  const [audioResponse, setAudioResponse] = useState<string | null>(null);
   const { measureOperation } = usePerformance();
   const { handleError } = useErrorHandler();
   const [loading, setLoading] = useState(false);
@@ -117,6 +117,88 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onClose }) => {
           };
 
           setMessages((prev) => [...prev, assistantMessage]);
+        }
+      );
+    } catch (error) {
+      handleError(error);
+
+      const errorMessage =
+        error instanceof Error ? error.message : t("assistant.error");
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          content: errorMessage,
+        },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVoiceSend = async (audioBlob: Blob) => {
+    if (loading) return;
+
+    setLoading(true);
+    setAudioResponse(null); // Clear previous audio response
+
+    const userMessage: Message = {
+      id: crypto.randomUUID(),
+      role: "user",
+      content: t("assistant.voiceInput"), // Placeholder for voice input
+    };
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
+
+    try {
+      await measureOperation(
+        "assistant.voiceChat",
+        "Send Voice Message to Assistant",
+        async () => {
+          const formData = new FormData();
+          formData.append("audio", audioBlob, "audio.webm");
+          formData.append("language", lang);
+          formData.append("messages", JSON.stringify(newMessages));
+
+          const headers: Record<string, string> = {};
+          if (session?.access_token) {
+            headers["Authorization"] = `Bearer ${session.access_token}`;
+          }
+
+          const response = await fetch("/api/assistant/voice-chat", {
+            method: "POST",
+            headers,
+            body: formData,
+          });
+
+          if (!response.ok) {
+            const errorData = (await response.json().catch(() => ({}))) as {
+              details?: string;
+            };
+            throw new Error(
+              errorData.details || "Failed to get voice response"
+            );
+          }
+
+          const data = (await response.json()) as {
+            response?: string;
+            content?: string;
+            audioUrl?: string;
+          };
+
+          const assistantMessage: Message = {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            content:
+              data.response || data.content || t("assistant.processError"),
+          };
+
+          setMessages((prev) => [...prev, assistantMessage]);
+          if (data.audioUrl) {
+            setAudioResponse(data.audioUrl);
+          }
         }
       );
     } catch (error) {
@@ -279,8 +361,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onClose }) => {
         input={input}
         setInput={setInput}
         onSend={() => void handleSend()}
+        onVoiceSend={(blob) => void handleVoiceSend(blob)}
         loading={loading}
       />
+      <AudioPlayer src={audioResponse} autoPlay={true} />
     </Box>
   );
 };

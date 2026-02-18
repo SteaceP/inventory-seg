@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useRef, useEffect } from "react";
 
 import { motion } from "framer-motion";
 
@@ -11,118 +11,45 @@ import MicIcon from "@mui/icons-material/Mic";
 import SendIcon from "@mui/icons-material/Send";
 import StopIcon from "@mui/icons-material/Stop";
 
+import { useAudioRecorder } from "@/hooks/useAudioRecorder";
 import { useTranslation } from "@/i18n";
-import type {
-  SpeechRecognitionEvent,
-  SpeechRecognitionErrorEvent,
-  SpeechRecognition,
-  SpeechRecognitionConstructor,
-} from "@/types/assistant";
-
-import { useErrorHandler } from "@hooks/useErrorHandler";
 
 interface ChatInputProps {
   input: string;
   setInput: React.Dispatch<React.SetStateAction<string>>;
   onSend: () => void;
+  onVoiceSend: (blob: Blob) => void;
   loading: boolean;
 }
-
-// Helper for browser support
-const SpeechRecognition =
-  (window as unknown as { SpeechRecognition: SpeechRecognitionConstructor })
-    .SpeechRecognition ||
-  (
-    window as unknown as {
-      webkitSpeechRecognition: SpeechRecognitionConstructor;
-    }
-  ).webkitSpeechRecognition;
 
 const ChatInput: React.FC<ChatInputProps> = ({
   input,
   setInput,
   onSend,
+  onVoiceSend,
   loading,
 }) => {
   const { t } = useTranslation();
-  const { handleError } = useErrorHandler();
-  const [isListening, setIsListening] = useState(false);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const { isRecording, startRecording, stopRecording, audioBlob } =
+    useAudioRecorder();
+
+  // Effect to send audio when blob is ready (and we just finished recording)
+  // We need a ref to track if we *should* send, to avoid sending on initial mount or updates
+  const shouldSendRef = useRef(false);
 
   useEffect(() => {
-    if (SpeechRecognition) {
-      const recognition = new SpeechRecognition();
-      recognition.continuous = false; // Stop after one sentence/pause
-      recognition.interimResults = true;
-      recognition.lang = document.documentElement.lang || "en-US";
-
-      recognition.onresult = (event: SpeechRecognitionEvent) => {
-        let transcript = "";
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          transcript += event.results[i][0].transcript;
-        }
-        // Basic appending logic (could be improved to not overwrite)
-        if (event.results[0].isFinal) {
-          setInput((prev: string) => {
-            const spacer = prev && !prev.endsWith(" ") ? " " : "";
-            return prev + spacer + transcript;
-          });
-        }
-      };
-
-      recognition.onend = () => {
-        setIsListening(false);
-      };
-
-      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-        setIsListening(false);
-
-        // Ignore aborted error as it happens when stopping manually
-        if (event.error === "aborted") return;
-
-        let messageKey = "assistant.errors.generic";
-
-        switch (event.error) {
-          case "no-speech":
-            messageKey = "assistant.errors.no_speech";
-            break;
-          case "audio-capture":
-            messageKey = "assistant.errors.audio_capture";
-            break;
-          case "not-allowed":
-          case "service-not-allowed":
-            messageKey = "assistant.errors.permission_denied";
-            break;
-          case "network":
-            messageKey = "assistant.errors.network";
-            break;
-        }
-
-        handleError(
-          new Error(`SpeechRecognition error: ${event.error}`),
-          t(messageKey)
-        );
-      };
-
-      recognitionRef.current = recognition;
+    if (audioBlob && shouldSendRef.current) {
+      onVoiceSend(audioBlob);
+      shouldSendRef.current = false;
     }
-  }, [setInput, handleError, t]);
+  }, [audioBlob, onVoiceSend]);
 
-  const toggleListening = () => {
-    if (!SpeechRecognition) {
-      alert("Voice input is not supported in this browser.");
-      return;
-    }
-
-    if (isListening) {
-      recognitionRef.current?.stop();
+  const toggleListening = async () => {
+    if (isRecording) {
+      stopRecording();
+      shouldSendRef.current = true;
     } else {
-      // Re-initialize language in case user changed it
-      if (recognitionRef.current) {
-        recognitionRef.current.lang = document.documentElement.lang || "en-US";
-      }
-      recognitionRef.current?.start();
-      setIsListening(true);
+      await startRecording();
     }
   };
 
@@ -142,7 +69,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
           multiline
           maxRows={4}
           placeholder={
-            isListening ? "Listening..." : t("assistant.placeholder")
+            isRecording
+              ? t("assistant.listening") || "Listening..."
+              : t("assistant.placeholder")
           }
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -160,14 +89,14 @@ const ChatInput: React.FC<ChatInputProps> = ({
             },
             input: {
               endAdornment: (
-                <Tooltip title={isListening ? "Stop listening" : "Voice input"}>
+                <Tooltip title={isRecording ? "Stop listening" : "Voice input"}>
                   <IconButton
-                    onClick={toggleListening}
-                    color={isListening ? "error" : "default"}
+                    onClick={() => void toggleListening()}
+                    color={isRecording ? "error" : "default"}
                     size="small"
                     sx={{
                       mr: 1,
-                      animation: isListening ? "pulse 1.5s infinite" : "none",
+                      animation: isRecording ? "pulse 1.5s infinite" : "none",
                       "@keyframes pulse": {
                         "0%": { boxShadow: "0 0 0 0 rgba(211, 47, 47, 0.4)" },
                         "70%": { boxShadow: "0 0 0 10px rgba(211, 47, 47, 0)" },
@@ -175,7 +104,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                       },
                     }}
                   >
-                    {isListening ? <StopIcon /> : <MicIcon />}
+                    {isRecording ? <StopIcon /> : <MicIcon />}
                   </IconButton>
                 </Tooltip>
               ),
