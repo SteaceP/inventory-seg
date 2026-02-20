@@ -65,7 +65,7 @@ const InventoryCardStock: React.FC<InventoryCardStockProps> = ({
       >
         <Box>
           <Typography
-            variant="h4"
+            variant="h3"
             fontWeight="900"
             sx={{
               color: isOutOfStock
@@ -75,6 +75,8 @@ const InventoryCardStock: React.FC<InventoryCardStockProps> = ({
                   : "text.primary",
               lineHeight: 1,
               display: "inline-block",
+              textShadow: (theme) =>
+                `0 2px 4px ${alpha(theme.palette.common.black, theme.palette.mode === "dark" ? 0.3 : 0.05)}`,
             }}
           >
             {item.stock}
@@ -93,11 +95,11 @@ const InventoryCardStock: React.FC<InventoryCardStockProps> = ({
           fontWeight="900"
           color="text.secondary"
           sx={{
-            opacity: 0.8,
+            opacity: 0.9,
             bgcolor: alpha(theme.palette.divider, 0.05),
-            px: 1.25,
+            px: 1.5,
             py: 0.5,
-            borderRadius: 1.5,
+            borderRadius: 2,
             border: "1px solid",
             borderColor: alpha(theme.palette.divider, 0.1),
             letterSpacing: 0.5,
@@ -110,16 +112,17 @@ const InventoryCardStock: React.FC<InventoryCardStockProps> = ({
         variant="determinate"
         value={Math.min(100, ((item.stock || 0) / effectiveThreshold) * 100)}
         sx={{
-          height: 6,
-          borderRadius: 3,
+          height: 8,
+          borderRadius: 4,
           bgcolor: alpha(theme.palette.divider, 0.1),
+          boxShadow: `inset 0 1px 2px ${alpha(theme.palette.common.black, 0.1)}`,
           "& .MuiLinearProgress-bar": {
             bgcolor: isOutOfStock
               ? "error.main"
               : isLowStock
                 ? "warning.main"
                 : "success.main",
-            borderRadius: 3,
+            borderRadius: 4,
           },
         }}
       />

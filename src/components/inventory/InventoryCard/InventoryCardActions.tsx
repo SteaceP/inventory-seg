@@ -41,11 +41,8 @@ const InventoryCardActions: React.FC<InventoryCardActionsProps> = ({
   return (
     <CardActions
       sx={{
-        p: 1.5,
-        bgcolor:
-          theme.palette.mode === "dark"
-            ? alpha(theme.palette.background.default, 0.8)
-            : alpha(theme.palette.action.hover, 0.9),
+        p: 2,
+        bgcolor: "transparent",
         borderTop: "1px solid",
         borderColor: "divider",
       }}

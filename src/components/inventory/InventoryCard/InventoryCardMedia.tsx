@@ -44,11 +44,18 @@ const InventoryCardMedia: React.FC<InventoryCardMediaProps> = ({
           top: 12,
           right: 12,
           zIndex: 2,
-          bgcolor: alpha(theme.palette.background.paper, 0.8),
+          bgcolor: alpha(theme.palette.background.paper, 0.85),
           backdropFilter: "blur(4px)",
+          color: "text.secondary",
+          "&.Mui-checked": {
+            color: "primary.main",
+          },
+          border: "1px solid",
+          borderColor: alpha(theme.palette.divider, 0.5),
           "&:hover": { bgcolor: theme.palette.background.paper },
-          borderRadius: 1,
+          borderRadius: 1.5,
           p: 0.5,
+          boxShadow: `0 2px 4px ${alpha(theme.palette.common.black, 0.1)}`,
         }}
       />
 
@@ -66,12 +73,13 @@ const InventoryCardMedia: React.FC<InventoryCardMediaProps> = ({
           label={item.category}
           size="small"
           sx={{
-            bgcolor: alpha(theme.palette.primary.main, 0.9),
-            color: "white",
-            fontWeight: "bold",
-            backdropFilter: "blur(4px)",
+            bgcolor: alpha(theme.palette.background.paper, 0.85),
+            color: "text.primary",
+            fontWeight: 600,
+            backdropFilter: "blur(8px)",
             border: "1px solid",
-            borderColor: alpha(theme.palette.primary.main, 0.2),
+            borderColor: alpha(theme.palette.divider, 0.5),
+            boxShadow: `0 2px 8px ${alpha(theme.palette.common.black, 0.1)}`,
           }}
         />
         {isBeingEdited && (
@@ -81,6 +89,7 @@ const InventoryCardMedia: React.FC<InventoryCardMediaProps> = ({
             color="warning"
             sx={{
               fontWeight: "bold",
+              boxShadow: `0 2px 8px ${alpha(theme.palette.warning.main, 0.2)}`,
               animation: "pulse 2s infinite",
               "@keyframes pulse": {
                 "0%": { opacity: 1 },

@@ -86,7 +86,8 @@ describe("InventoryCard Integration", () => {
     );
 
     expect(screen.getByText("Test Item")).toBeInTheDocument();
-    expect(screen.getByText("SKU123")).toBeInTheDocument();
+    // SKU should not be displayed anymore
+    expect(screen.queryByText("SKU123")).not.toBeInTheDocument();
     // Use getAllByText since "Tools" appears both in chip and caption
     const toolsElements = screen.getAllByText("Tools");
     expect(toolsElements.length).toBeGreaterThan(0);
@@ -151,5 +152,35 @@ describe("InventoryCard Integration", () => {
 
     // Presence overlay should be triggered
     expect(screen.getByText(/Jane Smith/)).toBeInTheDocument();
+  });
+
+  it("should render markdown notes", () => {
+    vi.mocked(InventoryContextModule.useInventoryContext).mockReturnValue(
+      createMockInventoryContext({
+        presence: {},
+      }) as unknown as InventoryContextType
+    );
+
+    const itemWithNotes = createMockInventoryItem({
+      ...mockItem,
+      notes: "**Bold Note** and *Italic Note*",
+    });
+
+    render(
+      <InventoryCard
+        item={itemWithNotes}
+        isSelected={false}
+        onToggle={onToggle}
+        onEdit={onEdit}
+      />
+    );
+
+    // Check for strong tag which react-markdown renders for **text**
+    const strongElement = screen.getByText("Bold Note");
+    expect(strongElement.tagName).toBe("STRONG");
+
+    // Check for em tag which react-markdown renders for *text*
+    const emElement = screen.getByText("Italic Note");
+    expect(emElement.tagName).toBe("EM");
   });
 });
