@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/SteaceP/inventory-seg/compare/v1.3.1...v1.3.2) (2026-02-21)
+
+
+### Features
+
+* improve config preparation to allow direct modification of output files and CI-specific wrangler.toml env var injection ([e439330](https://github.com/SteaceP/inventory-seg/commit/e439330197da73f823e2d688f1b980c9412fe602))
+
 ## [1.3.1](https://github.com/SteaceP/inventory-seg/compare/v1.3.0...v1.3.1) (2026-02-21)
 
 
