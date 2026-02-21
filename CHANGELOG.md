@@ -1,3 +1,28 @@
+## [1.3.1](https://github.com/SteaceP/inventory-seg/compare/v1.3.0...v1.3.1) (2026-02-21)
+
+
+### Bug Fixes
+
+* add cache control headers and implement vite preload error handler for automatic page reload ([69a4ddb](https://github.com/SteaceP/inventory-seg/commit/69a4ddb0c2bf05c55e855b9ab6750b1d10cce0ab))
+* **ci:** add R2_BUCKET_NAME env var to workflows ([19a5a01](https://github.com/SteaceP/inventory-seg/commit/19a5a014c4b3d45ff18077021c747277b3442a00))
+* **ci:** downgrade actions to v4 and fix env var usage ([2d8ae82](https://github.com/SteaceP/inventory-seg/commit/2d8ae823eedabc98522fb6ce1261b15da59b5700))
+* improve test stability by mocking document createRange and turnstile, and awaiting async operations in tests ([ef85042](https://github.com/SteaceP/inventory-seg/commit/ef8504205ffcbdf6bc8ea8f0572fdbdd23caed07))
+
+
+### Features
+
+* add created_at and id fields to profiles database types ([d20a2c2](https://github.com/SteaceP/inventory-seg/commit/d20a2c207e967a16e61f350c02499092ae5dc84b))
+* add loading indicator to save button, validate inventory stock locations, and show success message on save ([1216693](https://github.com/SteaceP/inventory-seg/commit/1216693b822779d7552cda898cdb0fb1ac854a19))
+* add react-markdown dependency and update various package versions ([5890c08](https://github.com/SteaceP/inventory-seg/commit/5890c08b7ec08e511939524800c02ac10b2626a9))
+* add unique constraint to inventory_stock_locations table for inventory_id and location ([adfc034](https://github.com/SteaceP/inventory-seg/commit/adfc0340e7cafdd781ab4485632858f1b6083641))
+* add user bottom navigation and refactor UserContext into UserProvider and UserContextDefinition ([2e8b2e7](https://github.com/SteaceP/inventory-seg/commit/2e8b2e768bfbeaf761977dac426ababaf366e0b2))
+* create new user creation trigger and function to populate user settings ([c278e72](https://github.com/SteaceP/inventory-seg/commit/c278e729373e1b1a902ae8e4a3c984b4bcc47f1b))
+* introduce app.menuTitle translation key and use it in sidebar and mobile app bar components ([0bfc615](https://github.com/SteaceP/inventory-seg/commit/0bfc615ce987670b9cda083a5df3fbb293116c6a))
+* introduce voice assistant with audio input/output and AI processing ([fd9a990](https://github.com/SteaceP/inventory-seg/commit/fd9a990a3cc4a19b6268b82074b116b9ea01c370))
+* offload image uploads to cloudflare worker using r2 storage ([8bffd43](https://github.com/SteaceP/inventory-seg/commit/8bffd4362e40cfbc7087e68a5a0e17a376ca3ed6))
+* refine inventory card styling, add markdown notes support, and remove SKU display ([fd585a6](https://github.com/SteaceP/inventory-seg/commit/fd585a6c3d509efd5a88799992597a805f1602c7))
+* update CSP and Permissions-Policy to allow new data source and microphone access ([836d4e8](https://github.com/SteaceP/inventory-seg/commit/836d4e80ef3592aeb68d3a30efa5894a06b5b73e))
+
 # [1.3.0](https://github.com/SteaceP/inventory-seg/compare/v1.2.0...v1.3.0) (2026-02-17)
 
 
