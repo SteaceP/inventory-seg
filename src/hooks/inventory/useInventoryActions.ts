@@ -42,7 +42,7 @@ export const useInventoryActions = ({
 
   const { role } = useUserContext();
   const { t } = useTranslation();
-  const { showError } = useAlert();
+  const { showError, showSuccess } = useAlert();
   const { handleError } = useErrorHandler();
 
   const { handleImageUpload, uploading } = useInventoryImage(setFormData);
@@ -61,6 +61,19 @@ export const useInventoryActions = ({
 
     if (!sanitizedData.name) {
       showError(t("inventory.nameRequired"));
+      return;
+    }
+
+    if (
+      !sanitizedData.stock_locations ||
+      sanitizedData.stock_locations.length === 0 ||
+      sanitizedData.stock_locations.every(
+        (l) => !l.location || l.location.trim() === ""
+      )
+    ) {
+      showError(
+        t("inventory.locationRequired") || "At least one location is required."
+      );
       return;
     }
 
@@ -203,6 +216,7 @@ export const useInventoryActions = ({
       setEditingId(null);
       void refreshInventory();
       broadcastInventoryChange();
+      showSuccess(t("inventory.success.save") || "Item saved successfully!");
     } catch (err: unknown) {
       showError(t("inventory.saveItemError") + ": " + (err as Error).message);
     } finally {

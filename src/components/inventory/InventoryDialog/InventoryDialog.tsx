@@ -3,6 +3,7 @@ import React from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -263,6 +264,9 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({
           variant="contained"
           color="primary"
           disabled={loading}
+          startIcon={
+            loading ? <CircularProgress size={20} color="inherit" /> : null
+          }
         >
           {t("inventory.save")}
         </Button>

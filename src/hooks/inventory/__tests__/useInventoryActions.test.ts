@@ -17,6 +17,7 @@ import { useInventoryActions } from "../useInventoryActions";
 
 // Mock Contexts and Hooks
 const mockShowError = vi.fn();
+const mockShowSuccess = vi.fn();
 const mockHandleError = vi.fn();
 const mockRefreshInventory = vi.fn();
 const mockUpdateCategoryThreshold = vi.fn();
@@ -24,7 +25,7 @@ const mockBroadcastInventoryChange = vi.fn();
 const mockT = vi.fn((key: string) => key);
 
 vi.mock("@contexts/AlertContext", () => ({
-  useAlert: () => ({ showError: mockShowError }),
+  useAlert: () => ({ showError: mockShowError, showSuccess: mockShowSuccess }),
 }));
 
 vi.mock("../../useErrorHandler", () => ({
@@ -183,7 +184,11 @@ describe("useInventoryActions", () => {
     const { result } = renderHook(() =>
       useInventoryActions({
         ...defaultProps,
-        formData: { name: "New Item", stock: 5 },
+        formData: {
+          name: "New Item",
+          stock: 5,
+          stock_locations: [{ location: "Warehouse 1", quantity: 5 }],
+        },
       })
     );
 
@@ -205,6 +210,30 @@ describe("useInventoryActions", () => {
     expect(mockInsert).toHaveBeenCalled();
     expect(ActivityUtils.logActivity).toHaveBeenCalled();
     expect(mockSetOpen).toHaveBeenCalledWith(false);
+    expect(mockShowSuccess).toHaveBeenCalledWith(
+      expect.stringContaining("inventory.success.save")
+    );
+  });
+
+  it("should show error and return early if no stock location provided on save", async () => {
+    const { result } = renderHook(() =>
+      useInventoryActions({
+        ...defaultProps,
+        formData: { name: "No Location Item", stock: 5 }, // no locations
+      })
+    );
+
+    await act(async () => {
+      await result.current.handleSave();
+    });
+
+    expect(mockShowError).toHaveBeenCalledWith(
+      expect.stringContaining("inventory.locationRequired")
+    );
+    // Should return early
+    expect(supabase.from).not.toHaveBeenCalled();
+    expect(mockSetOpen).not.toHaveBeenCalled();
+    expect(mockShowSuccess).not.toHaveBeenCalled();
   });
 
   it("should update existing item successfully", async () => {
@@ -213,7 +242,11 @@ describe("useInventoryActions", () => {
       useInventoryActions({
         ...defaultProps,
         editingItem: editingItem,
-        formData: { ...editingItem, name: "Updated Name" },
+        formData: {
+          ...editingItem,
+          name: "Updated Name",
+          stock_locations: [{ location: "Warehouse 1", quantity: 10 }],
+        },
       })
     );
 
@@ -221,10 +254,15 @@ describe("useInventoryActions", () => {
     const mockUpdate = vi
       .fn()
       .mockReturnValue({ eq: vi.fn().mockResolvedValue({ error: null }) });
+    const mockDelete = vi
+      .fn()
+      .mockReturnValue({ eq: vi.fn().mockResolvedValue({ error: null }) });
+    const mockInsert = vi.fn().mockResolvedValue({ error: null });
 
     vi.mocked(supabase.from).mockReturnValue({
       update: mockUpdate,
-      delete: vi.fn().mockReturnValue({ eq: vi.fn() }),
+      delete: mockDelete,
+      insert: mockInsert,
     } as any);
 
     await act(async () => {
@@ -236,6 +274,9 @@ describe("useInventoryActions", () => {
     );
     expect(ActivityUtils.logActivity).toHaveBeenCalled();
     expect(mockSetOpen).toHaveBeenCalledWith(false);
+    expect(mockShowSuccess).toHaveBeenCalledWith(
+      expect.stringContaining("inventory.success.save")
+    );
   });
 
   it("should update existing item with stock locations successfully", async () => {
@@ -289,6 +330,9 @@ describe("useInventoryActions", () => {
       ])
     );
     expect(mockSetOpen).toHaveBeenCalledWith(false);
+    expect(mockShowSuccess).toHaveBeenCalledWith(
+      expect.stringContaining("inventory.success.save")
+    );
   });
 
   it("should show error when stock location insert fails during edit", async () => {
