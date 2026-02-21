@@ -48,17 +48,56 @@ function processTemplate(templateName, outputName) {
   const templatePath = path.join(rootDir, templateName);
   const outputPath = path.join(rootDir, outputName);
 
-  if (!fs.existsSync(templatePath)) return;
+  let content = "";
 
-  let content = fs.readFileSync(templatePath, "utf-8");
+  if (fs.existsSync(templatePath)) {
+    content = fs.readFileSync(templatePath, "utf-8");
+    content = content.replace(/\$\{([A-Z0-9_]+)\}/g, (match, varName) => {
+      return env[varName] !== undefined
+        ? env[varName]
+        : env[`VITE_${varName}`] !== undefined
+          ? env[`VITE_${varName}`]
+          : match;
+    });
+  } else if (fs.existsSync(outputPath)) {
+    // If no template, fall back to output (for direct mutation)
+    content = fs.readFileSync(outputPath, "utf-8");
 
-  content = content.replace(/\$\{([A-Z0-9_]+)\}/g, (match, varName) => {
-    return env[varName] !== undefined
-      ? env[varName]
-      : env[`VITE_${varName}`] !== undefined
-        ? env[`VITE_${varName}`]
-        : match;
-  });
+    // In CI, dynamically replace hardcoded dummies in wrangler.toml
+    if (process.env.CI && outputName === "wrangler.toml") {
+      if (env.HYPERDRIVE_ID) {
+        content = content.replace(
+          /id = "your_hyperdrive_id"/g,
+          `id = "${env.HYPERDRIVE_ID}"`
+        );
+      }
+      if (env.SUPABASE_URL) {
+        content = content.replace(
+          /SUPABASE_URL = "http:\/\/127\.0\.0\.1:54321"/g,
+          `SUPABASE_URL = "${env.SUPABASE_URL}"`
+        );
+      }
+      if (env.R2_BUCKET_NAME) {
+        content = content.replace(
+          /bucket_name = "my-inventory-bucket"/g,
+          `bucket_name = "${env.R2_BUCKET_NAME}"`
+        );
+        content = content.replace(
+          /R2_BUCKET_NAME = "my-inventory-bucket"/g,
+          `R2_BUCKET_NAME = "${env.R2_BUCKET_NAME}"`
+        );
+      }
+      if (env.D1_DATABASE_ID) {
+        content = content.replace(
+          /database_id = "64eb265b-9118-4a15-a544-110fec170502"/g,
+          `database_id = "${env.D1_DATABASE_ID}"`
+        );
+      }
+    }
+  } else {
+    // Neither template nor output exists
+    return;
+  }
 
   // Convert "true"/"false" strings to boolean literals for TOML
   content = content.replace(/"(true|false)"/g, "$1");
