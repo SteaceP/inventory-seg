@@ -28,7 +28,9 @@ vi.mock("@contexts/AlertContext", () => ({ useAlert: () => mockAlert }));
 vi.mock("@contexts/InventoryContext", () => ({
   useInventoryContext: () => mockInventory,
 }));
-vi.mock("@contexts/UserContext", () => ({ useUserContext: () => mockUser }));
+vi.mock("@contexts/UserContextDefinition", () => ({
+  useUserContext: () => mockUser,
+}));
 
 // Mock utils
 vi.mock("@utils/activityUtils", () => ({

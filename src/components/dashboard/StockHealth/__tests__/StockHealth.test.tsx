@@ -37,7 +37,7 @@ vi.mock("@contexts/InventoryContext", () => ({
   }),
 }));
 
-vi.mock("@contexts/UserContext", () => ({
+vi.mock("@contexts/UserContextDefinition", () => ({
   UserContext: UserContextMock,
   useUserContext: () => mockUserContextValue.current,
 }));

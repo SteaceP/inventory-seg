@@ -13,7 +13,7 @@ vi.mock("@hooks/useErrorHandler", () => ({
   }),
 }));
 
-vi.mock("@contexts/UserContext", () => ({
+vi.mock("@contexts/UserContextDefinition", () => ({
   useUserContext: () => ({
     compactView: false,
     role: "admin",

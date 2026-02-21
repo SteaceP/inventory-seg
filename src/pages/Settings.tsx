@@ -20,7 +20,7 @@ import NotificationSection from "@components/settings/NotificationSection";
 import ProfileSection from "@components/settings/ProfileSection";
 import SecuritySection from "@components/settings/SecuritySection";
 import TwoFactorSettings from "@components/settings/TwoFactorSettings";
-import { useUserContext } from "@contexts/UserContext";
+import { useUserContext } from "@contexts/UserContextDefinition";
 import {
   validateImageFile,
   generateSecureFileName,
@@ -298,12 +298,38 @@ const Settings: React.FC = () => {
         </Grid>
       </Grid>
 
-      <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end" }}>
+      <Box
+        sx={{
+          mt: 4,
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 2,
+        }}
+      >
+        <Button
+          variant="outlined"
+          color="error"
+          size="large"
+          onClick={() => void handleSignOut()}
+          sx={{
+            px: 4,
+            width: { xs: "100%", sm: "auto" },
+            order: { xs: 2, sm: 1 },
+          }}
+        >
+          {t("security.signOut")}
+        </Button>
         <Button
           variant="contained"
           size="large"
           onClick={() => void handleSaveSettings()}
-          sx={{ px: 4 }}
+          sx={{
+            px: 4,
+            width: { xs: "100%", sm: "auto" },
+            order: { xs: 1, sm: 2 },
+          }}
         >
           {t("settings.save")}
         </Button>

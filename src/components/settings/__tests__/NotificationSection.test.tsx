@@ -38,7 +38,7 @@ vi.mock("@hooks/useErrorHandler", () => ({
 }));
 
 // Mock UserContext
-vi.mock("@contexts/UserContext", () => ({
+vi.mock("@contexts/UserContextDefinition", () => ({
   useUserContext: () => mockUser,
 }));
 

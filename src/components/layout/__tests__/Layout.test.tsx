@@ -1,6 +1,6 @@
 import { MemoryRouter } from "react-router-dom";
 
-import { useUserContext } from "@contexts/UserContext";
+import { useUserContext } from "@contexts/UserContextDefinition";
 import { render, screen, fireEvent } from "@test/test-utils";
 
 import Layout from "../Layout";
@@ -8,7 +8,7 @@ import Layout from "../Layout";
 import type { Mock } from "vitest";
 
 // Mock dependencies
-vi.mock("@contexts/UserContext", () => ({
+vi.mock("@contexts/UserContextDefinition", () => ({
   useUserContext: vi.fn(),
 }));
 
@@ -39,6 +39,7 @@ describe("Layout Component", () => {
     compactView: false,
     displayName: "Test User",
     avatarUrl: "http://example.com/avatar.jpg",
+    navigationType: "sidebar",
   };
 
   beforeEach(() => {

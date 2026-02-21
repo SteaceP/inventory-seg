@@ -7,7 +7,7 @@ import Grid from "@mui/material/Grid";
 
 import type { InventoryItem } from "@/types/inventory";
 
-import { useUserContext } from "@contexts/UserContext";
+import { useUserContext } from "@contexts/UserContextDefinition";
 
 import InventoryCard from "../InventoryCard/InventoryCard";
 

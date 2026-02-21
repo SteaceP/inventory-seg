@@ -5,7 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import type { InventoryItem } from "@/types/inventory";
 
 import { useInventoryContext } from "@contexts/InventoryContext";
-import { useUserContext } from "@contexts/UserContext";
+import { useUserContext } from "@contexts/UserContextDefinition";
 import { getBarcodeFormat } from "@utils/inventoryUtils";
 
 import { useInventoryActions } from "./inventory/useInventoryActions";

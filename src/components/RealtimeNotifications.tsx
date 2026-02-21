@@ -4,7 +4,7 @@ import { useTranslation } from "@/i18n";
 import { supabase } from "@/supabaseClient";
 
 import { useAlert } from "@contexts/AlertContext";
-import { useUserContext } from "@contexts/UserContext";
+import { useUserContext } from "@contexts/UserContextDefinition";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 
 interface Activity {

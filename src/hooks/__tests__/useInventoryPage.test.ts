@@ -14,7 +14,7 @@ vi.mock("react-router-dom", () => ({
 }));
 
 // Mock Contexts
-vi.mock("../../contexts/UserContext", () => ({
+vi.mock("../../contexts/UserContextDefinition", () => ({
   useUserContext: () => ({
     role: "admin",
     lowStockThreshold: 10,

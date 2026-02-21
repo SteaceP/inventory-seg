@@ -17,7 +17,7 @@ import RobotIcon from "@mui/icons-material/SmartToy";
 import { useTranslation } from "@/i18n";
 import type { Message } from "@/types/assistant";
 
-import { useUserContext } from "@contexts/UserContext";
+import { useUserContext } from "@contexts/UserContextDefinition";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { usePerformance } from "@hooks/usePerformance";
 

@@ -15,7 +15,7 @@ import { logInfo } from "@utils/errorReporting";
 import { useTranslation } from "../i18n";
 import { useAlert } from "./AlertContext";
 import { useAuth } from "./AuthContext";
-import { UserContext } from "./UserContext";
+import { UserContext } from "./UserContextDefinition";
 
 import type { PostgrestError } from "@supabase/supabase-js";
 
@@ -38,6 +38,9 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const [lowStockThreshold, setLowStockThresholdState] = useState(5);
   const [darkMode, setDarkMode] = useState(true);
   const [compactView, setCompactView] = useState(false);
+  const [navigationType, setNavigationTypeState] = useState<
+    "sidebar" | "bottom"
+  >("bottom");
   const [mfaEnabled, setMfaEnabledState] = useState(false);
 
   // Settings loading state
@@ -55,6 +58,7 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       setLanguageState("fr");
       setDarkMode(true);
       setCompactView(false);
+      setNavigationTypeState("bottom");
       setMfaEnabledState(false);
       setSettingsLoading(false); // No user means no settings to load
     } else {
@@ -76,7 +80,7 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({
         const fetchPromise = supabase
           .from("user_settings")
           .select(
-            "display_name, avatar_url, role, language, low_stock_threshold, dark_mode, compact_view, mfa_enabled"
+            "display_name, avatar_url, role, language, low_stock_threshold, dark_mode, compact_view, mfa_enabled, navigation_type"
           )
           .eq("user_id", uid)
           .single();
@@ -129,6 +133,9 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({
           setLanguageState((s.language as Language) || "fr");
           setDarkMode(s.dark_mode ?? true);
           setCompactView(s.compact_view ?? false);
+          setNavigationTypeState(
+            (s.navigation_type as "sidebar" | "bottom") || "bottom"
+          );
           setMfaEnabledState(Boolean(s.mfa_enabled));
           if (
             s.low_stock_threshold !== undefined &&
@@ -278,6 +285,25 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     [userId, showError]
   );
 
+  const toggleNavigationType = useCallback(
+    async (type: "sidebar" | "bottom") => {
+      try {
+        setNavigationTypeState(type);
+        if (userId) {
+          await supabase
+            .from("user_settings")
+            .upsert(
+              { user_id: userId, navigation_type: type },
+              { onConflict: "user_id" }
+            );
+        }
+      } catch {
+        showError("Failed to save navigation setting");
+      }
+    },
+    [userId, showError]
+  );
+
   const setUserProfile = useCallback((profile: Partial<UserProfile>) => {
     if (profile.displayName !== undefined) setDisplayName(profile.displayName);
     if (profile.avatarUrl !== undefined) setAvatarUrl(profile.avatarUrl);
@@ -292,6 +318,7 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       lowStockThreshold,
       darkMode,
       compactView,
+      navigationType,
       mfaEnabled,
       userId,
       session,
@@ -300,6 +327,7 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       setLowStockThreshold,
       toggleDarkMode,
       toggleCompactView,
+      toggleNavigationType,
       setMfaEnabled,
       // If we are waiting for auth OR waiting for settings (and we have a user), we are loading.
       // If auth says no user, then we are not loading settings.
@@ -313,6 +341,7 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       lowStockThreshold,
       darkMode,
       compactView,
+      navigationType,
       mfaEnabled,
       userId,
       session,
@@ -321,6 +350,7 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       setLowStockThreshold,
       toggleDarkMode,
       toggleCompactView,
+      toggleNavigationType,
       setMfaEnabled,
       authLoading,
       settingsLoading,

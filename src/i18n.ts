@@ -1,6 +1,6 @@
 import { useCallback, use } from "react";
 
-import { UserContext } from "./contexts/UserContext";
+import { UserContext } from "./contexts/UserContextDefinition";
 import en from "./locales/en";
 import fr from "./locales/fr";
 

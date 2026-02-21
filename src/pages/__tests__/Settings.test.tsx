@@ -13,7 +13,7 @@ const mockUpsert = vi.fn();
 const mockGetUser = vi.fn();
 const mockSelect = vi.fn();
 
-vi.mock("@contexts/UserContext", () => ({
+vi.mock("@contexts/UserContextDefinition", () => ({
   useUserContext: () => ({
     displayName: "Test User",
     avatarUrl: "https://example.com/avatar.jpg",

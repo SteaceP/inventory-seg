@@ -141,6 +141,9 @@ const en = {
   "appearance.compactView": "Compact View",
   "appearance.title": "Appearance",
   "appearance.darkMode": "Dark mode",
+  "appearance.navigationType": "Navigation Style",
+  "appearance.navigationSidebar": "Sidebar (Classic)",
+  "appearance.navigationBottom": "Bottom Menu (Mobile-friendly)",
 
   // Notifications
   "notifications.testMobile": "Test notification",

@@ -49,7 +49,7 @@ vi.mock("@contexts/InventoryContext", () => ({
 const mockUserContext = createMockUserContext({
   lowStockThreshold: 8,
 });
-vi.mock("@contexts/UserContext", () => ({
+vi.mock("@contexts/UserContextDefinition", () => ({
   useUserContext: () => mockUserContext,
 }));
 

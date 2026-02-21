@@ -16,7 +16,7 @@ import TwoFactorVerification from "@/components/auth/TwoFactorVerification";
 import { useTranslation } from "@/i18n";
 import { supabase } from "@/supabaseClient";
 
-import { useUserContext } from "@contexts/UserContext";
+import { useUserContext } from "@contexts/UserContextDefinition";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { usePerformance } from "@hooks/usePerformance";
 import { logInfo } from "@utils/errorReporting";

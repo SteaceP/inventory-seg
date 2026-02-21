@@ -18,7 +18,7 @@ import { useTranslation } from "@/i18n";
 import type { InventoryItem } from "@/types/inventory";
 
 import { useInventoryContext } from "@contexts/InventoryContext";
-import { useUserContext } from "@contexts/UserContext";
+import { useUserContext } from "@contexts/UserContextDefinition";
 
 import InventoryDrawerActions from "./InventoryDrawerActions";
 import InventoryDrawerDetails from "./InventoryDrawerDetails";

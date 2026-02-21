@@ -35,6 +35,8 @@ export interface UserContextType {
   compactView: boolean;
   /** Status of Multi-Factor Authentication */
   mfaEnabled: boolean;
+  /** User's preferred navigation style */
+  navigationType: "sidebar" | "bottom";
   /** Current user's unique identifier */
   userId: string | null;
   /** Bulk update user profile fields */
@@ -47,6 +49,8 @@ export interface UserContextType {
   toggleDarkMode: (enabled: boolean) => void | Promise<void>;
   /** Enable or disable compact list view */
   toggleCompactView: (enabled: boolean) => void | Promise<void>;
+  /** Change the application navigation style */
+  toggleNavigationType: (type: "sidebar" | "bottom") => void | Promise<void>;
   /** Enable or disable MFA for the user account */
   setMfaEnabled: (enabled: boolean) => Promise<void>;
   /** Profile data loading state */

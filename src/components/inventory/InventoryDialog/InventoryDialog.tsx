@@ -17,7 +17,7 @@ import { useTranslation } from "@/i18n";
 import type { InventoryItem } from "@/types/inventory";
 
 import { useInventoryContext } from "@contexts/InventoryContext";
-import { useUserContext } from "@contexts/UserContext";
+import { useUserContext } from "@contexts/UserContextDefinition";
 import { calculateEffectiveThreshold } from "@utils/inventoryUtils";
 
 import ImageUploadField from "../shared/ImageUploadField";

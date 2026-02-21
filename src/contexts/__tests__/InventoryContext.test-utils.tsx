@@ -15,7 +15,7 @@ vi.mock("../AlertContext", async () => {
   };
 });
 
-vi.mock("../UserContext", async () => {
+vi.mock("../UserContextDefinition", async () => {
   const { mockUserContext } = await import("../../test/mocks/contexts");
   return {
     useUserContext: () => mockUserContext,

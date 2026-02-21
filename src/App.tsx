@@ -17,14 +17,15 @@ import { ThemeProvider } from "@mui/material/styles";
 
 import WifiOffIcon from "@mui/icons-material/WifiOff";
 
+import { useUserContext } from "@contexts/UserContextDefinition";
+
 import ErrorBoundary from "./components/ErrorBoundary";
 import Layout from "./components/layout/Layout";
 import RealtimeNotifications from "./components/RealtimeNotifications";
 import { AlertProvider } from "./contexts/AlertContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { InventoryProvider } from "./contexts/InventoryContext";
-import { useUserContext } from "./contexts/UserContext.ts";
-import UserProvider from "./contexts/UserContext.tsx";
+import UserProvider from "./contexts/UserProvider";
 import { useTranslation } from "./i18n";
 import { getTheme } from "./theme";
 

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { useLocation, Outlet } from "react-router-dom";
+import { useLocation, Outlet, useNavigate } from "react-router-dom";
 
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -18,27 +18,34 @@ import SettingsIcon from "@mui/icons-material/Settings";
 
 import { useTranslation } from "@/i18n";
 
-import { useUserContext } from "@contexts/UserContext";
+import { useUserContext } from "@contexts/UserContextDefinition";
+import { useErrorHandler } from "@hooks/useErrorHandler";
 
-// Sub-components
 import MobileAppBar from "./MobileAppBar/MobileAppBar";
 import NavigationList from "./NavigationList/NavigationList";
 import SidebarHeader from "./SidebarHeader/SidebarHeader";
+import UserBottomNavigation from "./UserBottomNavigation";
 import UserProfile from "./UserProfile/UserProfile";
 import AssistantFAB from "../assistant/AssistantFAB";
+import InventoryScanner from "../inventory/InventoryScanner/InventoryScanner";
 
 const Layout: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const theme = useTheme();
-  const { compactView, displayName, avatarUrl } = useUserContext();
+  const { compactView, displayName, avatarUrl, navigationType } =
+    useUserContext();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { t } = useTranslation();
+  const { handleError } = useErrorHandler();
 
+  const isSidebar = navigationType === "sidebar";
   const drawerWidth = 240;
   const collapsedWidth = 64;
 
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scanOpen, setScanOpen] = useState(false);
 
   const menuItems = [
     { text: t("menu.dashboard"), icon: <DashboardIcon />, path: "/" },
@@ -134,7 +141,7 @@ const Layout: React.FC = () => {
       }}
     >
       <CssBaseline />
-      {isMobile && (
+      {isSidebar && isMobile && (
         <MobileAppBar
           mobileOpen={mobileOpen}
           compactView={compactView}
@@ -142,52 +149,54 @@ const Layout: React.FC = () => {
         />
       )}
 
-      <Box
-        component="nav"
-        sx={{ width: { sm: currentDrawerWidth }, flexShrink: { sm: 0 } }}
-      >
-        {isMobile ? (
-          <Drawer
-            variant="temporary"
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            ModalProps={{ keepMounted: true }}
-            sx={{
-              display: { xs: "block", sm: "none" },
-              "& .MuiDrawer-paper": {
-                boxSizing: "border-box",
-                width: drawerWidth,
-                bgcolor: "sidebar.background",
-                borderRight: "1px solid",
-                borderColor: "sidebar.border",
-                color: "sidebar.text",
-              },
-            }}
-          >
-            {sidebarContent}
-          </Drawer>
-        ) : (
-          <Drawer
-            variant="permanent"
-            sx={{
-              display: { xs: "none", sm: "block" },
-              "& .MuiDrawer-paper": {
-                boxSizing: "border-box",
-                width: currentDrawerWidth,
-                background: (theme) => theme.palette.sidebar.background,
-                backdropFilter: "blur(10px)",
-                borderRight: "1px solid",
-                borderColor: "sidebar.border",
-                color: "sidebar.text",
-                transition: "width 0.2s ease-in-out",
-                overflowX: "hidden",
-              },
-            }}
-          >
-            {sidebarContent}
-          </Drawer>
-        )}
-      </Box>
+      {isSidebar && (
+        <Box
+          component="nav"
+          sx={{ width: { sm: currentDrawerWidth }, flexShrink: { sm: 0 } }}
+        >
+          {isMobile ? (
+            <Drawer
+              variant="temporary"
+              open={mobileOpen}
+              onClose={handleDrawerToggle}
+              ModalProps={{ keepMounted: true }}
+              sx={{
+                display: { xs: "block", sm: "none" },
+                "& .MuiDrawer-paper": {
+                  boxSizing: "border-box",
+                  width: drawerWidth,
+                  bgcolor: "sidebar.background",
+                  borderRight: "1px solid",
+                  borderColor: "sidebar.border",
+                  color: "sidebar.text",
+                },
+              }}
+            >
+              {sidebarContent}
+            </Drawer>
+          ) : (
+            <Drawer
+              variant="permanent"
+              sx={{
+                display: { xs: "none", sm: "block" },
+                "& .MuiDrawer-paper": {
+                  boxSizing: "border-box",
+                  width: currentDrawerWidth,
+                  background: (theme) => theme.palette.sidebar.background,
+                  backdropFilter: "blur(10px)",
+                  borderRight: "1px solid",
+                  borderColor: "sidebar.border",
+                  color: "sidebar.text",
+                  transition: "width 0.2s ease-in-out",
+                  overflowX: "hidden",
+                },
+              }}
+            >
+              {sidebarContent}
+            </Drawer>
+          )}
+        </Box>
+      )}
 
       <Box
         component="main"
@@ -196,17 +205,38 @@ const Layout: React.FC = () => {
           p: compactView
             ? { xs: 1.5, sm: 2, md: 2.5 }
             : { xs: 2, sm: 3, md: 4 },
-          pb: 8, // Add padding to prevent FAB overlap
-          width: { sm: `calc(100% - ${currentDrawerWidth}px)` },
-          mt: isMobile
-            ? `calc(${compactView ? "48px" : "56px"} + env(safe-area-inset-top))`
-            : 0,
+          pb: isSidebar ? 8 : 12, // More padding at bottom for UserBottomNavigation
+          width:
+            isSidebar && !isMobile
+              ? `calc(100% - ${currentDrawerWidth}px)`
+              : "100%",
+          mt:
+            isSidebar && isMobile
+              ? `calc(${compactView ? "48px" : "56px"} + env(safe-area-inset-top))`
+              : 0,
           maxWidth: "100%",
           overflowX: "hidden",
         }}
       >
         <Outlet />
       </Box>
+
+      {!isSidebar && (
+        <UserBottomNavigation onScanClick={() => setScanOpen(true)} />
+      )}
+
+      <InventoryScanner
+        open={scanOpen}
+        onClose={() => setScanOpen(false)}
+        onScanSuccess={(decodedText) => {
+          setScanOpen(false);
+          void navigate(
+            `/inventory?scanResult=${encodeURIComponent(decodedText)}`
+          );
+        }}
+        onError={(msg) => handleError(new Error(msg), msg)}
+      />
+
       <AssistantFAB />
     </Box>
   );

@@ -19,7 +19,7 @@ import type {
 } from "@/types/inventory";
 
 import { useAlert } from "./AlertContext";
-import { useUserContext } from "./UserContext";
+import { useUserContext } from "./UserContextDefinition";
 
 import type { RealtimeChannel } from "@supabase/supabase-js";
 

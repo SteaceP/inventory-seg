@@ -39,7 +39,7 @@ vi.mock("@hooks/useErrorHandler", () => ({
   }),
 }));
 
-vi.mock("@contexts/UserContext", () => ({
+vi.mock("@contexts/UserContextDefinition", () => ({
   useUserContext: () => ({
     userId: mocks.userId,
   }),

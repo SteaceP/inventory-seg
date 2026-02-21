@@ -13,7 +13,7 @@ import { useTranslation } from "@/i18n";
 import type { InventoryItem } from "@/types/inventory";
 
 import { useInventoryContext } from "@contexts/InventoryContext";
-import { useUserContext } from "@contexts/UserContext";
+import { useUserContext } from "@contexts/UserContextDefinition";
 import { useInventoryCategorization } from "@hooks/useInventoryCategorization";
 
 import CategorySection from "../CategoryManagement/CategorySection";

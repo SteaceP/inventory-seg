@@ -20,7 +20,7 @@ const mockUser = createMockUserContext({
 });
 mockUser.setLanguage = mockSetLanguage;
 
-vi.mock("@contexts/UserContext", () => ({
+vi.mock("@contexts/UserContextDefinition", () => ({
   useUserContext: () => mockUser,
 }));
 

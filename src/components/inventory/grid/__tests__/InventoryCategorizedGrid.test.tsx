@@ -37,7 +37,7 @@ vi.mock("@i18n", () => ({
 
 // Mock UserContext
 const mockUserContext = createMockUserContext({ role: "admin" });
-vi.mock("@contexts/UserContext", () => ({
+vi.mock("@contexts/UserContextDefinition", () => ({
   useUserContext: () => mockUserContext,
 }));
 

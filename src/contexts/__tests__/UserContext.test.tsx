@@ -7,8 +7,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { mockSupabaseClient } from "@test/mocks";
 
-import { useUserContext } from "../UserContext.ts";
-import UserProvider from "../UserContext.tsx";
+import { useUserContext } from "../UserContextDefinition";
+import UserProvider from "../UserProvider";
 
 // Hoist mocks
 const mocks = vi.hoisted(() => {

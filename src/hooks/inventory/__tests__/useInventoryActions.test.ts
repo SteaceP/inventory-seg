@@ -63,7 +63,7 @@ vi.mock("@contexts/InventoryContext", () => ({
   }),
 }));
 
-vi.mock("@contexts/UserContext", () => ({
+vi.mock("@contexts/UserContextDefinition", () => ({
   useUserContext: () => ({
     role: "admin",
     lowStockThreshold: 10,

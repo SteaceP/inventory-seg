@@ -20,7 +20,7 @@ vi.mock("../../InventoryCard/InventoryCard", () => ({
 
 // Mock UserContext
 const mockUser = createMockUserContext({ compactView: false });
-vi.mock("@contexts/UserContext", () => ({
+vi.mock("@contexts/UserContextDefinition", () => ({
   useUserContext: () => mockUser,
 }));
 

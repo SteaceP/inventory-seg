@@ -8,7 +8,7 @@ import type {
 import type { UserContextType } from "@/types/user";
 
 import * as InventoryContextModule from "@contexts/InventoryContext";
-import * as UserContextModule from "@contexts/UserContext";
+import * as UserContextModule from "@contexts/UserContextDefinition";
 import {
   createMockInventoryItem,
   createMockInventoryContext,
@@ -58,7 +58,7 @@ vi.mock("@contexts/InventoryContext", () => ({
   useInventoryContext: vi.fn(),
 }));
 
-vi.mock("@contexts/UserContext", () => ({
+vi.mock("@contexts/UserContextDefinition", () => ({
   UserContext: UserContextMock,
   useUserContext: vi
     .fn()

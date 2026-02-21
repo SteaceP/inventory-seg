@@ -357,6 +357,7 @@ export type Database = {
           language: string | null
           low_stock_threshold: number | null
           mfa_enabled: boolean | null
+          navigation_type: string | null
           notifications: boolean | null
           role: string | null
           updated_at: string | null
@@ -373,6 +374,7 @@ export type Database = {
           language?: string | null
           low_stock_threshold?: number | null
           mfa_enabled?: boolean | null
+          navigation_type?: string | null
           notifications?: boolean | null
           role?: string | null
           updated_at?: string | null
@@ -389,6 +391,7 @@ export type Database = {
           language?: string | null
           low_stock_threshold?: number | null
           mfa_enabled?: boolean | null
+          navigation_type?: string | null
           notifications?: boolean | null
           role?: string | null
           updated_at?: string | null

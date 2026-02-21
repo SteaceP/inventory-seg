@@ -10,7 +10,7 @@ import {
 } from "@/utils/push-notifications";
 
 import { useAlert } from "@contexts/AlertContext";
-import { useUserContext } from "@contexts/UserContext";
+import { useUserContext } from "@contexts/UserContextDefinition";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 
 export const useNotificationSettings = () => {

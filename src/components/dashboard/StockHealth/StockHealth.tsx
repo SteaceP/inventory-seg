@@ -13,7 +13,7 @@ import CrisisIcon from "@mui/icons-material/Error";
 import { useTranslation } from "@/i18n";
 
 import { useInventoryContext } from "@contexts/InventoryContext";
-import { useUserContext } from "@contexts/UserContext";
+import { useUserContext } from "@contexts/UserContextDefinition";
 
 const StockHealth: React.FC = () => {
   const { t } = useTranslation();

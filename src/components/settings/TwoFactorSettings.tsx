@@ -18,7 +18,7 @@ import SecurityIcon from "@mui/icons-material/Security";
 import { useTranslation } from "@/i18n";
 import { supabase } from "@/supabaseClient";
 
-import { useUserContext } from "@contexts/UserContext";
+import { useUserContext } from "@contexts/UserContextDefinition";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 
 import TwoFactorEnrollment from "./TwoFactorEnrollment";

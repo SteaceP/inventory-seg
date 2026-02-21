@@ -4,7 +4,7 @@ import type { InventoryItem } from "@/types/inventory";
 
 import { useAlert } from "@contexts/AlertContext";
 import { useInventoryContext } from "@contexts/InventoryContext";
-import { useUserContext } from "@contexts/UserContext";
+import { useUserContext } from "@contexts/UserContextDefinition";
 import { logActivity } from "@utils/activityUtils";
 
 import { useErrorHandler } from "../useErrorHandler";

@@ -32,7 +32,7 @@ import InventoryDialog from "@components/inventory/InventoryDialog/InventoryDial
 import InventoryScanner from "@components/inventory/InventoryScanner/InventoryScanner";
 import SEO from "@components/SEO";
 import { useInventoryContext } from "@contexts/InventoryContext";
-import { useUserContext } from "@contexts/UserContext";
+import { useUserContext } from "@contexts/UserContextDefinition";
 import { useInventoryActions } from "@hooks/inventory/useInventoryActions";
 import { useInventoryForm } from "@hooks/inventory/useInventoryForm";
 import { useErrorHandler } from "@hooks/useErrorHandler";

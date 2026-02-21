@@ -16,7 +16,7 @@ import SignupSuccess from "@/components/auth/SignupSuccess";
 import { useTranslation } from "@/i18n";
 import { supabase } from "@/supabaseClient";
 
-import { useUserContext } from "@contexts/UserContext";
+import { useUserContext } from "@contexts/UserContextDefinition";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { usePerformance } from "@hooks/usePerformance";
 
@@ -47,7 +47,7 @@ const Signup: React.FC = () => {
     setLoading(true);
 
     // Domain validation
-    if (!email.toLowerCase().endsWith("@s-e-g.ca")) {
+    if (!email.toLowerCase().trim().endsWith("@s-e-g.ca")) {
       handleError(new Error("Invalid domain"), t("signup.invalidDomain"), {
         email,
       });

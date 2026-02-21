@@ -21,7 +21,7 @@ import StockAdjustmentDialog from "@components/inventory/StockAdjustmentDialog/i
 import StockHistoryDialog from "@components/inventory/StockHistoryDialog/StockHistoryDialog";
 import SEO from "@components/SEO";
 import { useInventoryContext } from "@contexts/InventoryContext";
-import { useUserContext } from "@contexts/UserContext";
+import { useUserContext } from "@contexts/UserContextDefinition";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { useInventoryPage } from "@hooks/useInventoryPage";
 

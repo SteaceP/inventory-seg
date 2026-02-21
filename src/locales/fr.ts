@@ -146,6 +146,9 @@ const fr = {
   // Appearance
   "appearance.title": "Apparence",
   "appearance.darkMode": "Mode sombre",
+  "appearance.navigationType": "Style de Navigation",
+  "appearance.navigationSidebar": "Barre latérale (Classique)",
+  "appearance.navigationBottom": "Menu du bas (Mobile)",
   "appearance.compactView": "Affichage compact",
 
   // Notifications

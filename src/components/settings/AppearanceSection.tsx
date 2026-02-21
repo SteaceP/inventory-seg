@@ -8,9 +8,8 @@ import Typography from "@mui/material/Typography";
 
 import PaletteIcon from "@mui/icons-material/Palette";
 
+import { useUserContext } from "@/contexts/UserContextDefinition";
 import { useTranslation } from "@/i18n";
-
-import { useUserContext } from "@contexts/UserContext";
 
 interface AppearanceSectionProps {
   darkMode: boolean;
@@ -25,7 +24,12 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
   onDarkModeChange,
   onCompactViewChange,
 }) => {
-  const { toggleDarkMode, toggleCompactView } = useUserContext();
+  const {
+    toggleDarkMode,
+    toggleCompactView,
+    navigationType,
+    toggleNavigationType,
+  } = useUserContext();
   const { t } = useTranslation();
   const [assistantEnabled, setAssistantEnabled] = React.useState(() => {
     return localStorage.getItem("assistant-fab-visible") !== "false";
@@ -101,6 +105,21 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
             />
           }
           label={t("menu.assistant") + " (Show Button)"}
+        />
+        <FormControlLabel
+          control={
+            <Switch
+              id="navigation-toggle"
+              checked={navigationType === "bottom"}
+              onChange={(e) =>
+                void toggleNavigationType(
+                  e.target.checked ? "bottom" : "sidebar"
+                )
+              }
+              color="primary"
+            />
+          }
+          label={t("appearance.navigationType")}
         />
       </Box>
     </Paper>

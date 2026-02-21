@@ -31,7 +31,7 @@ import AppliancesStats from "@components/appliances/AppliancesStats";
 import BarcodePrinter from "@components/BarcodePrinter";
 import ConfirmDialog from "@components/ConfirmDialog";
 import InventoryScanner from "@components/inventory/InventoryScanner/InventoryScanner";
-import { useUserContext } from "@contexts/UserContext";
+import { useUserContext } from "@contexts/UserContextDefinition";
 import { useApplianceManagement } from "@hooks/useApplianceManagement";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 

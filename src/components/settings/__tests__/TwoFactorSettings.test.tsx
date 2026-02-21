@@ -23,8 +23,9 @@ vi.mock("../../../i18n", () => ({
   }),
 }));
 
-vi.mock("@contexts/UserContext", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@contexts/UserContext")>();
+vi.mock("@contexts/UserContextDefinition", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@contexts/UserContextDefinition")>();
   return {
     ...actual,
     useUserContext: mockUseUserContext,

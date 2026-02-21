@@ -4,6 +4,9 @@ import type { UserContextType } from "@/types/user";
 
 import type { Session } from "@supabase/supabase-js";
 
+/**
+ * Context for user settings, profile, and preferences.
+ */
 export const UserContext = createContext<
   (UserContextType & { session: Session | null }) | undefined
 >(undefined);

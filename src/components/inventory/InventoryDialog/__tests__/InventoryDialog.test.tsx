@@ -42,7 +42,7 @@ const mockInventory = createMockInventoryContext({
 });
 const { t } = createMockTranslation();
 
-vi.mock("@contexts/UserContext", () => ({
+vi.mock("@contexts/UserContextDefinition", () => ({
   useUserContext: () => mockUser,
 }));
 
