@@ -22,7 +22,6 @@ test_output.txt
 # Dependencies
 # ======================
 node_modules
-package.json
 pnpm-lock.yaml
 
 # ======================
@@ -30,7 +29,6 @@ pnpm-lock.yaml
 # ======================
 .wrangler
 wrangler.jsonc
-wrangler.toml
 .dev.vars
 .wrangler.dev.vars*
 

@@ -1,18 +1,18 @@
 {
-  "name": "${PACKAGE_NAME}",
+  "name": "seg-inventaire",
   "description": "Advanced Inventory Management System, featuring multi-location tracking, AI-driven reordering, and appliance maintenance history.",
   "private": true,
   "version": "0.0.2",
   "license": "AGPL-3.0-only",
-  "author": "${PACKAGE_AUTHOR}",
-  "github": "${GH_USERNAME}",
+  "author": "SteaceP",
+  "github": "SteaceP",
   "repository": {
     "type": "git",
-    "url": "https://github.com/${GH_USERNAME}/${REPO_NAME}.git"
+    "url": "https://github.com/SteaceP/inventory-seg.git"
   },
-  "homepage": "${APP_URL}",
+  "homepage": "https://inv.coderage.pro",
   "bugs": {
-    "url": "https://github.com/${GH_USERNAME}/${REPO_NAME}/issues"
+    "url": "https://github.com/SteaceP/inventory-seg/issues"
   },
   "keywords": [
     "inventory",
@@ -153,7 +153,12 @@
     ]
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
-    "*.{json,css,md}": ["prettier --write"]
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,css,md}": [
+      "prettier --write"
+    ]
   }
 }

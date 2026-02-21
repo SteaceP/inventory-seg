@@ -1,0 +1,60 @@
+# Wrangler configuration file generated from template
+name = "inventory-seg-production"
+main = "src/worker.ts"
+compatibility_date = "2026-01-02"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "dist/client"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/*"]
+
+[triggers]
+crons = ["0 13 * * *"]
+
+
+[[routes]]
+pattern = "inv.coderage.pro"
+custom_domain = true
+
+[vars]
+VAPID_PUBLIC_KEY = "BPb01P8jNEFvyMS6hQW4i-wgqK3DDK9dWkJBuyinBxUGDhvSpGMHCMAmfU1LE3p6qTs0XkeP_pGupYhDMQ6F8pI"
+BREVO_SENDER_EMAIL = "admin@coderage.pro"
+SENTRY_DSN = "https://6df3120171c9626e7132dc99e560c9fd@o1383731.ingest.us.sentry.io/4510731850088448"
+COMPANY_NAME = "La Société Emmanuel-Grégoire"
+ADMIN_EMAIL = "admin@coderage.pro"
+SUPABASE_URL = "http://127.0.0.1:54321"
+APP_URL = "https://inv.coderage.pro"
+ALLOWED_ORIGIN = "https://inv.coderage.pro,https://*.coderage.workers.dev"
+R2_BUCKET_NAME = "my-inventory-bucket"
+
+[[hyperdrive]]
+binding = "HYPERDRIVE"
+id = "your_hyperdrive_id"
+localConnectionString = "postgresql://postgres:postgres@127.0.0.1:54322/postgres"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "my-inventory-db"
+database_id = "64eb265b-9118-4a15-a544-110fec170502"
+
+[observability]
+enabled = true
+
+[[r2_buckets]]
+binding = "SEG_INVENTORY_DATA"
+bucket_name = "my-inventory-bucket"
+
+[ai]
+binding = "AI_SERVICE"
+remote = false
+
+[env.dev.vars]
+SUPABASE_URL = "http://127.0.0.1:54321"
+APP_URL = "https://inv.coderage.pro"
+ALLOWED_ORIGIN = "https://inv.coderage.pro,https://*.coderage.workers.dev"
+
+[env.preview.vars]
+SUPABASE_URL = "http://127.0.0.1:54321"
+APP_URL = "https://inv.coderage.pro"
+ALLOWED_ORIGIN = "https://inv.coderage.pro,https://*.coderage.workers.dev"

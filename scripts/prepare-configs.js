@@ -5,10 +5,6 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, "..");
 
-/**
- * Loads environment variables from a file if it exists
- * @param {string} filePath
- */
 function loadEnvFile(filePath) {
   if (!fs.existsSync(filePath)) return {};
   const content = fs.readFileSync(filePath, "utf-8");
@@ -20,7 +16,6 @@ function loadEnvFile(filePath) {
     if (colonIndex > -1) {
       const key = trimmed.slice(0, colonIndex).trim();
       let value = trimmed.slice(colonIndex + 1).trim();
-      // Remove quotes if present
       if (
         (value.startsWith('"') && value.endsWith('"')) ||
         (value.startsWith("'") && value.endsWith("'"))
@@ -32,76 +27,45 @@ function loadEnvFile(filePath) {
   });
   return env;
 }
-const isCI =
-  process.env.GITHUB_ACTIONS === "true" || process.env.ACT === "true";
 
 const env = {
-  ...loadEnvFile(path.join(rootDir, ".env.example")), // Blueprint
-  ...loadEnvFile(path.join(rootDir, ".env.local")), // Development
-  ...(isCI ? loadEnvFile(path.join(rootDir, ".act.env")) : {}), // CI / Local ACT
-  ...loadEnvFile(path.join(rootDir, ".prod.vars")), // Production Infrastructure
-  ...process.env, // Final Overrides
-  AI_REMOTE: process.env.AI_REMOTE || "false",
+  ...loadEnvFile(path.join(rootDir, ".env.example")), // Default blueprint
+  ...loadEnvFile(path.join(rootDir, ".env")),
+  ...loadEnvFile(path.join(rootDir, ".env.local")),
+  ...process.env,
 };
 
-// Derive extracted values
-if (env.APP_URL) {
+// Derive APP_DOMAIN if available
+if (env.APP_URL && !env.APP_DOMAIN) {
   try {
-    const url = new URL(env.APP_URL);
-    env.APP_DOMAIN = url.hostname;
+    env.APP_DOMAIN = new URL(env.APP_URL).hostname;
   } catch (e) {
     console.warn("Could not parse APP_URL to derive APP_DOMAIN");
   }
 }
 
-/**
- * Processes a template file and generates the output file
- * @param {string} templateName
- * @param {string} outputName
- */
 function processTemplate(templateName, outputName) {
   const templatePath = path.join(rootDir, templateName);
   const outputPath = path.join(rootDir, outputName);
 
-  if (!fs.existsSync(templatePath)) {
-    console.error(`Template file not found: ${templatePath}`);
-    process.exit(1);
-  }
+  if (!fs.existsSync(templatePath)) return;
 
   let content = fs.readFileSync(templatePath, "utf-8");
-  let missingVars = [];
 
-  // Replace ${VAR_NAME} placeholders
   content = content.replace(/\$\{([A-Z0-9_]+)\}/g, (match, varName) => {
-    // Check environment variables (both standard and VITE_ prefixed)
-    const hasVar = varName in env;
-    const hasViteVar = `VITE_${varName}` in env;
-
-    if (!hasVar && !hasViteVar) {
-      missingVars.push(varName);
-      return match;
-    }
-
-    return env[varName] !== undefined ? env[varName] : env[`VITE_${varName}`];
+    return env[varName] !== undefined
+      ? env[varName]
+      : env[`VITE_${varName}`] !== undefined
+        ? env[`VITE_${varName}`]
+        : match;
   });
 
-  if (missingVars.length > 0) {
-    console.error(
-      `\x1b[31mError: The following environment variables are missing for ${outputName}:\x1b[0m`
-    );
-    missingVars.forEach((v) => console.error(`  - ${v}`));
-    console.error(`\nPlease add them to your .env.local or .dev.vars file.`);
-    process.exit(1);
-  }
-
-  // No post-processing needed for TOML unless specific literals are required
-  // But we can keep the boolean conversion if we want to support both or ensure TOML literals
+  // Convert "true"/"false" strings to boolean literals for TOML
   content = content.replace(/"(true|false)"/g, "$1");
 
   fs.writeFileSync(outputPath, content);
-  console.log(`Successfully generated ${outputName} from template`);
+  console.log(`Successfully generated ${outputName}`);
 }
 
-// Process all templates
 processTemplate("wrangler.template.toml", "wrangler.toml");
 processTemplate("package.template.json", "package.json");
